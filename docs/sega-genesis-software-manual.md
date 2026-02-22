@@ -1,0 +1,1 @@
+../../32x-playground/docs/sega-genesis-software-manual.md

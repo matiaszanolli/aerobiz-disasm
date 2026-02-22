@@ -1,0 +1,1 @@
+../../32x-playground/docs/genesis-software-development-manual.md

@@ -1,0 +1,1 @@
+../../32x-playground/docs/genesis-32x-overview.md

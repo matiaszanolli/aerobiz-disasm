@@ -53,6 +53,30 @@ The Navigator's complete knowledge base. Updated after each session.
 - SRAM present: $200001-$203FFF (battery-backed, odd byte addressed, ~8KB)
 - I/O: J (3-button joypad only)
 - Region: U (USA)
+- ~854 functions (RTS count), ~737KB code, ~276KB padding (30% fill)
+- Work RAM base pointer: A5 = $FFF010 (used throughout game)
+
+### Aerobiz Execution Flow
+- Boot: $000200 (TMSS) -> $0002FA (game init) -> $0003A0 (jmp $D5B6)
+- Main game entry: $00D5B6
+- Main game loop: $00D608 (loops via bra back to itself)
+- V-INT handler: $0014E6-$0015AE (DMA, display, input, 4 subsystem updates)
+- H-INT handler: $001484-$0014E4 (HScroll raster effect)
+- EXT INT: $001480 (NOP + RTE, unused)
+- Exception handlers: $000F84-$000FE0 (load ID, jsr $58EE, halt)
+- Z80 sound driver: ROM $002696-$003BE7 (5458 bytes, loaded to $A00000)
+- Sound init routine: $00260A
+- Game strings: $03E1AC-$041510+ (English text, printf-style %s/%d)
+
+### ROM Major Regions
+- $000200-$052FFF: CODE (333KB, main game code)
+- $054000-$065FFF: CODE (72KB)
+- $066000-$06FFFF: PADDING (40KB, $FF fill)
+- $070000-$074FFF: CODE (20KB)
+- $076000-$0B7FFF: CODE (264KB, largest block)
+- $0B8000-$0EFFFF: PADDING (224KB, $FF fill, largest gap)
+- $0F0000-$0FBFFF: CODE (48KB)
+- $0FC000-$0FFFFF: DATA + PADDING
 
 ### VDP Ports
 - $C00000: VDP data port (read/write VRAM/CRAM/VSRAM)
@@ -92,7 +116,11 @@ The Navigator's complete knowledge base. Updated after each session.
 | VDP DMA | docs/genesis-software-development-manual.md | KNOWN_ISSUES.md / VDP DMA Timing |
 | 68K instruction encoding | docs/motorola-68000-programmers-reference.md | KNOWN_ISSUES.md / 68K Assembly |
 | Z80 bus protocol | docs/genesis-technical-overview.md | KNOWN_ISSUES.md / Z80 Bus |
-| Sound driver | docs/sound-driver-v3.md | -- |
+| Sound driver | docs/sound-driver-v3.md | analysis/SYSTEM_EXECUTION_FLOW.md / Z80 Sound Driver |
+| Boot sequence | analysis/SYSTEM_EXECUTION_FLOW.md / Boot Sequence | -- |
+| Main game loop | analysis/SYSTEM_EXECUTION_FLOW.md / Main Game Loop | -- |
+| V-INT handler | analysis/SYSTEM_EXECUTION_FLOW.md / V-INT Handler | -- |
+| ROM layout / regions | analysis/ROM_MAP.md / Major Regions | -- |
 | Genesis memory map | docs/genesis-technical-overview.md | KNOWN_ISSUES.md / Memory Map |
 | ROM header format | docs/genesis-software-development-manual.md | KNOWN_ISSUES.md / SEGA ROM Header |
 | Controller I/O | docs/genesis-software-development-manual.md | docs/sega-genesis-reference-sheets.md |

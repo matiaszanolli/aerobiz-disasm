@@ -27,16 +27,16 @@ Pick the highest-priority unclaimed task. Mark it `IN PROGRESS` with your sessio
 ## P1 -- High Impact
 
 ### B-003: Map ROM sections (code vs data vs padding)
-**Status:** OPEN (depends on B-002)
+**Status:** DONE (2026-02-23)
 **Why:** Understanding ROM layout is prerequisite for targeted disassembly.
-**Approach:** Scan for patterns -- NOP sleds (padding), ASCII strings (data), consistent opcode patterns (code). Use the vector table to identify code entry points. Map out sections with address ranges and purposes.
-**Acceptance:** ROM map document in `analysis/ROM_MAP.md` with address ranges, types, and notes.
+**Approach:** Heuristic scan counting 68K instruction markers (RTS, RTE, JSR, BSR, Bcc) per 4KB block. Combined with padding detection (runs of $00/$FF) and ASCII string detection. Identified 5 major code regions, 3 padding regions, mixed/data zones.
+**Acceptance:** `analysis/ROM_MAP.md` populated with major regions, code density heatmap, statistics (854 RTS, 3873 JSR, ~30% padding).
 
 ### B-004: Trace entry point and main loop
-**Status:** OPEN (depends on B-002)
+**Status:** DONE (2026-02-23)
 **Why:** Understanding the main execution flow tells us where everything else hangs from.
-**Approach:** Follow reset vector -> initialization -> main loop. Document the V-INT handler. Identify the game state machine.
-**Acceptance:** `analysis/SYSTEM_EXECUTION_FLOW.md` with boot sequence, main loop, and V-INT handler documented.
+**Approach:** Disassembled from reset vector ($200) through TMSS boot -> game init -> main game entry ($D5B6) -> main loop ($D608). Traced V-INT ($14E6), H-INT ($1484), EXT INT ($1480), and exception handlers ($F84-$FE0). Identified Z80 sound driver at $2696-$3BE7 (5458 bytes).
+**Acceptance:** `analysis/SYSTEM_EXECUTION_FLOW.md` fully documented: boot sequence, main game loop, V-INT/H-INT/exception handlers, Z80 sound driver location.
 
 ### B-005: Identify and document the sound driver
 **Status:** OPEN (depends on B-003)
@@ -76,6 +76,8 @@ Pick the highest-priority unclaimed task. Mark it `IN PROGRESS` with your sessio
 
 | ID | Description | Commit | Date |
 |----|-------------|--------|------|
-| B-001 | Initial ROM dump as dc.w (byte-identical, 16 section files) | -- | 2026-02-23 |
-| B-002 | Vector table identified and labeled (all 64 vectors) | -- | 2026-02-23 |
-| -- | Project scaffolding created | -- | 2026-02-22 |
+| B-003 | ROM sections mapped (code/data/padding heatmap, 854 functions) | -- | 2026-02-23 |
+| B-004 | Entry point traced, main loop + all interrupt handlers documented | -- | 2026-02-23 |
+| B-001 | Initial ROM dump as dc.w (byte-identical, 16 section files) | f46553e | 2026-02-23 |
+| B-002 | Vector table identified and labeled (all 64 vectors) | f46553e | 2026-02-23 |
+| -- | Project scaffolding created | 412e6cf | 2026-02-22 |

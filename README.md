@@ -1,0 +1,86 @@
+# Aerobiz Supersonic -- Sega Genesis Disassembly
+
+A full disassembly and reassembly project for **Aerobiz Supersonic** (USA) on the Sega Genesis / Mega Drive.
+
+| | |
+|---|---|
+| **Platform** | Sega Genesis / Mega Drive |
+| **CPU** | Motorola 68000 @ 7.67 MHz |
+| **Sound** | Zilog Z80 @ 3.58 MHz, YM2612 FM, SN76489 PSG |
+| **Publisher** | KOEI (T-76) |
+| **Release** | December 1994 |
+| **ROM size** | 1 MB |
+| **Region** | USA |
+| **Product code** | GM T-76136 -00 |
+
+## Goal
+
+Produce a fully documented, byte-identical reassembly of the original ROM from 68000 assembly source. All code translated to mnemonics, all functions named and documented, all data tables identified.
+
+## Building
+
+Requires `vasmm68k_mot` (Motorola-syntax 68000 assembler). The toolchain is included in `tools/`.
+
+```bash
+make all          # Assemble ROM -> build/aerobiz.bin
+make verify       # Compare MD5 against original ROM
+make clean        # Remove build artifacts
+```
+
+Place the original ROM as `Aerobiz Supersonic (USA).gen` in the project root for verification.
+
+## Project Structure
+
+```
+aerobiz-disasm/
+  disasm/
+    aerobiz.asm                  # Main entry point (includes everything)
+    modules/
+      shared/definitions.asm     # Hardware register equates
+      68k/<category>/*.asm       # Translated 68K modules (by category)
+    sections/
+      header.asm                 # Vector table + ROM header ($000000-$0001FF)
+      section_XXXXXX.asm         # ROM data sections (64KB each)
+  analysis/
+    ROM_MAP.md                   # ROM layout (code/data/padding)
+    FUNCTION_REFERENCE.md        # All identified functions
+    SYSTEM_EXECUTION_FLOW.md     # Boot, main loop, V-INT, game states
+  docs/                          # Hardware reference documentation (symlinked)
+  tools/                         # Assembler and disassembler (symlinked)
+  agents/                        # AI agent team definitions
+  BACKLOG.md                     # Task queue
+  KNOWN_ISSUES.md                # Pitfalls and gotchas
+```
+
+## ROM Layout
+
+| Range | Size | Description |
+|-------|------|-------------|
+| `$000000-$0000FF` | 256 B | Exception vector table (64 longwords) |
+| `$000100-$0001FF` | 256 B | ROM header (console name, title, checksum, SRAM info) |
+| `$000200-$0FFFFF` | ~1 MB | Game code and data |
+
+### Key Addresses
+
+| Address | Purpose |
+|---------|---------|
+| `$000200` | Entry point (reset vector) |
+| `$000F84-$000FD2` | Exception handlers (bus error, address error, etc.) |
+| `$001480` | EXT interrupt handler (Level 2) |
+| `$001484` | H-Blank interrupt handler (Level 4) |
+| `$0014E6` | V-Blank interrupt handler (Level 6) |
+| `$200001-$203FFF` | SRAM (battery-backed save data, ~8 KB) |
+
+## Progress
+
+| Phase | Description | Status |
+|-------|-------------|--------|
+| 1. Initial dump | ROM as raw `dc.w` data, vector table labeled | Done |
+| 2. Code discovery | Trace execution, identify subroutines and data | Not started |
+| 3. Function translation | `dc.w` -> 68K mnemonics, name functions | Not started |
+| 4. Data analysis | Identify tables, strings, graphics data | Not started |
+| 5. Full understanding | Complete documentation, byte-identical rebuild | Not started |
+
+## License
+
+This repository contains no copyrighted ROM data. You must supply your own legally obtained ROM file to build. The disassembly source, tooling, and documentation are provided for educational and preservation purposes.

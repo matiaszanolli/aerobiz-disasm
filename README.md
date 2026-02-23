@@ -64,11 +64,16 @@ aerobiz-disasm/
 
 | Address | Purpose |
 |---------|---------|
-| `$000200` | Entry point (reset vector) |
-| `$000F84-$000FD2` | Exception handlers (bus error, address error, etc.) |
-| `$001480` | EXT interrupt handler (Level 2) |
-| `$001484` | H-Blank interrupt handler (Level 4) |
-| `$0014E6` | V-Blank interrupt handler (Level 6) |
+| `$000200` | Entry point (reset vector, TMSS boot) |
+| `$0002FA` | Post-boot initialization (work RAM setup, HW init calls) |
+| `$000F84-$000FE1` | Exception handlers (14 IDs + common handler + halt) |
+| `$001480` | EXT interrupt handler (Level 2, unused -- nop + rte) |
+| `$001484` | H-Blank interrupt handler (Level 4, raster scroll effect) |
+| `$0014E6` | V-Blank interrupt handler (Level 6, main per-frame handler) |
+| `$00D5B6` | Main game entry |
+| `$00D608` | Main game loop (iterates forever) |
+| `$002696-$003BE7` | Z80 sound driver (5,458 bytes, custom) |
+| `$03E1AC-$041FFF` | Game text strings (ASCII, null-terminated, printf-style) |
 | `$200001-$203FFF` | SRAM (battery-backed save data, ~8 KB) |
 
 ## Progress
@@ -76,10 +81,20 @@ aerobiz-disasm/
 | Phase | Description | Status |
 |-------|-------------|--------|
 | 1. Initial dump | ROM as raw `dc.w` data, vector table labeled | Done |
-| 2. Code discovery | Trace execution, identify subroutines and data | Not started |
-| 3. Function translation | `dc.w` -> 68K mnemonics, name functions | Not started |
-| 4. Data analysis | Identify tables, strings, graphics data | Not started |
+| 2. Code discovery | Trace execution, map ROM regions, identify functions | Done |
+| 3. Function translation | `dc.w` -> 68K mnemonics, name functions | **In progress** |
+| 4. Data analysis | Identify tables, strings, graphics data | Partial |
 | 5. Full understanding | Complete documentation, byte-identical rebuild | Not started |
+
+### Translation Status
+
+~560 bytes of code translated from raw `dc.w` to 68000 mnemonics (all verified byte-identical):
+
+- Exception handlers ($F84-$FE1) -- 94 bytes, full mnemonics
+- EXT/H-INT/V-INT interrupt handlers ($1480-$15AF) -- 304 bytes
+- Boot post-initialization ($2FA-$3A0) -- 166 bytes
+
+47 functions named out of ~854 total. See [BACKLOG.md](BACKLOG.md) for the full task queue.
 
 ## License
 

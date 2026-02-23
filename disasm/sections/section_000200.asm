@@ -21,18 +21,73 @@ EntryPoint:
     dc.w    $4000,$0080,$AF01,$D91F,$1127,$0021,$2600,$F977; $0002C0
     dc.w    $EDB0,$DDE1,$FDE1,$ED47,$ED4F,$D1E1,$F108,$D9C1; $0002D0
     dc.w    $D1E1,$F1F9,$F3ED,$5636,$E9E9,$8104,$8F02,$C000; $0002E0
-    dc.w    $0000,$4000,$0010,$9FBF,$DFFF,$4A79,$00C0,$0004; $0002F0
-    dc.w    $6100,$09DA,$0240,$0002,$66F6,$6100,$38DC,$7000; $000300
-    dc.w    $2A7C,$00FF,$F010,$1B40,$02FB,$1B40,$0B2A,$1B40; $000310
-    dc.w    $001C,$1B40,$002B,$1B40,$004B,$3B40,$0BCE,$2B40; $000320
-    dc.w    $0BD0,$1B40,$0BD4,$3B40,$0C70,$4EBA,$03CE,$4E71; $000330
-    dc.w    $0839,$0006,$00A1,$000D,$6600,$0004,$4E71,$207C; $000340
-    dc.w    $00FF,$F000,$227C,$0000,$0362,$20D9,$20D9,$3091; $000350
-    dc.w    $600A,$38AD,$0042,$38AD,$0044,$4E75,$4EBA,$0CC8; $000360
-    dc.w    $4E71,$4EBA,$0CA8,$4E71,$4EBA,$0D00,$4E71,$4EBA; $000370
-    dc.w    $0D7E,$4E71,$4EB9,$0000,$260A,$4EBA,$0D4E,$4E71; $000380
-    dc.w    $4EBA,$0CFE,$4E71,$46FC,$2000,$207C,$0000,$D5B6; $000390
-    dc.w    $4ED0,$202E,$000E,$287C,$00C0,$0004,$3880,$3200; $0003A0
+    dc.w    $0000,$4000,$0010,$9FBF,$DFFF                   ; $0002F0 (end of data table)
+
+; ===========================================================================
+; Post-Boot Initialization ($0002FA-$0003A0)
+; Wait for V-Blank, init work RAM, call init subroutines, enter game
+; ===========================================================================
+
+    tst.w   VDP_CTRL                                        ; $0002FA: read/clear VDP status
+.vblank_wait:                                               ; $000300
+    dc.w    $6100,$09DA                                     ; bsr.w WaitVBlank ($000CDC)
+    andi.w  #$0002,d0                                       ; check status bit 1
+    bne.s   .vblank_wait                                    ; loop while set
+; --- Early init (RAM/VDP setup) ---
+    dc.w    $6100,$38DC                                     ; bsr.w EarlyInit ($003BE8)
+; --- Set up work RAM base and clear game state flags ---
+    moveq   #0,d0                                           ; D0 = 0 (clear value)
+    movea.l #$00FFF010,a5                                   ; A5 = work RAM base pointer
+    move.b  d0,$02FB(a5)                                    ; clear input enable flag
+    move.b  d0,$0B2A(a5)                                    ; clear display update flag
+    move.b  d0,$001C(a5)                                    ; clear flag
+    move.b  d0,$002B(a5)                                    ; clear V-INT dispatch flags
+    move.b  d0,$004B(a5)                                    ; clear DMA pending flag
+    move.w  d0,$0BCE(a5)                                    ; clear word flag
+    move.l  d0,$0BD0(a5)                                    ; clear long
+    move.b  d0,$0BD4(a5)                                    ; clear V-INT sub1 flag
+    move.w  d0,$0C70(a5)                                    ; clear word
+; --- Hardware init subroutine ---
+    dc.w    $4EBA,$03CE                                     ; jsr HardwareInit(pc) ($00070A)
+    nop
+; --- Test expansion controller ---
+    btst    #6,IO_CTRL3                                     ; expansion controller present?
+    bne.w   .copy_ram_sub                                   ; skip nop if yes
+    nop
+; --- Copy 10-byte subroutine from ROM to Work RAM ---
+.copy_ram_sub:                                              ; $00034E
+    movea.l #$00FFF000,a0                                   ; A0 = RAM target ($FFF000)
+    movea.l #$00000362,a1                                   ; A1 = ROM source (inline below)
+    move.l  (a1)+,(a0)+                                     ; copy bytes 0-3
+    move.l  (a1)+,(a0)+                                     ; copy bytes 4-7
+    move.w  (a1),(a0)                                       ; copy bytes 8-9
+    bra.s   .init_subs                                      ; skip over inline data
+; --- Inline RAM subroutine data (copied to $FFF000, 10 bytes) ---
+    dc.w    $38AD,$0042                                     ; move.w $0042(a5),(a4)
+    dc.w    $38AD,$0044                                     ; move.w $0044(a5),(a4)
+    rts                                                     ; $00036A
+; --- Init subroutine calls ---
+.init_subs:                                                 ; $00036C
+    dc.w    $4EBA,$0CC8                                     ; jsr VDP_Init1(pc) ($001036)
+    nop
+    dc.w    $4EBA,$0CA8                                     ; jsr VDP_Init2(pc) ($00101C)
+    nop
+    dc.w    $4EBA,$0D00                                     ; jsr VDP_Init3(pc) ($00107A)
+    nop
+    dc.w    $4EBA,$0D7E                                     ; jsr VDP_Init4(pc) ($0010FE)
+    nop
+    dc.w    $4EB9,$0000,$260A                               ; jsr Z80_SoundInit ($00260A)
+    dc.w    $4EBA,$0D4E                                     ; jsr Init5(pc) ($0010DA)
+    nop
+    dc.w    $4EBA,$0CFE                                     ; jsr Init6(pc) ($001090)
+    nop
+; --- Enable interrupts and enter main game ---
+    move    #$2000,sr                                       ; enable interrupts (supervisor mode)
+    movea.l #$0000D5B6,a0                                   ; A0 = GameEntry address
+    jmp     (a0)                                            ; ENTER MAIN GAME
+
+; ---------------------------------------------------------------------------
+    dc.w    $202E,$000E,$287C,$00C0,$0004,$3880,$3200       ; $0003A2
     dc.w    $E049,$0201,$007F,$1B80,$1000,$4E75,$202E,$0012; $0003B0
     dc.w    $222E,$000E,$661A,$3B40,$0038,$E048,$E448,$0040; $0003C0
     dc.w    $8200,$0200,$0038,$33C0,$00C0,$0004,$6000,$007A; $0003D0
@@ -222,19 +277,67 @@ EntryPoint:
     dc.w    $00FF,$FC74,$266E,$0012,$24DB,$2493,$08ED,$0000; $000F50
     dc.w    $0C62,$6014,$2B7C,$0000,$0000,$007A,$4EBA,$0074; $000F60
     dc.w    $4E71,$4EBA,$0662,$4E71,$4E75,$202E,$000E,$1B40; $000F70
-    dc.w    $0C6C,$4E75,$7002,$6000,$004C,$7003,$6000,$0046; $000F80
+    dc.w    $0C6C                                           ; $000F80
+    rts                                                     ; $000F82
 
-; --- Illegal Instruction ---
-IllegalInstr:
-    dc.w    $7004,$6000,$0040,$7005,$6000,$003A,$7006,$6000; $000F90
-    dc.w    $0034,$7007,$6000,$002E,$7008,$6000,$0028,$7009; $000FA0
-    dc.w    $6000,$0022,$700A,$6000,$001C,$700B,$6000,$0016; $000FB0
+; ===========================================================================
+; Exception Handlers ($000F84-$000FE1)
+; Pattern: moveq #exception_id,d0 -> bra.w ExceptionCommon
+; ExceptionCommon: push SP and ID, call ErrorDisplay, halt
+; ===========================================================================
 
-; --- Reserved ---
-Reserved_0C:
-    dc.w    $700C,$6000,$0010,$700D,$6000,$000A,$700E,$6000; $000FC0
-    dc.w    $0004,$700F,$204F,$2F08,$2F00,$4EB9,$0000,$58EE; $000FD0
-    dc.w    $60FE,$48E7,$E080,$207C,$00FF,$F01C,$0810,$0000; $000FE0
+BusError:                                                   ; $000F84
+    moveq   #2,d0
+    bra.w   ExceptionCommon
+AddressError:                                               ; $000F8A
+    moveq   #3,d0
+    bra.w   ExceptionCommon
+IllegalInstr:                                               ; $000F90
+    moveq   #4,d0
+    bra.w   ExceptionCommon
+ZeroDivide:                                                 ; $000F96
+    moveq   #5,d0
+    bra.w   ExceptionCommon
+ChkInstr:                                                   ; $000F9C
+    moveq   #6,d0
+    bra.w   ExceptionCommon
+TrapvInstr:                                                 ; $000FA2
+    moveq   #7,d0
+    bra.w   ExceptionCommon
+PrivilegeViol:                                              ; $000FA8
+    moveq   #8,d0
+    bra.w   ExceptionCommon
+Trace:                                                      ; $000FAE
+    moveq   #9,d0
+    bra.w   ExceptionCommon
+LineAEmulator:                                              ; $000FB4
+    moveq   #10,d0
+    bra.w   ExceptionCommon
+LineFEmulator:                                              ; $000FBA
+    moveq   #11,d0
+    bra.w   ExceptionCommon
+Reserved_0C:                                                ; $000FC0
+    moveq   #12,d0
+    bra.w   ExceptionCommon
+Reserved_0D:                                                ; $000FC6
+    moveq   #13,d0
+    bra.w   ExceptionCommon
+Reserved_0E:                                                ; $000FCC
+    moveq   #14,d0
+    bra.w   ExceptionCommon
+Reserved_0F:                                                ; $000FD2
+    moveq   #15,d0
+                                                            ; falls through
+ExceptionCommon:                                            ; $000FD4
+    movea.l sp,a0
+    move.l  a0,-(sp)
+    move.l  d0,-(sp)
+    dc.w    $4EB9,$0000,$58EE                               ; jsr ErrorDisplay ($0058EE)
+ExceptionHalt:                                              ; $000FE0
+    bra.s   ExceptionHalt
+
+; ---------------------------------------------------------------------------
+    dc.w    $48E7,$E080,$207C,$00FF,$F01C,$0810,$0000       ; $000FE2
     dc.w    $6604,$723F,$6002,$724F,$7001,$207C,$00FF,$F08A; $000FF0
     dc.w    $7403,$1180,$2000,$5280,$5082,$51C9,$FFF6,$7000; $001000
     dc.w    $5182,$1180,$2000,$4CDF,$0107,$4E75,$2C7C,$00FF; $001010
@@ -309,27 +412,122 @@ Reserved_0C:
     dc.w    $142D,$004C,$5343,$6710,$51CF,$FFDE,$220A,$2B41; $001460
     dc.w    $0054,$1B43,$004D,$6006,$1B7C,$0000,$002B,$4E75; $001470
 
-; --- Level 2 Interrupt -- EXT (active on Genesis) ---
-ExtInterrupt:
-    dc.w    $4E71,$4E73,$40E7,$007C,$0700,$48E7,$E084,$2A7C; $001480
-    dc.w    $00FF,$F010,$302D,$0C50,$5240,$3B40,$0C50,$3200; $001490
-    dc.w    $D040,$082D,$0000,$0C46,$6734,$206D,$0C48,$3430; $0014A0
-    dc.w    $0000,$9441,$206D,$0C4C,$3030,$0000,$9041,$23FC; $0014B0
-    dc.w    $4000,$0010,$00C0,$0004,$33C2,$00C0,$0000,$23FC; $0014C0
-    dc.w    $4002,$0010,$00C0,$0004,$33C0,$00C0,$0000,$4CDF; $0014D0
-    dc.w    $2107,$46DF,$4E73,$48E7,$FFFF,$200F,$0C80,$00FF; $0014E0
-    dc.w    $E000,$6500,$0434,$2A7C,$00FF,$F010,$287C,$00C0; $0014F0
-    dc.w    $0004,$3B7C,$0000,$0C50,$082D,$0000,$004B,$670A; $001500
-    dc.w    $6100,$012C,$08AD,$0000,$004B,$7000,$102D,$0B2A; $001510
-    dc.w    $6704,$6100,$013C,$7000,$102D,$0BD4,$6704,$6100; $001520
-    dc.w    $F708,$302D,$0BCE,$6700,$0006,$6100,$0190,$7000; $001530
-    dc.w    $102D,$02FB,$6704,$6100,$F5FA,$7000,$102D,$002B; $001540
-    dc.w    $6700,$0030,$082D,$0000,$002B,$670C,$6100,$FDE8; $001550
-    dc.w    $7000,$1B40,$002B,$601A,$082D,$0001,$002B,$6706; $001560
-    dc.w    $6100,$FE1E,$600C,$082D,$0002,$002B,$6704,$6100; $001570
-    dc.w    $FE84,$43F9,$00FF,$FBFC,$6100,$03A4,$4EBA,$0146; $001580
-    dc.w    $4E71,$4EBA,$01C8,$4E71,$4EBA,$02CA,$4E71,$4EBA; $001590
-    dc.w    $0330,$4E71,$1B7C,$0000,$0036,$4CDF,$FFFF,$4E73; $0015A0
+; ===========================================================================
+; EXT Interrupt Handler ($001480-$001483) -- Level 2 (unused)
+; ===========================================================================
+
+ExtInterrupt:                                               ; $001480
+    nop
+    rte
+
+; ===========================================================================
+; H-Blank Interrupt Handler ($001484-$0014E5) -- Level 4
+; Raster scroll effect: per-scanline VSRAM updates for scroll A/B
+; ===========================================================================
+
+HBlankInt:                                                  ; $001484
+    move    sr,-(sp)                                        ; save status register
+    ori     #$0700,sr                                       ; disable all interrupts
+    movem.l d0-d2/a0/a5,-(sp)                              ; save working registers
+    movea.l #$00FFF010,a5                                   ; A5 = work RAM base
+    move.w  $0C50(a5),d0                                    ; D0 = H-scroll line counter
+    addq.w  #1,d0                                           ; increment counter
+    move.w  d0,$0C50(a5)                                    ; store back
+    move.w  d0,d1                                           ; D1 = line counter (for offset)
+    add.w   d0,d0                                           ; D0 = word index (counter * 2)
+    btst    #0,$0C46(a5)                                    ; scroll effect enabled?
+    beq.s   .restore                                        ; skip update if disabled
+    movea.l $0C48(a5),a0                                    ; A0 = scroll table B pointer
+    move.w  0(a0,d0.w),d2                                   ; D2 = scroll B value for this line
+    sub.w   d1,d2                                           ; adjust by scanline
+    movea.l $0C4C(a5),a0                                    ; A0 = scroll table A pointer
+    move.w  0(a0,d0.w),d0                                   ; D0 = scroll A value for this line
+    sub.w   d1,d0                                           ; adjust by scanline
+    move.l  #$40000010,VDP_CTRL                             ; VSRAM write at address 0
+    move.w  d2,VDP_DATA                                     ; write scroll B value
+    move.l  #$40020010,VDP_CTRL                             ; VSRAM write at address 2
+    move.w  d0,VDP_DATA                                     ; write scroll A value
+.restore:                                                   ; $0014DE
+    movem.l (sp)+,d0-d2/a0/a5                              ; restore working registers
+    move    (sp)+,sr                                        ; restore status register
+    rte
+
+; ===========================================================================
+; V-Blank Interrupt Handler ($0014E6-$0015AF) -- Level 6
+; Main per-frame handler: DMA, display, input, subsystem updates
+; ===========================================================================
+
+VBlankInt:                                                  ; $0014E6
+    movem.l d0-d7/a0-a7,-(sp)                              ; save ALL registers
+    move.l  sp,d0                                           ; D0 = current stack pointer
+    cmpi.l  #$00FFE000,d0                                   ; stack overflow guard
+    dc.w    $6500,$0434                                     ; bcs.w VInt_Emergency ($001928)
+    movea.l #$00FFF010,a5                                   ; A5 = work RAM base
+    movea.l #$00C00004,a4                                   ; A4 = VDP control port
+    move.w  #0,$0C50(a5)                                    ; reset H-scroll line counter
+; --- DMA/VRAM transfer ---
+    btst    #0,$004B(a5)                                    ; DMA transfer pending?
+    beq.s   .no_dma
+    dc.w    $6100,$012C                                     ; bsr.w DMA_Transfer ($00163E)
+    bclr    #0,$004B(a5)                                    ; clear DMA flag
+; --- Display update ---
+.no_dma:                                                    ; $00151A
+    moveq   #0,d0
+    move.b  $0B2A(a5),d0                                    ; display update flag
+    beq.s   .no_display
+    dc.w    $6100,$013C                                     ; bsr.w DisplayUpdate ($001660)
+; --- Subsystem 1 ---
+.no_display:                                                ; $001526
+    moveq   #0,d0
+    move.b  $0BD4(a5),d0
+    beq.s   .no_sub1
+    dc.w    $6100,$F708                                     ; bsr.w VInt_Sub1 ($000C38)
+; --- Subsystem 2 ---
+.no_sub1:                                                   ; $001532
+    move.w  $0BCE(a5),d0                                    ; word flag
+    beq.w   .no_sub2
+    dc.w    $6100,$0190                                     ; bsr.w VInt_Sub2 ($0016CC)
+; --- Controller/input read ---
+.no_sub2:                                                   ; $00153E
+    moveq   #0,d0
+    move.b  $02FB(a5),d0                                    ; input enable flag
+    beq.s   .no_input
+    dc.w    $6100,$F5FA                                     ; bsr.w ControllerRead ($000B42)
+; --- Multi-dispatch on $002B(A5) bits 0/1/2 ---
+.no_input:                                                  ; $00154A
+    moveq   #0,d0
+    move.b  $002B(a5),d0                                    ; dispatch flags
+    beq.w   .poll                                           ; skip if no bits set
+    btst    #0,$002B(a5)                                    ; bit 0 set?
+    beq.s   .try_bit1
+    dc.w    $6100,$FDE8                                     ; bsr.w VInt_Handler1 ($001346)
+    moveq   #0,d0
+    move.b  d0,$002B(a5)                                    ; clear all dispatch flags
+    bra.s   .poll
+.try_bit1:                                                  ; $001568
+    btst    #1,$002B(a5)                                    ; bit 1 set?
+    beq.s   .try_bit2
+    dc.w    $6100,$FE1E                                     ; bsr.w VInt_Handler2 ($001390)
+    bra.s   .poll
+.try_bit2:                                                  ; $001576
+    btst    #2,$002B(a5)                                    ; bit 2 set?
+    beq.s   .poll
+    dc.w    $6100,$FE84                                     ; bsr.w VInt_Handler3 ($001404)
+; --- Controller poll + 4 subsystem updates (always run) ---
+.poll:                                                      ; $001582
+    dc.w    $43F9,$00FF,$FBFC                               ; lea $00FFFBFC,a1
+    dc.w    $6100,$03A4                                     ; bsr.w ControllerPoll ($00192E)
+    dc.w    $4EBA,$0146                                     ; jsr SubsysUpdate1(pc) ($0016D4)
+    nop
+    dc.w    $4EBA,$01C8                                     ; jsr SubsysUpdate2(pc) ($00175C)
+    nop
+    dc.w    $4EBA,$02CA                                     ; jsr SubsysUpdate3(pc) ($001864)
+    nop
+    dc.w    $4EBA,$0330                                     ; jsr SubsysUpdate4(pc) ($0018D0)
+    nop
+    move.b  #0,$0036(a5)                                    ; clear V-INT processed flag
+    movem.l (sp)+,d0-d7/a0-a7                              ; restore ALL registers
+    rte
     dc.w    $0800,$0000,$6614,$0800,$0001,$6614,$0800,$0002; $0015B0
     dc.w    $6700,$0012,$6100,$FB72,$600A,$6100,$FB52,$6004; $0015C0
     dc.w    $6100,$FB54,$4E75,$48E7,$0080,$207C,$00FF,$F01C; $0015D0

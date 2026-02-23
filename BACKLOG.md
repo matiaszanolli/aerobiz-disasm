@@ -72,10 +72,55 @@ Pick the highest-priority unclaimed task. Mark it `IN PROGRESS` with your sessio
 
 ---
 
+## Phase 3 -- Function Translation
+
+### B-009: Translate exception handlers ($F84-$FE0)
+**Status:** DONE (2026-02-23)
+**Why:** Simplest functions in the ROM -- each is 6 bytes (moveq + bra.w). Perfect first translation target.
+**Approach:** Replaced dc.w with mnemonics. 14 handlers + ExceptionCommon + ExceptionHalt (94 bytes). All labels placed. Confirmed bra.w displacement correct in vasm (no +2 bug like bsr.w).
+**Acceptance:** `make verify` passes. All exception handlers are mnemonics.
+
+### B-010: Translate interrupt handlers (EXT/H-INT/V-INT)
+**Status:** DONE (2026-02-23)
+**Why:** Critical system code. EXT INT (4 bytes), H-INT (98 bytes), V-INT (202 bytes).
+**Approach:** Full mnemonics for EXT INT (nop+rte) and H-INT (raster scroll with VDP_CTRL/VDP_DATA equates, indexed addressing verified). V-INT uses hybrid: mnemonics for logic (beq.s/beq.w/bra.s with local labels, movem.l, btst/bclr, move.b/w) + dc.w for bsr.w/jsr(pc) calls to external targets (no labels at target addresses yet). Subsystem update targets corrected: $175C not $1760, $18D0 not $18D4.
+**Acceptance:** `make verify` passes. All three interrupt handlers readable with full control flow.
+
+### B-011: Translate boot code ($200-$3A0)
+**Status:** DONE (2026-02-23)
+**Why:** Entry point and hardware initialization. ~416 bytes including inline data table.
+**Approach:** Translated post-boot init ($2FA-$3A0): V-Blank wait loop, work RAM flag clearing (10 flags via A5 offsets), hardware init calls (7 jsr's to VDP/sound init), RAM subroutine copy (10 bytes to $FFF000), enable interrupts + jmp to GameEntry. TMSS code ($200-$28C) and data table ($28E-$2F8) remain as dc.w (standard Genesis boilerplate). Inline RAM sub kept as dc.w with comments.
+**Acceptance:** `make verify` passes. Post-boot init fully readable.
+
+### B-012: Translate sound driver interface ($260A-$2688)
+**Status:** OPEN
+**Why:** Z80 init, bus request/release, delay routines. Self-contained utility functions.
+**Acceptance:** `make verify` passes. Sound interface functions are mnemonics.
+
+### B-013: Translate most-called function $000D64
+**Status:** OPEN
+**Why:** Called 306 times -- highest call count in ROM. Understanding it unlocks many callers.
+**Acceptance:** Function translated, named, and documented.
+
+### B-014: Translate main game loop ($D5B6-$D648)
+**Status:** OPEN
+**Why:** The main loop structure. ~142 bytes of high-level game flow.
+**Acceptance:** `make verify` passes. Main loop is mnemonics with named subroutine calls.
+
+### B-015: Translate top utility functions ($1D520-$1E1EC cluster)
+**Status:** OPEN
+**Why:** 6 functions in the $01D5xx-$01E1xx range with 64-106 calls each. Likely core utility/UI routines.
+**Acceptance:** Functions translated, named, documented.
+
+---
+
 ## Done
 
 | ID | Description | Commit | Date |
 |----|-------------|--------|------|
+| B-009 | Exception handlers translated (14 handlers + common, 94 bytes) | -- | 2026-02-23 |
+| B-010 | Interrupt handlers translated (EXT 4B + H-INT 98B + V-INT 202B) | -- | 2026-02-23 |
+| B-011 | Boot code translated ($2FA-$3A0, post-init 166 bytes) | -- | 2026-02-23 |
 | B-005 | Z80 sound driver identified (custom, 5458 bytes at $2696) | -- | 2026-02-23 |
 | B-006 | Function reference built (41 named, 2896 targets, top-20 by calls) | -- | 2026-02-23 |
 | B-007 | Navigator index populated (13 docs, 12 cross-refs) | -- | 2026-02-23 |

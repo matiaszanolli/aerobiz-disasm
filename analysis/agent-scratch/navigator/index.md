@@ -71,6 +71,17 @@ The Navigator's complete knowledge base. Updated after each session.
 - City name tables: $0459xx, $045Axx, $045Cxx (3 copies, 14+ cities)
 - Z80 sound driver: custom (not GEMS/SMPS), entry: DI+LD SP,$2000+JP $E0, uses YM2612+PSG
 - Most-called function: $000D64 (306 calls), $03E05C (204), $03AB2C (174)
+- V-INT subsystem update targets (corrected): $0016D4, $00175C, $001864, $0018D0
+
+### Translation Progress (Phase 3)
+- Exception handlers ($F84-$FE1): DONE -- 94 bytes, all mnemonics
+- EXT INT ($1480-$1483): DONE -- 4 bytes (nop + rte)
+- H-INT ($1484-$14E5): DONE -- 98 bytes, full mnemonics with VDP equates
+- V-INT ($14E6-$15AF): DONE -- 202 bytes, hybrid (mnemonics + dc.w for external calls)
+- Boot post-init ($2FA-$3A0): DONE -- 166 bytes, hybrid
+- TMSS boot ($200-$28C): not yet (standard Genesis boilerplate)
+- vasm bra.w: CONFIRMED correct displacement (no +2 bug like bsr.w)
+- vasm movem.l d0-d7/a0-a7: works correctly with $FFFF reglist
 
 ### ROM Major Regions
 - $000200-$052FFF: CODE (333KB, main game code)

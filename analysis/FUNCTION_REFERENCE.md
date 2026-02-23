@@ -7,8 +7,8 @@ Index of all identified functions. Updated as disassembly progresses.
 - **Total RTS (function endpoints):** 854
 - **Total RTE (interrupt returns):** 6
 - **Unique call targets:** 2,896
-- **Functions named:** 41
-- **Functions translated to mnemonics:** 0
+- **Functions named:** 47
+- **Functions translated to mnemonics:** 4 (exception handlers, EXT INT, H-INT, V-INT, boot post-init)
 
 ## Most-Called Functions
 
@@ -98,9 +98,9 @@ These are the most frequently called subroutines -- high-priority translation ta
 | $001404 | VInt_Handler3 | Bit 2 of $002B(A5) | Conditional handler |
 | $00192E | ControllerPoll | Always | Controller polling |
 | $0016D4 | SubsysUpdate1 | Always | Subsystem update (PC-relative) |
-| $001760 | SubsysUpdate2 | Always | Subsystem update (PC-relative) |
+| $00175C | SubsysUpdate2 | Always | Subsystem update (PC-relative) |
 | $001864 | SubsysUpdate3 | Always | Subsystem update (PC-relative) |
-| $0018D4 | SubsysUpdate4 | Always | Subsystem update (PC-relative) |
+| $0018D0 | SubsysUpdate4 | Always | Subsystem update (PC-relative) |
 
 ### Exception Handlers
 
@@ -116,7 +116,12 @@ These are the most frequently called subroutines -- high-priority translation ta
 | $000FAE | Trace | 9 |
 | $000FB4 | LineAEmulator | 10 |
 | $000FBA | LineFEmulator | 11 |
+| $000FC0 | Reserved_0C | 12 |
+| $000FC6 | Reserved_0D | 13 |
+| $000FCC | Reserved_0E | 14 |
+| $000FD2 | Reserved_0F | 15 (falls through) |
 | $000FD4 | ExceptionCommon | -- (common handler, calls $58EE then halts) |
+| $000FE0 | ExceptionHalt | -- (infinite loop) |
 | $0058EE | ErrorDisplay | -- (error display routine) |
 
 ### Sound

@@ -9,18 +9,18 @@ Pick the highest-priority unclaimed task. Mark it `IN PROGRESS` with your sessio
 ## P0 -- Blockers
 
 ### B-001: Initial ROM dump as dc.w
-**Status:** OPEN
+**Status:** DONE (2026-02-23)
 **Why:** Foundation for all subsequent work. Need the complete ROM as raw data words.
-**Approach:** Use `m68k_disasm.py` or a hex dump tool to convert the ROM binary into `dc.w` statements. Split into logical sections based on the vector table and known Genesis ROM structure.
-**Acceptance:** `make all` produces a ROM that is byte-identical to the original (`make verify` passes).
-**Key files:** `disasm/aerobiz.asm`, `disasm/sections/`
+**Approach:** Python script generated all assembly source from ROM binary. Split into header.asm (vectors + ROM header) and 16 x 64KB section files (dc.w data with 8 words per line, address comments).
+**Acceptance:** `make verify` passes -- byte-identical (MD5: `1269f44e846a88a2de945de082428b39`).
+**Key files:** `disasm/aerobiz.asm`, `disasm/sections/header.asm`, `disasm/sections/section_*.asm`
 
 ### B-002: Identify and label vector table
-**Status:** OPEN (depends on B-001)
+**Status:** DONE (2026-02-23)
 **Why:** The vector table at $000000-$0000FF defines all entry points (reset, interrupts, exceptions). This is the roadmap for everything else.
-**Approach:** Read the first 256 bytes. Label SP init, reset vector, bus error, address error, illegal instruction, divide by zero, CHK, TRAPV, privilege violation, trace, Line-A, Line-F, and all interrupt vectors (especially V-INT at vector $78 and H-INT at vector $70).
-**Acceptance:** All 64 vectors labeled with meaningful names. Reset vector traced to entry point.
-**Key files:** `disasm/sections/header.asm`
+**Approach:** All 64 vectors extracted from ROM and labeled with descriptive comments in header.asm. Key targets: Entry point at $000200, exception handlers clustered at $000F84-$000FD2, H-INT at $001484, V-INT at $000014E6, EXT INT at $001480. Labels placed at vector target addresses in data sections (EntryPoint, BusError, etc.).
+**Acceptance:** All 64 vectors labeled. Reset vector -> $000200 (EntryPoint). ROM map updated.
+**Key files:** `disasm/sections/header.asm`, `analysis/ROM_MAP.md`
 
 ---
 
@@ -76,4 +76,6 @@ Pick the highest-priority unclaimed task. Mark it `IN PROGRESS` with your sessio
 
 | ID | Description | Commit | Date |
 |----|-------------|--------|------|
+| B-001 | Initial ROM dump as dc.w (byte-identical, 16 section files) | -- | 2026-02-23 |
+| B-002 | Vector table identified and labeled (all 64 vectors) | -- | 2026-02-23 |
 | -- | Project scaffolding created | -- | 2026-02-22 |

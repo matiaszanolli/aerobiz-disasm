@@ -13,7 +13,7 @@ TOOLS_DIR = tools
 
 # ROM settings
 # Place your original ROM in the project root with this name:
-ORIGINAL_ROM = Aerobiz Supersonic (USA).bin
+ORIGINAL_ROM = Aerobiz Supersonic (USA).gen
 OUTPUT_ROM = $(BUILD_DIR)/aerobiz.bin
 
 # Assembly flags

@@ -34,12 +34,25 @@ The Navigator's complete knowledge base. Updated after each session.
 - ROM: up to 4MB at $000000-$3FFFFF
 
 ### Genesis Vector Table ($000000-$0000FF)
-- $000000: Initial SP
-- $000004: Reset vector (entry point)
+- $000000: Initial SP = $00FFF000 (top of work RAM)
+- $000004: Reset vector = $00000200 (EntryPoint)
 - $000008-$00002F: Exception vectors (bus error, address error, etc.)
-- $000070: H-INT vector (horizontal interrupt)
-- $000078: V-INT vector (vertical interrupt)
-- $00007C: External interrupt vector
+- $000030-$00003C: Reserved vectors (have non-zero handlers at $FC0-$FD2)
+- $000068: EXT INT (Level 2) = $00001480
+- $000070: H-INT vector (Level 4) = $00001484
+- $000078: V-INT vector (Level 6) = $000014E6
+- $00007C: NMI (Level 7) = $00000000 (unused)
+- Exception handlers clustered at $000F84-$000FD2 (6 bytes apart)
+- All TRAP vectors ($0080-$00BC) are $00000000 (unused)
+
+### Aerobiz ROM Facts
+- ROM size: 1MB ($000000-$0FFFFF), MD5: 1269f44e846a88a2de945de082428b39
+- Publisher: KOEI (T-76), December 1994
+- Product code: GM T-76136 -00
+- Checksum in header: $4620
+- SRAM present: $200001-$203FFF (battery-backed, odd byte addressed, ~8KB)
+- I/O: J (3-button joypad only)
+- Region: U (USA)
 
 ### VDP Ports
 - $C00000: VDP data port (read/write VRAM/CRAM/VSRAM)

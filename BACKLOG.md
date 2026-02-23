@@ -92,9 +92,10 @@ Pick the highest-priority unclaimed task. Mark it `IN PROGRESS` with your sessio
 **Approach:** Translated post-boot init ($2FA-$3A0): V-Blank wait loop, work RAM flag clearing (10 flags via A5 offsets), hardware init calls (7 jsr's to VDP/sound init), RAM subroutine copy (10 bytes to $FFF000), enable interrupts + jmp to GameEntry. TMSS code ($200-$28C) and data table ($28E-$2F8) remain as dc.w (standard Genesis boilerplate). Inline RAM sub kept as dc.w with comments.
 **Acceptance:** `make verify` passes. Post-boot init fully readable.
 
-### B-012: Translate sound driver interface ($260A-$2688)
-**Status:** OPEN
+### B-012: Translate sound driver interface ($260A-$2695)
+**Status:** DONE (2026-02-23)
 **Why:** Z80 init, bus request/release, delay routines. Self-contained utility functions.
+**Approach:** Translated 4 functions: Z80_SoundInit (88 bytes, copies driver to Z80 RAM with bus arbitration), Z80_RequestBus (22 bytes), Z80_ReleaseBus (16 bytes), Z80_Delay (14 bytes). Used Z80_BUSREQ/Z80_RAM equates from definitions.asm. PC-relative lea and jsr(pc) kept as dc.w for displacement safety.
 **Acceptance:** `make verify` passes. Sound interface functions are mnemonics.
 
 ### B-013: Translate most-called function $000D64
@@ -102,9 +103,10 @@ Pick the highest-priority unclaimed task. Mark it `IN PROGRESS` with your sessio
 **Why:** Called 306 times -- highest call count in ROM. Understanding it unlocks many callers.
 **Acceptance:** Function translated, named, and documented.
 
-### B-014: Translate main game loop ($D5B6-$D648)
-**Status:** OPEN
-**Why:** The main loop structure. ~142 bytes of high-level game flow.
+### B-014: Translate main game loop ($D5B6-$D645)
+**Status:** DONE (2026-02-23)
+**Why:** The main loop structure. ~144 bytes of high-level game flow.
+**Approach:** Translated 3 functions: GameEntry (76 bytes, 5 init calls + display setup + enters loop), GameLoopSetup (6 bytes, falls through to MainLoop), MainLoop (62 bytes, 8 jsr calls + frame counter + bra.s loop). All jsr/bsr kept as dc.w; pea, clr.w, addq, lea, bra.s as mnemonics. First use of pea instruction in translation.
 **Acceptance:** `make verify` passes. Main loop is mnemonics with named subroutine calls.
 
 ### B-015: Translate top utility functions ($1D520-$1E1EC cluster)
@@ -118,6 +120,8 @@ Pick the highest-priority unclaimed task. Mark it `IN PROGRESS` with your sessio
 
 | ID | Description | Commit | Date |
 |----|-------------|--------|------|
+| B-012 | Sound driver interface translated (4 functions, 140 bytes) | -- | 2026-02-23 |
+| B-014 | Main game loop translated (GameEntry + GameLoopSetup + MainLoop, 144 bytes) | -- | 2026-02-23 |
 | B-009 | Exception handlers translated (14 handlers + common, 94 bytes) | -- | 2026-02-23 |
 | B-010 | Interrupt handlers translated (EXT 4B + H-INT 98B + V-INT 202B) | -- | 2026-02-23 |
 | B-011 | Boot code translated ($2FA-$3A0, post-init 166 bytes) | -- | 2026-02-23 |

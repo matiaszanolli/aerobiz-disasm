@@ -789,16 +789,74 @@ VBlankInt:                                                  ; $0014E6
     dc.w    $0012,$1281,$137C,$0002,$0006,$4EBA,$009C,$4E71; $0025D0
     dc.w    $4EBA,$00A6,$4E71,$4EBA,$007A,$4E71,$1229,$0006; $0025E0
     dc.w    $0C01,$0000,$66E4,$1029,$0007,$4EBA,$007C,$4E71; $0025F0
-    dc.w    $0280,$0000,$00FF,$46DF,$4E75,$40E7,$007C,$0700; $002600
-    dc.w    $207C,$00A1,$1100,$30BC,$0100,$317C,$0100,$0100; $002610
-    dc.w    $0810,$0000,$66FA,$41FA,$15C0,$4E71,$43FA,$0068; $002620
-    dc.w    $4E71,$91C9,$2008,$207C,$00A0,$0000,$4EBA,$0024; $002630
-    dc.w    $4E71,$10D9,$51C8,$FFFC,$207C,$00A1,$1100,$317C; $002640
-    dc.w    $0000,$0100,$30BC,$0000,$317C,$0100,$0100,$46DF; $002650
-    dc.w    $4E75,$2F08,$207C,$00A1,$1100,$30BC,$0100,$0810; $002660
-    dc.w    $0000,$66FA,$205F,$4E75,$2F09,$227C,$00A1,$1100; $002670
-    dc.w    $32BC,$0000,$225F,$4E75,$2F00,$303C,$18CE,$51C8; $002680
-    dc.w    $FFFE,$201F,$4E75,$F331,$0020,$C3E0,$0000,$0000; $002690
+    dc.w    $0280,$0000,$00FF,$46DF,$4E75                    ; $002600 (end prev fn)
+; ============================================================================
+; Z80_SoundInit -- Load Z80 sound driver from ROM into Z80 RAM
+; ============================================================================
+; Copies Z80 driver from ROM ($2696-$3BE7, 5458 bytes) into Z80 RAM ($A00000).
+; Handles bus arbitration and Z80 reset sequencing.
+; Called once during boot initialization.
+; ============================================================================
+Z80_SoundInit:                                               ; $00260A
+    move    sr,-(sp)                                         ; Save SR
+    ori     #$0700,sr                                        ; Disable all interrupts
+    movea.l #Z80_BUSREQ,a0                                   ; A0 -> Z80 bus req port ($A11100)
+    move.w  #$0100,(a0)                                      ; Request Z80 bus
+    move.w  #$0100,$0100(a0)                                 ; Assert Z80 reset ($A11200)
+.poll_bus:                                                   ; $002620
+    btst    #0,(a0)                                          ; Check bus grant
+    bne.s   .poll_bus                                        ; Poll until granted
+    dc.w    $41FA,$15C0                                      ; lea SoundDriverEnd(pc),a0  [$3BE8]
+    nop
+    dc.w    $43FA,$0068                                      ; lea SoundDriverStart(pc),a1 [$2696]
+    nop
+    suba.l  a1,a0                                            ; A0 = driver size (end - start)
+    move.l  a0,d0                                            ; D0 = byte count for copy loop
+    movea.l #Z80_RAM,a0                                      ; A0 -> Z80 RAM destination ($A00000)
+    dc.w    $4EBA,$0024                                      ; jsr Z80_RequestBus(pc) [$2662]
+    nop
+.copy_loop:                                                  ; $002642
+    move.b  (a1)+,(a0)+                                      ; Copy driver byte to Z80 RAM
+    dbra    d0,.copy_loop                                    ; Loop until done
+    movea.l #Z80_BUSREQ,a0                                   ; A0 -> Z80 bus req port
+    move.w  #$0000,$0100(a0)                                 ; Release Z80 reset ($A11200=0)
+    move.w  #$0000,(a0)                                      ; Release Z80 bus ($A11100=0)
+    move.w  #$0100,$0100(a0)                                 ; Deassert Z80 reset ($A11200=$100)
+    move    (sp)+,sr                                         ; Restore SR
+    rts
+; ============================================================================
+; Z80_RequestBus -- Request and wait for Z80 bus ownership
+; ============================================================================
+Z80_RequestBus:                                              ; $002662
+    move.l  a0,-(sp)                                         ; Save A0
+    movea.l #Z80_BUSREQ,a0                                   ; A0 -> Z80 bus req port
+    move.w  #$0100,(a0)                                      ; Request bus
+.poll:                                                       ; $00266E
+    btst    #0,(a0)                                          ; Check grant bit
+    bne.s   .poll                                            ; Wait until granted
+    movea.l (sp)+,a0                                         ; Restore A0
+    rts
+; ============================================================================
+; Z80_ReleaseBus -- Release Z80 bus
+; ============================================================================
+Z80_ReleaseBus:                                              ; $002678
+    move.l  a1,-(sp)                                         ; Save A1
+    movea.l #Z80_BUSREQ,a1                                   ; A1 -> Z80 bus req port
+    move.w  #$0000,(a1)                                      ; Release bus
+    movea.l (sp)+,a1                                         ; Restore A1
+    rts
+; ============================================================================
+; Z80_Delay -- Busy-wait delay (~5ms at 7.67 MHz)
+; ============================================================================
+Z80_Delay:                                                   ; $002688
+    move.l  d0,-(sp)                                         ; Save D0
+    move.w  #$18CE,d0                                        ; Loop counter (6350 iterations)
+.wait:                                                       ; $00268E
+    dbra    d0,.wait                                         ; Spin
+    move.l  (sp)+,d0                                         ; Restore D0
+    rts
+; --- Z80 sound driver binary begins at $002696 ---
+    dc.w    $F331,$0020,$C3E0,$0000,$0000                    ; $002696
     dc.w    $0000,$0000,$0000,$0000,$0000,$0000,$0000,$0000; $0026A0
     dc.w    $0000,$0000,$0000,$0000,$0000,$0000,$0000,$0000; $0026B0
     dc.w    $0000,$0000,$0000,$0000,$0000,$0000,$0000,$C36B; $0026C0
@@ -3600,16 +3658,54 @@ VBlankInt:                                                  ; $0014E6
     dc.w    $D520,$33FC,$8001,$00FF,$0A34,$4878,$0038,$42A7; $00D580
     dc.w    $4879,$00FF,$BDAC,$4EB9,$0001,$D520,$4879,$0000; $00D590
     dc.w    $625C,$4878,$0001,$4878,$0022,$4EB9,$0000,$0D64; $00D5A0
-    dc.w    $4FEF,$0024,$4E75,$4EB9,$0000,$5736,$6100,$FE58; $00D5B0
-    dc.w    $6100,$FF96,$4878,$0001,$4EB9,$0003,$B428,$4EB9; $00D5C0
-    dc.w    $0003,$CA4E,$6100,$FF2A,$4878,$0010,$42A7,$4879; $00D5D0
-    dc.w    $0007,$651E,$4EB9,$0000,$5092,$4FEF,$0010,$4EB9; $00D5E0
-    dc.w    $0000,$A006,$4EBA,$000C,$4E71,$4279,$00FF,$0006; $00D5F0
-    dc.w    $4E75,$4EB9,$0001,$E398,$4EB9,$0002,$F5A6,$4EB9; $00D600
-    dc.w    $0001,$B49A,$4279,$00FF,$17C4,$4EB9,$0002,$13B6; $00D610
-    dc.w    $4EB9,$0002,$947A,$4878,$0001,$4EB9,$0001,$819C; $00D620
-    dc.w    $588F,$4EB9,$0001,$E402,$4EB9,$0002,$6128,$5279; $00D630
-    dc.w    $00FF,$0006,$60C2,$4E75,$48E7,$3000,$262F,$000C; $00D640
+    dc.w    $4FEF,$0024,$4E75                                ; $00D5B0 (end prev fn: lea $24(sp),sp / rts)
+; ============================================================================
+; GameEntry -- Main game entry point (called after boot initialization)
+; ============================================================================
+; Sets up game state, initializes subsystems, configures display, then enters
+; the main loop. Called once from boot code via jmp.
+; ============================================================================
+GameEntry:                                                   ; $00D5B6
+    dc.w    $4EB9,$0000,$5736                                ; jsr PreGameInit [$5736]
+    dc.w    $6100,$FE58                                      ; bsr.w GameInit1 [$D416]
+    dc.w    $6100,$FF96                                      ; bsr.w GameInit2 [$D558]
+    pea     ($0001).w                                        ; Push argument 1
+    dc.w    $4EB9,$0003,$B428                                ; jsr GameSetup1 [$3B428]
+    dc.w    $4EB9,$0003,$CA4E                                ; jsr GameSetup2 [$3CA4E]
+    dc.w    $6100,$FF2A                                      ; bsr.w GameInit5 [$D500]
+    pea     ($0010).w                                        ; Push display mode $10
+    clr.l   -(sp)                                            ; Push zero (default param)
+    pea     $0007651E                                        ; Push display config ptr
+    dc.w    $4EB9,$0000,$5092                                ; jsr DisplaySetup [$5092]
+    lea     $10(sp),sp                                       ; Clean 16 bytes of stack args
+    dc.w    $4EB9,$0000,$A006                                ; jsr PostDisplayInit [$A006]
+    dc.w    $4EBA,$000C                                      ; jsr GameLoopSetup(pc) [$D602]
+    nop
+    clr.w   $00FF0006                                        ; Clear per-frame update flag
+    rts
+; ============================================================================
+; GameLoopSetup -- One-time loop init (falls through to MainLoop)
+; ============================================================================
+GameLoopSetup:                                               ; $00D602
+    dc.w    $4EB9,$0001,$E398                                ; jsr PreLoopInit [$1E398]
+; ============================================================================
+; MainLoop -- Main game loop (runs every frame, iterates forever)
+; ============================================================================
+MainLoop:                                                    ; $00D608
+    dc.w    $4EB9,$0002,$F5A6                                ; jsr GameUpdate1 [$2F5A6]
+    dc.w    $4EB9,$0001,$B49A                                ; jsr GameUpdate2 [$1B49A]
+    clr.w   $00FF17C4                                        ; Clear per-frame work flag
+    dc.w    $4EB9,$0002,$13B6                                ; jsr GameLogic1 [$213B6]
+    dc.w    $4EB9,$0002,$947A                                ; jsr GameLogic2 [$2947A]
+    pea     ($0001).w                                        ; Push argument 1
+    dc.w    $4EB9,$0001,$819C                                ; jsr GameCall [$1819C]
+    addq.l  #4,sp                                            ; Clean up pea argument
+    dc.w    $4EB9,$0001,$E402                                ; jsr GameUpdate3 [$1E402]
+    dc.w    $4EB9,$0002,$6128                                ; jsr GameUpdate4 [$26128]
+    addq.w  #1,$00FF0006                                     ; Increment frame counter
+    bra.s   MainLoop                                         ; Loop forever
+; ---
+    dc.w    $4E75,$48E7,$3000,$262F,$000C                    ; $00D646 (next function)
     dc.w    $207C,$0005,$ECBC,$0C43,$0020,$6C22,$4242,$7000; $00D650
     dc.w    $1010,$7200,$1228,$0001,$D081,$3203,$48C1,$B081; $00D660
     dc.w    $6E44,$5888,$5242,$0C42,$0007,$65E2,$6038,$0C43; $00D670

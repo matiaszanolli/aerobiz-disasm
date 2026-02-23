@@ -7,8 +7,8 @@ Index of all identified functions. Updated as disassembly progresses.
 - **Total RTS (function endpoints):** 854
 - **Total RTE (interrupt returns):** 6
 - **Unique call targets:** 2,896
-- **Functions named:** 47
-- **Functions translated to mnemonics:** 4 (exception handlers, EXT INT, H-INT, V-INT, boot post-init)
+- **Functions named:** 54
+- **Functions translated to mnemonics:** 11 (exception handlers, EXT/H-INT/V-INT, boot post-init, Z80 sound interface, GameEntry/GameLoopSetup/MainLoop)
 
 ## Most-Called Functions
 

@@ -88,13 +88,15 @@ aerobiz-disasm/
 
 ### Translation Status
 
-~560 bytes of code translated from raw `dc.w` to 68000 mnemonics (all verified byte-identical):
+~844 bytes of code translated from raw `dc.w` to 68000 mnemonics (all verified byte-identical):
 
 - Exception handlers ($F84-$FE1) -- 94 bytes, full mnemonics
 - EXT/H-INT/V-INT interrupt handlers ($1480-$15AF) -- 304 bytes
 - Boot post-initialization ($2FA-$3A0) -- 166 bytes
+- Z80 sound driver interface ($260A-$2695) -- 140 bytes, 4 functions
+- Main game loop ($D5B6-$D645) -- 144 bytes, 3 functions (GameEntry, GameLoopSetup, MainLoop)
 
-47 functions named out of ~854 total. See [BACKLOG.md](BACKLOG.md) for the full task queue.
+54 functions named out of ~854 total. See [BACKLOG.md](BACKLOG.md) for the full task queue.
 
 ## License
 

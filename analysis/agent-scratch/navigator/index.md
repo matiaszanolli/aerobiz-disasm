@@ -79,8 +79,11 @@ The Navigator's complete knowledge base. Updated after each session.
 - H-INT ($1484-$14E5): DONE -- 98 bytes, full mnemonics with VDP equates
 - V-INT ($14E6-$15AF): DONE -- 202 bytes, hybrid (mnemonics + dc.w for external calls)
 - Boot post-init ($2FA-$3A0): DONE -- 166 bytes, hybrid
+- Z80 sound interface ($260A-$2695): DONE -- 140 bytes, 4 functions (SoundInit/RequestBus/ReleaseBus/Delay)
+- Main game loop ($D5B6-$D645): DONE -- 144 bytes, 3 functions (GameEntry/GameLoopSetup/MainLoop)
 - TMSS boot ($200-$28C): not yet (standard Genesis boilerplate)
 - vasm bra.w: CONFIRMED correct displacement (no +2 bug like bsr.w)
+- vasm pea ($xxxx).w: CONFIRMED correct absolute short encoding
 - vasm movem.l d0-d7/a0-a7: works correctly with $FFFF reglist
 
 ### ROM Major Regions

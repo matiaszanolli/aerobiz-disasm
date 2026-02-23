@@ -39,36 +39,36 @@ Pick the highest-priority unclaimed task. Mark it `IN PROGRESS` with your sessio
 **Acceptance:** `analysis/SYSTEM_EXECUTION_FLOW.md` fully documented: boot sequence, main game loop, V-INT/H-INT/exception handlers, Z80 sound driver location.
 
 ### B-005: Identify and document the sound driver
-**Status:** OPEN (depends on B-003)
+**Status:** DONE (2026-02-23)
 **Why:** Sound driver is usually self-contained Z80 code loaded during boot. Identifying it early prevents it from being confused with game data.
-**Approach:** Look for Z80 bus request sequences, Z80 RAM writes during init. The Z80 program is typically a contiguous block loaded to $A00000.
-**Acceptance:** Z80 sound driver binary identified and extracted. Load address and size documented.
+**Approach:** Z80 driver at ROM $002696-$003BE7 (5458 bytes). Custom driver (not GEMS/SMPS). Entry: DI, LD SP,$2000, JP $00E0. References YM2612 ($4000-$4003) and PSG ($7F11). Init at $00260A, bus request at $002662.
+**Acceptance:** Z80 driver located, entry structure and port usage documented.
 
 ---
 
 ## P2 -- Infrastructure
 
 ### B-006: Build function reference index
-**Status:** OPEN (depends on B-004)
+**Status:** DONE (2026-02-23)
 **Why:** As functions are identified, we need a searchable reference.
-**Approach:** Create `analysis/FUNCTION_REFERENCE.md` and `analysis/FUNCTION_QUICK_LOOKUP.md` following the VRD project patterns. Auto-generate as functions are labeled.
-**Acceptance:** Reference files exist and are populated with at least the boot/init functions.
+**Approach:** Scanned all JSR/BSR/JMP targets to find 2,896 unique call targets. Named 41 functions across boot, game, interrupt, exception, and sound categories. Top 20 most-called functions identified. Quick lookup table for Ctrl+F searching.
+**Acceptance:** `analysis/FUNCTION_REFERENCE.md` populated with categorized functions, call counts, and flat lookup table.
 
 ### B-007: Set up Navigator index
-**Status:** OPEN (depends on B-003)
+**Status:** DONE (2026-02-23)
 **Why:** The Navigator agent needs its index populated to be useful.
-**Approach:** Create `analysis/agent-scratch/navigator/index.md` with document registry, key facts, known pitfalls, and cross-references.
-**Acceptance:** Navigator can answer basic queries about where documentation lives.
+**Approach:** Index populated incrementally during B-001 through B-004. Contains document registry (13 entries), platform facts, vector table details, ROM facts, execution flow, major regions, known pitfalls (8), and cross-reference table (12 entries).
+**Acceptance:** Navigator answers queries about documentation, ROM layout, execution flow, and hardware.
 
 ---
 
 ## P3 -- Nice to Have
 
 ### B-008: Identify text encoding and string tables
-**Status:** OPEN (depends on B-003)
+**Status:** DONE (2026-02-23)
 **Why:** Aerobiz has significant text content (airline names, city names, menus). Finding the text encoding early enables data table documentation.
-**Approach:** Search for known ASCII strings in the ROM (e.g., "KOEI", game title from header). Trace how text is rendered to identify the encoding table.
-**Acceptance:** Text encoding documented. At least one string table located and labeled.
+**Approach:** Encoding is plain ASCII, null-terminated, printf-style (%s, %d, %$lu). 1,942 string runs found. Main dialogue region at $03E1AC-$041FFF (~398 strings). 8 pointer tables found at $0475DC-$0488D7 (largest: 128 pointers for dialogue, 118 for advisor text). City names at 3 locations ($0459xx, $045Axx, $045Cxx). 283 format strings.
+**Acceptance:** Text encoding = ASCII null-terminated with printf formatting. Multiple string tables and pointer tables located.
 
 ---
 
@@ -76,8 +76,12 @@ Pick the highest-priority unclaimed task. Mark it `IN PROGRESS` with your sessio
 
 | ID | Description | Commit | Date |
 |----|-------------|--------|------|
-| B-003 | ROM sections mapped (code/data/padding heatmap, 854 functions) | -- | 2026-02-23 |
-| B-004 | Entry point traced, main loop + all interrupt handlers documented | -- | 2026-02-23 |
+| B-005 | Z80 sound driver identified (custom, 5458 bytes at $2696) | -- | 2026-02-23 |
+| B-006 | Function reference built (41 named, 2896 targets, top-20 by calls) | -- | 2026-02-23 |
+| B-007 | Navigator index populated (13 docs, 12 cross-refs) | -- | 2026-02-23 |
+| B-008 | Text encoding: ASCII null-term, 8 pointer tables, 398+ strings | -- | 2026-02-23 |
+| B-003 | ROM sections mapped (code/data/padding heatmap, 854 functions) | aac6850 | 2026-02-23 |
+| B-004 | Entry point traced, main loop + all interrupt handlers documented | aac6850 | 2026-02-23 |
 | B-001 | Initial ROM dump as dc.w (byte-identical, 16 section files) | f46553e | 2026-02-23 |
 | B-002 | Vector table identified and labeled (all 64 vectors) | f46553e | 2026-02-23 |
 | -- | Project scaffolding created | 412e6cf | 2026-02-22 |

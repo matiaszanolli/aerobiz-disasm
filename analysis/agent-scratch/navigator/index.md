@@ -66,7 +66,11 @@ The Navigator's complete knowledge base. Updated after each session.
 - Exception handlers: $000F84-$000FE0 (load ID, jsr $58EE, halt)
 - Z80 sound driver: ROM $002696-$003BE7 (5458 bytes, loaded to $A00000)
 - Sound init routine: $00260A
-- Game strings: $03E1AC-$041510+ (English text, printf-style %s/%d)
+- Game strings: $03E1AC-$041FFF (398+ strings, ASCII null-terminated, printf-style %s/%d/%$lu)
+- String pointer tables: $0475DC-$0488D7 (8 tables, largest: 128 ptrs for dialogue)
+- City name tables: $0459xx, $045Axx, $045Cxx (3 copies, 14+ cities)
+- Z80 sound driver: custom (not GEMS/SMPS), entry: DI+LD SP,$2000+JP $E0, uses YM2612+PSG
+- Most-called function: $000D64 (306 calls), $03E05C (204), $03AB2C (174)
 
 ### ROM Major Regions
 - $000200-$052FFF: CODE (333KB, main game code)
@@ -124,3 +128,6 @@ The Navigator's complete knowledge base. Updated after each session.
 | Genesis memory map | docs/genesis-technical-overview.md | KNOWN_ISSUES.md / Memory Map |
 | ROM header format | docs/genesis-software-development-manual.md | KNOWN_ISSUES.md / SEGA ROM Header |
 | Controller I/O | docs/genesis-software-development-manual.md | docs/sega-genesis-reference-sheets.md |
+| Function reference | analysis/FUNCTION_REFERENCE.md | -- |
+| String tables / text | analysis/ROM_MAP.md / Game Strings | -- |
+| City name data | analysis/ROM_MAP.md (search: city) | -- |

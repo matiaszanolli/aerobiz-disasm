@@ -8,7 +8,7 @@ Index of all identified functions. Updated as disassembly progresses.
 - **Total RTE (interrupt returns):** 6
 - **Unique call targets:** 2,896
 - **Functions named:** 54
-- **Functions translated to mnemonics:** 11 (exception handlers, EXT/H-INT/V-INT, boot post-init, Z80 sound interface, GameEntry/GameLoopSetup/MainLoop)
+- **Functions translated to mnemonics:** 12 (exception handlers, EXT/H-INT/V-INT, boot post-init, Z80 sound interface, GameEntry/GameLoopSetup/MainLoop, GameCommand)
 
 ## Most-Called Functions
 
@@ -16,7 +16,7 @@ These are the most frequently called subroutines -- high-priority translation ta
 
 | Address | Calls | Name | Notes |
 |---------|-------|------|-------|
-| $000D64 | 306 | | Most-called function in entire ROM |
+| $000D64 | 306 | GameCommand | Central command dispatcher (47 handlers via jump table) |
 | $03E05C | 204 | | In string/UI region |
 | $03AB2C | 174 | | |
 | $03B22C | 171 | | |
@@ -60,6 +60,7 @@ These are the most frequently called subroutines -- high-priority translation ta
 
 | Address | Name | Description |
 |---------|------|-------------|
+| $000D64 | GameCommand | Central command dispatcher (306 calls, 47 handlers via jump table) |
 | $00D5B6 | GameEntry | Main game entry (called from boot via JMP) |
 | $00D602 | GameLoopSetup | One-time pre-loop init, falls into MainLoop |
 | $00D608 | MainLoop | Main game loop body (8 calls, loops forever) |
@@ -143,7 +144,7 @@ These are the most frequently called subroutines -- high-priority translation ta
 | $000B42 | ControllerRead | vint | -- | named |
 | $000C38 | VInt_Sub1 | vint | -- | named |
 | $000CDC | WaitVBlank | boot | -- | named |
-| $000D64 | -- | unknown | 306 | unnamed |
+| $000D64 | GameCommand | game | 306 | translated |
 | $000F84 | BusError | exception | -- | named |
 | $000FD4 | ExceptionCommon | exception | -- | named |
 | $001036 | VDP_Init1 | boot | -- | named |

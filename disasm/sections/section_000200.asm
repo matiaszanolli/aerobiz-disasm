@@ -243,22 +243,52 @@ EntryPoint:
     dc.w    $3B40,$0C70,$7000,$302D,$0C70,$4E75,$7000,$1B40; $000D30
     dc.w    $0C46,$2B40,$0C48,$2B40,$0C4C,$202E,$0012,$2B40; $000D40
     dc.w    $0C48,$202E,$0016,$2B40,$0C4C,$202E,$000E,$1B40; $000D50
-    dc.w    $0C46,$4E75,$40E7,$4E56,$0000,$48E7,$3F3C,$2E2E; $000D60
-    dc.w    $000A,$0C87,$0000,$002F,$641C,$2A7C,$00FF,$F010; $000D70
-    dc.w    $E54F,$287C,$0000,$0D98,$2874,$7000,$4E94,$4CDF; $000D80
-    dc.w    $3CFC,$4E5E,$4E77,$60FE,$0000,$03A2,$0000,$03BC; $000D90
-    dc.w    $0000,$045A,$0000,$046A,$0000,$0474,$0000,$047C; $000DA0
-    dc.w    $0000,$04F0,$0000,$0520,$0000,$0550,$0000,$05F8; $000DB0
-    dc.w    $0000,$060C,$0000,$0658,$0000,$06F0,$0000,$070A; $000DC0
-    dc.w    $0000,$0724,$0000,$074A,$0000,$07A4,$0000,$07D8; $000DD0
-    dc.w    $0000,$24B8,$0000,$24DE,$0000,$24FA,$0000,$24DE; $000DE0
-    dc.w    $0000,$250A,$0000,$2568,$0000,$24FA,$0000,$24FA; $000DF0
-    dc.w    $0000,$0876,$0000,$0944,$0000,$09F6,$0000,$0A50; $000E00
-    dc.w    $0000,$0A62,$0000,$0A6C,$0000,$0AE8,$0000,$0B28; $000E10
-    dc.w    $0000,$0CEC,$0000,$0BF0,$0000,$0D04,$0000,$0D3C; $000E20
-    dc.w    $0000,$0E54,$0000,$0E92,$0000,$0EAA,$0000,$0EBA; $000E30
-    dc.w    $0000,$0F18,$0000,$0F22,$0000,$0F42,$0000,$0F7A; $000E40
-    dc.w    $0000,$0D24,$202E,$000E,$B06D,$0C52,$6E06,$302D; $000E50
+    dc.w    $0C46,$4E75                                      ; $000D60 (end prev fn)
+; ============================================================================
+; GameCommand -- Central command dispatcher (most-called function, 306 calls)
+; ============================================================================
+; Takes a command number (0-46) as the first longword stack argument.
+; Dispatches to one of 47 handler functions via jump table.
+; Sets A5 = work RAM base ($FFF010) before calling the handler.
+;
+; Stack frame (move sr BEFORE link creates unusual layout):
+;   0(a6) = saved A6          4(a6) = saved SR (word)
+;   6(a6) = return address    A(a6) = command number (longword)
+;   E(a6) = additional args (vary per command)
+; ============================================================================
+GameCommand:                                                 ; $000D64
+    move    sr,-(sp)                                         ; Save SR (before link frame!)
+    link    a6,#$0000                                        ; Create stack frame
+    movem.l d2-d7/a2-a5,-(sp)                               ; Save working registers
+    move.l  $A(a6),d7                                        ; D7 = command number (first arg)
+    cmpi.l  #$0000002F,d7                                    ; Valid range: 0-46
+    bcc.s   .error                                           ; Branch if >= 47 (invalid)
+    movea.l #$00FFF010,a5                                    ; A5 = work RAM base
+    lsl.w   #2,d7                                            ; D7 *= 4 (longword table offset)
+    movea.l #GameCommandTable,a4                             ; A4 = jump table base
+    movea.l 0(a4,d7.w),a4                                   ; A4 = handler address
+    jsr     (a4)                                             ; Call handler
+    movem.l (sp)+,d2-d7/a2-a5                               ; Restore registers
+    unlk    a6                                               ; Destroy stack frame
+    rtr                                                      ; Restore CCR + return
+.error:                                                      ; $000D96
+    bra.s   .error                                           ; Infinite loop (invalid cmd)
+; -- Jump table: 47 command handlers (indexed 0-46) --
+GameCommandTable:                                            ; $000D98
+    dc.l    $000003A2,$000003BC,$0000045A,$0000046A          ; Cmds 0-3
+    dc.l    $00000474,$0000047C,$000004F0,$00000520          ; Cmds 4-7
+    dc.l    $00000550,$000005F8,$0000060C,$00000658          ; Cmds 8-11
+    dc.l    $000006F0,$0000070A,$00000724,$0000074A          ; Cmds 12-15
+    dc.l    $000007A4,$000007D8,$000024B8,$000024DE          ; Cmds 16-19
+    dc.l    $000024FA,$000024DE,$0000250A,$00002568          ; Cmds 20-23
+    dc.l    $000024FA,$000024FA,$00000876,$00000944          ; Cmds 24-27
+    dc.l    $000009F6,$00000A50,$00000A62,$00000A6C          ; Cmds 28-31
+    dc.l    $00000AE8,$00000B28,$00000CEC,$00000BF0          ; Cmds 32-35
+    dc.l    $00000D04,$00000D3C,$00000E54,$00000E92          ; Cmds 36-39
+    dc.l    $00000EAA,$00000EBA,$00000F18,$00000F22          ; Cmds 40-43
+    dc.l    $00000F42,$00000F7A,$00000D24                    ; Cmds 44-46
+; ---
+    dc.w    $202E,$000E,$B06D,$0C52,$6E06,$302D              ; $000E54 (Cmd38 handler)
     dc.w    $0C52,$600A,$B06D,$0C56,$6F04,$302D,$0C56,$3B40; $000E60
     dc.w    $0C5C,$222E,$0012,$B26D,$0C54,$6E06,$322D,$0C54; $000E70
     dc.w    $600A,$B26D,$0C58,$6F04,$322D,$0C58,$3B41,$0C5E; $000E80

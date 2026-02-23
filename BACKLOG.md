@@ -99,9 +99,10 @@ Pick the highest-priority unclaimed task. Mark it `IN PROGRESS` with your sessio
 **Acceptance:** `make verify` passes. Sound interface functions are mnemonics.
 
 ### B-013: Translate most-called function $000D64
-**Status:** OPEN
+**Status:** DONE (2026-02-23)
 **Why:** Called 306 times -- highest call count in ROM. Understanding it unlocks many callers.
-**Acceptance:** Function translated, named, and documented.
+**Approach:** Named "GameCommand" -- central command dispatcher with 47 handlers via jump table. Unusual stack frame: `move sr,-(sp)` BEFORE `link a6,#0` shifts first arg to $A(a6). Range check via cmpi.l #$2F / bcc.s, invalid command triggers infinite loop. 52 bytes of code + 188 bytes jump table (47 dc.l entries). First use of link/unlk, rtr, cmpi.l, indexed movea.l, jsr (a4), dc.l directive.
+**Acceptance:** `make verify` passes. GameCommand fully translated with jump table.
 
 ### B-014: Translate main game loop ($D5B6-$D645)
 **Status:** DONE (2026-02-23)
@@ -120,6 +121,7 @@ Pick the highest-priority unclaimed task. Mark it `IN PROGRESS` with your sessio
 
 | ID | Description | Commit | Date |
 |----|-------------|--------|------|
+| B-013 | GameCommand dispatcher translated (47-entry jump table, 240 bytes) | -- | 2026-02-23 |
 | B-012 | Sound driver interface translated (4 functions, 140 bytes) | -- | 2026-02-23 |
 | B-014 | Main game loop translated (GameEntry + GameLoopSetup + MainLoop, 144 bytes) | -- | 2026-02-23 |
 | B-009 | Exception handlers translated (14 handlers + common, 94 bytes) | -- | 2026-02-23 |

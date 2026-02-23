@@ -81,6 +81,7 @@ The Navigator's complete knowledge base. Updated after each session.
 - Boot post-init ($2FA-$3A0): DONE -- 166 bytes, hybrid
 - Z80 sound interface ($260A-$2695): DONE -- 140 bytes, 4 functions (SoundInit/RequestBus/ReleaseBus/Delay)
 - Main game loop ($D5B6-$D645): DONE -- 144 bytes, 3 functions (GameEntry/GameLoopSetup/MainLoop)
+- GameCommand ($D64-$E53): DONE -- 240 bytes, command dispatcher + 47-entry jump table
 - TMSS boot ($200-$28C): not yet (standard Genesis boilerplate)
 - vasm bra.w: CONFIRMED correct displacement (no +2 bug like bsr.w)
 - vasm pea ($xxxx).w: CONFIRMED correct absolute short encoding

@@ -111,9 +111,10 @@ Pick the highest-priority unclaimed task. Mark it `IN PROGRESS` with your sessio
 **Acceptance:** `make verify` passes. Main loop is mnemonics with named subroutine calls.
 
 ### B-015: Translate top utility functions ($1D520-$1E1EC cluster)
-**Status:** OPEN
-**Why:** 6 functions in the $01D5xx-$01E1xx range with 64-106 calls each. Likely core utility/UI routines.
-**Acceptance:** Functions translated, named, documented.
+**Status:** DONE (2026-02-23)
+**Why:** 8 functions in the $01D5xx-$01E1xx range with 64-106 calls each, plus 3 helper functions between them.
+**Approach:** Translated 11 functions totaling 624 bytes: MemFillByte (24B), MemCopy (24B), MemFillWord (24B), PollAction (120B, flush-then-wait input loop), RandRange (88B, classic C LCG with constants 1103515245/12345), ByteSum (30B), ResourceLoad/ResourceUnload (44B/42B, paired load/unload with flag), TilePlacement (116B, builds param block for GameCmd #15), GameCmd16 (40B, thin wrapper), ReadInput (72B, joypad input with mode selection). Hit ASL-vs-LSL pitfall on TilePlacement (KNOWN_ISSUES confirmed). Also hit a branch-target labeling bug on PollAction (bne.s to wrong label).
+**Acceptance:** `make verify` passes. All 11 functions translated with full control flow.
 
 ---
 
@@ -121,6 +122,7 @@ Pick the highest-priority unclaimed task. Mark it `IN PROGRESS` with your sessio
 
 | ID | Description | Commit | Date |
 |----|-------------|--------|------|
+| B-015 | Utility cluster translated (11 functions, 624 bytes) | -- | 2026-02-23 |
 | B-013 | GameCommand dispatcher translated (47-entry jump table, 240 bytes) | -- | 2026-02-23 |
 | B-012 | Sound driver interface translated (4 functions, 140 bytes) | -- | 2026-02-23 |
 | B-014 | Main game loop translated (GameEntry + GameLoopSetup + MainLoop, 144 bytes) | -- | 2026-02-23 |

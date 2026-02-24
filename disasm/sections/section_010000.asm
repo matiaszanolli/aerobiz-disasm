@@ -3413,11 +3413,56 @@
     dc.w    $4E95,$2F0A,$2F0B,$2F0C,$4878,$0016,$4E95,$3003; $01D4F0
     dc.w    $48C0,$E588,$207C,$000F,$C13E,$2F30,$0800,$4878; $01D500
     dc.w    $0017,$4E95,$4FEF,$001C,$7000,$4CDF,$3C0C,$4E75; $01D510
-    dc.w    $222F,$000C,$202F,$0008,$206F,$0004,$6004,$10C0; $01D520
-    dc.w    $5341,$4A41,$66F8,$4E75,$202F,$0014,$226F,$0010; $01D530
-    dc.w    $206F,$0008,$6004,$12D8,$5340,$4A40,$66F8,$4E75; $01D540
-    dc.w    $222F,$0008,$202F,$000C,$206F,$0004,$6004,$30C0; $01D550
-    dc.w    $5341,$4A41,$66F8,$4E75,$4E56,$0000,$48E7,$3030; $01D560
+; ============================================================================
+; MemFillByte -- Fill memory with a byte value (71 calls)
+; Args (stack): 4(sp)=dest, 8(sp)=fill byte, C(sp)=count
+; ============================================================================
+MemFillByte:                                                     ; $01D520
+    move.l  $C(sp),d1                                            ; D1 = count
+    move.l  $8(sp),d0                                            ; D0 = fill value
+    movea.l $4(sp),a0                                            ; A0 = dest pointer
+    bra.s   .check                                               ; enter loop at test
+.loop:                                                           ; $01D52E
+    move.b  d0,(a0)+                                             ; *dest++ = fill byte
+    subq.w  #1,d1                                                ; count--
+.check:                                                          ; $01D532
+    tst.w   d1                                                   ; count == 0?
+    bne.s   .loop                                                ; loop if not done
+    rts
+; ============================================================================
+; MemCopy -- Copy bytes from source to destination
+; Args (stack): 8(sp)=src, 10(sp)=dest, 14(sp)=count
+; ============================================================================
+MemCopy:                                                         ; $01D538
+    move.l  $14(sp),d0                                           ; D0 = count
+    movea.l $10(sp),a1                                           ; A1 = dest
+    movea.l $8(sp),a0                                            ; A0 = src
+    bra.s   .check                                               ; enter loop at test
+.loop:                                                           ; $01D546
+    move.b  (a0)+,(a1)+                                          ; *dest++ = *src++
+    subq.w  #1,d0                                                ; count--
+.check:                                                          ; $01D54A
+    tst.w   d0                                                   ; count == 0?
+    bne.s   .loop                                                ; loop if not done
+    rts
+; ============================================================================
+; MemFillWord -- Fill memory with a word value
+; Args (stack): 4(sp)=dest, 8(sp)=count, C(sp)=fill word
+; ============================================================================
+MemFillWord:                                                     ; $01D550
+    move.l  $8(sp),d1                                            ; D1 = count
+    move.l  $C(sp),d0                                            ; D0 = fill value
+    movea.l $4(sp),a0                                            ; A0 = dest pointer
+    bra.s   .check                                               ; enter loop at test
+.loop:                                                           ; $01D55E
+    move.w  d0,(a0)+                                             ; *dest++ = fill word
+    subq.w  #1,d1                                                ; count--
+.check:                                                          ; $01D562
+    tst.w   d1                                                   ; count == 0?
+    bne.s   .loop                                                ; loop if not done
+    rts
+; ---
+    dc.w    $4E56,$0000,$48E7,$3030                              ; $01D568 (next fn)
     dc.w    $242E,$000C,$246E,$0010,$267C,$0000,$0D64,$362E; $01D570
     dc.w    $000A,$EB4B,$0C42,$0200,$6D64,$6032,$42A7,$7000; $01D580
     dc.w    $3003,$2F00,$2F0A,$4878,$0800,$4878,$0002,$4878; $01D590
@@ -3429,28 +3474,156 @@
     dc.w    $7000,$3003,$2F00,$2F0A,$3002,$48C0,$E988,$2F00; $01D5F0
     dc.w    $4878,$0002,$4878,$0005,$4E93,$4FEF,$0018,$3002; $01D600
     dc.w    $48C0,$7264,$4EB9,$0003,$E08A,$2F00,$4878,$000E; $01D610
-    dc.w    $4E93,$4CEE,$0C0C,$FFF0,$4E5E,$4E75,$4E56,$0000; $01D620
-    dc.w    $48E7,$2020,$247C,$0001,$E1EC,$4A79,$00FF,$0A34; $01D630
-    dc.w    $674A,$4A6E,$000E,$6612,$6038,$4878,$0001,$4878; $01D640
-    dc.w    $000E,$4EB9,$0000,$0D64,$508F,$42A7,$4E92,$588F; $01D650
-    dc.w    $4A40,$66E6,$6010,$4878,$0001,$4878,$000E,$4EB9; $01D660
-    dc.w    $0000,$0D64,$508F,$42A7,$4E92,$588F,$3400,$67E6; $01D670
-    dc.w    $6016,$42A7,$4E92,$588F,$3400,$600C,$4878,$003C; $01D680
-    dc.w    $4EBA,$0C62,$4E71,$7410,$3002,$4CEE,$0404,$FFF8; $01D690
-    dc.w    $4E5E,$4E75,$48E7,$3C20,$262F,$0018,$282F,$001C; $01D6A0
-    dc.w    $247C,$00FF,$A7E0,$342A,$0002,$4878,$0003,$4EB9; $01D6B0
-    dc.w    $0000,$0D64,$588F,$D440,$2012,$223C,$41C6,$4E6D; $01D6C0
-    dc.w    $4EB9,$0003,$E05C,$0680,$0000,$3039,$2480,$7000; $01D6D0
-    dc.w    $3002,$3204,$48C1,$3A03,$48C5,$9285,$5281,$4EB9; $01D6E0
-    dc.w    $0003,$E146,$D043,$4CDF,$043C,$4E75,$2F02,$242F; $01D6F0
-    dc.w    $000C,$206F,$0008,$4241,$6008,$7000,$1018,$D240; $01D700
-    dc.w    $5342,$4A42,$66F4,$3001,$241F,$4E75,$4A79,$00FF; $01D710
-    dc.w    $A7DC,$6622,$4878,$0002,$4878,$0040,$42A7,$4879; $01D720
-    dc.w    $00FF,$14BC,$4EB9,$0000,$4CB6,$4FEF,$0010,$33FC; $01D730
-    dc.w    $0001,$00FF,$A7DC,$4E75,$4A79,$00FF,$A7DC,$6720; $01D740
-    dc.w    $4878,$0002,$4878,$0040,$42A7,$4879,$00FF,$14BC; $01D750
-    dc.w    $4EB9,$0000,$4D04,$4FEF,$0010,$4279,$00FF,$A7DC; $01D760
-    dc.w    $4E75,$4E56,$FFF8,$48E7,$3000,$242E,$0010,$262E; $01D770
+    dc.w    $4E93,$4CEE,$0C0C,$FFF0,$4E5E,$4E75              ; $01D620 (end of fn $1D568)
+; ============================================================================
+; PollAction -- Poll for action/input with different loop strategies (65 calls)
+; If flag $FF0A34 is clear, delays 60 frames and returns 16 (default).
+; Otherwise loops calling utility $1E1EC based on arg at $E(a6).
+; ============================================================================
+PollAction:                                                      ; $01D62C
+    link    a6,#$0000                                            ; create stack frame
+    movem.l d2/a2,-(sp)                                          ; save working registers
+    movea.l #$0001E1EC,a2                                        ; A2 = utility function
+    tst.w   ($00FF0A34).l                                        ; is UI/system active?
+    beq.s   .inactive                                            ; no -> delay and return default
+    tst.w   $E(a6)                                               ; test second arg
+    bne.s   .pollA                                               ; non-zero -> flush-then-wait
+    bra.s   .once                                                ; zero -> single call
+; -- Flush loop: call GameCmd #14 between polls (re-entry) --
+.retryA:                                                         ; $01D64A
+    pea     ($0001).w                                            ; sub-arg: 1
+    pea     ($000E).w                                            ; GameCommand #14
+    dc.w    $4EB9,$0000,$0D64                                    ; jsr GameCommand
+    addq.l  #8,sp                                                ; clean 2 pea args
+; -- Flush: poll until result is zero (release detection) --
+.pollA:                                                          ; $01D65A
+    clr.l   -(sp)                                                ; push 0 (utility arg)
+    jsr     (a2)                                                 ; call utility $1E1EC
+    addq.l  #4,sp                                                ; clean arg
+    tst.w   d0                                                   ; still active?
+    bne.s   .retryA                                              ; non-zero -> keep flushing
+    bra.s   .pollB                                               ; zero -> now wait for input
+; -- Wait loop: call GameCmd #14 between polls (re-entry) --
+.retryB:                                                         ; $01D666
+    pea     ($0001).w                                            ; sub-arg: 1
+    pea     ($000E).w                                            ; GameCommand #14
+    dc.w    $4EB9,$0000,$0D64                                    ; jsr GameCommand
+    addq.l  #8,sp                                                ; clean 2 pea args
+; -- Wait: poll until result is non-zero (press detection) --
+.pollB:                                                          ; $01D676
+    clr.l   -(sp)                                                ; push 0 (utility arg)
+    jsr     (a2)                                                 ; call utility $1E1EC
+    addq.l  #4,sp                                                ; clean arg
+    move.w  d0,d2                                                ; D2 = result
+    beq.s   .retryB                                              ; zero -> keep waiting
+    bra.s   .result                                              ; non-zero -> done
+; -- Single call path --
+.once:                                                           ; $01D682
+    clr.l   -(sp)                                                ; push 0 (utility arg)
+    jsr     (a2)                                                 ; call utility $1E1EC
+    addq.l  #4,sp                                                ; clean arg
+    move.w  d0,d2                                                ; D2 = result
+    bra.s   .result
+; -- Inactive path: delay and return default --
+.inactive:                                                       ; $01D68C
+    pea     ($003C).w                                            ; push 60 (frame count)
+    dc.w    $4EBA,$0C62                                          ; jsr $1E2F4(pc) (delay)
+    nop                                                          ; padding
+    moveq   #$10,d2                                              ; D2 = 16 (default result)
+.result:                                                         ; $01D698
+    move.w  d2,d0                                                ; D0 = result
+    movem.l -8(a6),d2/a2                                         ; restore from link frame
+    unlk    a6                                                   ; destroy stack frame
+    rts
+; ============================================================================
+; RandRange -- Random integer in [min, max] (64 calls)
+; Uses classic C LCG: state = state * 1103515245 + 12345
+; Args (stack): $18(sp)=min (word), $1C(sp)=max (word)
+;   (offsets shifted by 20 bytes of saved registers)
+; RNG state at $FFA7E0 (longword + word accumulator)
+; ============================================================================
+RandRange:                                                       ; $01D6A4
+    movem.l d2-d5/a2,-(sp)                                      ; save working registers
+    move.l  $18(sp),d3                                           ; D3 = min
+    move.l  $1C(sp),d4                                           ; D4 = max
+    movea.l #$00FFA7E0,a2                                        ; A2 = RNG state pointer
+    move.w  $2(a2),d2                                            ; D2 = accumulator word
+    pea     ($0003).w                                            ; GameCommand #3
+    dc.w    $4EB9,$0000,$0D64                                    ; jsr GameCommand
+    addq.l  #4,sp                                                ; clean arg
+    add.w   d0,d2                                                ; accumulate return value
+    move.l  (a2),d0                                              ; D0 = RNG state
+    move.l  #$41C64E6D,d1                                        ; D1 = LCG multiplier (1103515245)
+    dc.w    $4EB9,$0003,$E05C                                    ; jsr Multiply32 (D0 * D1)
+    addi.l  #$00003039,d0                                        ; D0 += 12345 (LCG increment)
+    move.l  d0,(a2)                                              ; store new RNG state
+    moveq   #0,d0                                                ; zero-extend
+    move.w  d2,d0                                                ; D0 = accumulator (unsigned)
+    move.w  d4,d1                                                ; D1 = max
+    ext.l   d1                                                   ; sign-extend to long
+    move.w  d3,d5                                                ; D5 = min
+    ext.l   d5                                                   ; sign-extend to long
+    sub.l   d5,d1                                                ; D1 = max - min
+    addq.l  #1,d1                                                ; D1 = range (max - min + 1)
+    dc.w    $4EB9,$0003,$E146                                    ; jsr Divide32 (D0 / D1, remainder)
+    add.w   d3,d0                                                ; D0 = (random % range) + min
+    movem.l (sp)+,d2-d5/a2                                       ; restore registers
+    rts
+; ============================================================================
+; ByteSum -- Sum bytes in a buffer, return sum in D0.W
+; Args (stack): 4(sp)=src ptr, 8(sp)=count
+; ============================================================================
+ByteSum:                                                         ; $01D6FC
+    move.l  d2,-(sp)                                             ; Save D2
+    move.l  $C(sp),d2                                            ; D2 = count (+4 from push)
+    movea.l $8(sp),a0                                            ; A0 = src pointer
+    clr.w   d1                                                   ; D1 = accumulator = 0
+    bra.s   .check                                               ; enter loop at test
+.loop:                                                           ; $01D70A
+    moveq   #0,d0                                                ; zero-extend
+    move.b  (a0)+,d0                                             ; D0 = next byte
+    add.w   d0,d1                                                ; accumulate
+    subq.w  #1,d2                                                ; count--
+.check:                                                          ; $01D712
+    tst.w   d2                                                   ; count == 0?
+    bne.s   .loop                                                ; loop if not done
+    move.w  d1,d0                                                ; D0 = result sum
+    move.l  (sp)+,d2                                             ; Restore D2
+    rts
+; ============================================================================
+; ResourceLoad -- Load resource if not already loaded (106 calls)
+; Pushes 4 args, calls $4CB6, sets flag at $FFA7DC
+; ============================================================================
+ResourceLoad:                                                    ; $01D71C
+    tst.w   ($00FFA7DC).l                                        ; Already loaded?
+    bne.s   .done                                                ; Yes -> skip
+    pea     ($0002).w                                            ; arg: 2
+    pea     ($0040).w                                            ; arg: $40
+    clr.l   -(sp)                                                ; arg: 0
+    pea     ($00FF14BC).l                                        ; arg: work RAM buffer
+    dc.w    $4EB9,$0000,$4CB6                                    ; jsr $00004CB6
+    lea     $10(sp),sp                                           ; clean 16 bytes of args
+    move.w  #$0001,($00FFA7DC).l                                 ; set loaded flag
+.done:                                                           ; $01D746
+    rts
+; ============================================================================
+; ResourceUnload -- Unload resource if loaded (95 calls)
+; Pushes 4 args, calls $4D04, clears flag at $FFA7DC
+; ============================================================================
+ResourceUnload:                                                  ; $01D748
+    tst.w   ($00FFA7DC).l                                        ; Is it loaded?
+    beq.s   .done                                                ; No -> skip
+    pea     ($0002).w                                            ; arg: 2
+    pea     ($0040).w                                            ; arg: $40
+    clr.l   -(sp)                                                ; arg: 0
+    pea     ($00FF14BC).l                                        ; arg: work RAM buffer
+    dc.w    $4EB9,$0000,$4D04                                    ; jsr $00004D04
+    lea     $10(sp),sp                                           ; clean 16 bytes of args
+    clr.w   ($00FFA7DC).l                                        ; clear loaded flag
+.done:                                                           ; $01D770
+    rts
+; ---
+    dc.w    $4E56,$FFF8,$48E7,$3000,$242E,$0010,$262E          ; $01D772 (next fn)
     dc.w    $000C,$322E,$0016,$9243,$302E,$001A,$9042,$C2C0; $01D780
     dc.w    $302E,$000A,$48C0,$2F00,$3001,$48C0,$2F00,$3002; $01D790
     dc.w    $48C0,$2F00,$3003,$48C0,$2F00,$486E,$FFF8,$4EBA; $01D7A0
@@ -3591,16 +3764,66 @@
     dc.w    $48C0,$2F00,$302E,$0012,$48C0,$2F00,$3003,$48C0; $01E010
     dc.w    $2F00,$4EBA,$0020,$4E71,$4FEF,$0030,$4878,$0001; $01E020
     dc.w    $4878,$000E,$4EB9,$0000,$0D64,$4CEE,$001C,$FFD4; $01E030
-    dc.w    $4E5E,$4E75,$4E56,$FFF8,$41EE,$FFF8,$3D7C,$0080; $01E040
-    dc.w    $FFF8,$302E,$001A,$0640,$FFFF,$0240,$0003,$720A; $01E050
-    dc.w    $E368,$322E,$001E,$0641,$FFFF,$0241,$0003,$E149; $01E060
-    dc.w    $8081,$3140,$0002,$302E,$0022,$0240,$FC00,$806E; $01E070
-    dc.w    $000A,$3140,$0004,$317C,$0080,$0006,$302E,$0016; $01E080
-    dc.w    $48C0,$2F00,$302E,$0012,$48C0,$2F00,$2F08,$4878; $01E090
-    dc.w    $0001,$302E,$000E,$48C0,$2F00,$4878,$000F,$4EB9; $01E0A0
-    dc.w    $0000,$0D64,$4E5E,$4E75,$2F02,$242F,$000C,$222F; $01E0B0
-    dc.w    $0008,$3002,$48C0,$2F00,$3001,$48C0,$2F00,$4878; $01E0C0
-    dc.w    $0010,$4EB9,$0000,$0D64,$4FEF,$000C,$241F,$4E75; $01E0D0
+    dc.w    $4E5E,$4E75                                        ; $01E040 (end prev fn)
+; ============================================================================
+; TilePlacement -- Set up tile/sprite parameters, call GameCommand #15 (100 calls)
+; Builds 8-byte parameter block on stack from args, then dispatches.
+; Args via link frame: $E-$22(a6) = various tile params
+; ============================================================================
+TilePlacement:                                                   ; $01E044
+    link    a6,#-8                                               ; allocate 8 bytes local
+    lea     -8(a6),a0                                            ; A0 = local buffer
+    move.w  #$0080,-8(a6)                                        ; buf[0] = $80 (default flags)
+    move.w  $1A(a6),d0                                           ; D0 = tile row param
+    addi.w  #$FFFF,d0                                            ; D0 -= 1
+    andi.w  #$0003,d0                                            ; D0 &= 3 (0-3)
+    moveq   #$0A,d1                                              ; D1 = 10
+    lsl.w   d1,d0                                                ; D0 <<= 10 (row -> VRAM offset)
+    move.w  $1E(a6),d1                                           ; D1 = tile col param
+    addi.w  #$FFFF,d1                                            ; D1 -= 1
+    andi.w  #$0003,d1                                            ; D1 &= 3 (0-3)
+    lsl.w   #8,d1                                                ; D1 <<= 8 (col -> VRAM offset)
+    or.l    d1,d0                                                ; combine row + col
+    move.w  d0,2(a0)                                             ; buf[2] = tile position
+    move.w  $22(a6),d0                                           ; D0 = palette/priority
+    andi.w  #$FC00,d0                                            ; keep top 6 bits
+    or.w    $A(a6),d0                                            ; OR with tile ID arg
+    move.w  d0,4(a0)                                             ; buf[4] = tile attr + ID
+    move.w  #$0080,6(a0)                                         ; buf[6] = $80 (flags)
+    move.w  $16(a6),d0                                           ; D0 = height param
+    ext.l   d0                                                   ; sign-extend
+    move.l  d0,-(sp)                                             ; push height
+    move.w  $12(a6),d0                                           ; D0 = width param
+    ext.l   d0                                                   ; sign-extend
+    move.l  d0,-(sp)                                             ; push width
+    move.l  a0,-(sp)                                             ; push buffer ptr
+    pea     ($0001).w                                            ; push 1 (mode)
+    move.w  $E(a6),d0                                            ; D0 = plane select
+    ext.l   d0                                                   ; sign-extend
+    move.l  d0,-(sp)                                             ; push plane
+    pea     ($000F).w                                            ; GameCommand #15
+    dc.w    $4EB9,$0000,$0D64                                    ; jsr GameCommand
+    unlk    a6                                                   ; cleanup (discards args + locals)
+    rts
+; ============================================================================
+; GameCmd16 -- Call GameCommand #16 with two args (77 calls)
+; Args (stack): 4(sp)=arg1 (word), 8(sp)=arg2 (word)
+; ============================================================================
+GameCmd16:                                                       ; $01E0B8
+    move.l  d2,-(sp)                                             ; save D2
+    move.l  $C(sp),d2                                            ; D2 = arg2 (shifted +4)
+    move.l  $8(sp),d1                                            ; D1 = arg1
+    move.w  d2,d0                                                ; D0 = arg2
+    ext.l   d0                                                   ; sign-extend
+    move.l  d0,-(sp)                                             ; push arg2
+    move.w  d1,d0                                                ; D0 = arg1
+    ext.l   d0                                                   ; sign-extend
+    move.l  d0,-(sp)                                             ; push arg1
+    pea     ($0010).w                                            ; GameCommand #16
+    dc.w    $4EB9,$0000,$0D64                                    ; jsr GameCommand
+    lea     $C(sp),sp                                            ; clean 12 bytes (3 args)
+    move.l  (sp)+,d2                                             ; restore D2
+    rts
     dc.w    $202F,$000C,$226F,$0008,$206F,$0004,$4241,$6008; $01E0E0
     dc.w    $1290,$5241,$5288,$5489,$B240,$6DF4,$4E75,$202F; $01E0F0
     dc.w    $000C,$226F,$0008,$206F,$0004,$4241,$6008,$1091; $01E100
@@ -3617,12 +3840,50 @@
     dc.w    $14D9,$66FC,$2008,$245F,$4E75,$2F0A,$246F,$0008; $01E1B0
     dc.w    $226F,$000C,$204A,$6002,$528A,$4A12,$66FA,$14D9; $01E1C0
     dc.w    $66FC,$2008,$245F,$4E75,$226F,$0004,$2049,$6002; $01E1D0
-    dc.w    $5289,$4A11,$66FA,$3009,$9048,$4E75,$48E7,$3020; $01E1E0
-    dc.w    $262F,$0010,$247C,$00FF,$A790,$42A7,$4878,$000A; $01E1F0
-    dc.w    $4EB9,$0000,$0D64,$508F,$2400,$4A83,$6712,$7002; $01E200
-    dc.w    $B083,$6608,$2002,$7210,$E2A8,$600C,$3002,$6008; $01E210
-    dc.w    $2002,$7210,$E2A8,$8042,$C052,$0240,$00FF,$4CDF; $01E220
-    dc.w    $040C,$4E75,$2F02,$4A79,$00FF,$0A34,$6612,$603C; $01E230
+    dc.w    $5289,$4A11,$66FA,$3009,$9048,$4E75              ; $01E1E0 (end strlen fn)
+; ============================================================================
+; ReadInput -- Read joypad input via GameCommand #10 (95 calls)
+; Arg (stack): $10(sp)=mode (0=high|low, 2=high only, other=low only)
+; Input mask at $FFA790 filters which buttons are reported.
+; Returns: D0.W = masked input value (byte)
+; ============================================================================
+ReadInput:                                                       ; $01E1EC
+    movem.l d2-d3/a2,-(sp)                                      ; save working registers
+    move.l  $10(sp),d3                                           ; D3 = mode arg (shifted +12)
+    movea.l #$00FFA790,a2                                        ; A2 = input mask pointer
+    clr.l   -(sp)                                                ; push 0 (sub-arg)
+    pea     ($000A).w                                            ; GameCommand #10 (read input)
+    dc.w    $4EB9,$0000,$0D64                                    ; jsr GameCommand
+    addq.l  #8,sp                                                ; clean 2 args
+    move.l  d0,d2                                                ; D2 = raw input (longword)
+    tst.l   d3                                                   ; check mode
+    beq.s   .modeOr                                              ; mode 0 -> OR both halves
+    moveq   #2,d0                                                ; compare value
+    cmp.l   d3,d0                                                ; mode == 2?
+    bne.s   .modeLow                                             ; no -> use low word
+; -- Mode 2: extract high word only (new presses) --
+.modeHigh:                                                       ; $01E214
+    move.l  d2,d0                                                ; D0 = raw input
+    moveq   #$10,d1                                              ; D1 = 16
+    lsr.l   d1,d0                                                ; D0 = high word (>> 16)
+    bra.s   .mask                                                ; apply mask
+; -- Mode other: use low word only (held buttons) --
+.modeLow:                                                        ; $01E21C
+    move.w  d2,d0                                                ; D0 = low word
+    bra.s   .mask                                                ; apply mask
+; -- Mode 0: OR high and low words (any activity) --
+.modeOr:                                                         ; $01E220
+    move.l  d2,d0                                                ; D0 = raw input
+    moveq   #$10,d1                                              ; D1 = 16
+    lsr.l   d1,d0                                                ; D0 = high word (>> 16)
+    or.w    d2,d0                                                ; D0 |= low word
+.mask:                                                           ; $01E228
+    and.w   (a2),d0                                              ; mask with allowed buttons
+    andi.w  #$00FF,d0                                            ; keep low byte only
+    movem.l (sp)+,d2-d3/a2                                       ; restore registers
+    rts
+; ---
+    dc.w    $2F02,$4A79,$00FF,$0A34,$6612,$603C                ; $01E234 (next fn)
     dc.w    $4878,$0001,$4878,$000E,$4EB9,$0000,$0D64,$508F; $01E240
     dc.w    $42A7,$6100,$FF98,$588F,$4A40,$66E4,$6010,$4878; $01E250
     dc.w    $0001,$4878,$000E,$4EB9,$0000,$0D64,$508F,$42A7; $01E260

@@ -7,8 +7,8 @@ Index of all identified functions. Updated as disassembly progresses.
 - **Total RTS (function endpoints):** 854
 - **Total RTE (interrupt returns):** 6
 - **Unique call targets:** 2,896
-- **Functions named:** 54
-- **Functions translated to mnemonics:** 12 (exception handlers, EXT/H-INT/V-INT, boot post-init, Z80 sound interface, GameEntry/GameLoopSetup/MainLoop, GameCommand)
+- **Functions named:** 66
+- **Functions translated to mnemonics:** 23 (exception handlers, EXT/H-INT/V-INT, boot post-init, Z80 sound interface, GameEntry/GameLoopSetup/MainLoop, GameCommand, utility cluster: MemFillByte/MemCopy/MemFillWord/PollAction/RandRange/ByteSum/ResourceLoad/ResourceUnload/TilePlacement/GameCmd16/ReadInput)
 
 ## Most-Called Functions
 
@@ -24,18 +24,18 @@ These are the most frequently called subroutines -- high-priority translation ta
 | $03A942 | 124 | | |
 | $003FEC | 123 | | |
 | $00D648 | 114 | | Near main game loop |
-| $01D71C | 106 | | |
+| $01D71C | 106 | ResourceLoad | Load resource if not loaded, set flag |
 | $005092 | 101 | DisplaySetup | Display/graphics setup |
-| $01E044 | 100 | | |
+| $01E044 | 100 | TilePlacement | Build tile params, call GameCmd #15 |
 | $03B270 | 97 | | |
-| $01E1EC | 95 | | |
-| $01D748 | 95 | | |
+| $01E1EC | 95 | ReadInput | Read joypad via GameCmd #10, mode select |
+| $01D748 | 95 | ResourceUnload | Unload resource if loaded, clear flag |
 | $03E146 | 88 | | In string/UI region |
-| $01E0B8 | 77 | | |
-| $01D520 | 71 | | |
+| $01E0B8 | 77 | GameCmd16 | Thin wrapper for GameCommand #16 |
+| $01D520 | 71 | MemFillByte | Fill memory with byte value |
 | $03B246 | 65 | | |
-| $01D62C | 65 | | |
-| $01D6A4 | 64 | | |
+| $01D62C | 65 | PollAction | Flush-then-wait input polling |
+| $01D6A4 | 64 | RandRange | Random int in [min,max] via LCG |
 
 ## Functions by Category
 
@@ -61,6 +61,13 @@ These are the most frequently called subroutines -- high-priority translation ta
 | Address | Name | Description |
 |---------|------|-------------|
 | $000D64 | GameCommand | Central command dispatcher (306 calls, 47 handlers via jump table) |
+| $01E1EC | ReadInput | Read joypad input via GameCmd #10 (95 calls, 3 modes) |
+| $01D62C | PollAction | Flush-then-wait input polling (65 calls) |
+| $01D6A4 | RandRange | Random integer in [min,max] via C LCG (64 calls) |
+| $01D71C | ResourceLoad | Load resource if not loaded, set flag (106 calls) |
+| $01D748 | ResourceUnload | Unload resource, clear flag (95 calls) |
+| $01E044 | TilePlacement | Build tile parameters, call GameCmd #15 (100 calls) |
+| $01E0B8 | GameCmd16 | Thin wrapper for GameCommand #16 (77 calls) |
 | $00D5B6 | GameEntry | Main game entry (called from boot via JMP) |
 | $00D602 | GameLoopSetup | One-time pre-loop init, falls into MainLoop |
 | $00D608 | MainLoop | Main game loop body (8 calls, loops forever) |
@@ -178,14 +185,17 @@ These are the most frequently called subroutines -- high-priority translation ta
 | $0058EE | ErrorDisplay | exception | -- | named |
 | $01819C | GameCall | game | -- | named |
 | $01B49A | GameUpdate2 | game | -- | named |
-| $01D520 | -- | unknown | 71 | unnamed |
-| $01D62C | -- | unknown | 65 | unnamed |
-| $01D6A4 | -- | unknown | 64 | unnamed |
-| $01D71C | -- | unknown | 106 | unnamed |
-| $01D748 | -- | unknown | 95 | unnamed |
-| $01E044 | -- | unknown | 100 | unnamed |
-| $01E0B8 | -- | unknown | 77 | unnamed |
-| $01E1EC | -- | unknown | 95 | unnamed |
+| $01D520 | MemFillByte | util | 71 | translated |
+| $01D538 | MemCopy | util | -- | translated |
+| $01D550 | MemFillWord | util | -- | translated |
+| $01D62C | PollAction | game | 65 | translated |
+| $01D6A4 | RandRange | math | 64 | translated |
+| $01D6FC | ByteSum | util | -- | translated |
+| $01D71C | ResourceLoad | game | 106 | translated |
+| $01D748 | ResourceUnload | game | 95 | translated |
+| $01E044 | TilePlacement | graphics | 100 | translated |
+| $01E0B8 | GameCmd16 | game | 77 | translated |
+| $01E1EC | ReadInput | input | 95 | translated |
 | $01E398 | PreLoopInit | game | 57 | named |
 | $01E402 | GameUpdate3 | game | -- | named |
 | $0213B6 | GameLogic1 | game | -- | named |

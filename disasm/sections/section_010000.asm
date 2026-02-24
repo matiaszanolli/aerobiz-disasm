@@ -3889,28 +3889,117 @@ ReadInput:                                                       ; $01E1EC
     dc.w    $0001,$4878,$000E,$4EB9,$0000,$0D64,$508F,$42A7; $01E260
     dc.w    $6100,$FF7A,$588F,$3400,$67E4,$600E,$4878,$003C; $01E270
     dc.w    $4EBA,$0072,$4E71,$588F,$3400,$3002,$241F,$4E75; $01E280
-    dc.w    $48E7,$3000,$242F,$000C,$262F,$0010,$0C79,$0001; $01E290
-    dc.w    $00FF,$13FC,$662E,$4A79,$00FF,$A7D8,$671E,$6024; $01E2A0
-    dc.w    $42A7,$6100,$FF38,$588F,$B043,$6618,$4878,$0001; $01E2B0
-    dc.w    $4878,$000E,$4EB9,$0000,$0D64,$508F,$2002,$5342; $01E2C0
-    dc.w    $4A40,$66DC,$0C79,$0001,$00FF,$13FC,$6608,$33FC; $01E2D0
-    dc.w    $0001,$00FF,$A7D8,$42A7,$6100,$FF02,$588F,$4CDF; $01E2E0
-    dc.w    $000C,$4E75,$48E7,$3800,$262F,$0010,$42A7,$6100; $01E2F0
-    dc.w    $FEEC,$588F,$3800,$6032,$42A7,$6100,$FEE0,$588F; $01E300
-    dc.w    $3400,$4A42,$6708,$B842,$6704,$3002,$6022,$3039; $01E310
-    dc.w    $00FF,$0008,$48C0,$5280,$2F00,$4878,$000E,$4EB9; $01E320
-    dc.w    $0000,$0D64,$508F,$3802,$5343,$4A43,$66CA,$3004; $01E330
-    dc.w    $4CDF,$001C,$4E75,$48E7,$3800,$242F,$0014,$262F; $01E340
+; === ProcessInputLoop ($01E290, 100B) ===
+ProcessInputLoop:                                                     ; $01E290
+    MOVEM.L D2-D3,-(SP)
+    MOVE.L  $C(SP),D2                                                 ; arg1 (iteration count)
+    MOVE.L  $10(SP),D3                                                ; arg2 (target input)
+    CMPI.W  #1,($00FF13FC).L                                         ; check mode flag
+    BNE.S   .pil_after                                                ; if != 1, skip loop
+    TST.W   ($00FFA7D8).L                                            ; check init flag
+    BEQ.S   .pil_countdown                                            ; if == 0, start countdown
+    BRA.S   .pil_after                                                ; else skip
+.pil_loop:                                                            ; $01E2B0
+    CLR.L   -(SP)
+    dc.w    $6100,$FF38                                               ; bsr.w ReadInput [$1E1EC]
+    ADDQ.L  #4,SP
+    CMP.W   D3,D0                                                     ; compare with target
+    BNE.S   .pil_after                                                ; if match, continue; else exit
+    PEA     ($0001).W
+    PEA     ($000E).W                                                 ; command 14
+    dc.w    $4EB9,$0000,$0D64                                         ; jsr GameCommand
+    ADDQ.L  #8,SP
+.pil_countdown:                                                       ; $01E2CC
+    MOVE.L  D2,D0
+    SUBQ.W  #1,D2                                                     ; decrement counter
+    TST.W   D0                                                        ; test pre-decrement value
+    BNE.S   .pil_loop                                                 ; continue while != 0
+.pil_after:                                                           ; $01E2D4
+    CMPI.W  #1,($00FF13FC).L
+    BNE.S   .pil_epilogue
+    MOVE.W  #1,($00FFA7D8).L                                         ; set init flag
+.pil_epilogue:                                                        ; $01E2E6
+    CLR.L   -(SP)
+    dc.w    $6100,$FF02                                               ; bsr.w ReadInput [$1E1EC]
+    ADDQ.L  #4,SP
+    MOVEM.L (SP)+,D2-D3
+    RTS
+; === PollInputChange ($01E2F4, 82B) ===
+PollInputChange:                                                      ; $01E2F4
+    MOVEM.L D2-D4,-(SP)
+    MOVE.L  $10(SP),D3                                                ; arg (loop count)
+    CLR.L   -(SP)
+    dc.w    $6100,$FEEC                                               ; bsr.w ReadInput [$1E1EC]
+    ADDQ.L  #4,SP
+    MOVE.W  D0,D4                                                     ; D4 = initial input
+    BRA.S   .pic_check
+.pic_loop:                                                            ; $01E308
+    CLR.L   -(SP)
+    dc.w    $6100,$FEE0                                               ; bsr.w ReadInput [$1E1EC]
+    ADDQ.L  #4,SP
+    MOVE.W  D0,D2                                                     ; D2 = new input
+    TST.W   D2
+    BEQ.S   .pic_nochange                                             ; if 0, skip
+    CMP.W   D2,D4
+    BEQ.S   .pic_nochange                                             ; if same as last, skip
+    MOVE.W  D2,D0                                                     ; found different input
+    BRA.S   .pic_exit
+.pic_nochange:                                                        ; $01E31E
+    MOVE.W  ($00FF0008).L,D0                                         ; frame counter
+    EXT.L   D0                                                        ; sign-extend
+    ADDQ.L  #1,D0                                                     ; frame + 1
+    MOVE.L  D0,-(SP)
+    PEA     ($000E).W                                                 ; command 14
+    dc.w    $4EB9,$0000,$0D64                                         ; jsr GameCommand
+    ADDQ.L  #8,SP
+    MOVE.W  D2,D4                                                     ; update last input
+    SUBQ.W  #1,D3                                                     ; loop counter--
+.pic_check:                                                           ; $01E33A
+    TST.W   D3
+    BNE.S   .pic_loop                                                 ; continue while != 0
+    MOVE.W  D4,D0                                                     ; return last value
+.pic_exit:                                                            ; $01E340
+    MOVEM.L (SP)+,D2-D4
+    RTS
+    dc.w    $48E7,$3800,$242F,$0014,$262F                             ; $01E346
     dc.w    $001C,$3002,$8043,$6604,$7000,$6036,$7000,$302F; $01E350
     dc.w    $001A,$7200,$3203,$4EB9,$0003,$E05C,$2F00,$7000; $01E360
     dc.w    $302F,$0016,$7200,$3202,$4EB9,$0003,$E05C,$D09F; $01E370
     dc.w    $7200,$3202,$7800,$3803,$D284,$4EB9,$0003,$E0C6; $01E380
-    dc.w    $3400,$4CDF,$001C,$4E75,$2F0A,$247C,$0000,$0D64; $01E390
-    dc.w    $4878,$0040,$42A7,$4878,$0010,$4E92,$2F3C,$0000; $01E3A0
-    dc.w    $8000,$4878,$0020,$4878,$0020,$42A7,$42A7,$42A7; $01E3B0
-    dc.w    $4878,$001A,$4E92,$4FEF,$0028,$2F3C,$0000,$8000; $01E3C0
-    dc.w    $4878,$0020,$4878,$0020,$42A7,$42A7,$4878,$0001; $01E3D0
-    dc.w    $4878,$001A,$4E92,$4FEF,$001C,$245F,$4E75,$226F; $01E3E0
+    dc.w    $3400,$4CDF,$001C,$4E75                            ; $01E390 (end of previous function)
+; ---------------------------------------------------------------------------
+; PreLoopInit -- Initialize display layers before main game loop
+; Sets up display mode (GameCommand 16) and two background layers (GameCommand 26)
+; Called 57 times
+; ---------------------------------------------------------------------------
+PreLoopInit:                                                   ; $01E398
+    MOVE.L  A2,-(SP)                                           ; save A2
+    MOVEA.L #$00000D64,A2                                      ; A2 = GameCommand
+    PEA     ($0040).W                                          ; push 64 (columns)
+    CLR.L   -(SP)                                              ; push 0
+    PEA     ($0010).W                                          ; command 16 (set display mode)
+    JSR     (A2)                                               ; GameCommand(16, 0, 64)
+    MOVE.L  #$00008000,-(SP)                                   ; push VRAM base
+    PEA     ($0020).W                                          ; push 32 (height)
+    PEA     ($0020).W                                          ; push 32 (width)
+    CLR.L   -(SP)                                              ; push 0 (y)
+    CLR.L   -(SP)                                              ; push 0 (x)
+    CLR.L   -(SP)                                              ; push 0 (layer 0)
+    PEA     ($001A).W                                          ; command 26 (set background)
+    JSR     (A2)                                               ; GameCommand(26, 0, 0, 0, 32, 32, $8000)
+    LEA     $28(SP),SP                                         ; pop 10 args (both calls)
+    MOVE.L  #$00008000,-(SP)                                   ; push VRAM base
+    PEA     ($0020).W                                          ; push 32 (height)
+    PEA     ($0020).W                                          ; push 32 (width)
+    CLR.L   -(SP)                                              ; push 0 (y)
+    CLR.L   -(SP)                                              ; push 0 (x)
+    PEA     ($0001).W                                          ; push 1 (layer 1)
+    PEA     ($001A).W                                          ; command 26
+    JSR     (A2)                                               ; GameCommand(26, 1, 0, 0, 32, 32, $8000)
+    LEA     $1C(SP),SP                                         ; pop 7 args
+    MOVEA.L (SP)+,A2                                           ; restore A2
+    RTS
+    dc.w    $226F                                              ; $01E3EE (start of next function)
     dc.w    $0008,$206F,$0004,$2F09,$2F08,$6100,$FDBE,$508F; $01E3F0
     dc.w    $4E75,$2F02,$4EBA,$00E6,$4E71,$4242,$7000,$3002; $01E400
     dc.w    $2F00,$4EBA,$057A,$4E71,$588F,$5242,$0C42,$0007; $01E410

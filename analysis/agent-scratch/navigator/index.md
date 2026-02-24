@@ -86,6 +86,9 @@ The Navigator's complete knowledge base. Updated after each session.
 - Math primitives ($3E05A-$3E181): DONE -- 296 bytes, 12 functions: Multiply32/SignedDiv/UnsignedDivide/UDiv_Overflow/UDiv_Full32/UnsignedMod/SignedMod + 5 FromPtr alternate entries
 - Text system ($3A942-$3B29B): DONE -- 250 bytes, 5 functions: SetTextWindow/SetTextCursor/sprintf/PrintfNarrow/PrintfWide
 - LZ_Decompress ($3FEC-$423F): DONE -- 596 bytes, LZSS decompressor with variable-length bitstream encoding
+- DisplaySetup cluster ($5092-$51B5): DONE -- 292 bytes, 6 functions: DisplaySetup/DisplayInitRows/DisplayInit15/DisplayInit0/DisplaySetupScaled/DisplayTileSetup
+- High-call graphics/util ($4668-$74E0): DONE -- 234 bytes, 5 functions: CmdPlaceTile/CmdSetBackground/BitFieldSearch/GetByteField4/GetLowNibble + 2 more: MemMove/CmdPlaceTile2 (116B)
+- Input/game cluster ($1E290-$1E3DD): DONE -- 268 bytes, 3 functions: ProcessInputLoop/PollInputChange/PreLoopInit
 - TMSS boot ($200-$28C): not yet (standard Genesis boilerplate)
 - vasm bra.w: CONFIRMED correct displacement (no +2 bug like bsr.w)
 - vasm pea ($xxxx).w: CONFIRMED correct absolute short encoding

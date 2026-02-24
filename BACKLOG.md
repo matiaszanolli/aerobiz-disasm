@@ -140,12 +140,23 @@ Pick the highest-priority unclaimed task. Mark it `IN PROGRESS` with your sessio
 **Approach:** Translated 5 functions totaling 250 bytes: SetTextWindow (106B, 124 calls, sets win_left/top/right/bottom RAM + cursor helpers), SetTextCursor (36B, 174 calls, sets cursor X/Y via helpers), sprintf (26B, 171 calls, C-style varargs format to buffer), PrintfNarrow (42B, 65 calls, format + display with 1-tile font), PrintfWide (44B, 97 calls, format + display with 2-tile font). Discovered text RAM variables: font_mode $FF1800, cursor_x $FF128A, cursor_y $FFBDA6, char_width $FF99DE, cursor_advance $FFA77A, window bounds at $FFBD48/68/B9E4/BDA8/1000/1290. All BSR.W kept as dc.w (vasm bug). First use of LINK/UNLK/LEA for C-style varargs.
 **Acceptance:** `make verify` passes. All 5 functions translated.
 
+### B-020: Translate high-call-count functions (display, graphics, memory, input)
+**Status:** DONE (2026-02-23)
+**Why:** 16 functions with combined 590+ calls. Covers display setup, tile placement, memory copy, input polling, and bitfield search.
+**Approach:** Translated 3 batches totaling 910 bytes:
+- Batch 1 (DisplaySetup cluster, 292B, 6 functions): DisplaySetup (80B, 101 calls), DisplayInitRows (68B), DisplayInit15 (12B), DisplayInit0 (10B), DisplaySetupScaled (52B), DisplayTileSetup (70B). Hit ASL vs LSL pitfall at $00515C.
+- Batch 2 (304B, 5 functions): CmdPlaceTile (62B, 46 calls, GameCommand #5), CmdSetBackground (44B, 46 calls, GameCommand #26), BitFieldSearch (88B, 47 calls, RAM bitfield scan), GetByteField4 (24B, 36 calls, high nibble extract), PreLoopInit (86B, 57 calls, display layer init via JSR (A2) pattern).
+- Batch 3 (314B, 5 functions): GetLowNibble (16B, 20 calls), MemMove (52B, 19 calls, direction-safe byte copy), CmdPlaceTile2 (64B, 23 calls, GameCommand #8), ProcessInputLoop (100B, 42 calls, input polling with ReadInput BSR.W), PollInputChange (82B, 18 calls, frame-counting input change detection).
+All verified byte-identical before applying. JSR abs.l kept as dc.w, BSR.W as dc.w (vasm displacement bug).
+**Acceptance:** `make clean && make all` passes. MD5 1269f44e846a88a2de945de082428b39. All 16 functions translated.
+
 ---
 
 ## Done
 
 | ID | Description | Commit | Date |
 |----|-------------|--------|------|
+| B-020 | High-call-count functions translated (16 functions, 910 bytes: display/graphics/memory/input) | -- | 2026-02-23 |
 | B-019 | Text system translated (5 functions, 250 bytes) | -- | 2026-02-23 |
 | B-018 | LZ_Decompress translated (596 bytes, LZSS decompressor) | -- | 2026-02-23 |
 | B-017 | RangeLookup translated ($D648, 118 bytes) | -- | 2026-02-23 |

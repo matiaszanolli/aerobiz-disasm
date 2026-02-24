@@ -7,8 +7,8 @@ Index of all identified functions. Updated as disassembly progresses.
 - **Total RTS (function endpoints):** 854
 - **Total RTE (interrupt returns):** 6
 - **Unique call targets:** 2,896
-- **Functions named:** 79
-- **Functions translated to mnemonics:** 42 (exception handlers, EXT/H-INT/V-INT, boot post-init, Z80 sound interface, GameEntry/GameLoopSetup/MainLoop, GameCommand, RangeLookup, utility cluster: MemFillByte/MemCopy/MemFillWord/PollAction/RandRange/ByteSum/ResourceLoad/ResourceUnload/TilePlacement/GameCmd16/ReadInput, math: Multiply32/SignedDiv/UnsignedDivide/UDiv_Overflow/UDiv_Full32/UnsignedMod/SignedMod + 5 FromPtr entries, text: SetTextWindow/SetTextCursor/sprintf/PrintfNarrow/PrintfWide, compression: LZ_Decompress)
+- **Functions named:** 93
+- **Functions translated to mnemonics:** 58 (exception handlers, EXT/H-INT/V-INT, boot post-init, Z80 sound interface, GameEntry/GameLoopSetup/MainLoop, GameCommand, RangeLookup, utility cluster: MemFillByte/MemCopy/MemFillWord/PollAction/RandRange/ByteSum/ResourceLoad/ResourceUnload/TilePlacement/GameCmd16/ReadInput, math: Multiply32/SignedDiv/UnsignedDivide/UDiv_Overflow/UDiv_Full32/UnsignedMod/SignedMod + 5 FromPtr entries, text: SetTextWindow/SetTextCursor/sprintf/PrintfNarrow/PrintfWide, compression: LZ_Decompress, display: DisplaySetup/DisplayInitRows/DisplayInit15/DisplayInit0/DisplaySetupScaled/DisplayTileSetup, graphics: CmdPlaceTile/CmdPlaceTile2/CmdSetBackground, memory: MemMove, game: BitFieldSearch/PreLoopInit, util: GetLowNibble/GetByteField4, input: ProcessInputLoop/PollInputChange)
 
 ## Most-Called Functions
 
@@ -214,9 +214,21 @@ These are the most frequently called subroutines -- high-priority translation ta
 | $002688 | Z80_Delay | sound | -- | named |
 | $003BE8 | EarlyInit | boot | -- | named |
 | $003FEC | LZ_Decompress | compression | 123 | translated |
-| $005092 | DisplaySetup | display | 101 | named |
+| $0045B2 | MemMove | memory | 19 | translated |
+| $0045E6 | CmdPlaceTile2 | graphics | 23 | translated |
+| $004668 | CmdPlaceTile | graphics | 46 | translated |
+| $005092 | DisplaySetup | display | 101 | translated |
+| $0050E2 | DisplayInitRows | display | -- | translated |
+| $005126 | DisplayInit15 | display | -- | translated |
+| $005132 | DisplayInit0 | display | -- | translated |
+| $00513C | DisplaySetupScaled | display | -- | translated |
+| $005170 | DisplayTileSetup | display | -- | translated |
+| $00538E | CmdSetBackground | graphics | 46 | translated |
 | $005736 | PreGameInit | game | -- | named |
 | $0058EE | ErrorDisplay | exception | -- | named |
+| $006EEA | BitFieldSearch | game | 47 | translated |
+| $007402 | GetLowNibble | util | 20 | translated |
+| $0074E0 | GetByteField4 | util | 36 | translated |
 | $01819C | GameCall | game | -- | named |
 | $01B49A | GameUpdate2 | game | -- | named |
 | $01D520 | MemFillByte | util | 71 | translated |
@@ -230,7 +242,9 @@ These are the most frequently called subroutines -- high-priority translation ta
 | $01E044 | TilePlacement | graphics | 100 | translated |
 | $01E0B8 | GameCmd16 | game | 77 | translated |
 | $01E1EC | ReadInput | input | 95 | translated |
-| $01E398 | PreLoopInit | game | 57 | named |
+| $01E290 | ProcessInputLoop | input | 42 | translated |
+| $01E2F4 | PollInputChange | input | 18 | translated |
+| $01E398 | PreLoopInit | game | 57 | translated |
 | $01E402 | GameUpdate3 | game | -- | named |
 | $0213B6 | GameLogic1 | game | -- | named |
 | $026128 | GameUpdate4 | game | -- | named |

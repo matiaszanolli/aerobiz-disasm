@@ -1571,22 +1571,95 @@ LZ_Decompress:
     dc.w    $7200,$3203,$5281,$B081,$6DE4,$1039,$00FF,$128E; $004580
     dc.w    $D139,$00FF,$128E,$5244,$0C44,$0008,$6500,$FDDE; $004590
     dc.w    $6000,$FDD2,$222F,$0030,$2008,$9081,$4CDF,$7CFC; $0045A0
-    dc.w    $4E75,$222F,$000C,$226F,$0008,$206F,$0004,$B0C9; $0045B0
-    dc.w    $630C,$6004,$12D8,$5341,$4A41,$66F8,$6016,$7000; $0045C0
-    dc.w    $3001,$D3C0,$7000,$3001,$D1C0,$6004,$1320,$5341; $0045D0
-    dc.w    $4A41,$66F8,$4E75,$2F02,$242F,$0010,$222F,$000C; $0045E0
-    dc.w    $206F,$0008,$3001,$0280,$0000,$07FF,$EB88,$2240; $0045F0
-    dc.w    $42A7,$42A7,$7000,$3002,$E988,$2F00,$2F09,$2F08; $004600
-    dc.w    $4878,$0002,$4878,$0008,$4EB9,$0000,$0D64,$4FEF; $004610
-    dc.w    $001C,$241F,$4E75,$2F02,$242F,$0010,$222F,$000C; $004620
+    dc.w    $4E75                                                     ; $0045B0
+; === MemMove ($0045B2, 52B) ===
+MemMove:                                                              ; $0045B2
+    MOVE.L  $C(SP),D1                                                 ; count
+    MOVEA.L $8(SP),A1                                                 ; dest
+    MOVEA.L $4(SP),A0                                                 ; src
+    CMPA.W  A1,A0                                                     ; compare src vs dest
+    BLS.S   .mm_backward                                              ; if src <= dest, copy backward
+    BRA.S   .mm_fwd_check
+.mm_fwd_loop:                                                         ; $0045C4
+    MOVE.B  (A0)+,(A1)+                                               ; copy forward
+    SUBQ.W  #1,D1
+.mm_fwd_check:                                                        ; $0045C8
+    TST.W   D1
+    BNE.S   .mm_fwd_loop
+    BRA.S   .mm_done
+.mm_backward:                                                         ; $0045CE
+    MOVEQ   #0,D0
+    MOVE.W  D1,D0
+    ADDA.L  D0,A1                                                     ; dest += count
+    MOVEQ   #0,D0
+    MOVE.W  D1,D0
+    ADDA.L  D0,A0                                                     ; src += count
+    BRA.S   .mm_bwd_check
+.mm_bwd_loop:                                                         ; $0045DC
+    MOVE.B  -(A0),-(A1)                                               ; copy backward
+    SUBQ.W  #1,D1
+.mm_bwd_check:                                                        ; $0045E0
+    TST.W   D1
+    BNE.S   .mm_bwd_loop
+.mm_done:                                                             ; $0045E4
+    RTS
+; === CmdPlaceTile2 ($0045E6, 64B) ===
+CmdPlaceTile2:                                                        ; $0045E6
+    MOVE.L  D2,-(SP)
+    MOVE.L  $10(SP),D2                                                ; arg3 (count)
+    MOVE.L  $C(SP),D1                                                 ; arg2 (tile address)
+    MOVEA.L $8(SP),A0                                                 ; arg1 (src)
+    MOVE.W  D1,D0
+    ANDI.L  #$000007FF,D0
+    LSL.L   #5,D0                                                     ; * 32
+    MOVEA.L D0,A1
+    CLR.L   -(SP)                                                     ; push 0
+    CLR.L   -(SP)                                                     ; push 0
+    MOVEQ   #0,D0
+    MOVE.W  D2,D0
+    LSL.L   #4,D0                                                     ; count * 16
+    MOVE.L  D0,-(SP)
+    MOVE.L  A1,-(SP)
+    MOVE.L  A0,-(SP)
+    PEA     ($0002).W                                                 ; sub-command 2
+    PEA     ($0008).W                                                 ; command 8
+    dc.w    $4EB9,$0000,$0D64                                         ; jsr GameCommand
+    LEA     $1C(SP),SP                                                ; pop 7 args
+    MOVE.L  (SP)+,D2
+    RTS
+    dc.w    $2F02,$242F,$0010,$222F,$000C                             ; $004626
     dc.w    $206F,$0008,$3001,$0280,$0000,$07FF,$EB88,$2240; $004630
     dc.w    $4878,$0001,$42A7,$7000,$3002,$E988,$2F00,$2F09; $004640
     dc.w    $2F08,$4878,$0002,$4878,$0008,$4EB9,$0000,$0D64; $004650
-    dc.w    $4FEF,$001C,$241F,$4E75,$2F02,$242F,$0010,$222F; $004660
-    dc.w    $000C,$206F,$0008,$3001,$0280,$0000,$07FF,$EB88; $004670
-    dc.w    $2240,$42A7,$2F09,$2F08,$7000,$3002,$E988,$2F00; $004680
-    dc.w    $4878,$0002,$4878,$0005,$4EB9,$0000,$0D64,$4FEF; $004690
-    dc.w    $0018,$241F,$4E75,$48E7,$3E00,$242F,$0018,$262F; $0046A0
+    dc.w    $4FEF,$001C,$241F,$4E75                            ; $004660 (end of previous function)
+; ---------------------------------------------------------------------------
+; CmdPlaceTile -- Place tile block via GameCommand(5, 2, ...)
+; Args: $8(SP) = src pointer, $C(SP) = tile address, $10(SP) = count
+; Called 46 times
+; ---------------------------------------------------------------------------
+CmdPlaceTile:                                                  ; $004668
+    MOVE.L  D2,-(SP)                                           ; save D2
+    MOVE.L  $10(SP),D2                                         ; arg3 (count)
+    MOVE.L  $C(SP),D1                                          ; arg2 (tile address)
+    MOVEA.L $8(SP),A0                                          ; arg1 (src pointer)
+    MOVE.W  D1,D0
+    ANDI.L  #$000007FF,D0                                      ; lower 11 bits
+    LSL.L   #5,D0                                              ; * 32
+    MOVEA.L D0,A1                                              ; A1 = tile offset
+    CLR.L   -(SP)                                              ; push 0
+    MOVE.L  A1,-(SP)                                           ; push tile*32
+    MOVE.L  A0,-(SP)                                           ; push src
+    MOVEQ   #0,D0
+    MOVE.W  D2,D0                                              ; zero-extend count
+    LSL.L   #4,D0                                              ; count * 16
+    MOVE.L  D0,-(SP)                                           ; push count*16
+    PEA     ($0002).W                                          ; sub-command 2
+    PEA     ($0005).W                                          ; command 5
+    dc.w    $4EB9,$0000,$0D64                                  ; jsr GameCommand [$D64]
+    LEA     $18(SP),SP                                         ; pop 6 args
+    MOVE.L  (SP)+,D2                                           ; restore D2
+    RTS
+    dc.w    $48E7,$3E00,$242F,$0018,$262F                      ; $0046A6 (start of next function)
     dc.w    $001C,$282F,$0024,$2A2F,$0020,$206F,$0028,$0245; $0046B0
     dc.w    $0003,$0244,$0001,$0242,$07FF,$3005,$720D,$E368; $0046C0
     dc.w    $D042,$3204,$7C0F,$ED69,$D041,$3400,$6006,$2002; $0046D0
@@ -1745,25 +1818,137 @@ LZ_Decompress:
     dc.w    $4878,$0040,$4879,$00FF,$14BC,$4879,$0004,$72CE; $005060
     dc.w    $4EB9,$0001,$E16C,$4878,$0040,$42A7,$4879,$00FF; $005070
     dc.w    $14BC,$6100,$FAE8,$4FEF,$0018,$4279,$00FF,$A7DC; $005080
-    dc.w    $4E75,$48E7,$3020,$242F,$0018,$262F,$0014,$246F; $005090
-    dc.w    $0010,$7000,$3002,$2F00,$3003,$D040,$207C,$00FF; $0050A0
-    dc.w    $14BC,$4870,$0000,$2F0A,$4EB9,$0001,$E16C,$4FEF; $0050B0
-    dc.w    $000C,$4A79,$00FF,$A7DC,$6612,$3002,$2F00,$3003; $0050C0
-    dc.w    $2F00,$2F0A,$6100,$FA96,$4FEF,$000C,$4CDF,$040C; $0050D0
-    dc.w    $4E75,$48E7,$3000,$242F,$000C,$7000,$3002,$6C02; $0050E0
-    dc.w    $5280,$E280,$3600,$2F00,$4878,$0040,$42A7,$4879; $0050F0
-    dc.w    $00FF,$14BC,$6100,$FAC0,$4FEF,$0010,$4A42,$6708; $005100
-    dc.w    $4279,$00FF,$A7DC,$6008,$33FC,$0001,$00FF,$A7DC; $005110
-    dc.w    $4CDF,$000C,$4E75,$4878,$000F,$6100,$FFB6,$588F; $005120
-    dc.w    $4E75,$42A7,$6100,$FFAC,$588F,$4E75,$48E7,$2020; $005130
-    dc.w    $242F,$0010,$246F,$000C,$7000,$3002,$7204,$4EB9; $005140
-    dc.w    $0003,$E146,$3400,$4878,$0010,$3002,$E948,$2F00; $005150
-    dc.w    $2F0A,$6100,$FF2E,$4FEF,$000C,$4CDF,$0404,$4E75; $005160
-    dc.w    $48E7,$3000,$242F,$000C,$262F,$0014,$222F,$0010; $005170
-    dc.w    $7000,$3002,$EB88,$2040,$7000,$3003,$EB88,$2240; $005180
-    dc.w    $3401,$EB4A,$2F09,$2F08,$7000,$3002,$2F00,$4878; $005190
-    dc.w    $0001,$4878,$0006,$4EB9,$0000,$0D64,$4FEF,$0014; $0051A0
-    dc.w    $4CDF,$000C,$4E75,$4E56,$0000,$48E7,$3F38,$242E; $0051B0
+    dc.w    $4E75                                              ; $005090 (rts -- end of previous function)
+; ---------------------------------------------------------------------------
+; DisplaySetup -- Load resource into dest buffer, optionally call init
+; Args: $10(SP)=dest ptr, $14(SP)=resource index, $18(SP)=size
+; Called 101 times
+; ---------------------------------------------------------------------------
+DisplaySetup:                                                  ; $005092
+    MOVEM.L D2-D3/A2,-(SP)
+    MOVE.L  $18(SP),D2                                         ; arg3 (size)
+    MOVE.L  $14(SP),D3                                         ; arg2 (resource index)
+    MOVEA.L $10(SP),A2                                         ; arg1 (dest pointer)
+    MOVEQ   #0,D0
+    MOVE.W  D2,D0                                              ; zero-extend size
+    MOVE.L  D0,-(SP)
+    MOVE.W  D3,D0
+    ADD.W   D0,D0                                              ; index * 2
+    MOVEA.L #$00FF14BC,A0                                      ; resource table base
+    PEA     0(A0,D0.W)                                         ; push table[index]
+    MOVE.L  A2,-(SP)                                           ; push dest
+    dc.w    $4EB9,$0001,$E16C                                  ; jsr ResourceLoad [$1E16C]
+    LEA     $C(SP),SP                                          ; pop 3 args
+    TST.W   ($FFA7DC).L                                        ; display init flag
+    BNE.S   .ds_done                                           ; if set, skip init
+    MOVE.W  D2,D0
+    MOVE.L  D0,-(SP)                                           ; push size
+    MOVE.W  D3,D0
+    MOVE.L  D0,-(SP)                                           ; push index
+    MOVE.L  A2,-(SP)                                           ; push dest
+    dc.w    $6100,$FA96                                        ; bsr.w $004B6C
+    LEA     $C(SP),SP
+.ds_done:                                                      ; $0050DC
+    MOVEM.L (SP)+,D2-D3/A2
+    RTS
+; ---------------------------------------------------------------------------
+; DisplayInitRows -- Set display row configuration and init flag
+; Args: $C(SP)=row count
+; ---------------------------------------------------------------------------
+DisplayInitRows:                                               ; $0050E2
+    MOVEM.L D2-D3,-(SP)
+    MOVE.L  $C(SP),D2                                          ; arg (row count)
+    MOVEQ   #0,D0
+    MOVE.W  D2,D0                                              ; zero-extend
+    BGE.S   .dir_noadj                                         ; if >= 0, skip adjustment
+    ADDQ.L  #1,D0                                              ; signed round toward zero
+.dir_noadj:                                                    ; $0050F2
+    ASR.L   #1,D0                                              ; rows / 2
+    MOVE.W  D0,D3                                              ; D3 = half rows
+    MOVE.L  D0,-(SP)                                           ; push half rows
+    PEA     ($0040).W                                          ; push 64 (width)
+    CLR.L   -(SP)                                              ; push 0 (index)
+    PEA     ($00FF14BC).L                                      ; push table address
+    dc.w    $6100,$FAC0                                        ; bsr.w $004BC6
+    LEA     $10(SP),SP                                         ; pop 4 args
+    TST.W   D2
+    BEQ.S   .dir_setzero                                       ; if row count == 0
+    CLR.W   ($FFA7DC).L                                        ; clear flag (initialized)
+    BRA.S   .dir_exit
+.dir_setzero:                                                  ; $005118
+    MOVE.W  #1,($FFA7DC).L                                     ; set flag (not initialized)
+.dir_exit:                                                     ; $005120
+    MOVEM.L (SP)+,D2-D3
+    RTS
+; ---------------------------------------------------------------------------
+; DisplayInit15 -- Initialize display with 15 rows
+; ---------------------------------------------------------------------------
+DisplayInit15:                                                 ; $005126
+    PEA     ($000F).W                                          ; push 15
+    dc.w    $6100,$FFB6                                        ; bsr.w DisplayInitRows
+    ADDQ.L  #4,SP
+    RTS
+; ---------------------------------------------------------------------------
+; DisplayInit0 -- Initialize display with 0 rows (sets flag)
+; ---------------------------------------------------------------------------
+DisplayInit0:                                                  ; $005132
+    CLR.L   -(SP)                                              ; push 0
+    dc.w    $6100,$FFAC                                        ; bsr.w DisplayInitRows
+    ADDQ.L  #4,SP
+    RTS
+; ---------------------------------------------------------------------------
+; DisplaySetupScaled -- Load resource with size/4, scaled index
+; Args: $C(SP)=dest ptr, $10(SP)=size
+; ---------------------------------------------------------------------------
+DisplaySetupScaled:                                            ; $00513C
+    MOVEM.L D2/A2,-(SP)
+    MOVE.L  $10(SP),D2                                         ; arg2 (size)
+    MOVEA.L $C(SP),A2                                          ; arg1 (dest ptr)
+    MOVEQ   #0,D0
+    MOVE.W  D2,D0                                              ; zero-extend
+    MOVEQ   #4,D1
+    dc.w    $4EB9,$0003,$E146                                  ; jsr SignedDiv [$3E146]
+    MOVE.W  D0,D2                                              ; D2 = size / 4
+    PEA     ($0010).W                                          ; push 16
+    MOVE.W  D2,D0
+    LSL.W   #4,D0                                              ; D0 = (size/4) * 16
+    MOVE.L  D0,-(SP)                                           ; push scaled index
+    MOVE.L  A2,-(SP)                                           ; push dest
+    dc.w    $6100,$FF2E                                        ; bsr.w DisplaySetup
+    LEA     $C(SP),SP
+    MOVEM.L (SP)+,D2/A2
+    RTS
+; ---------------------------------------------------------------------------
+; DisplayTileSetup -- Set up tile map via GameCommand #6
+; Args: $C(SP)=src1, $10(SP)=count, $14(SP)=src2 (all scaled by *32)
+; ---------------------------------------------------------------------------
+DisplayTileSetup:                                              ; $005170
+    MOVEM.L D2-D3,-(SP)
+    MOVE.L  $C(SP),D2                                          ; arg1
+    MOVE.L  $14(SP),D3                                         ; arg3
+    MOVE.L  $10(SP),D1                                         ; arg2 (count)
+    MOVEQ   #0,D0
+    MOVE.W  D2,D0
+    LSL.L   #5,D0                                              ; arg1 * 32
+    MOVEA.L D0,A0
+    MOVEQ   #0,D0
+    MOVE.W  D3,D0
+    LSL.L   #5,D0                                              ; arg3 * 32
+    MOVEA.L D0,A1
+    MOVE.W  D1,D2
+    LSL.W   #5,D2                                              ; arg2 * 32
+    MOVE.L  A1,-(SP)                                           ; push src2*32
+    MOVE.L  A0,-(SP)                                           ; push src1*32
+    MOVEQ   #0,D0
+    MOVE.W  D2,D0
+    MOVE.L  D0,-(SP)                                           ; push count*32
+    PEA     ($0001).W                                          ; push sub-command 1
+    PEA     ($0006).W                                          ; push command 6
+    dc.w    $4EB9,$0000,$0D64                                  ; jsr GameCommand [$D64]
+    LEA     $14(SP),SP                                         ; pop 5 args
+    MOVEM.L (SP)+,D2-D3
+    RTS
+    dc.w    $4E56,$0000,$48E7,$3F38,$242E                      ; $0051B6 (start of next function)
     dc.w    $000C,$262E,$0008,$282E,$0018,$2A2E,$0024,$2C2E; $0051C0
     dc.w    $0020,$2E2E,$001C,$287C,$00FF,$A77E,$4A43,$660A; $0051D0
     dc.w    $7000,$3039,$00FF,$88D6,$6008,$7000,$3039,$00FF; $0051E0
@@ -1792,10 +1977,27 @@ LZ_Decompress:
     dc.w    $65D4,$5245,$BA6E,$001A,$65AE,$7000,$302E,$0012; $005350
     dc.w    $2F00,$7000,$302E,$000E,$2F00,$486E,$FE00,$7000; $005360
     dc.w    $3003,$2F00,$7000,$3007,$2F00,$4878,$000F,$4EB9; $005370
-    dc.w    $0000,$0D64,$4CEE,$0CFC,$FDE0,$4E5E,$4E75,$222F; $005380
-    dc.w    $0004,$2F3C,$0000,$8000,$4878,$0020,$4878,$0020; $005390
-    dc.w    $42A7,$42A7,$7000,$3001,$2F00,$4878,$001A,$4EB9; $0053A0
-    dc.w    $0000,$0D64,$4FEF,$001C,$4E75,$2F0A,$247C,$0000; $0053B0
+    dc.w    $0000,$0D64,$4CEE,$0CFC,$FDE0,$4E5E,$4E75         ; $005380 (end of previous function)
+; ---------------------------------------------------------------------------
+; CmdSetBackground -- Set background display via GameCommand #26
+; Args: $4(SP) = layer/mode parameter
+; Called 46 times
+; ---------------------------------------------------------------------------
+CmdSetBackground:                                              ; $00538E
+    MOVE.L  $4(SP),D1                                          ; arg (layer/mode)
+    MOVE.L  #$00008000,-(SP)                                   ; push VRAM base
+    PEA     ($0020).W                                          ; push 32 (height)
+    PEA     ($0020).W                                          ; push 32 (width)
+    CLR.L   -(SP)                                              ; push 0
+    CLR.L   -(SP)                                              ; push 0
+    MOVEQ   #0,D0
+    MOVE.W  D1,D0                                              ; zero-extend arg
+    MOVE.L  D0,-(SP)                                           ; push arg
+    PEA     ($001A).W                                          ; command 26
+    dc.w    $4EB9,$0000,$0D64                                  ; jsr GameCommand [$D64]
+    LEA     $1C(SP),SP                                         ; pop 7 args
+    RTS
+    dc.w    $2F0A,$247C,$0000                                  ; $0053BA (start of next function)
     dc.w    $0D64,$4878,$000D,$4E92,$4878,$0040,$42A7,$4878; $0053C0
     dc.w    $0010,$4E92,$2F3C,$0000,$8000,$4878,$0020,$4878; $0053D0
     dc.w    $0020,$42A7,$42A7,$42A7,$4878,$001A,$4E92,$4FEF; $0053E0
@@ -2230,13 +2432,53 @@ LZ_Decompress:
     dc.w    $1013,$0640,$007C,$34C0,$5243,$548B,$5244,$0C44; $006EB0
     dc.w    $0020,$6D9E,$42A7,$42A7,$486E,$FF3C,$3003,$48C0; $006EC0
     dc.w    $2F00,$4878,$0007,$4878,$000F,$4EB9,$0000,$0D64; $006ED0
-    dc.w    $4CEE,$3CFC,$FF14,$4E5E,$4E75,$48E7,$3000,$222F; $006EE0
-    dc.w    $000C,$302F,$0012,$E548,$207C,$0005,$ECBC,$41F0; $006EF0
-    dc.w    $0000,$2248,$7000,$1011,$7601,$E1AB,$4242,$601E; $006F00
-    dc.w    $3001,$E548,$207C,$00FF,$08EC,$2030,$0000,$C083; $006F10
-    dc.w    $6708,$7000,$1011,$D042,$6012,$D683,$5242,$7000; $006F20
-    dc.w    $1029,$0001,$B042,$6ED8,$303C,$00FF,$4CDF,$000C; $006F30
-    dc.w    $4E75,$48E7,$3C20,$242F,$0018,$262F,$001C,$B443; $006F40
+    dc.w    $4CEE,$3CFC,$FF14,$4E5E,$4E75                      ; $006EE0 (end of previous function)
+; ---------------------------------------------------------------------------
+; BitFieldSearch -- Search bitfield in RAM for a set bit
+; Args: $C(SP) = entity index (long), $12(SP) = table index (word)
+; Returns: D0 = bit position if found, $FF if not
+; Uses ROM table at $5ECBC (byte[0]=start bit, byte[1]=count)
+; and RAM table at $FF08EC (longwords indexed by entity)
+; Called 47 times
+; ---------------------------------------------------------------------------
+BitFieldSearch:                                                ; $006EEA
+    MOVEM.L D2-D3,-(SP)
+    MOVE.L  $C(SP),D1                                          ; entity index
+    MOVE.W  $12(SP),D0                                         ; table index
+    LSL.W   #2,D0                                              ; * 4 (entry size)
+    MOVEA.L #$0005ECBC,A0                                      ; ROM lookup table
+    LEA     0(A0,D0.W),A0                                      ; point to entry
+    MOVEA.L A0,A1                                              ; A1 = entry pointer
+    MOVEQ   #0,D0
+    MOVE.B  (A1),D0                                            ; start bit position
+    MOVEQ   #1,D3
+    LSL.L   D0,D3                                              ; D3 = 1 << start_bit (mask)
+    CLR.W   D2                                                 ; counter = 0
+    BRA.S   .bfs_check
+.bfs_loop:                                                     ; $006F10
+    MOVE.W  D1,D0
+    LSL.W   #2,D0                                              ; entity * 4
+    MOVEA.L #$00FF08EC,A0                                      ; RAM bitfield table
+    MOVE.L  0(A0,D0.W),D0                                      ; load entity bits
+    AND.L   D3,D0                                              ; test current bit
+    BEQ.S   .bfs_next                                          ; not set, continue
+    MOVEQ   #0,D0
+    MOVE.B  (A1),D0                                            ; start bit
+    ADD.W   D2,D0                                              ; + offset = actual position
+    BRA.S   .bfs_exit                                          ; found
+.bfs_next:                                                     ; $006F2A
+    ADD.L   D3,D3                                              ; shift mask left by 1
+    ADDQ.W  #1,D2                                              ; counter++
+.bfs_check:                                                    ; $006F2E
+    MOVEQ   #0,D0
+    MOVE.B  $1(A1),D0                                          ; bit count limit
+    CMP.W   D2,D0                                              ; limit > counter?
+    BGT.S   .bfs_loop                                          ; continue searching
+    MOVE.W  #$00FF,D0                                          ; not found sentinel
+.bfs_exit:                                                     ; $006F3C
+    MOVEM.L (SP)+,D2-D3
+    RTS
+    dc.w    $48E7,$3C20,$242F,$0018,$262F,$001C,$B443          ; $006F42 (start of next function)
     dc.w    $6306,$3802,$3403,$3604,$B443,$6606,$4242,$6000; $006F50
     dc.w    $0144,$0C42,$0020,$6438,$0C43,$0020,$6432,$7000; $006F60
     dc.w    $3003,$2F00,$7000,$3002,$2F00,$4878,$0020,$4EBA; $006F70
@@ -2312,8 +2554,15 @@ LZ_Decompress:
     dc.w    $0003,$E05C,$7214,$4EB9,$0003,$E08A,$1540,$000B; $0073D0
     dc.w    $102A,$0003,$B02A,$000B,$6408,$7000,$102A,$0003; $0073E0
     dc.w    $6006,$7000,$102A,$000B,$1540,$0003,$4CDF,$0404; $0073F0
-    dc.w    $4E75,$206F,$0004,$1228,$0002,$0241,$000F,$3001; $007400
-    dc.w    $4E75,$48E7,$3020,$246F,$0010,$7000,$102A,$0001; $007410
+    dc.w    $4E75                                                     ; $007400
+; === GetLowNibble ($007402, 16B) ===
+GetLowNibble:                                                         ; $007402
+    MOVEA.L $4(SP),A0
+    MOVE.B  $2(A0),D1
+    ANDI.W  #$000F,D1
+    MOVE.W  D1,D0
+    RTS
+    dc.w    $48E7,$3020,$246F,$0010,$7000,$102A,$0001                 ; $007412
     dc.w    $2F00,$7000,$1012,$2F00,$6100,$FB18,$3400,$0C42; $007420
     dc.w    $3200,$6304,$761E,$602E,$0C42,$1900,$6304,$7623; $007430
     dc.w    $6024,$0C42,$0C80,$6304,$7632,$601A,$0C42,$0640; $007440
@@ -2326,8 +2575,21 @@ LZ_Decompress:
     dc.w    $0C42,$0034,$6614,$3003,$48C0,$2200,$E988,$9081; $0074B0
     dc.w    $720A,$4EB9,$0003,$E08A,$3600,$0C43,$001E,$6F06; $0074C0
     dc.w    $3003,$48C0,$6002,$701E,$3600,$4CDF,$040C,$4E75; $0074D0
-    dc.w    $206F,$0004,$1228,$0002,$0281,$0000,$00FF,$E881; $0074E0
-    dc.w    $0241,$000F,$3001,$4E75,$48E7,$3C30,$262F,$001C; $0074F0
+; ---------------------------------------------------------------------------
+; GetByteField4 -- Extract high nibble from byte[2] of structure
+; Args: $4(SP) = pointer to structure
+; Returns: D0 = high nibble (bits 7-4) of byte at offset 2
+; Called 36 times
+; ---------------------------------------------------------------------------
+GetByteField4:                                                 ; $0074E0
+    MOVEA.L $4(SP),A0                                          ; load structure pointer
+    MOVE.B  $2(A0),D1                                          ; get byte at offset 2
+    ANDI.L  #$000000FF,D1                                      ; mask to unsigned byte
+    ASR.L   #4,D1                                              ; shift right 4 (high nibble)
+    ANDI.W  #$000F,D1                                          ; mask to 4 bits
+    MOVE.W  D1,D0                                              ; return in D0
+    RTS
+    dc.w    $48E7,$3C30,$262F,$001C                            ; $0074F8 (start of next function)
     dc.w    $282F,$0020,$4242,$3004,$48C0,$2F00,$4EB9,$0000; $007500
     dc.w    $D648,$3A00,$7000,$3005,$2F00,$3003,$48C0,$2F00; $007510
     dc.w    $6100,$F9C8,$4FEF,$000C,$3A00,$0C45,$00FF,$6604; $007520

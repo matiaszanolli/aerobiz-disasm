@@ -8,7 +8,7 @@ Index of all identified functions. Updated as disassembly progresses.
 - **Total RTE (interrupt returns):** 6
 - **Unique call targets:** 2,896
 - **Functions named:** 96
-- **Functions translated to mnemonics:** 63 (exception handlers, EXT/H-INT/V-INT, boot post-init, Z80 sound interface, GameEntry/GameLoopSetup/MainLoop, GameCommand, RangeLookup, utility cluster: MemFillByte/MemCopy/MemFillWord/VRAMBulkLoad/PollAction/RandRange/ByteSum/ResourceLoad/ResourceUnload/TilePlacement/GameCmd16/ReadInput, math: Multiply32/SignedDiv/UnsignedDivide/UDiv_Overflow/UDiv_Full32/UnsignedMod/SignedMod + 5 FromPtr entries, text: SetTextWindow/SetTextCursor/sprintf/PrintfNarrow/PrintfWide, compression: LZ_Decompress, display: DisplaySetup/DisplayInitRows/DisplayInit15/DisplayInit0/DisplaySetupScaled/DisplayTileSetup, graphics: CmdPlaceTile/CmdPlaceTile2/CmdSetBackground, memory: MemMove, game: BitFieldSearch/PreLoopInit/ShowDialog/ShowTextDialog/MenuSelectEntry/LoadScreen, util: GetLowNibble/GetByteField4, input: ProcessInputLoop/PollInputChange)
+- **Functions translated to mnemonics:** 65 (exception handlers, EXT/H-INT/V-INT, boot post-init, Z80 sound interface, GameEntry/GameLoopSetup/MainLoop, GameCommand, RangeLookup, utility cluster: MemFillByte/MemCopy/MemFillWord/VRAMBulkLoad/PollAction/RandRange/ByteSum/ResourceLoad/ResourceUnload/TilePlacement/GameCmd16/ReadInput, math: Multiply32/SignedDiv/UnsignedDivide/UDiv_Overflow/UDiv_Full32/UnsignedMod/SignedMod + 5 FromPtr entries, text: SetTextWindow/SetTextCursor/sprintf/PrintfNarrow/PrintfWide, compression: LZ_Decompress, display: DisplaySetup/DisplayInitRows/DisplayInit15/DisplayInit0/DisplaySetupScaled/DisplayTileSetup, graphics: CmdPlaceTile/CmdPlaceTile2/CmdSetBackground, memory: MemMove, game: BitFieldSearch/PreLoopInit/ShowDialog/ShowTextDialog/MenuSelectEntry/LoadScreen/CharCodeScore/RangeMatch, util: GetLowNibble/GetByteField4, input: ProcessInputLoop/PollInputChange)
 
 ## Most-Called Functions
 
@@ -89,6 +89,8 @@ These are the most frequently called subroutines -- high-priority translation ta
 | $007912 | ShowDialog | Display dialog with table lookup and optional input (38 calls) |
 | $01183A | ShowTextDialog | Display text dialog with PrintfWide and table lookup (31 calls) |
 | $01D3AC | MenuSelectEntry | Validate selection index, update $FFBD52, dispatch GameCommand (14 calls) |
+| $0070DC | CharCodeScore | Compute percentage match score for two character codes (12 calls) |
+| $007158 | RangeMatch | Check if two char codes map to same range category (10 calls) |
 
 ### Interrupt Handlers
 
@@ -233,6 +235,8 @@ These are the most frequently called subroutines -- high-priority translation ta
 | $0058EE | ErrorDisplay | exception | -- | named |
 | $006A2E | LoadScreen | game | 38 | translated |
 | $006EEA | BitFieldSearch | game | 47 | translated |
+| $0070DC | CharCodeScore | game | 12 | translated |
+| $007158 | RangeMatch | game | 10 | translated |
 | $007402 | GetLowNibble | util | 20 | translated |
 | $0074E0 | GetByteField4 | util | 36 | translated |
 | $007912 | ShowDialog | game | 38 | translated |

@@ -2578,23 +2578,131 @@ BitFieldSearch:                                                ; $006EEA
     dc.w    $343C,$FFFF,$0C42,$FFFF,$672A,$3002,$C0FC,$0064; $0070A0
     dc.w    $3400,$7000,$3002,$6C04,$720F,$D081,$E880,$2200; $0070B0
     dc.w    $E588,$D081,$D080,$720A,$4EB9,$0003,$E08A,$C0FC; $0070C0
-    dc.w    $000A,$3400,$3002,$4CDF,$043C,$4E75,$48E7,$3000; $0070D0
-    dc.w    $242F,$000C,$262F,$0010,$3003,$48C0,$2F00,$3002; $0070E0
-    dc.w    $48C0,$2F00,$6100,$FE4C,$508F,$3400,$4A42,$6706; $0070F0
-    dc.w    $0C42,$FFFF,$6606,$343C,$FFFF,$601A,$7000,$3002; $007100
-    dc.w    $E480,$0680,$0000,$0078,$720A,$4EB9,$0003,$E08A; $007110
-    dc.w    $C0FC,$000A,$3400,$3039,$00FF,$0002,$48C0,$7203; $007120
-    dc.w    $9280,$2001,$D080,$D081,$7264,$9280,$2001,$7200; $007130
-    dc.w    $3202,$4EB9,$0003,$E05C,$7264,$4EB9,$0003,$E08A; $007140
-    dc.w    $3400,$4CDF,$000C,$4E75,$48E7,$3820,$242F,$0014; $007150
-    dc.w    $262F,$0018,$247C,$0000,$D648,$B443,$6F06,$3802; $007160
-    dc.w    $3403,$3604,$B443,$675A,$0C42,$0020,$6C28,$0C43; $007170
-    dc.w    $0020,$6C22,$3002,$48C0,$2F00,$4E92,$3800,$3003; $007180
-    dc.w    $48C0,$2F00,$4E92,$508F,$3600,$B843,$6604,$7401; $007190
-    dc.w    $6034,$4242,$6030,$0C42,$0059,$6C26,$0C43,$0059; $0071A0
-    dc.w    $6C20,$3002,$48C0,$2F00,$4E92,$3800,$3003,$48C0; $0071B0
-    dc.w    $2F00,$4E92,$508F,$3600,$B843,$6606,$0C42,$0020; $0071C0
-    dc.w    $6DCC,$343C,$00FF,$3002,$4CDF,$041C,$4E75,$48E7; $0071D0
+    dc.w    $000A,$3400,$3002,$4CDF,$043C,$4E75             ; $0070D0
+; ============================================================================
+; CharCodeScore -- Compute percentage match score for two character codes
+; Called: 12 times. Args (stack, no link): $C(SP)=code1 (w), $10(SP)=code2 (w)
+; Returns: D0.W = percentage score, or $FFFF if no match
+; ============================================================================
+CharCodeScore:                                               ; $0070DC
+    movem.l d2-d3,-(sp)
+    move.l  $000C(sp),d2                                 ; D2 = code1
+    move.l  $0010(sp),d3                                 ; D3 = code2
+    move.w  d3,d0
+    ext.l   d0
+    move.l  d0,-(sp)                                     ; push D3 sign-extended
+    move.w  d2,d0
+    ext.l   d0
+    move.l  d0,-(sp)                                     ; push D2 sign-extended
+    dc.w    $6100,$FE4C                                  ; bsr.w $006F42 (CharCodeCompare)
+    addq.l  #8,sp                                        ; clean 2 args
+    move.w  d0,d2                                        ; D2 = compare result
+    tst.w   d2                                           ; result == 0?
+    beq.s   .no_match
+    cmpi.w  #$FFFF,d2
+    bne.s   .has_result
+.no_match:                                               ; $007106
+    move.w  #$FFFF,d2
+    bra.s   .scale
+.has_result:                                             ; $00710C
+    moveq   #0,d0
+    move.w  d2,d0
+    asr.l   #2,d0
+    addi.l  #$78,d0
+    moveq   #$0A,d1
+    dc.w    $4EB9,$0003,$E08A                             ; jsr $03E08A
+    dc.w    $C0FC,$000A                                  ; and.w #$000A,d0
+    move.w  d0,d2
+.scale:                                                  ; $007126
+    move.w  ($00FF0002).l,d0
+    ext.l   d0
+    moveq   #3,d1
+    sub.l   d0,d1
+    move.l  d1,d0
+    add.l   d0,d0
+    add.l   d1,d0
+    moveq   #$64,d1
+    sub.l   d0,d1
+    move.l  d1,d0
+    moveq   #0,d1
+    move.w  d2,d1
+    dc.w    $4EB9,$0003,$E05C                             ; jsr Multiply32
+    moveq   #$64,d1
+    dc.w    $4EB9,$0003,$E08A                             ; jsr $03E08A
+    move.w  d0,d2                                        ; D2 = final result
+    movem.l (sp)+,d2-d3
+    rts
+; ============================================================================
+; RangeMatch -- Check if two char codes map to the same range category
+; Called: 10 times. Args (stack, no link): $14(SP)=code1 (w), $18(SP)=code2 (w)
+; Returns: D0.W = 1 (same range), 0 (different range), $FF (out of range)
+; Uses A2 = RangeLookup ($0000D648)
+; ============================================================================
+RangeMatch:                                              ; $007158
+    movem.l d2-d4/a2,-(sp)
+    move.l  $0014(sp),d2                                 ; D2 = code1
+    move.l  $0018(sp),d3                                 ; D3 = code2
+    movea.l #$0000D648,a2                                ; A2 = RangeLookup
+    cmp.w   d3,d2                                        ; D2 <= D3?
+    ble.s   .sorted
+    move.w  d2,d4                                        ; swap D2, D3 to ensure D2 <= D3
+    move.w  d3,d2
+    move.w  d4,d3
+.sorted:                                                 ; $007174
+    cmp.w   d3,d2                                        ; D2 == D3?
+    beq.s   .return_ff                                   ; equal → not comparable
+    cmpi.w  #$0020,d2
+    bge.s   .check_high                                  ; D2 >= 32 → check upper range
+    cmpi.w  #$0020,d3
+    bge.s   .check_high                                  ; D3 >= 32 → check upper range
+    ; both codes < 32: compare via RangeLookup
+    move.w  d2,d0
+    ext.l   d0
+    move.l  d0,-(sp)
+    jsr     (a2)                                         ; RangeLookup(D2)
+    move.w  d0,d4                                        ; D4 = RangeLookup(D2)
+    move.w  d3,d0
+    ext.l   d0
+    move.l  d0,-(sp)
+    jsr     (a2)                                         ; RangeLookup(D3)
+    addq.l  #8,sp
+    move.w  d0,d3                                        ; D3 = RangeLookup(D3)
+    cmp.w   d3,d4                                        ; same range?
+    bne.s   .return_zero
+.return_one:                                             ; $00719E
+    moveq   #1,d2
+    bra.s   .return_d2
+.return_zero:                                            ; $0071A2
+    clr.w   d2
+    bra.s   .return_d2
+.check_high:                                             ; $0071A6
+    cmpi.w  #$0059,d2
+    bge.s   .return_ff
+    cmpi.w  #$0059,d3
+    bge.s   .return_ff
+    ; 32 <= code < 89: compare via RangeLookup
+    move.w  d2,d0
+    ext.l   d0
+    move.l  d0,-(sp)
+    jsr     (a2)                                         ; RangeLookup(D2)
+    move.w  d0,d4
+    move.w  d3,d0
+    ext.l   d0
+    move.l  d0,-(sp)
+    jsr     (a2)                                         ; RangeLookup(D3)
+    addq.l  #8,sp
+    move.w  d0,d3
+    cmp.w   d3,d4
+    bne.s   .return_ff
+    cmpi.w  #$0020,d2
+    blt.s   .return_one                                  ; D2 < 32 → return 1
+.return_ff:                                              ; $0071D2
+    move.w  #$00FF,d2
+.return_d2:                                              ; $0071D6
+    move.w  d2,d0
+    movem.l (sp)+,d2-d4/a2
+    rts
+    dc.w    $48E7                                        ; $0071DE
     dc.w    $3C00,$242F,$0014,$282F,$0018,$2A2F,$001C,$4243; $0071E0
     dc.w    $B444,$6F08,$B445,$6F04,$B845,$6606,$363C,$FFFF; $0071F0
     dc.w    $6020,$B845,$6C06,$3404,$3805,$3A02,$4242,$6004; $007200

@@ -89,6 +89,10 @@ The Navigator's complete knowledge base. Updated after each session.
 - DisplaySetup cluster ($5092-$51B5): DONE -- 292 bytes, 6 functions: DisplaySetup/DisplayInitRows/DisplayInit15/DisplayInit0/DisplaySetupScaled/DisplayTileSetup
 - High-call graphics/util ($4668-$74E0): DONE -- 234 bytes, 5 functions: CmdPlaceTile/CmdSetBackground/BitFieldSearch/GetByteField4/GetLowNibble + 2 more: MemMove/CmdPlaceTile2 (116B)
 - Input/game cluster ($1E290-$1E3DD): DONE -- 268 bytes, 3 functions: ProcessInputLoop/PollInputChange/PreLoopInit
+- MenuSelectEntry ($1D3AC): DONE -- 152 bytes, 14 calls, section_010000.asm
+- LoadScreen ($6A2E): DONE -- 330 bytes, 38 calls, section_000200.asm
+- CharCodeScore ($70DC): DONE -- 124 bytes, 12 calls, section_000200.asm; calls $006F42 via dc.w bsr.w
+- RangeMatch ($7158): DONE -- 134 bytes, 10 calls, section_000200.asm; uses A2=RangeLookup ($D648) via jsr (a2)
 - TMSS boot ($200-$28C): not yet (standard Genesis boilerplate)
 - vasm bra.w: CONFIRMED correct displacement (no +2 bug like bsr.w)
 - vasm pea ($xxxx).w: CONFIRMED correct absolute short encoding

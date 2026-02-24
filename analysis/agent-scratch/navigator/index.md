@@ -95,6 +95,7 @@ The Navigator's complete knowledge base. Updated after each session.
 - RangeMatch ($7158): DONE -- 134 bytes, 10 calls, section_000200.asm; uses A2=RangeLookup ($D648) via jsr (a2)
 - CharCodeCompare ($6F42): DONE -- 410 bytes, 22 calls, section_000200.asm; 7-category jump table (dc.w $303B/$4EFB pattern), calls CharPairIndex + RangeLookup + SignedDiv
 - CharPairIndex ($71DE): DONE -- 74 bytes, 1 call (from CharCodeCompare), section_000200.asm; triangular index for symmetric pair lookup
+- DrawBox ($5A04): DONE -- 608 bytes, 42 calls, section_000200.asm; LINK/MOVEM frame, sets 4 win vars, GameCommand #$1A fill + #$1B tiles; A3/A4 = &local_tile(A6-2), ADDQ.W #1,(A3) tile sequencing, BCC.W bounds check
 - TMSS boot ($200-$28C): not yet (standard Genesis boilerplate)
 - vasm bra.w: CONFIRMED correct displacement (no +2 bug like bsr.w)
 - vasm pea ($xxxx).w: CONFIRMED correct absolute short encoding

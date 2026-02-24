@@ -8,7 +8,7 @@ Index of all identified functions. Updated as disassembly progresses.
 - **Total RTE (interrupt returns):** 6
 - **Unique call targets:** 2,896
 - **Functions named:** 96
-- **Functions translated to mnemonics:** 61 (exception handlers, EXT/H-INT/V-INT, boot post-init, Z80 sound interface, GameEntry/GameLoopSetup/MainLoop, GameCommand, RangeLookup, utility cluster: MemFillByte/MemCopy/MemFillWord/VRAMBulkLoad/PollAction/RandRange/ByteSum/ResourceLoad/ResourceUnload/TilePlacement/GameCmd16/ReadInput, math: Multiply32/SignedDiv/UnsignedDivide/UDiv_Overflow/UDiv_Full32/UnsignedMod/SignedMod + 5 FromPtr entries, text: SetTextWindow/SetTextCursor/sprintf/PrintfNarrow/PrintfWide, compression: LZ_Decompress, display: DisplaySetup/DisplayInitRows/DisplayInit15/DisplayInit0/DisplaySetupScaled/DisplayTileSetup, graphics: CmdPlaceTile/CmdPlaceTile2/CmdSetBackground, memory: MemMove, game: BitFieldSearch/PreLoopInit/ShowDialog/ShowTextDialog, util: GetLowNibble/GetByteField4, input: ProcessInputLoop/PollInputChange)
+- **Functions translated to mnemonics:** 63 (exception handlers, EXT/H-INT/V-INT, boot post-init, Z80 sound interface, GameEntry/GameLoopSetup/MainLoop, GameCommand, RangeLookup, utility cluster: MemFillByte/MemCopy/MemFillWord/VRAMBulkLoad/PollAction/RandRange/ByteSum/ResourceLoad/ResourceUnload/TilePlacement/GameCmd16/ReadInput, math: Multiply32/SignedDiv/UnsignedDivide/UDiv_Overflow/UDiv_Full32/UnsignedMod/SignedMod + 5 FromPtr entries, text: SetTextWindow/SetTextCursor/sprintf/PrintfNarrow/PrintfWide, compression: LZ_Decompress, display: DisplaySetup/DisplayInitRows/DisplayInit15/DisplayInit0/DisplaySetupScaled/DisplayTileSetup, graphics: CmdPlaceTile/CmdPlaceTile2/CmdSetBackground, memory: MemMove, game: BitFieldSearch/PreLoopInit/ShowDialog/ShowTextDialog/MenuSelectEntry/LoadScreen, util: GetLowNibble/GetByteField4, input: ProcessInputLoop/PollInputChange)
 
 ## Most-Called Functions
 
@@ -84,9 +84,11 @@ These are the most frequently called subroutines -- high-priority translation ta
 | $01819C | GameCall | Main loop: parameterized call |
 | $01E402 | GameUpdate3 | Main loop: third update call |
 | $026128 | GameUpdate4 | Main loop: fourth update call |
+| $006A2E | LoadScreen | Load and initialize a game screen (38 calls) |
 | $01D568 | VRAMBulkLoad | Chunked DMA transfer to VRAM via GameCommand (46 calls) |
 | $007912 | ShowDialog | Display dialog with table lookup and optional input (38 calls) |
 | $01183A | ShowTextDialog | Display text dialog with PrintfWide and table lookup (31 calls) |
+| $01D3AC | MenuSelectEntry | Validate selection index, update $FFBD52, dispatch GameCommand (14 calls) |
 
 ### Interrupt Handlers
 
@@ -229,6 +231,7 @@ These are the most frequently called subroutines -- high-priority translation ta
 | $00538E | CmdSetBackground | graphics | 46 | translated |
 | $005736 | PreGameInit | game | -- | named |
 | $0058EE | ErrorDisplay | exception | -- | named |
+| $006A2E | LoadScreen | game | 38 | translated |
 | $006EEA | BitFieldSearch | game | 47 | translated |
 | $007402 | GetLowNibble | util | 20 | translated |
 | $0074E0 | GetByteField4 | util | 36 | translated |
@@ -236,6 +239,7 @@ These are the most frequently called subroutines -- high-priority translation ta
 | $01183A | ShowTextDialog | game | 31 | translated |
 | $01819C | GameCall | game | -- | named |
 | $01B49A | GameUpdate2 | game | -- | named |
+| $01D3AC | MenuSelectEntry | game | 14 | translated |
 | $01D520 | MemFillByte | util | 71 | translated |
 | $01D538 | MemCopy | util | -- | translated |
 | $01D550 | MemFillWord | util | -- | translated |

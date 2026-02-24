@@ -2356,28 +2356,103 @@ CmdSetBackground:                                              ; $00538E
     dc.w    $0016,$4878,$0020,$42A7,$42A7,$42A7,$4878,$001B; $0069F0
     dc.w    $4E92,$2F39,$0009,$5138,$2F0B,$4EB9,$0000,$3FEC; $006A00
     dc.w    $4FEF,$0030,$4878,$00C0,$4878,$0640,$2F0B,$4EB9; $006A10
-    dc.w    $0000,$45E6,$4CEE,$0C04,$FFF4,$4E5E,$4E75,$48E7; $006A20
-    dc.w    $3020,$242F,$0014,$262F,$0010,$247C,$0000,$0D64; $006A30
-    dc.w    $33C2,$00FF,$9A1C,$4878,$0040,$42A7,$4878,$0010; $006A40
-    dc.w    $4E92,$42A7,$4EB9,$0000,$538E,$42A7,$4879,$0004; $006A50
-    dc.w    $E1EC,$4878,$0001,$4878,$077F,$4EB9,$0001,$D568; $006A60
-    dc.w    $4FEF,$0020,$4878,$077F,$4878,$0001,$4878,$0020; $006A70
-    dc.w    $4878,$0016,$42A7,$4878,$0001,$4878,$001A,$4E92; $006A80
-    dc.w    $4FEF,$001C,$4878,$077D,$4878,$0009,$4878,$0020; $006A90
-    dc.w    $4878,$0017,$42A7,$4878,$0001,$4878,$001A,$4E92; $006AA0
-    dc.w    $4878,$0010,$4878,$0010,$4879,$0007,$677E,$4EB9; $006AB0
-    dc.w    $0000,$5092,$4FEF,$0028,$4879,$0007,$0198,$4878; $006AC0
-    dc.w    $0016,$4878,$0020,$42A7,$42A7,$4878,$0001,$4878; $006AD0
-    dc.w    $001B,$4E92,$3002,$48C0,$E588,$207C,$0009,$511C; $006AE0
-    dc.w    $2F30,$0800,$4879,$00FF,$1804,$4EB9,$0000,$3FEC; $006AF0
-    dc.w    $4FEF,$0024,$0C43,$0004,$6C14,$3002,$48C0,$2F00; $006B00
-    dc.w    $3003,$48C0,$2F00,$4EB9,$0000,$9C9E,$508F,$4878; $006B10
-    dc.w    $02C0,$4878,$0001,$4879,$00FF,$1804,$4EB9,$0000; $006B20
-    dc.w    $45E6,$4878,$077F,$4878,$0001,$4878,$0020,$4878; $006B30
-    dc.w    $0016,$42A7,$4878,$0001,$4878,$001A,$4E92,$4FEF; $006B40
-    dc.w    $0028,$4878,$077D,$4878,$0009,$4878,$0020,$4878; $006B50
-    dc.w    $0017,$42A7,$4878,$0001,$4878,$001A,$4E92,$4FEF; $006B60
-    dc.w    $001C,$4CDF,$040C,$4E75,$4E56,$FF3C,$48E7,$3F3C; $006B70
+    dc.w    $0000,$45E6,$4CEE,$0C04,$FFF4,$4E5E,$4E75       ; $006A20
+; ============================================================================
+; LoadScreen -- Load and initialize a game screen
+; Called: 38 times. Args (stack, no link): $10(sp)=screen_type, $14(sp)=screen_id
+; ============================================================================
+LoadScreen:                                                  ; $006A2E
+    movem.l d2-d3/a2,-(sp)
+    move.l  $0014(sp),d2                                 ; D2 = screen_id
+    move.l  $0010(sp),d3                                 ; D3 = screen_type
+    movea.l #$00000D64,a2                                ; A2 = GameCommand
+    move.w  d2,($00FF9A1C).l                             ; store screen_id
+    pea     ($0040).w
+    clr.l   -(sp)
+    pea     ($0010).w
+    jsr     (a2)                                         ; GameCommand($10,0,$40)
+    clr.l   -(sp)
+    dc.w    $4EB9,$0000,$538E                            ; jsr CmdSetBackground
+    clr.l   -(sp)
+    pea     ($0004E1EC).l
+    pea     ($0001).w
+    pea     ($077F).w
+    dc.w    $4EB9,$0001,$D568                            ; jsr VRAMBulkLoad
+    lea     $20(sp),sp
+    pea     ($077F).w
+    pea     ($0001).w
+    pea     ($0020).w
+    pea     ($0016).w
+    clr.l   -(sp)
+    pea     ($0001).w
+    pea     ($001A).w
+    jsr     (a2)                                         ; GameCommand($1A,...)
+    lea     $1C(sp),sp
+    pea     ($077D).w
+    pea     ($0009).w
+    pea     ($0020).w
+    pea     ($0017).w
+    clr.l   -(sp)
+    pea     ($0001).w
+    pea     ($001A).w
+    jsr     (a2)                                         ; GameCommand($1A,...)
+    pea     ($0010).w
+    pea     ($0010).w
+    pea     ($0007677E).l
+    dc.w    $4EB9,$0000,$5092                            ; jsr $5092
+    lea     $28(sp),sp
+    pea     ($00070198).l
+    pea     ($0016).w
+    pea     ($0020).w
+    clr.l   -(sp)
+    clr.l   -(sp)
+    pea     ($0001).w
+    pea     ($001B).w
+    jsr     (a2)                                         ; GameCommand($1B,...)
+    move.w  d2,d0
+    ext.l   d0
+    lsl.l   #2,d0                                        ; D0 = screen_id * 4
+    movea.l #$0009511C,a0                                ; A0 = screen table base
+    move.l  (a0,d0.l),-(sp)                              ; push table[screen_id]
+    pea     ($00FF1804).l
+    dc.w    $4EB9,$0000,$3FEC                            ; jsr $3FEC
+    lea     $24(sp),sp
+    cmpi.w  #$0004,d3                                    ; screen_type >= 4?
+    bge.s   .skip_calc
+    move.w  d2,d0
+    ext.l   d0
+    move.l  d0,-(sp)                                     ; push screen_id
+    move.w  d3,d0
+    ext.l   d0
+    move.l  d0,-(sp)                                     ; push screen_type
+    dc.w    $4EB9,$0000,$9C9E                            ; jsr $9C9E
+    addq.l  #8,sp
+.skip_calc:                                              ; $006B1E
+    pea     ($02C0).w
+    pea     ($0001).w
+    pea     ($00FF1804).l
+    dc.w    $4EB9,$0000,$45E6                            ; jsr $45E6
+    pea     ($077F).w
+    pea     ($0001).w
+    pea     ($0020).w
+    pea     ($0016).w
+    clr.l   -(sp)
+    pea     ($0001).w
+    pea     ($001A).w
+    jsr     (a2)                                         ; GameCommand($1A,...)
+    lea     $28(sp),sp
+    pea     ($077D).w
+    pea     ($0009).w
+    pea     ($0020).w
+    pea     ($0017).w
+    clr.l   -(sp)
+    pea     ($0001).w
+    pea     ($001A).w
+    jsr     (a2)                                         ; GameCommand($1A,...)
+    lea     $1C(sp),sp
+    movem.l (sp)+,d2-d3/a2
+    rts
+    dc.w    $4E56,$FF3C,$48E7,$3F3C                      ; $006B78
     dc.w    $302E,$000A,$C0FC,$0024,$207C,$00FF,$0018,$41F0; $006B80
     dc.w    $0000,$2A48,$7E1F,$3C3C,$0660,$4878,$0030,$4878; $006B90
     dc.w    $0007,$4878,$0010,$4EB9,$0000,$0D64,$4FEF,$000C; $006BA0

@@ -3440,17 +3440,64 @@ ShowTextDialog:                                              ; $01183A
     dc.w    $00FF,$1274,$7000,$241F,$4E75,$2F02,$242F,$0008; $01D370
     dc.w    $4A42,$660C,$4878,$0018,$4EB9,$0000,$0D64,$588F; $01D380
     dc.w    $3002,$E148,$3239,$00FF,$1274,$0241,$00FF,$8081; $01D390
-    dc.w    $33C0,$00FF,$1274,$7000,$241F,$4E75,$4E56,$0000; $01D3A0
-    dc.w    $48E7,$2030,$242E,$0008,$247C,$0000,$0D64,$267C; $01D3B0
-    dc.w    $00FF,$BD52,$3039,$00FF,$1274,$0280,$0000,$0001; $01D3C0
-    dc.w    $7201,$B280,$6662,$4878,$0001,$6100,$FF64,$588F; $01D3D0
-    dc.w    $4A42,$6C06,$0C42,$0016,$6E4E,$B453,$672E,$4878; $01D3E0
-    dc.w    $0008,$4878,$0013,$4E92,$4878,$0014,$4878,$000E; $01D3F0
-    dc.w    $4E92,$3002,$48C0,$E588,$207C,$000F,$0000,$2F30; $01D400
-    dc.w    $0800,$4878,$0012,$4E92,$4FEF,$0018,$0C6E,$0001; $01D410
-    dc.w    $000E,$6608,$3682,$4878,$0001,$6006,$36BC,$FFFF; $01D420
-    dc.w    $42A7,$4878,$0015,$4E92,$7000,$4CEE,$0C04,$FFF4; $01D430
-    dc.w    $4E5E,$4E75,$48E7,$303C,$262F,$001C,$2A7C,$0000; $01D440
+    dc.w    $33C0,$00FF,$1274,$7000,$241F,$4E75          ; $01D3A0
+; ============================================================================
+; MenuSelectEntry -- Validate selection index, dispatch GameCommand calls
+; Called: 14 times. Args (stack): 8(a6)=selection index (w), E(a6)=mode flag (w)
+; ============================================================================
+MenuSelectEntry:                                             ; $01D3AC
+    link    a6,#$0000
+    movem.l d2/a2/a3,-(sp)
+    move.l  $0008(a6),d2                                 ; D2 = selection index
+    movea.l #$00000D64,a2                                ; A2 = GameCommand
+    movea.l #$00FFBD52,a3                                ; A3 = stored selection ptr
+    move.w  ($00FF1274).l,d0                             ; D0 = display state
+    andi.l  #$00000001,d0                                ; isolate active bit
+    moveq   #1,d1
+    cmp.l   d0,d1                                        ; active?
+    bne.s   .done                                        ; no -> exit
+    pea     ($0001).w
+    dc.w    $6100,$FF64                                  ; bsr.w $01D340
+    addq.l  #4,sp
+    tst.w   d2                                           ; index >= 0?
+    bge.s   .check_upper
+    cmpi.w  #$0016,d2
+    bgt.s   .done                                        ; out of range
+.check_upper:                                            ; $01D3EA
+    cmp.w   (a3),d2                                      ; already selected?
+    beq.s   .do_set
+    pea     ($0008).w
+    pea     ($0013).w
+    jsr     (a2)                                         ; GameCommand($13,$8)
+    pea     ($0014).w
+    pea     ($000E).w
+    jsr     (a2)                                         ; GameCommand($14,$E)
+    move.w  d2,d0
+    ext.l   d0
+    lsl.l   #2,d0                                        ; D0 = index * 4
+    movea.l #$000F0000,a0                                ; A0 = table base
+    move.l  (a0,d0.l),-(sp)                              ; push table[index]
+    pea     ($0012).w
+    jsr     (a2)                                         ; GameCommand($12,entry)
+    lea     $18(sp),sp                                   ; clean 6 args (3 calls)
+.do_set:                                                 ; $01D41C
+    cmpi.w  #$0001,$000E(a6)                             ; mode flag == 1?
+    bne.s   .store_ffff
+    move.w  d2,(a3)                                      ; save selection
+    pea     ($0001).w
+    bra.s   .call_game15
+.store_ffff:                                             ; $01D42C
+    move.w  #$FFFF,(a3)                                  ; reset stored selection
+    clr.l   -(sp)
+.call_game15:                                            ; $01D432
+    pea     ($0015).w
+    jsr     (a2)                                         ; GameCommand($15,...)
+.done:                                                   ; $01D438
+    moveq   #0,d0
+    movem.l -$C(a6),d2/a2/a3
+    unlk    a6
+    rts
+    dc.w    $48E7,$303C,$262F,$001C,$2A7C,$0000          ; $01D444
     dc.w    $0D64,$3039,$00FF,$1274,$0280,$0000,$0100,$0C80; $01D450
     dc.w    $0000,$0100,$6600,$00B2,$4A43,$6D00,$00AC,$0C43; $01D460
     dc.w    $0017,$6E00,$00A4,$3003,$C0FC,$0006,$207C,$0004; $01D470

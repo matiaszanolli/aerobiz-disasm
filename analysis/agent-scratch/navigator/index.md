@@ -83,10 +83,16 @@ The Navigator's complete knowledge base. Updated after each session.
 - Main game loop ($D5B6-$D645): DONE -- 144 bytes, 3 functions (GameEntry/GameLoopSetup/MainLoop)
 - GameCommand ($D64-$E53): DONE -- 240 bytes, command dispatcher + 47-entry jump table
 - Utility cluster ($1D520-$1E233): DONE -- 624 bytes, 11 functions: MemFillByte/MemCopy/MemFillWord/PollAction/RandRange/ByteSum/ResourceLoad/ResourceUnload/TilePlacement/GameCmd16/ReadInput
+- Math primitives ($3E05A-$3E181): DONE -- 296 bytes, 12 functions: Multiply32/SignedDiv/UnsignedDivide/UDiv_Overflow/UDiv_Full32/UnsignedMod/SignedMod + 5 FromPtr alternate entries
 - TMSS boot ($200-$28C): not yet (standard Genesis boilerplate)
 - vasm bra.w: CONFIRMED correct displacement (no +2 bug like bsr.w)
 - vasm pea ($xxxx).w: CONFIRMED correct absolute short encoding
 - vasm movem.l d0-d7/a0-a7: works correctly with $FFFF reglist
+- vasm bsr.s: CONFIRMED correct displacement (no bug, unlike bsr.w)
+- vasm divs.w/divu.w/mulu.w: CONFIRMED correct encoding
+- vasm ext.l: CONFIRMED correct ($48C0 for D0)
+- vasm addx.l/dbra: CONFIRMED correct encoding
+- Most-called function: $000D64 (306 calls), $03E05C Multiply32 (204), $03AB2C (174)
 
 ### ROM Major Regions
 - $000200-$052FFF: CODE (333KB, main game code)

@@ -3592,26 +3592,216 @@
     dc.w    $4878,$000E,$4E93,$4FEF,$0010,$5242,$5243,$0C42; $03E020
     dc.w    $0010,$6DE0,$5244,$5445,$0C44,$000D,$6D9A,$4878; $03E030
     dc.w    $00C8,$4878,$000E,$4E93,$42A7,$4EB9,$0000,$538E; $03E040
-    dc.w    $4CEE,$3C3C,$FFDC,$4E5E,$4E75,$2210,$48E7,$A000; $03E050
-    dc.w    $2400,$C0C1,$4242,$4842,$6708,$C4C1,$4842,$4242; $03E060
-    dc.w    $D082,$241F,$4241,$4841,$6708,$C4C1,$4842,$4242; $03E070
-    dc.w    $D082,$241F,$4E75,$2210,$C141,$0C81,$0000,$7FFF; $03E080
-    dc.w    $6E10,$0C81,$FFFF,$8000,$6D08,$81C1,$6904,$48C0; $03E090
-    dc.w    $4E75,$2F02,$4202,$4A80,$6C04,$4480,$4602,$4A81; $03E0A0
-    dc.w    $6C04,$4481,$4602,$610E,$4A02,$6702,$4480,$241F; $03E0B0
-    dc.w    $4E75,$2210,$C141,$0C81,$0001,$0000,$6430,$80C1; $03E0C0
-    dc.w    $690C,$7200,$3200,$4240,$4840,$C141,$4E75,$2F02; $03E0D0
-    dc.w    $2401,$2200,$4240,$4840,$80C2,$4840,$4841,$3200; $03E0E0
-    dc.w    $4841,$82C2,$3001,$4241,$4841,$241F,$4E75,$48E7; $03E0F0
-    dc.w    $3000,$2601,$2200,$4840,$4240,$4241,$4841,$740F; $03E100
-    dc.w    $D080,$D381,$B283,$6504,$9283,$5200,$51CA,$FFF2; $03E110
-    dc.w    $4CDF,$000C,$4E75,$2210,$C141,$0C81,$0001,$0000; $03E120
-    dc.w    $640A,$80C1,$6906,$4240,$4840,$4E75,$6188,$2001; $03E130
-    dc.w    $4E75,$2210,$C141,$0C81,$0000,$7FFF,$6E12,$0C81; $03E140
-    dc.w    $FFFF,$8000,$6D0A,$81C1,$6906,$4840,$48C0,$4E75; $03E150
-    dc.w    $2F02,$4282,$4A81,$6C02,$4481,$4A80,$6C04,$4480; $03E160
-    dc.w    $5202,$6100,$FF52,$2001,$4A02,$6702,$4480,$241F; $03E170
-    dc.w    $4E75,$1B47,$2573,$00FF,$2524,$366C,$6400,$2533; $03E180
+    dc.w    $4CEE,$3C3C,$FFDC,$4E5E,$4E75                    ; $03E050 (movem.l + unlk + rts)
+; ===========================================================================
+; Multiply32_FromPtr -- Alternate entry: load multiplier from (A0)
+; ===========================================================================
+Multiply32_FromPtr:                                         ; $03E05A
+    move.l  (a0),d1
+; ===========================================================================
+; Multiply32 -- 32x32 -> 32 unsigned multiply
+;   In:  D0.l = multiplicand, D1.l = multiplier
+;   Out: D0.l = low 32 bits of product
+;   Uses: D2 (saved/restored)
+;   204 calls
+; ===========================================================================
+Multiply32:                                                 ; $03E05C
+    movem.l d0/d2,-(sp)               ; save D0 and D2
+    move.l  d0,d2                      ; D2 = multiplicand copy
+    mulu.w  d1,d0                      ; D0 = low * low (16x16->32)
+    clr.w   d2
+    swap    d2                         ; D2 = multiplicand high word
+    beq.s   .crossB                    ; skip if high word zero
+    mulu.w  d1,d2                      ; D2 = mcand_high * mplier_low
+    swap    d2
+    clr.w   d2                         ; cross product << 16
+    add.l   d2,d0                      ; accumulate
+.crossB:                                                    ; $03E072
+    move.l  (sp)+,d2                   ; recover saved D0 into D2
+    clr.w   d1
+    swap    d1                         ; D1 = multiplier high word
+    beq.s   .mulDone                   ; skip if high word zero
+    mulu.w  d1,d2                      ; D2 = saved_D0_low * mplier_high
+    swap    d2
+    clr.w   d2                         ; cross product << 16
+    add.l   d2,d0                      ; accumulate
+.mulDone:                                                   ; $03E082
+    move.l  (sp)+,d2                   ; restore original D2
+    rts
+; ===========================================================================
+; SignedDiv_FromPtr -- Alternate entry: load from (A0), swap
+; ===========================================================================
+SignedDiv_FromPtr:                                          ; $03E086
+    move.l  (a0),d1
+    exg     d0,d1                      ; D0 = (A0), D1 = caller's D0
+; ===========================================================================
+; SignedDiv -- Signed 32/32 -> 32 division
+;   In:  D0.l = dividend, D1.l = divisor
+;   Out: D0.l = quotient (signed)
+;   169 calls
+; ===========================================================================
+SignedDiv:                                                  ; $03E08A
+    cmpi.l  #$00007FFF,d1
+    bgt.s   .slowDiv                   ; divisor > +32767
+    cmpi.l  #$FFFF8000,d1
+    blt.s   .slowDiv                   ; divisor < -32768
+    divs.w  d1,d0                      ; fast: DIVS.W (32/16)
+    bvs.s   .slowDiv                   ; overflow
+    ext.l   d0                         ; sign-extend quotient
+    rts
+.slowDiv:                                                   ; $03E0A2
+    move.l  d2,-(sp)                   ; save D2
+    clr.b   d2                         ; sign tracker
+    tst.l   d0
+    bge.s   .divChk1                   ; dividend positive
+    neg.l   d0                         ; make positive
+    not.b   d2                         ; toggle sign
+.divChk1:                                                   ; $03E0AE
+    tst.l   d1
+    bge.s   .divCall                   ; divisor positive
+    neg.l   d1                         ; make positive
+    not.b   d2                         ; toggle sign
+.divCall:                                                   ; $03E0B6
+    bsr.s   UnsignedDivide             ; unsigned D0/D1
+    tst.b   d2
+    beq.s   .divDone                   ; signs matched
+    neg.l   d0                         ; negate quotient
+.divDone:                                                   ; $03E0BE
+    move.l  (sp)+,d2                   ; restore D2
+    rts
+; ===========================================================================
+; UnsignedDiv_FromPtr -- Alternate entry: load from (A0), swap
+; ===========================================================================
+UnsignedDiv_FromPtr:                                        ; $03E0C2
+    move.l  (a0),d1
+    exg     d0,d1                      ; D0 = (A0), D1 = caller's D0
+; ===========================================================================
+; UnsignedDivide -- Unsigned 32/32 divide
+;   In:  D0.l = dividend, D1.l = divisor
+;   Out: D0.l = quotient, D1.l = remainder
+; ===========================================================================
+UnsignedDivide:                                             ; $03E0C6
+    cmpi.l  #$00010000,d1
+    bcc.s   UDiv_Full32                ; divisor >= 65536, bit-by-bit
+    divu.w  d1,d0                      ; fast: DIVU.W (32/16)
+    bvs.s   UDiv_Overflow              ; quotient overflow, two-step
+    moveq   #0,d1
+    move.w  d0,d1                      ; D1 = quotient (low word)
+    clr.w   d0
+    swap    d0                         ; D0 = remainder (high word)
+    exg     d0,d1                      ; D0 = quotient, D1 = remainder
+    rts
+; ---------------------------------------------------------------------------
+; UDiv_Overflow -- Two-step 32/16 (quotient > 16 bits)
+; ---------------------------------------------------------------------------
+UDiv_Overflow:                                              ; $03E0DE
+    move.l  d2,-(sp)                   ; save D2
+    move.l  d1,d2                      ; D2 = divisor
+    move.l  d0,d1                      ; D1 = original dividend
+    clr.w   d0
+    swap    d0                         ; D0 = dividend high word
+    divu.w  d2,d0                      ; high / divisor -> rem1:quot_hi
+    swap    d0                         ; D0 = quot_hi:rem1
+    swap    d1
+    move.w  d0,d1                      ; D1.low = rem1
+    swap    d1                         ; D1 = rem1:dividend_low
+    divu.w  d2,d1                      ; rem1:low / divisor -> rem2:quot_lo
+    move.w  d1,d0                      ; D0 = quot_hi:quot_lo
+    clr.w   d1
+    swap    d1                         ; D1 = remainder
+    move.l  (sp)+,d2                   ; restore D2
+    rts
+; ---------------------------------------------------------------------------
+; UDiv_Full32 -- Bit-by-bit 32/32 shift-subtract (16 iterations)
+;   Quotient fits in 16 bits since divisor >= $10000
+; ---------------------------------------------------------------------------
+UDiv_Full32:                                                ; $03E0FE
+    movem.l d2-d3,-(sp)               ; save D2-D3
+    move.l  d1,d3                      ; D3 = divisor
+    move.l  d0,d1                      ; D1 = dividend
+    swap    d0
+    clr.w   d0                         ; D0 = dividend_low:0 (quotient accum)
+    clr.w   d1
+    swap    d1                         ; D1 = 0:dividend_high (remainder seed)
+    moveq   #15,d2                     ; 16 iterations
+.shiftLoop:                                                 ; $03E110
+    add.l   d0,d0                      ; shift quotient left
+    addx.l  d1,d1                      ; shift remainder left with carry
+    cmp.l   d3,d1
+    bcs.s   .noSub                     ; remainder < divisor
+    sub.l   d3,d1                      ; remainder -= divisor
+    addq.b  #1,d0                      ; set quotient bit
+.noSub:                                                     ; $03E11C
+    dbra    d2,.shiftLoop
+    movem.l (sp)+,d2-d3               ; restore D2-D3
+    rts
+; ===========================================================================
+; UnsignedMod_FromPtr -- Alternate entry: load from (A0), swap
+; ===========================================================================
+UnsignedMod_FromPtr:                                        ; $03E126
+    move.l  (a0),d1
+    exg     d0,d1                      ; D0 = (A0), D1 = caller's D0
+; ===========================================================================
+; UnsignedMod -- Unsigned 32/32 modulo
+;   In:  D0.l = dividend, D1.l = divisor
+;   Out: D0.l = remainder
+; ===========================================================================
+UnsignedMod:                                                ; $03E12A
+    cmpi.l  #$00010000,d1
+    bcc.s   .slowMod                   ; divisor >= 65536
+    divu.w  d1,d0                      ; fast: DIVU.W
+    bvs.s   .slowMod                   ; overflow
+    clr.w   d0
+    swap    d0                         ; D0 = remainder
+    rts
+.slowMod:                                                   ; $03E13C
+    bsr.s   UnsignedDivide             ; full divide, D1 = remainder
+    move.l  d1,d0                      ; D0 = remainder
+    rts
+; ===========================================================================
+; SignedMod_FromPtr -- Alternate entry: load from (A0), swap
+; ===========================================================================
+SignedMod_FromPtr:                                          ; $03E142
+    move.l  (a0),d1
+    exg     d0,d1                      ; D0 = (A0), D1 = caller's D0
+; ===========================================================================
+; SignedMod -- Signed 32/32 modulo
+;   In:  D0.l = dividend, D1.l = divisor
+;   Out: D0.l = remainder (sign follows dividend)
+;   88 calls
+; ===========================================================================
+SignedMod:                                                  ; $03E146
+    cmpi.l  #$00007FFF,d1
+    bgt.s   .slowMod                   ; divisor out of 16-bit range
+    cmpi.l  #$FFFF8000,d1
+    blt.s   .slowMod                   ; divisor out of 16-bit range
+    divs.w  d1,d0                      ; fast: DIVS.W
+    bvs.s   .slowMod                   ; overflow
+    swap    d0                         ; remainder in low word
+    ext.l   d0                         ; sign-extend remainder
+    rts
+.slowMod:                                                   ; $03E160
+    move.l  d2,-(sp)                   ; save D2
+    clr.l   d2                         ; sign tracker
+    tst.l   d1
+    bge.s   .modChk                    ; divisor positive
+    neg.l   d1                         ; make positive
+.modChk:                                                    ; $03E16A
+    tst.l   d0
+    bge.s   .modCall                   ; dividend positive
+    neg.l   d0                         ; make positive
+    addq.b  #1,d2                      ; mark: dividend was negative
+.modCall:                                                   ; $03E172
+    dc.w    $6100,$FF52                ; bsr.w UnsignedDivide (vasm BSR.W +2 bug)
+    move.l  d1,d0                      ; D0 = remainder
+    tst.b   d2
+    beq.s   .modDone                   ; dividend was positive
+    neg.l   d0                         ; negate remainder
+.modDone:                                                   ; $03E17E
+    move.l  (sp)+,d2                   ; restore D2
+    rts
+; ---------------------------------------------------------------------------
+    dc.w    $1B47,$2573,$00FF,$2524,$366C,$6400,$2533        ; $03E182 (string data)
     dc.w    $6400,$2533,$6400,$2533,$6400,$2533,$6400,$2534; $03E190
     dc.w    $6400,$2535,$6400,$2573,$00FF,$00FF,$506C,$6561; $03E1A0
     dc.w    $7365,$2063,$686F,$6F73,$6520,$616E,$6F74,$6865; $03E1B0

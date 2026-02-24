@@ -116,12 +116,19 @@ Pick the highest-priority unclaimed task. Mark it `IN PROGRESS` with your sessio
 **Approach:** Translated 11 functions totaling 624 bytes: MemFillByte (24B), MemCopy (24B), MemFillWord (24B), PollAction (120B, flush-then-wait input loop), RandRange (88B, classic C LCG with constants 1103515245/12345), ByteSum (30B), ResourceLoad/ResourceUnload (44B/42B, paired load/unload with flag), TilePlacement (116B, builds param block for GameCmd #15), GameCmd16 (40B, thin wrapper), ReadInput (72B, joypad input with mode selection). Hit ASL-vs-LSL pitfall on TilePlacement (KNOWN_ISSUES confirmed). Also hit a branch-target labeling bug on PollAction (bne.s to wrong label).
 **Acceptance:** `make verify` passes. All 11 functions translated with full control flow.
 
+### B-016: Translate math primitives ($3E05C, $3E08A, $3E146)
+**Status:** DONE (2026-02-23)
+**Why:** Top 3 most-called unnamed functions (204+169+88 = 461 total calls). Critical math infrastructure used by RandRange and throughout game logic.
+**Approach:** Translated 12 functions in the $3E05A-$3E181 math block (296 bytes): Multiply32 (42B, 204 calls, 32x32->32 via cross-product MULU.W), SignedDiv (54B, 169 calls, fast DIVS.W path + slow negate-and-unsigned path), UnsignedDivide (24B, shared entry with fast DIVU.W), UDiv_Overflow (30B, two-step 32/16 long division), UDiv_Full32 (38B, bit-by-bit shift-subtract, 16 iterations), UnsignedMod (24B, remainder extraction), SignedMod (60B, 88 calls, sign-follows-dividend), plus 5 FromPtr alternate entries (load from pointer, swap operands). BSR.W at $3E172 kept as dc.w (vasm +2 displacement bug). All DIVS.W/DIVU.W/MULU.W/EXT.L/ADDX.L/DBRA verified against ROM bytes.
+**Acceptance:** `make verify` passes. All 12 functions translated with full control flow.
+
 ---
 
 ## Done
 
 | ID | Description | Commit | Date |
 |----|-------------|--------|------|
+| B-016 | Math primitives translated (12 functions, 296 bytes) | -- | 2026-02-23 |
 | B-015 | Utility cluster translated (11 functions, 624 bytes) | -- | 2026-02-23 |
 | B-013 | GameCommand dispatcher translated (47-entry jump table, 240 bytes) | -- | 2026-02-23 |
 | B-012 | Sound driver interface translated (4 functions, 140 bytes) | -- | 2026-02-23 |

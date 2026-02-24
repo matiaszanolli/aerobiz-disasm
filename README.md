@@ -88,7 +88,7 @@ aerobiz-disasm/
 
 ### Translation Status
 
-~1,708 bytes of code translated from raw `dc.w` to 68000 mnemonics (all verified byte-identical):
+~2,004 bytes of code translated from raw `dc.w` to 68000 mnemonics (all verified byte-identical):
 
 - Exception handlers ($F84-$FE1) -- 94 bytes, full mnemonics
 - EXT/H-INT/V-INT interrupt handlers ($1480-$15AF) -- 304 bytes
@@ -97,8 +97,9 @@ aerobiz-disasm/
 - GameCommand dispatcher ($D64-$E53) -- 240 bytes (52 code + 188 jump table, 47 handlers)
 - Main game loop ($D5B6-$D645) -- 144 bytes, 3 functions (GameEntry, GameLoopSetup, MainLoop)
 - Utility cluster ($1D520-$1E233) -- 624 bytes, 11 functions (memory ops, input, RNG, tiles, resources)
+- Math primitives ($3E05A-$3E181) -- 296 bytes, 12 functions (multiply, signed/unsigned div/mod)
 
-66 functions named out of ~854 total. See [BACKLOG.md](BACKLOG.md) for the full task queue.
+78 functions named out of ~854 total. See [BACKLOG.md](BACKLOG.md) for the full task queue.
 
 ## License
 

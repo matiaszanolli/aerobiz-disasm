@@ -2711,13 +2711,47 @@
     dc.w    $BDA4,$4279,$00FF,$BD68,$4279,$00FF,$B9E4,$7020; $03A910
     dc.w    $33C0,$00FF,$BD48,$33C0,$00FF,$BDA8,$4279,$00FF; $03A920
     dc.w    $13FC,$4279,$00FF,$A7D8,$33FC,$0001,$00FF,$128C; $03A930
-    dc.w    $4E75,$48E7,$3C00,$242F,$0014,$262F,$001C,$282F; $03A940
-    dc.w    $0018,$2A2F,$0020,$33C2,$00FF,$BD68,$33C2,$00FF; $03A950
-    dc.w    $1290,$33C4,$00FF,$B9E4,$7000,$3002,$7200,$3203; $03A960
-    dc.w    $D081,$5380,$2600,$33C0,$00FF,$BDA8,$33C3,$00FF; $03A970
-    dc.w    $1000,$3004,$D045,$0640,$FFFF,$33C0,$00FF,$BD48; $03A980
-    dc.w    $3002,$2F00,$4EBA,$0168,$4E71,$3004,$2F00,$4EBA; $03A990
-    dc.w    $0154,$4E71,$508F,$4CDF,$003C,$4E75,$2F3C,$0000; $03A9A0
+    dc.w    $4E75                                           ; $03A940 | rts (prev fn)
+; ---------------------------------------------------------------------------
+; SetTextWindow - Define text rendering window bounds
+; Params: left (SP+4), top (SP+8), width (SP+12), height (SP+16)
+; Sets win_left, win_top, win_right, win_bottom and calls cursor helpers
+; 124 calls | 106 bytes | $03A942-$03A9AB
+; ---------------------------------------------------------------------------
+SetTextWindow:
+    movem.l d2-d5,-(sp)                                    ; $03A942
+    move.l  $14(sp),d2                                     ; $03A946 | left
+    move.l  $1C(sp),d3                                     ; $03A94A | width
+    move.l  $18(sp),d4                                     ; $03A94E | top
+    move.l  $20(sp),d5                                     ; $03A952 | height
+    move.w  d2,($FFBD68).l                                 ; $03A956 | win_left
+    move.w  d2,($FF1290).l                                 ; $03A95C | win_left_dup
+    move.w  d4,($FFB9E4).l                                 ; $03A962 | win_top
+    moveq   #0,d0                                          ; $03A968
+    move.w  d2,d0                                          ; $03A96A
+    moveq   #0,d1                                          ; $03A96C
+    move.w  d3,d1                                          ; $03A96E
+    add.l   d1,d0                                          ; $03A970 | left + width
+    subq.l  #1,d0                                          ; $03A972 | right = left+width-1
+    move.l  d0,d3                                          ; $03A974
+    move.w  d0,($FFBDA8).l                                 ; $03A976 | win_right
+    move.w  d3,($FF1000).l                                 ; $03A97C | win_right_dup
+    move.w  d4,d0                                          ; $03A982
+    add.w   d5,d0                                          ; $03A984 | top + height
+    addi.w  #$FFFF,d0                                      ; $03A986 | bottom = top+height-1
+    move.w  d0,($FFBD48).l                                 ; $03A98A | win_bottom
+    move.w  d2,d0                                          ; $03A990
+    move.l  d0,-(sp)                                       ; $03A992
+    dc.w    $4EBA,$0168                                    ; $03A994 | jsr SetCursorX(pc)
+    nop                                                    ; $03A998
+    move.w  d4,d0                                          ; $03A99A
+    move.l  d0,-(sp)                                       ; $03A99C
+    dc.w    $4EBA,$0154                                    ; $03A99E | jsr SetCursorY(pc)
+    nop                                                    ; $03A9A2
+    addq.l  #8,sp                                          ; $03A9A4 | clean 2 pushed params
+    movem.l (sp)+,d2-d5                                    ; $03A9A6
+    rts                                                    ; $03A9AA
+    dc.w    $2F3C,$0000                                    ; $03A9AC | (next fn start)
     dc.w    $8000,$4878,$0020,$4878,$0020,$42A7,$42A7,$42A7; $03A9B0
     dc.w    $4878,$001A,$4EB9,$0000,$0D64,$4FEF,$001C,$4E75; $03A9C0
     dc.w    $2F02,$226F,$0008,$4242,$600C,$3002,$C0FC,$000A; $03A9D0
@@ -2741,9 +2775,25 @@
     dc.w    $508F,$4E75,$33EF,$0006,$00FF,$BDA6,$4E75,$33EF; $03AAF0
     dc.w    $0006,$00FF,$128A,$4E75,$48E7,$3000,$242F,$0010; $03AB00
     dc.w    $262F,$000C,$3003,$2F00,$6100,$FFE4,$3002,$2F00; $03AB10
-    dc.w    $6100,$FFD2,$508F,$4CDF,$000C,$4E75,$48E7,$3000; $03AB20
-    dc.w    $242F,$0010,$262F,$000C,$3003,$2F00,$6100,$FFC0; $03AB30
-    dc.w    $3002,$2F00,$6100,$FFAE,$508F,$4CDF,$000C,$4E75; $03AB40
+    dc.w    $6100,$FFD2,$508F,$4CDF,$000C,$4E75             ; $03AB20 | prev fn tail
+; ---------------------------------------------------------------------------
+; SetTextCursor - Set text cursor position
+; Params: x (SP+4), y (SP+8)
+; 174 calls | 36 bytes | $03AB2C-$03AB4F
+; ---------------------------------------------------------------------------
+SetTextCursor:
+    movem.l d2-d3,-(sp)                                    ; $03AB2C
+    move.l  $10(sp),d2                                     ; $03AB30 | y
+    move.l  $0C(sp),d3                                     ; $03AB34 | x
+    move.w  d3,d0                                          ; $03AB38
+    move.l  d0,-(sp)                                       ; $03AB3A
+    dc.w    $6100,$FFC0                                    ; $03AB3C | bsr.w SetCursorX
+    move.w  d2,d0                                          ; $03AB40
+    move.l  d0,-(sp)                                       ; $03AB42
+    dc.w    $6100,$FFAE                                    ; $03AB44 | bsr.w SetCursorY
+    addq.l  #8,sp                                          ; $03AB48 | clean 2 pushed params
+    movem.l (sp)+,d2-d3                                    ; $03AB4A
+    rts                                                    ; $03AB4E
     dc.w    $2F02,$4242,$206F,$0008,$6042,$0C10,$001B,$6638; $03AB50
     dc.w    $5288,$7000,$1010,$723D,$B001,$6726,$7252,$B001; $03AB60
     dc.w    $6722,$7245,$B001,$671C,$7250,$B001,$6716,$7247; $03AB70
@@ -2853,14 +2903,56 @@
     dc.w    $6600,$FE20,$4212,$41EE,$FF38,$226E,$0010,$12D8; $03B1F0
     dc.w    $66FC,$4CEE,$3CFC,$FEEC,$4E5E,$4E75,$4E56,$FF68; $03B200
     dc.w    $486E,$FF6A,$2F2E,$000C,$2F2E,$0008,$6100,$FDD4; $03B210
-    dc.w    $486E,$FF6A,$6100,$FAB6,$4E5E,$4E75,$4E56,$0000; $03B220
-    dc.w    $41EE,$0010,$2F2E,$0008,$2F08,$2F2E,$000C,$6100; $03B230
-    dc.w    $FDB2,$4E5E,$4E75,$4E56,$0000,$41EE,$000C,$4279; $03B240
-    dc.w    $00FF,$1800,$7001,$33C0,$00FF,$A77A,$33C0,$00FF; $03B250
-    dc.w    $99DE,$2F08,$2F2E,$0008,$6100,$FFA2,$4E5E,$4E75; $03B260
-    dc.w    $4E56,$0000,$41EE,$000C,$33FC,$0001,$00FF,$1800; $03B270
-    dc.w    $7002,$33C0,$00FF,$A77A,$33C0,$00FF,$99DE,$2F08; $03B280
-    dc.w    $2F2E,$0008,$6100,$FF76,$4E5E,$4E75,$4E56,$FFFC; $03B290
+    dc.w    $486E,$FF6A,$6100,$FAB6,$4E5E,$4E75             ; $03B220 | prev fn tail
+; ---------------------------------------------------------------------------
+; sprintf - Format string to buffer (C-style varargs)
+; Params via LINK: dest (8,A6), format ($C,A6), varargs ($10,A6+)
+; 171 calls | 26 bytes | $03B22C-$03B245
+; ---------------------------------------------------------------------------
+sprintf:
+    link    a6,#0                                          ; $03B22C
+    lea     $10(a6),a0                                     ; $03B230 | varargs ptr
+    move.l  $08(a6),-(sp)                                  ; $03B234 | push dest
+    move.l  a0,-(sp)                                       ; $03B238 | push varargs
+    move.l  $0C(a6),-(sp)                                  ; $03B23A | push format
+    dc.w    $6100,$FDB2                                    ; $03B23E | bsr.w vsprintf
+    unlk    a6                                             ; $03B242
+    rts                                                    ; $03B244
+; ---------------------------------------------------------------------------
+; PrintfNarrow - Format and display string (1-tile narrow font)
+; Params: format (8,A6), varargs ($C,A6+)
+; 65 calls | 42 bytes | $03B246-$03B26F
+; ---------------------------------------------------------------------------
+PrintfNarrow:
+    link    a6,#0                                          ; $03B246
+    lea     $0C(a6),a0                                     ; $03B24A | varargs ptr
+    clr.w   ($FF1800).l                                    ; $03B24E | font_mode = 0 (narrow)
+    moveq   #1,d0                                          ; $03B254
+    move.w  d0,($FFA77A).l                                 ; $03B256 | cursor_advance = 1
+    move.w  d0,($FF99DE).l                                 ; $03B25C | char_width = 1
+    move.l  a0,-(sp)                                       ; $03B262 | push varargs
+    move.l  $08(a6),-(sp)                                  ; $03B264 | push format
+    dc.w    $6100,$FFA2                                    ; $03B268 | bsr.w printf_internal
+    unlk    a6                                             ; $03B26C
+    rts                                                    ; $03B26E
+; ---------------------------------------------------------------------------
+; PrintfWide - Format and display string (2-tile wide font)
+; Params: format (8,A6), varargs ($C,A6+)
+; 97 calls | 44 bytes | $03B270-$03B29B
+; ---------------------------------------------------------------------------
+PrintfWide:
+    link    a6,#0                                          ; $03B270
+    lea     $0C(a6),a0                                     ; $03B274 | varargs ptr
+    move.w  #1,($FF1800).l                                 ; $03B278 | font_mode = 1 (wide)
+    moveq   #2,d0                                          ; $03B280
+    move.w  d0,($FFA77A).l                                 ; $03B282 | cursor_advance = 2
+    move.w  d0,($FF99DE).l                                 ; $03B288 | char_width = 2
+    move.l  a0,-(sp)                                       ; $03B28E | push varargs
+    move.l  $08(a6),-(sp)                                  ; $03B290 | push format
+    dc.w    $6100,$FF76                                    ; $03B294 | bsr.w printf_internal
+    unlk    a6                                             ; $03B298
+    rts                                                    ; $03B29A
+    dc.w    $4E56,$FFFC                                    ; $03B29C | (next fn LINK)
     dc.w    $48E7,$3020,$242E,$000C,$262E,$0008,$45EE,$FFFC; $03B2A0
     dc.w    $3002,$33C0,$00FF,$A782,$33C0,$00FF,$A786,$3002; $03B2B0
     dc.w    $0240,$03FF,$3D40,$FFFC,$3002,$0240,$03FF,$D079; $03B2C0

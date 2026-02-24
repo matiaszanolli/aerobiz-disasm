@@ -128,12 +128,26 @@ Pick the highest-priority unclaimed task. Mark it `IN PROGRESS` with your sessio
 **Approach:** Translated 12 functions in the $3E05A-$3E181 math block (296 bytes): Multiply32 (42B, 204 calls, 32x32->32 via cross-product MULU.W), SignedDiv (54B, 169 calls, fast DIVS.W path + slow negate-and-unsigned path), UnsignedDivide (24B, shared entry with fast DIVU.W), UDiv_Overflow (30B, two-step 32/16 long division), UDiv_Full32 (38B, bit-by-bit shift-subtract, 16 iterations), UnsignedMod (24B, remainder extraction), SignedMod (60B, 88 calls, sign-follows-dividend), plus 5 FromPtr alternate entries (load from pointer, swap operands). BSR.W at $3E172 kept as dc.w (vasm +2 displacement bug). All DIVS.W/DIVU.W/MULU.W/EXT.L/ADDX.L/DBRA verified against ROM bytes.
 **Acceptance:** `make verify` passes. All 12 functions translated with full control flow.
 
+### B-018: Translate LZ_Decompress ($003FEC-$00423F)
+**Status:** DONE (2026-02-23)
+**Why:** 123 calls. Core decompression routine used for loading compressed game assets.
+**Approach:** Translated 1 function at $003FEC-$00423F (596 bytes, largest single function translated). LZSS/LZ77 variant with control-byte-driven bitstream processing. Algorithm: 8 flag bits per control byte, bit=1 for literal copy, bit=0 for back-reference match (variable-length encoded length + distance). Match length via cascading priority encoding (test bits 15-9, extract 1-13 bits, 255=end marker). Match distance via cascading range checks (7-15 bits consumed). Copy loop: (length+1) bytes from (dest - distance - 1). Helper function at $003F72 called via JSR (A4) for bitstream consumption. All 16 ASR.L shifts verified (type bits 00, no ASL/LSL pitfall). All 10 BRA.W/Bcc.W branches verified correct in vasm (no displacement bug unlike BSR.W). No BSR.W in function. 17 PEA instructions for constant passing. RAM: $FFBD56 (bitstream window via A3), $FFA78C (control byte), $FF1802 (init flag).
+**Acceptance:** `make verify` passes. Function fully translated with 24 local labels.
+
+### B-019: Translate text system functions ($03A942-$03B29B)
+**Status:** DONE (2026-02-23)
+**Why:** 5 functions with 124+174+171+65+97 = 631 total calls. The game's complete text rendering pipeline.
+**Approach:** Translated 5 functions totaling 250 bytes: SetTextWindow (106B, 124 calls, sets win_left/top/right/bottom RAM + cursor helpers), SetTextCursor (36B, 174 calls, sets cursor X/Y via helpers), sprintf (26B, 171 calls, C-style varargs format to buffer), PrintfNarrow (42B, 65 calls, format + display with 1-tile font), PrintfWide (44B, 97 calls, format + display with 2-tile font). Discovered text RAM variables: font_mode $FF1800, cursor_x $FF128A, cursor_y $FFBDA6, char_width $FF99DE, cursor_advance $FFA77A, window bounds at $FFBD48/68/B9E4/BDA8/1000/1290. All BSR.W kept as dc.w (vasm bug). First use of LINK/UNLK/LEA for C-style varargs.
+**Acceptance:** `make verify` passes. All 5 functions translated.
+
 ---
 
 ## Done
 
 | ID | Description | Commit | Date |
 |----|-------------|--------|------|
+| B-019 | Text system translated (5 functions, 250 bytes) | -- | 2026-02-23 |
+| B-018 | LZ_Decompress translated (596 bytes, LZSS decompressor) | -- | 2026-02-23 |
 | B-017 | RangeLookup translated ($D648, 118 bytes) | -- | 2026-02-23 |
 | B-016 | Math primitives translated (12 functions, 296 bytes) | -- | 2026-02-23 |
 | B-015 | Utility cluster translated (11 functions, 624 bytes) | -- | 2026-02-23 |

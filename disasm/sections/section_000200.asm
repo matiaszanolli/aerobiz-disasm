@@ -1291,44 +1291,231 @@ Z80_Delay:                                                   ; $002688
     dc.w    $E568,$8154,$1029,$0001,$E148,$1011,$3A80,$5489; $003FB0
     dc.w    $7010,$9042,$3680,$6002,$9553,$7000,$3013,$7200; $003FC0
     dc.w    $3215,$E0A1,$2001,$3202,$D241,$247C,$0004,$684C; $003FD0
-    dc.w    $C072,$1000,$8154,$4CDF,$3C0C,$4E75,$48E7,$3838; $003FE0
-    dc.w    $206F,$001C,$226F,$0020,$267C,$00FF,$BD56,$287C; $003FF0
-    dc.w    $0000,$3F72,$4279,$00FF,$1802,$4878,$0010,$4E94; $004000
-    dc.w    $588F,$13D9,$00FF,$A78C,$4244,$1039,$00FF,$A78C; $004010
-    dc.w    $0800,$0007,$6706,$10D9,$6000,$01EE,$3013,$0240; $004020
-    dc.w    $8000,$6706,$7601,$6000,$00B8,$3013,$0240,$4000; $004030
-    dc.w    $6714,$3613,$0283,$0000,$6000,$700D,$E0A3,$4878; $004040
-    dc.w    $0002,$6000,$0098,$3013,$0240,$2000,$6712,$3613; $004050
-    dc.w    $0283,$0000,$3800,$700B,$E0A3,$4878,$0004,$607C; $004060
-    dc.w    $3013,$0240,$1000,$6712,$3613,$0283,$0000,$1E00; $004070
-    dc.w    $7009,$E0A3,$4878,$0006,$6062,$3013,$0240,$0800; $004080
-    dc.w    $6710,$3613,$0283,$0000,$0F80,$EE83,$4878,$0008; $004090
-    dc.w    $604A,$3013,$0240,$0400,$6710,$3613,$0283,$0000; $0040A0
-    dc.w    $07E0,$EA83,$4878,$000A,$6032,$3013,$0240,$0200; $0040B0
-    dc.w    $6710,$3613,$0283,$0000,$03F8,$E683,$4878,$000C; $0040C0
-    dc.w    $601A,$3613,$0283,$0000,$01FC,$E483,$0643,$0080; $0040D0
-    dc.w    $0C43,$00FF,$6700,$014C,$4878,$000D,$4E94,$588F; $0040E0
-    dc.w    $0253,$7FFF,$0C53,$0800,$6414,$3413,$0282,$0000; $0040F0
-    dc.w    $0600,$7009,$E0A2,$4878,$0007,$6000,$00E6,$0C53; $004100
-    dc.w    $0C00,$6414,$3413,$0282,$0000,$0300,$E082,$5842; $004110
-    dc.w    $4878,$0008,$6000,$00CC,$0C53,$1800,$641C,$7400; $004120
-    dc.w    $3413,$0482,$0000,$0C00,$0282,$0000,$0F80,$EE82; $004130
-    dc.w    $5042,$4878,$0009,$6000,$00AA,$0C53,$3000,$641E; $004140
-    dc.w    $7400,$3413,$0482,$0000,$1800,$0282,$0000,$1FC0; $004150
-    dc.w    $EC82,$0642,$0020,$4878,$000A,$6000,$0086,$0C53; $004160
-    dc.w    $4000,$6416,$3413,$0282,$0000,$1FFF,$0082,$0000; $004170
-    dc.w    $1000,$EA82,$4878,$000B,$6068,$0C53,$5000,$6416; $004180
-    dc.w    $3413,$0282,$0000,$1FFF,$0082,$0000,$1000,$E882; $004190
-    dc.w    $4878,$000C,$604C,$0C53,$6000,$6416,$3413,$0282; $0041A0
-    dc.w    $0000,$1FFF,$0082,$0000,$1000,$E682,$4878,$000D; $0041B0
-    dc.w    $6030,$0C53,$7000,$6416,$3413,$0282,$0000,$1FFF; $0041C0
-    dc.w    $0082,$0000,$1000,$E482,$4878,$000E,$6014,$3413; $0041D0
-    dc.w    $0282,$0000,$1FFF,$0082,$0000,$1000,$E282,$4878; $0041E0
-    dc.w    $000F,$4E94,$588F,$7000,$3002,$2208,$9280,$5381; $0041F0
-    dc.w    $2441,$4242,$6004,$10DA,$5242,$7000,$3002,$7200; $004200
-    dc.w    $3203,$5281,$B081,$6DEE,$1039,$00FF,$A78C,$D139; $004210
-    dc.w    $00FF,$A78C,$5244,$0C44,$0008,$6500,$FDEE,$6000; $004220
-    dc.w    $FDE2,$222F,$001C,$2008,$9081,$4CDF,$1C1C,$4E75; $004230
+    dc.w    $C072,$1000,$8154,$4CDF,$3C0C,$4E75             ; $003FE0 | prev fn tail
+; ---------------------------------------------------------------------------
+; LZ_Decompress - LZSS/LZ77 variant decompression
+; Inputs: dest buffer ($1C,SP), compressed source ($20,SP)
+; Output: D0.L = bytes written
+; Uses A4 = helper at $003F72 for bitstream consumption (JSR (A4))
+; RAM: $FFBD56 bitstream window (via A3), $FFA78C control byte, $FF1802 init
+; 123 calls | 596 bytes | $003FEC-$00423F
+; ---------------------------------------------------------------------------
+LZ_Decompress:
+    movem.l d2-d4/a2-a4,-(sp)                             ; $003FEC
+    movea.l $1C(sp),a0                                     ; $003FF0 | dest buffer
+    movea.l $20(sp),a1                                     ; $003FF4 | compressed source
+    movea.l #$00FFBD56,a3                                  ; $003FF8 | -> bitstream window
+    movea.l #$00003F72,a4                                  ; $003FFE | -> helper function
+    clr.w   ($FF1802).l                                    ; $004004 | clear init flag
+    pea     ($0010).w                                      ; $00400A | push 16 (read 16 bits)
+    jsr     (a4)                                           ; $00400E | fill bitstream window
+    addq.l  #4,sp                                          ; $004010
+.fetch_control:
+    move.b  (a1)+,($FFA78C).l                              ; $004012 | read control byte
+    clr.w   d4                                             ; $004018 | bit counter = 0
+.process_bit:
+    move.b  ($FFA78C).l,d0                                 ; $00401A | load control byte
+    btst    #7,d0                                          ; $004020 | test MSB
+    beq.s   .bit_zero                                      ; $004024 | 0 = back-reference
+    move.b  (a1)+,(a0)+                                    ; $004026 | 1 = literal copy
+    bra.w   .advance_bit                                   ; $004028
+; --- Decode match length from bitstream window ---
+.bit_zero:
+    move.w  (a3),d0                                        ; $00402C
+    andi.w  #$8000,d0                                      ; $00402E | test bit 15
+    beq.s   .len_not_b15                                   ; $004032
+    moveq   #1,d3                                          ; $004034 | length = 1
+    bra.w   .decode_dist                                   ; $004036
+.len_not_b15:
+    move.w  (a3),d0                                        ; $00403A
+    andi.w  #$4000,d0                                      ; $00403C | test bit 14
+    beq.s   .len_not_b14                                   ; $004040
+    move.w  (a3),d3                                        ; $004042
+    andi.l  #$00006000,d3                                  ; $004044 | bits 14-13
+    moveq   #13,d0                                         ; $00404A
+    asr.l   d0,d3                                          ; $00404C
+    pea     ($0002).w                                      ; $00404E | consume 2 bits
+    bra.w   .call_helper                                   ; $004052
+.len_not_b14:
+    move.w  (a3),d0                                        ; $004056
+    andi.w  #$2000,d0                                      ; $004058 | test bit 13
+    beq.s   .len_not_b13                                   ; $00405C
+    move.w  (a3),d3                                        ; $00405E
+    andi.l  #$00003800,d3                                  ; $004060 | bits 13-11
+    moveq   #11,d0                                         ; $004066
+    asr.l   d0,d3                                          ; $004068
+    pea     ($0004).w                                      ; $00406A | consume 4 bits
+    bra.s   .call_helper                                   ; $00406E
+.len_not_b13:
+    move.w  (a3),d0                                        ; $004070
+    andi.w  #$1000,d0                                      ; $004072 | test bit 12
+    beq.s   .len_not_b12                                   ; $004076
+    move.w  (a3),d3                                        ; $004078
+    andi.l  #$00001E00,d3                                  ; $00407A | bits 12-9
+    moveq   #9,d0                                          ; $004080
+    asr.l   d0,d3                                          ; $004082
+    pea     ($0006).w                                      ; $004084 | consume 6 bits
+    bra.s   .call_helper                                   ; $004088
+.len_not_b12:
+    move.w  (a3),d0                                        ; $00408A
+    andi.w  #$0800,d0                                      ; $00408C | test bit 11
+    beq.s   .len_not_b11                                   ; $004090
+    move.w  (a3),d3                                        ; $004092
+    andi.l  #$00000F80,d3                                  ; $004094 | bits 10-7
+    asr.l   #7,d3                                          ; $00409A
+    pea     ($0008).w                                      ; $00409C | consume 8 bits
+    bra.s   .call_helper                                   ; $0040A0
+.len_not_b11:
+    move.w  (a3),d0                                        ; $0040A2
+    andi.w  #$0400,d0                                      ; $0040A4 | test bit 10
+    beq.s   .len_not_b10                                   ; $0040A8
+    move.w  (a3),d3                                        ; $0040AA
+    andi.l  #$000007E0,d3                                  ; $0040AC | bits 9-5
+    asr.l   #5,d3                                          ; $0040B2
+    pea     ($000A).w                                      ; $0040B4 | consume 10 bits
+    bra.s   .call_helper                                   ; $0040B8
+.len_not_b10:
+    move.w  (a3),d0                                        ; $0040BA
+    andi.w  #$0200,d0                                      ; $0040BC | test bit 9
+    beq.s   .len_default                                   ; $0040C0
+    move.w  (a3),d3                                        ; $0040C2
+    andi.l  #$000003F8,d3                                  ; $0040C4 | bits 8-3
+    asr.l   #3,d3                                          ; $0040CA
+    pea     ($000C).w                                      ; $0040CC | consume 12 bits
+    bra.s   .call_helper                                   ; $0040D0
+.len_default:
+    move.w  (a3),d3                                        ; $0040D2
+    andi.l  #$000001FC,d3                                  ; $0040D4 | bits 8-2
+    asr.l   #2,d3                                          ; $0040DA
+    addi.w  #$0080,d3                                      ; $0040DC | +128 bias
+    cmpi.w  #$00FF,d3                                      ; $0040E0 | 255 = end marker
+    beq.w   .done                                          ; $0040E4
+    pea     ($000D).w                                      ; $0040E8 | consume 13 bits
+.call_helper:
+    jsr     (a4)                                           ; $0040EC | call bitstream helper
+    addq.l  #4,sp                                          ; $0040EE
+; --- Decode match distance from bitstream window ---
+.decode_dist:
+    andi.w  #$7FFF,(a3)                                    ; $0040F0 | clear bit 15
+    cmpi.w  #$0800,(a3)                                    ; $0040F4
+    bcc.s   .dist_ge_0800                                  ; $0040F8
+    move.w  (a3),d2                                        ; $0040FA
+    andi.l  #$00000600,d2                                  ; $0040FC | bits 10-9
+    moveq   #9,d0                                          ; $004102
+    asr.l   d0,d2                                          ; $004104
+    pea     ($0007).w                                      ; $004106 | consume 7 bits
+    bra.w   .do_copy                                       ; $00410A
+.dist_ge_0800:
+    cmpi.w  #$0C00,(a3)                                    ; $00410E
+    bcc.s   .dist_ge_0C00                                  ; $004112
+    move.w  (a3),d2                                        ; $004114
+    andi.l  #$00000300,d2                                  ; $004116 | bits 9-8
+    asr.l   #8,d2                                          ; $00411C
+    addq.w  #4,d2                                          ; $00411E | +4 bias
+    pea     ($0008).w                                      ; $004120 | consume 8 bits
+    bra.w   .do_copy                                       ; $004124
+.dist_ge_0C00:
+    cmpi.w  #$1800,(a3)                                    ; $004128
+    bcc.s   .dist_ge_1800                                  ; $00412C
+    moveq   #0,d2                                          ; $00412E
+    move.w  (a3),d2                                        ; $004130
+    subi.l  #$00000C00,d2                                  ; $004132
+    andi.l  #$00000F80,d2                                  ; $004138 | bits 10-7
+    asr.l   #7,d2                                          ; $00413E
+    addq.w  #8,d2                                          ; $004140 | +8 bias
+    pea     ($0009).w                                      ; $004142 | consume 9 bits
+    bra.w   .do_copy                                       ; $004146
+.dist_ge_1800:
+    cmpi.w  #$3000,(a3)                                    ; $00414A
+    bcc.s   .dist_ge_3000                                  ; $00414E
+    moveq   #0,d2                                          ; $004150
+    move.w  (a3),d2                                        ; $004152
+    subi.l  #$00001800,d2                                  ; $004154
+    andi.l  #$00001FC0,d2                                  ; $00415A | bits 12-6
+    asr.l   #6,d2                                          ; $004160
+    addi.w  #$0020,d2                                      ; $004162 | +$20 bias
+    pea     ($000A).w                                      ; $004166 | consume 10 bits
+    bra.w   .do_copy                                       ; $00416A
+.dist_ge_3000:
+    cmpi.w  #$4000,(a3)                                    ; $00416E
+    bcc.s   .dist_ge_4000                                  ; $004172
+    move.w  (a3),d2                                        ; $004174
+    andi.l  #$00001FFF,d2                                  ; $004176 | bits 12-0
+    ori.l   #$00001000,d2                                  ; $00417C | set bit 12
+    asr.l   #5,d2                                          ; $004182
+    pea     ($000B).w                                      ; $004184 | consume 11 bits
+    bra.s   .do_copy                                       ; $004188
+.dist_ge_4000:
+    cmpi.w  #$5000,(a3)                                    ; $00418A
+    bcc.s   .dist_ge_5000                                  ; $00418E
+    move.w  (a3),d2                                        ; $004190
+    andi.l  #$00001FFF,d2                                  ; $004192
+    ori.l   #$00001000,d2                                  ; $004198
+    asr.l   #4,d2                                          ; $00419E
+    pea     ($000C).w                                      ; $0041A0 | consume 12 bits
+    bra.s   .do_copy                                       ; $0041A4
+.dist_ge_5000:
+    cmpi.w  #$6000,(a3)                                    ; $0041A6
+    bcc.s   .dist_ge_6000                                  ; $0041AA
+    move.w  (a3),d2                                        ; $0041AC
+    andi.l  #$00001FFF,d2                                  ; $0041AE
+    ori.l   #$00001000,d2                                  ; $0041B4
+    asr.l   #3,d2                                          ; $0041BA
+    pea     ($000D).w                                      ; $0041BC | consume 13 bits
+    bra.s   .do_copy                                       ; $0041C0
+.dist_ge_6000:
+    cmpi.w  #$7000,(a3)                                    ; $0041C2
+    bcc.s   .dist_ge_7000                                  ; $0041C6
+    move.w  (a3),d2                                        ; $0041C8
+    andi.l  #$00001FFF,d2                                  ; $0041CA
+    ori.l   #$00001000,d2                                  ; $0041D0
+    asr.l   #2,d2                                          ; $0041D6
+    pea     ($000E).w                                      ; $0041D8 | consume 14 bits
+    bra.s   .do_copy                                       ; $0041DC
+.dist_ge_7000:
+    move.w  (a3),d2                                        ; $0041DE
+    andi.l  #$00001FFF,d2                                  ; $0041E0
+    ori.l   #$00001000,d2                                  ; $0041E6
+    asr.l   #1,d2                                          ; $0041EC
+    pea     ($000F).w                                      ; $0041EE | consume 15 bits
+; --- Copy match: D3+1 bytes from (A0 - D2 - 1) ---
+.do_copy:
+    jsr     (a4)                                           ; $0041F2 | call helper
+    addq.l  #4,sp                                          ; $0041F4
+    moveq   #0,d0                                          ; $0041F6
+    move.w  d2,d0                                          ; $0041F8 | D0 = distance
+    move.l  a0,d1                                          ; $0041FA
+    sub.l   d0,d1                                          ; $0041FC | dest - distance
+    subq.l  #1,d1                                          ; $0041FE | - 1
+    movea.l d1,a2                                          ; $004200 | A2 = copy source
+    clr.w   d2                                             ; $004202 | counter = 0
+    bra.s   .copy_test                                     ; $004204
+.copy_loop:
+    move.b  (a2)+,(a0)+                                    ; $004206 | copy byte
+    addq.w  #1,d2                                          ; $004208
+.copy_test:
+    moveq   #0,d0                                          ; $00420A
+    move.w  d2,d0                                          ; $00420C | D0 = counter
+    moveq   #0,d1                                          ; $00420E
+    move.w  d3,d1                                          ; $004210 | D1 = length
+    addq.l  #1,d1                                          ; $004212 | +1 (copy length+1 bytes)
+    cmp.l   d1,d0                                          ; $004214
+    blt.s   .copy_loop                                     ; $004216
+; --- Advance control bit ---
+.advance_bit:
+    move.b  ($FFA78C).l,d0                                 ; $004218 | load control byte
+    add.b   d0,($FFA78C).l                                 ; $00421E | double it (shift left 1)
+    addq.w  #1,d4                                          ; $004224 | bit counter++
+    cmpi.w  #$0008,d4                                      ; $004226 | 8 bits done?
+    bcs.w   .process_bit                                   ; $00422A | no: next bit
+    bra.w   .fetch_control                                 ; $00422E | yes: next control byte
+; --- Return bytes written ---
+.done:
+    move.l  $1C(sp),d1                                     ; $004232 | original dest ptr
+    move.l  a0,d0                                          ; $004236 | final dest ptr
+    sub.l   d1,d0                                          ; $004238 | D0 = bytes written
+    movem.l (sp)+,d2-d4/a2-a4                              ; $00423A
+    rts                                                    ; $00423E
     dc.w    $48E7,$303C,$242F,$001C,$267C,$00FF,$BD50,$287C; $004240
     dc.w    $00FF,$88DA,$2A7C,$00FF,$88D8,$3014,$E568,$3880; $004250
     dc.w    $B453,$6332,$9453,$3013,$D040,$247C,$0004,$686E; $004260

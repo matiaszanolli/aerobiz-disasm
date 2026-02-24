@@ -8,7 +8,7 @@ Index of all identified functions. Updated as disassembly progresses.
 - **Total RTE (interrupt returns):** 6
 - **Unique call targets:** 2,896
 - **Functions named:** 79
-- **Functions translated to mnemonics:** 36 (exception handlers, EXT/H-INT/V-INT, boot post-init, Z80 sound interface, GameEntry/GameLoopSetup/MainLoop, GameCommand, RangeLookup, utility cluster: MemFillByte/MemCopy/MemFillWord/PollAction/RandRange/ByteSum/ResourceLoad/ResourceUnload/TilePlacement/GameCmd16/ReadInput, math: Multiply32/SignedDiv/UnsignedDivide/UDiv_Overflow/UDiv_Full32/UnsignedMod/SignedMod + 5 FromPtr entries)
+- **Functions translated to mnemonics:** 42 (exception handlers, EXT/H-INT/V-INT, boot post-init, Z80 sound interface, GameEntry/GameLoopSetup/MainLoop, GameCommand, RangeLookup, utility cluster: MemFillByte/MemCopy/MemFillWord/PollAction/RandRange/ByteSum/ResourceLoad/ResourceUnload/TilePlacement/GameCmd16/ReadInput, math: Multiply32/SignedDiv/UnsignedDivide/UDiv_Overflow/UDiv_Full32/UnsignedMod/SignedMod + 5 FromPtr entries, text: SetTextWindow/SetTextCursor/sprintf/PrintfNarrow/PrintfWide, compression: LZ_Decompress)
 
 ## Most-Called Functions
 
@@ -18,22 +18,22 @@ These are the most frequently called subroutines -- high-priority translation ta
 |---------|-------|------|-------|
 | $000D64 | 306 | GameCommand | Central command dispatcher (47 handlers via jump table) |
 | $03E05C | 204 | Multiply32 | 32x32->32 unsigned multiply (cross-product MULU.W) |
-| $03AB2C | 174 | | |
-| $03B22C | 171 | | |
+| $03AB2C | 174 | SetTextCursor | Set text cursor X/Y position |
+| $03B22C | 171 | sprintf | Format string to buffer (C-style varargs) |
 | $03E08A | 169 | SignedDiv | Signed 32/32 divide (fast DIVS.W + slow unsigned path) |
-| $03A942 | 124 | | |
-| $003FEC | 123 | | |
+| $03A942 | 124 | SetTextWindow | Define text rendering window bounds |
+| $003FEC | 123 | LZ_Decompress | LZSS/LZ77 decompressor (variable-length bitstream) |
 | $00D648 | 114 | RangeLookup | Map value to table index (0-7) via cumulative thresholds |
 | $01D71C | 106 | ResourceLoad | Load resource if not loaded, set flag |
 | $005092 | 101 | DisplaySetup | Display/graphics setup |
 | $01E044 | 100 | TilePlacement | Build tile params, call GameCmd #15 |
-| $03B270 | 97 | | |
+| $03B270 | 97 | PrintfWide | Format + display string (2-tile wide font) |
 | $01E1EC | 95 | ReadInput | Read joypad via GameCmd #10, mode select |
 | $01D748 | 95 | ResourceUnload | Unload resource if loaded, clear flag |
 | $03E146 | 88 | SignedMod | Signed 32/32 modulo (sign follows dividend) |
 | $01E0B8 | 77 | GameCmd16 | Thin wrapper for GameCommand #16 |
 | $01D520 | 71 | MemFillByte | Fill memory with byte value |
-| $03B246 | 65 | | |
+| $03B246 | 65 | PrintfNarrow | Format + display string (1-tile narrow font) |
 | $01D62C | 65 | PollAction | Flush-then-wait input polling |
 | $01D6A4 | 64 | RandRange | Random int in [min,max] via LCG |
 
@@ -150,6 +150,22 @@ These are the most frequently called subroutines -- high-priority translation ta
 | $03E142 | SignedMod_FromPtr | Alternate entry: load from (A0), swap D0/D1 |
 | $03E146 | SignedMod | Signed 32/32 modulo, sign follows dividend (88 calls) |
 
+### Compression
+
+| Address | Name | Description |
+|---------|------|-------------|
+| $003FEC | LZ_Decompress | LZSS/LZ77 decompressor, 596 bytes (123 calls) |
+
+### Text
+
+| Address | Name | Description |
+|---------|------|-------------|
+| $03A942 | SetTextWindow | Define text window bounds: left/top/width/height (124 calls) |
+| $03AB2C | SetTextCursor | Set text cursor X/Y position (174 calls) |
+| $03B22C | sprintf | Format string to buffer, C-style varargs (171 calls) |
+| $03B246 | PrintfNarrow | Format + display string, 1-tile narrow font (65 calls) |
+| $03B270 | PrintfWide | Format + display string, 2-tile wide font (97 calls) |
+
 ### Sound
 
 | Address | Name | Description |
@@ -197,7 +213,7 @@ These are the most frequently called subroutines -- high-priority translation ta
 | $002678 | Z80_ReleaseBus | sound | -- | named |
 | $002688 | Z80_Delay | sound | -- | named |
 | $003BE8 | EarlyInit | boot | -- | named |
-| $003FEC | -- | unknown | 123 | unnamed |
+| $003FEC | LZ_Decompress | compression | 123 | translated |
 | $005092 | DisplaySetup | display | 101 | named |
 | $005736 | PreGameInit | game | -- | named |
 | $0058EE | ErrorDisplay | exception | -- | named |
@@ -220,11 +236,11 @@ These are the most frequently called subroutines -- high-priority translation ta
 | $026128 | GameUpdate4 | game | -- | named |
 | $02947A | GameLogic2 | game | -- | named |
 | $02F5A6 | GameUpdate1 | game | -- | named |
-| $03A942 | -- | unknown | 124 | unnamed |
-| $03AB2C | -- | unknown | 174 | unnamed |
-| $03B22C | -- | unknown | 171 | unnamed |
-| $03B246 | -- | unknown | 65 | unnamed |
-| $03B270 | -- | unknown | 97 | unnamed |
+| $03A942 | SetTextWindow | text | 124 | translated |
+| $03AB2C | SetTextCursor | text | 174 | translated |
+| $03B22C | sprintf | text | 171 | translated |
+| $03B246 | PrintfNarrow | text | 65 | translated |
+| $03B270 | PrintfWide | text | 97 | translated |
 | $03B428 | GameSetup1 | game | -- | named |
 | $03CA4E | GameSetup2 | game | -- | named |
 | $03E05A | Multiply32_FromPtr | math | -- | translated |

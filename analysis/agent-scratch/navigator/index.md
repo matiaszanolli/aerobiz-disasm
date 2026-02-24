@@ -84,6 +84,8 @@ The Navigator's complete knowledge base. Updated after each session.
 - GameCommand ($D64-$E53): DONE -- 240 bytes, command dispatcher + 47-entry jump table
 - Utility cluster ($1D520-$1E233): DONE -- 624 bytes, 11 functions: MemFillByte/MemCopy/MemFillWord/PollAction/RandRange/ByteSum/ResourceLoad/ResourceUnload/TilePlacement/GameCmd16/ReadInput
 - Math primitives ($3E05A-$3E181): DONE -- 296 bytes, 12 functions: Multiply32/SignedDiv/UnsignedDivide/UDiv_Overflow/UDiv_Full32/UnsignedMod/SignedMod + 5 FromPtr alternate entries
+- Text system ($3A942-$3B29B): DONE -- 250 bytes, 5 functions: SetTextWindow/SetTextCursor/sprintf/PrintfNarrow/PrintfWide
+- LZ_Decompress ($3FEC-$423F): DONE -- 596 bytes, LZSS decompressor with variable-length bitstream encoding
 - TMSS boot ($200-$28C): not yet (standard Genesis boilerplate)
 - vasm bra.w: CONFIRMED correct displacement (no +2 bug like bsr.w)
 - vasm pea ($xxxx).w: CONFIRMED correct absolute short encoding
@@ -92,7 +94,8 @@ The Navigator's complete knowledge base. Updated after each session.
 - vasm divs.w/divu.w/mulu.w: CONFIRMED correct encoding
 - vasm ext.l: CONFIRMED correct ($48C0 for D0)
 - vasm addx.l/dbra: CONFIRMED correct encoding
-- Most-called function: $000D64 (306 calls), $03E05C Multiply32 (204), $03AB2C (174)
+- Most-called function: $000D64 (306 calls), $03E05C Multiply32 (204), $03AB2C SetTextCursor (174), $03B22C sprintf (171)
+- Text system RAM: font_mode $FF1800, cursor_x $FF128A, cursor_y $FFBDA6, char_width $FF99DE, cursor_advance $FFA77A, win_left $FFBD68, win_top $FFB9E4, win_right $FFBDA8, win_bottom $FFBD48
 
 ### ROM Major Regions
 - $000200-$052FFF: CODE (333KB, main game code)

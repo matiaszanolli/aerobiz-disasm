@@ -2655,16 +2655,60 @@ GetByteField4:                                                 ; $0074E0
     dc.w    $4E94,$4FEF,$001C,$4878,$02EC,$4878,$0001,$4878; $0078E0
     dc.w    $0006,$3006,$48C0,$2F00,$3007,$48C0,$2F00,$42A7; $0078F0
     dc.w    $4878,$001A,$4E94,$3003,$4CEE,$1CFC,$FFD0,$4E5E; $007900
-    dc.w    $4E75,$48E7,$3E20,$242F,$001C,$282F,$002C,$2A2F; $007910
-    dc.w    $0028,$2C2F,$0024,$246F,$0020,$4878,$0020,$4878; $007920
-    dc.w    $0020,$42A7,$42A7,$4EB9,$0003,$A942,$2F0A,$4878; $007930
-    dc.w    $0001,$4878,$0001,$3006,$2F00,$3002,$2F00,$4878; $007940
-    dc.w    $0002,$4878,$0780,$3002,$C0FC,$000A,$207C,$00FF; $007950
-    dc.w    $03C0,$3230,$0000,$2F01,$4EB9,$0000,$643C,$4FEF; $007960
-    dc.w    $0030,$0C45,$0001,$6612,$4878,$001A,$4878,$0008; $007970
-    dc.w    $6100,$FE02,$508F,$3600,$6016,$0C44,$0001,$6610; $007980
-    dc.w    $4878,$0001,$4878,$0003,$4EB9,$0001,$D62C,$508F; $007990
-    dc.w    $3003,$4CDF,$047C,$4E75,$48E7,$3E00,$242F,$0020; $0079A0
+    dc.w    $4E75                                            ; $007910
+; ============================================================================
+; ShowDialog -- Display dialog with table lookup and optional input (38 calls)
+; No link frame. Args via sp: d2=index, a2=data ptr, d6=row, d5=flag1, d4=flag2
+; Returns result in d0 (from $7784 if flag1, else d3 default).
+; ============================================================================
+ShowDialog:                                                  ; $007912
+    movem.l d2-d6/a2,-(sp)
+    move.l  $001C(sp),d2                                     ; arg1: index
+    move.l  $002C(sp),d4                                     ; arg5: flag2
+    move.l  $0028(sp),d5                                     ; arg4: flag1
+    move.l  $0024(sp),d6                                     ; arg3: row
+    movea.l $0020(sp),a2                                     ; arg2: data pointer
+    pea     ($0020).w                                        ; width = 32
+    pea     ($0020).w                                        ; height = 32
+    clr.l   -(sp)                                            ; left = 0
+    clr.l   -(sp)                                            ; top = 0
+    dc.w    $4EB9,$0003,$A942                                ; jsr SetTextWindow
+    move.l  a2,-(sp)                                         ; data pointer
+    pea     ($0001).w
+    pea     ($0001).w
+    move.w  d6,d0
+    move.l  d0,-(sp)                                         ; row (extended)
+    move.w  d2,d0
+    move.l  d0,-(sp)                                         ; index (extended)
+    pea     ($0002).w
+    pea     ($0780).w
+    move.w  d2,d0
+    mulu.w  #$000A,d0                                        ; index * 10
+    movea.l #$00FF03C0,a0                                    ; lookup table base
+    move.w  (a0,d0.w),d1                                     ; table[index*10]
+    move.l  d1,-(sp)
+    dc.w    $4EB9,$0000,$643C                                ; jsr $643C (display fn)
+    lea     $30(sp),sp                                       ; clean 48 bytes
+    cmpi.w  #$0001,d5                                        ; flag1 == 1?
+    bne.s   .check_f2                                        ; no, check flag2
+    pea     ($001A).w
+    pea     ($0008).w
+    dc.w    $6100,$FE02                                      ; bsr.w $007784 (input fn)
+    addq.l  #8,sp                                            ; clean args
+    move.w  d0,d3                                            ; d3 = result
+    bra.s   .epilogue
+.check_f2:                                                   ; $00798A
+    cmpi.w  #$0001,d4                                        ; flag2 == 1?
+    bne.s   .epilogue                                        ; no, skip
+    pea     ($0001).w
+    pea     ($0003).w
+    dc.w    $4EB9,$0001,$D62C                                ; jsr PollAction
+    addq.l  #8,sp                                            ; clean args
+.epilogue:                                                   ; $0079A0
+    move.w  d3,d0                                            ; return value
+    movem.l (sp)+,d2-d6/a2
+    rts
+    dc.w    $48E7,$3E00,$242F,$0020                          ; $0079A8 (next fn)
     dc.w    $282F,$001C,$2A2F,$0018,$4243,$0C42,$0020,$6C1A; $0079B0
     dc.w    $3002,$48C0,$7201,$E1A9,$2001,$3205,$E549,$207C; $0079C0
     dc.w    $00FF,$A6A0,$C0B0,$1000,$603E,$0C44,$00FF,$6610; $0079D0

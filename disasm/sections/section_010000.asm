@@ -390,20 +390,71 @@
     dc.w    $486E,$FFEE,$4EB9,$0000,$5092,$4FEF,$000C,$B843; $011800
     dc.w    $6702,$7E01,$4878,$0003,$4878,$000E,$4EB9,$0000; $011810
     dc.w    $0D64,$508F,$6000,$FC1C,$4EB9,$0001,$E398,$3003; $011820
-    dc.w    $4CEE,$3CFC,$FF38,$4E5E,$4E75,$4E56,$0000,$48E7; $011830
-    dc.w    $3000,$242E,$0008,$4878,$0020,$4878,$0020,$42A7; $011840
-    dc.w    $42A7,$4EB9,$0003,$A942,$4878,$0019,$4878,$0013; $011850
-    dc.w    $4EB9,$0003,$AB2C,$3002,$C0FC,$0024,$207C,$00FF; $011860
-    dc.w    $001E,$2F30,$0000,$4879,$0003,$F1B2,$4EB9,$0003; $011870
-    dc.w    $B270,$4FEF,$0020,$2F2E,$000C,$4878,$0001,$4878; $011880
-    dc.w    $0001,$302E,$0016,$2F00,$3002,$2F00,$4878,$0002; $011890
-    dc.w    $4878,$0780,$3002,$C0FC,$000A,$322E,$0012,$D241; $0118A0
-    dc.w    $D041,$207C,$00FF,$03B8,$3230,$0000,$2F01,$4EB9; $0118B0
-    dc.w    $0000,$643C,$4FEF,$0020,$0C6E,$0001,$001A,$6614; $0118C0
-    dc.w    $4878,$001A,$4878,$0006,$4EB9,$0000,$7784,$508F; $0118D0
-    dc.w    $3600,$6016,$0C6E,$0001,$001E,$660E,$4878,$0001; $0118E0
-    dc.w    $4878,$0003,$4EB9,$0001,$D62C,$3003,$4CEE,$000C; $0118F0
-    dc.w    $FFF8,$4E5E,$4E75,$48E7,$3E20,$242F,$001C,$262F; $011900
+    dc.w    $4CEE,$3CFC,$FF38,$4E5E,$4E75                    ; $011830 (prev fn epilogue)
+; ============================================================================
+; ShowTextDialog -- Display text dialog with formatted output (31 calls)
+; Uses link frame. Displays formatted text via PrintfWide, does table lookup
+; via $643C, then optionally calls $7784 or PollAction based on flag args.
+; Args: $8.l=index, $C.l=data, $12.w=col, $16.w=param, $1A.w=flag1, $1E.w=flag2
+; ============================================================================
+ShowTextDialog:                                              ; $01183A
+    link    a6,#$0000
+    movem.l d2-d3,-(sp)
+    move.l  $0008(a6),d2                                     ; d2 = index
+    pea     ($0020).w                                        ; width = 32
+    pea     ($0020).w                                        ; height = 32
+    clr.l   -(sp)                                            ; left = 0
+    clr.l   -(sp)                                            ; top = 0
+    dc.w    $4EB9,$0003,$A942                                ; jsr SetTextWindow
+    pea     ($0019).w                                        ; x = 25
+    pea     ($0013).w                                        ; y = 19
+    dc.w    $4EB9,$0003,$AB2C                                ; jsr SetTextCursor
+    move.w  d2,d0
+    mulu.w  #$0024,d0                                        ; index * 36 (record size)
+    movea.l #$00FF001E,a0                                    ; record table base
+    move.l  (a0,d0.w),-(sp)                                  ; push record field
+    pea     ($0003F1B2).l                                    ; format string
+    dc.w    $4EB9,$0003,$B270                                ; jsr PrintfWide
+    lea     $20(sp),sp                                       ; clean 32 bytes
+    move.l  $000C(a6),-(sp)                                  ; push data arg
+    pea     ($0001).w
+    pea     ($0001).w
+    move.w  $0016(a6),d0
+    move.l  d0,-(sp)                                         ; param (extended)
+    move.w  d2,d0
+    move.l  d0,-(sp)                                         ; index (extended)
+    pea     ($0002).w
+    pea     ($0780).w
+    move.w  d2,d0
+    mulu.w  #$000A,d0                                        ; index * 10
+    move.w  $0012(a6),d1                                     ; col arg
+    add.w   d1,d1                                            ; col * 2
+    add.w   d1,d0                                            ; offset += col*2
+    movea.l #$00FF03B8,a0                                    ; lookup table base
+    move.w  (a0,d0.w),d1                                     ; table[index*10+col*2]
+    move.l  d1,-(sp)
+    dc.w    $4EB9,$0000,$643C                                ; jsr $643C (display fn)
+    lea     $20(sp),sp                                       ; clean 32 bytes
+    cmpi.w  #$0001,$001A(a6)                                 ; flag1 == 1?
+    bne.s   .check_f2                                        ; no, check flag2
+    pea     ($001A).w
+    pea     ($0006).w
+    dc.w    $4EB9,$0000,$7784                                ; jsr $7784 (input fn)
+    addq.l  #8,sp                                            ; clean args
+    move.w  d0,d3                                            ; d3 = result
+    bra.s   .epilogue
+.check_f2:                                                   ; $0118E4
+    cmpi.w  #$0001,$001E(a6)                                 ; flag2 == 1?
+    bne.s   .epilogue                                        ; no, skip
+    pea     ($0001).w
+    pea     ($0003).w
+    dc.w    $4EB9,$0001,$D62C                                ; jsr PollAction
+.epilogue:                                                   ; $0118FA
+    move.w  d3,d0                                            ; return value
+    movem.l -$08(a6),d2-d3
+    unlk    a6
+    rts
+    dc.w    $48E7,$3E20,$242F,$001C,$262F                    ; $011906 (next fn)
     dc.w    $0020,$3002,$48C0,$EB88,$2A00,$3203,$48C1,$E789; $011910
     dc.w    $2801,$D041,$207C,$00FF,$0338,$41F0,$0000,$2448; $011920
     dc.w    $7C00,$1C12,$0C2A,$0003,$0001,$645A,$3003,$48C0; $011930
@@ -3461,20 +3512,85 @@ MemFillWord:                                                     ; $01D550
     tst.w   d1                                                   ; count == 0?
     bne.s   .loop                                                ; loop if not done
     rts
-; ---
-    dc.w    $4E56,$0000,$48E7,$3030                              ; $01D568 (next fn)
-    dc.w    $242E,$000C,$246E,$0010,$267C,$0000,$0D64,$362E; $01D570
-    dc.w    $000A,$EB4B,$0C42,$0200,$6D64,$6032,$42A7,$7000; $01D580
-    dc.w    $3003,$2F00,$2F0A,$4878,$0800,$4878,$0002,$4878; $01D590
-    dc.w    $0005,$4E93,$4878,$0004,$4878,$000E,$4E93,$4FEF; $01D5A0
-    dc.w    $0020,$0643,$1000,$45EA,$1000,$0442,$0080,$0C42; $01D5B0
-    dc.w    $0080,$6EC8,$4A42,$6F5A,$42A7,$7000,$3003,$2F00; $01D5C0
-    dc.w    $2F0A,$3002,$48C0,$E988,$2F00,$4878,$0002,$4878; $01D5D0
-    dc.w    $0005,$4E93,$4FEF,$0018,$4878,$0002,$602E,$42A7; $01D5E0
-    dc.w    $7000,$3003,$2F00,$2F0A,$3002,$48C0,$E988,$2F00; $01D5F0
-    dc.w    $4878,$0002,$4878,$0005,$4E93,$4FEF,$0018,$3002; $01D600
-    dc.w    $48C0,$7264,$4EB9,$0003,$E08A,$2F00,$4878,$000E; $01D610
-    dc.w    $4E93,$4CEE,$0C0C,$FFF0,$4E5E,$4E75              ; $01D620 (end of fn $1D568)
+; ============================================================================
+; VRAMBulkLoad -- Transfer tile data to VRAM in chunks via GameCommand (46 calls)
+; Chunks large transfers into $80-unit pieces, each $800 bytes via DMA command.
+; Args: $A(a6).w = tile base, $C(a6).l = count, $10(a6).l = source ptr
+; ============================================================================
+VRAMBulkLoad:                                                ; $01D568
+    link    a6,#$0000
+    movem.l d2-d3/a2-a3,-(sp)
+    move.l  $000C(a6),d2                                     ; d2 = transfer count
+    movea.l $0010(a6),a2                                     ; a2 = source pointer
+    movea.l #$00000D64,a3                                    ; a3 = GameCommand
+    move.w  $000A(a6),d3                                     ; d3 = tile base
+    lsl.w   #5,d3                                            ; tile# -> VRAM offset (*32)
+    cmpi.w  #$0200,d2                                        ; count >= $200?
+    blt.s   .small                                           ; no, single transfer
+    bra.s   .chunk_test                                      ; enter chunked loop
+.chunk_loop:                                                 ; $01D58C
+    clr.l   -(sp)                                            ; flags = 0
+    moveq   #0,d0
+    move.w  d3,d0
+    move.l  d0,-(sp)                                         ; VRAM offset
+    move.l  a2,-(sp)                                         ; source address
+    pea     ($0800).w                                        ; chunk size ($800 bytes)
+    pea     ($0002).w                                        ; sub: VRAM
+    pea     ($0005).w                                        ; cmd: DMA transfer
+    jsr     (a3)                                             ; GameCommand(5,2,$800,src,ofs,0)
+    pea     ($0004).w                                        ; wait count
+    pea     ($000E).w                                        ; cmd: wait/sync
+    jsr     (a3)                                             ; GameCommand($E,4)
+    lea     $20(sp),sp                                       ; clean 32 bytes
+    addi.w  #$1000,d3                                        ; next VRAM chunk offset
+    lea     $1000(a2),a2                                     ; next source chunk
+    subi.w  #$0080,d2                                        ; count -= $80
+.chunk_test:                                                 ; $01D5BE
+    cmpi.w  #$0080,d2                                        ; count > $80?
+    bgt.s   .chunk_loop                                      ; yes, keep chunking
+    tst.w   d2                                               ; any remainder?
+    ble.s   .done                                            ; no, finished
+    clr.l   -(sp)                                            ; flags = 0
+    moveq   #0,d0
+    move.w  d3,d0
+    move.l  d0,-(sp)                                         ; VRAM offset
+    move.l  a2,-(sp)                                         ; source address
+    move.w  d2,d0
+    ext.l   d0
+    lsl.l   #4,d0                                            ; remainder * 16
+    move.l  d0,-(sp)                                         ; byte count
+    pea     ($0002).w                                        ; sub: VRAM
+    pea     ($0005).w                                        ; cmd: DMA transfer
+    jsr     (a3)                                             ; GameCommand(5,2,rem*16,src,ofs,0)
+    lea     $18(sp),sp                                       ; clean 24 bytes
+    pea     ($0002).w                                        ; wait count
+    bra.s   .tail                                            ; -> common tail
+.small:                                                      ; $01D5EE
+    clr.l   -(sp)                                            ; flags = 0
+    moveq   #0,d0
+    move.w  d3,d0
+    move.l  d0,-(sp)                                         ; VRAM offset
+    move.l  a2,-(sp)                                         ; source address
+    move.w  d2,d0
+    ext.l   d0
+    lsl.l   #4,d0                                            ; count * 16
+    move.l  d0,-(sp)                                         ; byte count
+    pea     ($0002).w                                        ; sub: VRAM
+    pea     ($0005).w                                        ; cmd: DMA transfer
+    jsr     (a3)                                             ; GameCommand(5,2,cnt*16,src,ofs,0)
+    lea     $18(sp),sp                                       ; clean 24 bytes
+    move.w  d2,d0
+    ext.l   d0
+    moveq   #$64,d1                                          ; divisor = 100
+    dc.w    $4EB9,$0003,$E08A                                ; jsr SignedDiv
+    move.l  d0,-(sp)                                         ; push count/100
+.tail:                                                       ; $01D61C
+    pea     ($000E).w                                        ; cmd: wait/sync
+    jsr     (a3)                                             ; GameCommand($E,<n>)
+.done:                                                       ; $01D622
+    movem.l -$10(a6),d2-d3/a2-a3
+    unlk    a6
+    rts
 ; ============================================================================
 ; PollAction -- Poll for action/input with different loop strategies (65 calls)
 ; If flag $FF0A34 is clear, delays 60 frames and returns 16 (default).

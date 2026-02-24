@@ -80,7 +80,7 @@ The Navigator's complete knowledge base. Updated after each session.
 - V-INT ($14E6-$15AF): DONE -- 202 bytes, hybrid (mnemonics + dc.w for external calls)
 - Boot post-init ($2FA-$3A0): DONE -- 166 bytes, hybrid
 - Z80 sound interface ($260A-$2695): DONE -- 140 bytes, 4 functions (SoundInit/RequestBus/ReleaseBus/Delay)
-- Main game loop ($D5B6-$D645): DONE -- 144 bytes, 3 functions (GameEntry/GameLoopSetup/MainLoop)
+- Main game loop ($D5B6-$D6BC): DONE -- 262 bytes, 4 functions (GameEntry/GameLoopSetup/MainLoop/RangeLookup)
 - GameCommand ($D64-$E53): DONE -- 240 bytes, command dispatcher + 47-entry jump table
 - Utility cluster ($1D520-$1E233): DONE -- 624 bytes, 11 functions: MemFillByte/MemCopy/MemFillWord/PollAction/RandRange/ByteSum/ResourceLoad/ResourceUnload/TilePlacement/GameCmd16/ReadInput
 - Math primitives ($3E05A-$3E181): DONE -- 296 bytes, 12 functions: Multiply32/SignedDiv/UnsignedDivide/UDiv_Overflow/UDiv_Full32/UnsignedMod/SignedMod + 5 FromPtr alternate entries

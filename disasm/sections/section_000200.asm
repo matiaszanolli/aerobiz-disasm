@@ -3735,14 +3735,73 @@ MainLoop:                                                    ; $00D608
     addq.w  #1,$00FF0006                                     ; Increment frame counter
     bra.s   MainLoop                                         ; Loop forever
 ; ---
-    dc.w    $4E75,$48E7,$3000,$262F,$000C                    ; $00D646 (next function)
-    dc.w    $207C,$0005,$ECBC,$0C43,$0020,$6C22,$4242,$7000; $00D650
-    dc.w    $1010,$7200,$1228,$0001,$D081,$3203,$48C1,$B081; $00D660
-    dc.w    $6E44,$5888,$5242,$0C42,$0007,$65E2,$6038,$0C43; $00D670
-    dc.w    $0059,$6C24,$4242,$7000,$1028,$0002,$7200,$1228; $00D680
-    dc.w    $0003,$D081,$3203,$48C1,$B081,$6E1A,$5888,$5242; $00D690
-    dc.w    $0C42,$0007,$65E0,$600E,$0C43,$005A,$6C04,$7407; $00D6A0
-    dc.w    $6004,$343C,$00FF,$3002,$4CDF,$000C,$4E75,$4E56; $00D6B0
+    rts                                                      ; $00D646 (dead code after MainLoop bra.s)
+; ===========================================================================
+; RangeLookup -- Map a value to a table index (0-7)
+;   In:  4(sp) = value to look up (longword on stack)
+;   Out: D0.w = index (0-7), or $FF if out of range
+;   Table: 8 entries x 4 bytes at $5ECBC, cumulative thresholds
+;   Value < 32: search bytes [0]+[1]; 32-88: search bytes [2]+[3]
+;   Value 89: returns 7; Value >= 90: returns $FF
+;   114 calls
+; ===========================================================================
+RangeLookup:                                                ; $00D648
+    movem.l d2-d3,-(sp)               ; save D2-D3
+    move.l  $000C(sp),d3              ; D3 = argument (past saved regs + return addr)
+    movea.l #$0005ECBC,a0             ; A0 = range table in ROM
+    cmpi.w  #$0020,d3                 ; value < 32?
+    bge.s   .range2                    ; no, try second range
+; --- Range 1: value 0-31, search using table bytes [0]+[1] ---
+    clr.w   d2                         ; D2 = index counter
+.loop1:                                                     ; $00D65E
+    moveq   #0,d0
+    move.b  (a0),d0                    ; D0 = entry byte 0
+    moveq   #0,d1
+    move.b  1(a0),d1                   ; D1 = entry byte 1
+    add.l   d1,d0                      ; D0 = threshold sum
+    move.w  d3,d1
+    ext.l   d1                         ; D1 = value (sign-extended)
+    cmp.l   d1,d0
+    bgt.s   .found                     ; threshold > value, match
+    addq.l  #4,a0                      ; next table entry
+    addq.w  #1,d2                      ; index++
+    cmpi.w  #$0007,d2
+    bcs.s   .loop1                     ; loop while index < 7
+    bra.s   .found                     ; not found, D2 = 7
+; --- Range 2: value 32-88, search using table bytes [2]+[3] ---
+.range2:                                                    ; $00D67E
+    cmpi.w  #$0059,d3                  ; value < 89?
+    bge.s   .range3                    ; no, check special cases
+    clr.w   d2                         ; D2 = index counter
+.loop2:                                                     ; $00D686
+    moveq   #0,d0
+    move.b  2(a0),d0                   ; D0 = entry byte 2
+    moveq   #0,d1
+    move.b  3(a0),d1                   ; D1 = entry byte 3
+    add.l   d1,d0                      ; D0 = threshold sum
+    move.w  d3,d1
+    ext.l   d1                         ; D1 = value (sign-extended)
+    cmp.l   d1,d0
+    bgt.s   .found                     ; threshold > value, match
+    addq.l  #4,a0                      ; next table entry
+    addq.w  #1,d2                      ; index++
+    cmpi.w  #$0007,d2
+    bcs.s   .loop2                     ; loop while index < 7
+    bra.s   .found                     ; not found, D2 = 7
+; --- Range 3: special values ---
+.range3:                                                    ; $00D6A8
+    cmpi.w  #$005A,d3                  ; value < 90?
+    bge.s   .invalid                   ; no, out of range
+    moveq   #7,d2                      ; value == 89 -> index 7
+    bra.s   .found
+.invalid:                                                   ; $00D6B2
+    move.w  #$00FF,d2                  ; out of range marker
+.found:                                                     ; $00D6B6
+    move.w  d2,d0                      ; D0 = result
+    movem.l (sp)+,d2-d3               ; restore D2-D3
+    rts
+; ---------------------------------------------------------------------------
+    dc.w    $4E56                                            ; $00D6BE (next function: link)
     dc.w    $FFFC,$48E7,$3800,$7400,$1439,$00FF,$0016,$3639; $00D6C0
     dc.w    $00FF,$9A1C,$4878,$0002,$3002,$48C0,$2F00,$4EB9; $00D6D0
     dc.w    $0001,$12EE,$508F,$3800,$0C40,$00FF,$673A,$0C44; $00D6E0

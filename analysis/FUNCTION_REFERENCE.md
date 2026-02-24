@@ -7,8 +7,8 @@ Index of all identified functions. Updated as disassembly progresses.
 - **Total RTS (function endpoints):** 854
 - **Total RTE (interrupt returns):** 6
 - **Unique call targets:** 2,896
-- **Functions named:** 78
-- **Functions translated to mnemonics:** 35 (exception handlers, EXT/H-INT/V-INT, boot post-init, Z80 sound interface, GameEntry/GameLoopSetup/MainLoop, GameCommand, utility cluster: MemFillByte/MemCopy/MemFillWord/PollAction/RandRange/ByteSum/ResourceLoad/ResourceUnload/TilePlacement/GameCmd16/ReadInput, math: Multiply32/SignedDiv/UnsignedDivide/UDiv_Overflow/UDiv_Full32/UnsignedMod/SignedMod + 5 FromPtr entries)
+- **Functions named:** 79
+- **Functions translated to mnemonics:** 36 (exception handlers, EXT/H-INT/V-INT, boot post-init, Z80 sound interface, GameEntry/GameLoopSetup/MainLoop, GameCommand, RangeLookup, utility cluster: MemFillByte/MemCopy/MemFillWord/PollAction/RandRange/ByteSum/ResourceLoad/ResourceUnload/TilePlacement/GameCmd16/ReadInput, math: Multiply32/SignedDiv/UnsignedDivide/UDiv_Overflow/UDiv_Full32/UnsignedMod/SignedMod + 5 FromPtr entries)
 
 ## Most-Called Functions
 
@@ -23,7 +23,7 @@ These are the most frequently called subroutines -- high-priority translation ta
 | $03E08A | 169 | SignedDiv | Signed 32/32 divide (fast DIVS.W + slow unsigned path) |
 | $03A942 | 124 | | |
 | $003FEC | 123 | | |
-| $00D648 | 114 | | Near main game loop |
+| $00D648 | 114 | RangeLookup | Map value to table index (0-7) via cumulative thresholds |
 | $01D71C | 106 | ResourceLoad | Load resource if not loaded, set flag |
 | $005092 | 101 | DisplaySetup | Display/graphics setup |
 | $01E044 | 100 | TilePlacement | Build tile params, call GameCmd #15 |
@@ -71,6 +71,7 @@ These are the most frequently called subroutines -- high-priority translation ta
 | $00D5B6 | GameEntry | Main game entry (called from boot via JMP) |
 | $00D602 | GameLoopSetup | One-time pre-loop init, falls into MainLoop |
 | $00D608 | MainLoop | Main game loop body (8 calls, loops forever) |
+| $00D648 | RangeLookup | Map value to table index (0-7) via cumulative thresholds (114 calls) |
 | $005736 | PreGameInit | Pre-game initialization |
 | $03B428 | GameSetup1 | Game setup (title/scenario?) |
 | $03CA4E | GameSetup2 | Game setup |
@@ -241,4 +242,4 @@ These are the most frequently called subroutines -- high-priority translation ta
 | $00D5B6 | GameEntry | game | -- | named |
 | $00D602 | GameLoopSetup | game | -- | named |
 | $00D608 | MainLoop | game | -- | named |
-| $00D648 | -- | game | 114 | unnamed |
+| $00D648 | RangeLookup | game | 114 | translated |

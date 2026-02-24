@@ -116,6 +116,12 @@ Pick the highest-priority unclaimed task. Mark it `IN PROGRESS` with your sessio
 **Approach:** Translated 11 functions totaling 624 bytes: MemFillByte (24B), MemCopy (24B), MemFillWord (24B), PollAction (120B, flush-then-wait input loop), RandRange (88B, classic C LCG with constants 1103515245/12345), ByteSum (30B), ResourceLoad/ResourceUnload (44B/42B, paired load/unload with flag), TilePlacement (116B, builds param block for GameCmd #15), GameCmd16 (40B, thin wrapper), ReadInput (72B, joypad input with mode selection). Hit ASL-vs-LSL pitfall on TilePlacement (KNOWN_ISSUES confirmed). Also hit a branch-target labeling bug on PollAction (bne.s to wrong label).
 **Acceptance:** `make verify` passes. All 11 functions translated with full control flow.
 
+### B-017: Translate RangeLookup at $D648
+**Status:** DONE (2026-02-23)
+**Why:** 114 calls, immediately after MainLoop. High-traffic utility.
+**Approach:** Translated 1 function at $D648-$D6BC (118 bytes). Takes a value from stack, searches 8-entry table at ROM $5ECBC (4 bytes/entry). Value < 32: searches bytes [0]+[1] thresholds. Value 32-88: searches bytes [2]+[3] thresholds. Value 89: returns 7. Value >= 90: returns $FF. Standard loop with CMPI.W/BCS.S for iteration control.
+**Acceptance:** `make verify` passes. Function fully translated.
+
 ### B-016: Translate math primitives ($3E05C, $3E08A, $3E146)
 **Status:** DONE (2026-02-23)
 **Why:** Top 3 most-called unnamed functions (204+169+88 = 461 total calls). Critical math infrastructure used by RandRange and throughout game logic.
@@ -128,6 +134,7 @@ Pick the highest-priority unclaimed task. Mark it `IN PROGRESS` with your sessio
 
 | ID | Description | Commit | Date |
 |----|-------------|--------|------|
+| B-017 | RangeLookup translated ($D648, 118 bytes) | -- | 2026-02-23 |
 | B-016 | Math primitives translated (12 functions, 296 bytes) | -- | 2026-02-23 |
 | B-015 | Utility cluster translated (11 functions, 624 bytes) | -- | 2026-02-23 |
 | B-013 | GameCommand dispatcher translated (47-entry jump table, 240 bytes) | -- | 2026-02-23 |

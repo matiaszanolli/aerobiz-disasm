@@ -2553,32 +2553,175 @@ BitFieldSearch:                                                ; $006EEA
 .bfs_exit:                                                     ; $006F3C
     MOVEM.L (SP)+,D2-D3
     RTS
-    dc.w    $48E7,$3C20,$242F,$0018,$262F,$001C,$B443          ; $006F42 (start of next function)
-    dc.w    $6306,$3802,$3403,$3604,$B443,$6606,$4242,$6000; $006F50
-    dc.w    $0144,$0C42,$0020,$6438,$0C43,$0020,$6432,$7000; $006F60
-    dc.w    $3003,$2F00,$7000,$3002,$2F00,$4878,$0020,$4EBA; $006F70
-    dc.w    $025E,$4E71,$4FEF,$000C,$3400,$207C,$0005,$E356; $006F80
-    dc.w    $1030,$2000,$0280,$0000,$00FF,$3400,$6000,$0106; $006F90
-    dc.w    $0C42,$0059,$6400,$00FA,$0C43,$0059,$6400,$00F2; $006FA0
-    dc.w    $7000,$3002,$2F00,$4EB9,$0000,$D648,$3800,$7000; $006FB0
-    dc.w    $3003,$2F00,$4EB9,$0000,$D648,$508F,$3A00,$B845; $006FC0
-    dc.w    $6600,$00CE,$0C42,$0020,$6400,$00C6,$3004,$E548; $006FD0
-    dc.w    $207C,$0005,$ECBC,$41F0,$0000,$2448,$1010,$0280; $006FE0
-    dc.w    $0000,$00FF,$3202,$9240,$3401,$7000,$102A,$0002; $006FF0
-    dc.w    $3203,$9240,$3601,$7000,$3004,$7206,$B081,$6200; $007000
-    dc.w    $0090,$D080,$303B,$0806,$4EFB,$0002,$000E,$0024; $007010
-    dc.w    $0034,$0044,$0054,$0064,$0074,$3002,$C0FC,$0011; $007020
-    dc.w    $D043,$207C,$0005,$E546,$1030,$0000,$6000,$FF56; $007030
-    dc.w    $3002,$C0FC,$0005,$D043,$207C,$0005,$E5BE,$60E8; $007040
-    dc.w    $3002,$C0FC,$0005,$D043,$207C,$0005,$E5C8,$60D8; $007050
-    dc.w    $3002,$C0FC,$000A,$D043,$207C,$0005,$E5D8,$60C8; $007060
-    dc.w    $3002,$C0FC,$0006,$D043,$207C,$0005,$E61E,$60B8; $007070
-    dc.w    $3002,$C0FC,$0009,$D043,$207C,$0005,$E630,$60A8; $007080
-    dc.w    $3002,$C0FC,$0005,$D043,$207C,$0005,$E670,$6098; $007090
-    dc.w    $343C,$FFFF,$0C42,$FFFF,$672A,$3002,$C0FC,$0064; $0070A0
-    dc.w    $3400,$7000,$3002,$6C04,$720F,$D081,$E880,$2200; $0070B0
-    dc.w    $E588,$D081,$D080,$720A,$4EB9,$0003,$E08A,$C0FC; $0070C0
-    dc.w    $000A,$3400,$3002,$4CDF,$043C,$4E75             ; $0070D0
+; ============================================================================
+; CharCodeCompare -- Compare two character codes, compute compatibility index
+; Called: 22 times. Args (stack, no link): $18(SP)=code1 (l), $1C(SP)=code2 (l)
+; Returns: D0.W = compatibility index, $FFFF if incompatible, 0 if equal
+; Uses tables at $5E356, $5ECBC, $5E546/$5E5BE/$5E5C8/$5E5D8/$5E61E/$5E630/$5E670
+; ============================================================================
+CharCodeCompare:                                             ; $006F42
+    movem.l d2-d5/a2,-(sp)
+    move.l  $0018(sp),d2                                 ; D2 = code1
+    move.l  $001C(sp),d3                                 ; D3 = code2
+    ; Sort so D2 <= D3
+    cmp.w   d3,d2
+    bls.s   .sorted
+    move.w  d2,d4
+    move.w  d3,d2
+    move.w  d4,d3
+.sorted:                                                 ; $006F58
+    cmp.w   d3,d2
+    bne.s   .not_equal
+    clr.w   d2                                           ; equal → return 0
+    bra.w   .exit
+.not_equal:                                              ; $006F62
+    cmpi.w  #$0020,d2
+    bcc.s   .check_high                                  ; D2 >= 32 → high path
+    cmpi.w  #$0020,d3
+    bcc.s   .check_high                                  ; D3 >= 32 → high path
+    ; Both < 32: call CharPairIndex(code2, code1, #$20)
+    moveq   #0,d0
+    move.w  d3,d0
+    move.l  d0,-(sp)
+    moveq   #0,d0
+    move.w  d2,d0
+    move.l  d0,-(sp)
+    pea     ($0020).w
+    dc.w    $4EBA,$025E                                  ; jsr (d16,pc) → CharPairIndex ($0071DE)
+    nop
+    lea     $000C(sp),sp                                 ; clean 3 args
+    move.w  d0,d2                                        ; D2 = pair index result
+    movea.l #$0005E356,a0                                ; A0 = char range score table
+    move.b  (a0,d2.w),d0                                 ; D0 = table[D2]
+.exit_mask:                                              ; $006F94
+    andi.l  #$000000FF,d0                                ; zero-extend
+    move.w  d0,d2                                        ; D2 = score byte
+    bra.w   .exit
+.check_high:                                             ; $006FA0
+    cmpi.w  #$0059,d2
+    bcc.w   .fail                                        ; D2 >= 89 → fail
+    cmpi.w  #$0059,d3
+    bcc.w   .fail                                        ; D3 >= 89 → fail
+    ; [32..88]: RangeLookup both codes, compare categories
+    moveq   #0,d0
+    move.w  d2,d0
+    move.l  d0,-(sp)
+    dc.w    $4EB9,$0000,$D648                            ; jsr RangeLookup(D2) → D0=cat(D2)
+    move.w  d0,d4                                        ; D4 = category(D2)
+    moveq   #0,d0
+    move.w  d3,d0
+    move.l  d0,-(sp)
+    dc.w    $4EB9,$0000,$D648                            ; jsr RangeLookup(D3) → D0=cat(D3)
+    addq.l  #8,sp                                        ; clean 2 args
+    move.w  d0,d5                                        ; D5 = category(D3)
+    cmp.w   d5,d4
+    bne.w   .fail                                        ; different categories → fail
+    cmpi.w  #$0020,d2
+    bcc.w   .fail                                        ; mixed-class → fail
+    ; Same category, D2 < 32: look up range entry at $5ECBC[D4*4]
+    move.w  d4,d0
+    lsl.w   #2,d0                                        ; D0 = D4 * 4
+    movea.l #$0005ECBC,a0                                ; A0 = range entries
+    lea     (a0,d0.w),a0                                 ; A0 = &RangeEntry[D4]
+    movea.l a0,a2                                        ; A2 = save entry pointer
+    move.b  (a0),d0                                      ; D0 = entry base byte [+0]
+    andi.l  #$000000FF,d0
+    move.w  d2,d1
+    sub.w   d0,d1                                        ; D1 = code1 - base
+    move.w  d1,d2                                        ; D2 = adjusted code1
+    moveq   #0,d0
+    move.b  $0002(a2),d0                                 ; D0 = entry byte [+2]
+    move.w  d3,d1
+    sub.w   d0,d1                                        ; D1 = code2 - base
+    move.w  d1,d3                                        ; D3 = adjusted code2
+    ; Dispatch via 7-entry jump table (category D4, 0-6)
+    moveq   #0,d0
+    move.w  d4,d0
+    moveq   #6,d1
+    cmp.l   d1,d0
+    bhi.w   .fail                                        ; category > 6 → fail
+    add.l   d0,d0                                        ; D0 *= 2 (word index)
+    dc.w    $303B,$0806                                  ; move.w ($06,pc,d0.w),d0
+    dc.w    $4EFB,$0002                                  ; jmp ($02,pc,d0.w)
+.jtab:
+    dc.w    .case0-.jtab
+    dc.w    .case1-.jtab
+    dc.w    .case2-.jtab
+    dc.w    .case3-.jtab
+    dc.w    .case4-.jtab
+    dc.w    .case5-.jtab
+    dc.w    .case6-.jtab
+.case0:                                                  ; $00702A
+    move.w  d2,d0
+    dc.w    $C0FC,$0011                                  ; and.w #$0011,d0
+    add.w   d3,d0
+    movea.l #$0005E546,a0
+.shared_lookup:                                          ; $007038 (shared by all cases)
+    move.b  (a0,d0.w),d0                                 ; look up score in category table
+    bra.w   .exit_mask                                   ; → mask + assign + exit
+.case1:                                                  ; $007040
+    move.w  d2,d0
+    dc.w    $C0FC,$0005                                  ; and.w #$0005,d0
+    add.w   d3,d0
+    movea.l #$0005E5BE,a0
+    bra.s   .shared_lookup
+.case2:                                                  ; $007050
+    move.w  d2,d0
+    dc.w    $C0FC,$0005                                  ; and.w #$0005,d0
+    add.w   d3,d0
+    movea.l #$0005E5C8,a0
+    bra.s   .shared_lookup
+.case3:                                                  ; $007060
+    move.w  d2,d0
+    dc.w    $C0FC,$000A                                  ; and.w #$000A,d0
+    add.w   d3,d0
+    movea.l #$0005E5D8,a0
+    bra.s   .shared_lookup
+.case4:                                                  ; $007070
+    move.w  d2,d0
+    dc.w    $C0FC,$0006                                  ; and.w #$0006,d0
+    add.w   d3,d0
+    movea.l #$0005E61E,a0
+    bra.s   .shared_lookup
+.case5:                                                  ; $007080
+    move.w  d2,d0
+    dc.w    $C0FC,$0009                                  ; and.w #$0009,d0
+    add.w   d3,d0
+    movea.l #$0005E630,a0
+    bra.s   .shared_lookup
+.case6:                                                  ; $007090
+    move.w  d2,d0
+    dc.w    $C0FC,$0005                                  ; and.w #$0005,d0
+    add.w   d3,d0
+    movea.l #$0005E670,a0
+    bra.s   .shared_lookup
+.fail:                                                   ; $0070A0
+    move.w  #$FFFF,d2
+.exit:                                                   ; $0070A4
+    cmpi.w  #$FFFF,d2
+    beq.s   .final                                       ; fail → skip scaling, return $FFFF
+    move.w  d2,d0
+    dc.w    $C0FC,$0064                                  ; and.w #$0064,d0 (mask to 0-100)
+    move.w  d0,d2
+    moveq   #0,d0
+    move.w  d2,d0                                        ; zero-extend D2
+    bge.s   .no_round                                    ; non-negative → no adjustment
+    moveq   #$0F,d1
+    add.l   d1,d0                                        ; round toward zero
+.no_round:                                               ; $0070BC
+    asr.l   #4,d0                                        ; D0 /= 16 (arithmetic)
+    move.l  d0,d1
+    lsl.l   #2,d0                                        ; D0 *= 4
+    add.l   d1,d0                                        ; D0 = D0*4 + D0 = D0*5
+    add.l   d0,d0                                        ; D0 *= 2 = D0*10
+    moveq   #$0A,d1
+    dc.w    $4EB9,$0003,$E08A                            ; jsr SignedDiv (D0/10)
+    dc.w    $C0FC,$000A                                  ; and.w #$000A,d0
+    move.w  d0,d2                                        ; D2 = scaled result
+.final:                                                  ; $0070D4
+    move.w  d2,d0                                        ; D0 = return value
+    movem.l (sp)+,d2-d5/a2
+    rts
 ; ============================================================================
 ; CharCodeScore -- Compute percentage match score for two character codes
 ; Called: 12 times. Args (stack, no link): $C(SP)=code1 (w), $10(SP)=code2 (w)
@@ -2702,12 +2845,52 @@ RangeMatch:                                              ; $007158
     move.w  d2,d0
     movem.l (sp)+,d2-d4/a2
     rts
-    dc.w    $48E7                                        ; $0071DE
-    dc.w    $3C00,$242F,$0014,$282F,$0018,$2A2F,$001C,$4243; $0071E0
-    dc.w    $B444,$6F08,$B445,$6F04,$B845,$6606,$363C,$FFFF; $0071F0
-    dc.w    $6020,$B845,$6C06,$3404,$3805,$3A02,$4242,$6004; $007200
-    dc.w    $D642,$5242,$7000,$3002,$3204,$48C1,$B081,$6DF0; $007210
-    dc.w    $D645,$3003,$4CDF,$003C,$4E75,$4E56,$FFFC,$48E7; $007220
+; ============================================================================
+; CharPairIndex -- Compute triangular index for a pair of character codes
+; Called: 1 time (from CharCodeCompare low path).
+; Args (stack, no link): $14(SP)=limit (l), $18(SP)=code1 (l), $1C(SP)=code2 (l)
+; Returns: D0.W = triangular/pair index, or $FFFF if out of range
+; ============================================================================
+CharPairIndex:                                               ; $0071DE
+    movem.l d2-d5,-(sp)
+    move.l  $0014(sp),d2                                 ; D2 = limit ($0020)
+    move.l  $0018(sp),d4                                 ; D4 = code1 (arg2)
+    move.l  $001C(sp),d5                                 ; D5 = code2 (arg3)
+    clr.w   d3                                           ; D3 = 0 (result accumulator)
+    cmp.w   d4,d2                                        ; limit vs code1
+    ble.s   .fail                                        ; if limit <= code1, fail
+    cmp.w   d5,d2                                        ; limit vs code2
+    ble.s   .fail                                        ; if limit <= code2, fail
+    cmp.w   d5,d4                                        ; code1 vs code2
+    bne.s   .compare                                     ; if code1 != code2, compare
+.fail:                                                   ; $0071FC
+    move.w  #$FFFF,d3
+    bra.s   .return
+.compare:                                                ; $007202
+    cmp.w   d5,d4                                        ; re-check code1 vs code2
+    bge.s   .sorted                                      ; if code1 >= code2 (signed), sorted
+    move.w  d4,d2                                        ; swap step 1: D2 = code1 (min)
+    move.w  d5,d4                                        ; swap step 2: D4 = code2 (max)
+    move.w  d2,d5                                        ; swap step 3: D5 = code1 (min saved)
+.sorted:                                                 ; $00720A
+    clr.w   d2                                           ; D2 = 0 (loop counter)
+    bra.s   .check                                       ; enter loop at check
+.loop:                                                   ; $007210
+    add.w   d2,d3                                        ; D3 += D2
+    addq.w  #1,d2                                        ; D2++
+.check:                                                  ; $007214
+    moveq   #0,d0
+    move.w  d2,d0                                        ; D0 = counter
+    move.w  d4,d1                                        ; D1 = loop bound (D4)
+    ext.l   d1
+    cmp.l   d1,d0
+    blt.s   .loop                                        ; if D0 < D4, continue
+    add.w   d5,d3                                        ; D3 += loop start offset
+.return:                                                 ; $007222
+    move.w  d3,d0                                        ; D0 = result
+    movem.l (sp)+,d2-d5
+    rts
+    dc.w    $4E56,$FFFC,$48E7                            ; $00722A (start of next function)
     dc.w    $3F30,$2E2E,$000C,$47EE,$000A,$3013,$C0FC,$0007; $007230
     dc.w    $D047,$207C,$00FF,$A7BC,$1030,$0000,$0280,$0000; $007240
     dc.w    $00FF,$3D40,$FFFE,$4242,$7602,$6000,$0122,$B447; $007250

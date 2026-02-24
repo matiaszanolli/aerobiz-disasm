@@ -156,7 +156,11 @@ All verified byte-identical before applying. JSR abs.l kept as dc.w, BSR.W as dc
 
 | ID | Description | Commit | Date |
 |----|-------------|--------|------|
-| B-020 | High-call-count functions translated (16 functions, 910 bytes: display/graphics/memory/input) | -- | 2026-02-23 |
+| B-024 | Character code functions translated (CharCodeCompare $6F42 + CharPairIndex $71DE, 484 bytes, 7-category jump table) | TBD | 2026-02-24 |
+| B-023 | CharCodeScore + RangeMatch translated ($70DC + $7158, 258 bytes) | b6b5939 | 2026-02-24 |
+| B-022 | MenuSelectEntry + LoadScreen translated ($1D3AC + $6A2E, 482 bytes) | 0a0309d | 2026-02-24 |
+| B-021 | High-call-count functions translated (ShowDialog/ShowTextDialog/BitFieldSearch cluster, 550 bytes) | 02c6f26 | 2026-02-24 |
+| B-020 | High-call-count functions translated (16 functions, 910 bytes: display/graphics/memory/input) | 173f37c | 2026-02-23 |
 | B-019 | Text system translated (5 functions, 250 bytes) | -- | 2026-02-23 |
 | B-018 | LZ_Decompress translated (596 bytes, LZSS decompressor) | -- | 2026-02-23 |
 | B-017 | RangeLookup translated ($D648, 118 bytes) | -- | 2026-02-23 |

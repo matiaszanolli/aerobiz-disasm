@@ -93,6 +93,8 @@ The Navigator's complete knowledge base. Updated after each session.
 - LoadScreen ($6A2E): DONE -- 330 bytes, 38 calls, section_000200.asm
 - CharCodeScore ($70DC): DONE -- 124 bytes, 12 calls, section_000200.asm; calls $006F42 via dc.w bsr.w
 - RangeMatch ($7158): DONE -- 134 bytes, 10 calls, section_000200.asm; uses A2=RangeLookup ($D648) via jsr (a2)
+- CharCodeCompare ($6F42): DONE -- 410 bytes, 22 calls, section_000200.asm; 7-category jump table (dc.w $303B/$4EFB pattern), calls CharPairIndex + RangeLookup + SignedDiv
+- CharPairIndex ($71DE): DONE -- 74 bytes, 1 call (from CharCodeCompare), section_000200.asm; triangular index for symmetric pair lookup
 - TMSS boot ($200-$28C): not yet (standard Genesis boilerplate)
 - vasm bra.w: CONFIRMED correct displacement (no +2 bug like bsr.w)
 - vasm pea ($xxxx).w: CONFIRMED correct absolute short encoding

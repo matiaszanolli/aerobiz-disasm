@@ -156,6 +156,7 @@ All verified byte-identical before applying. JSR abs.l kept as dc.w, BSR.W as dc
 
 | ID | Description | Commit | Date |
 |----|-------------|--------|------|
+| B-026 | ShowRelPanel ($006B78, 40 calls, 882B: char relationship/affinity panel, 2-path bar-draw loops) | TBD | 2026-02-24 |
 | B-025 | DrawBox ($005A04, 42 calls, 608B: corners+edges+fill tile loop) | fa57e84 | 2026-02-24 |
 | B-024 | Character code functions translated (CharCodeCompare $6F42 + CharPairIndex $71DE, 484 bytes, 7-category jump table) | d0078b6 | 2026-02-24 |
 | B-023 | CharCodeScore + RangeMatch translated ($70DC + $7158, 258 bytes) | b6b5939 | 2026-02-24 |

@@ -2657,62 +2657,329 @@ LoadScreen:                                                  ; $006A2E
     lea     $1C(sp),sp
     movem.l (sp)+,d2-d3/a2
     rts
-    dc.w    $4E56,$FF3C,$48E7,$3F3C                      ; $006B78
-    dc.w    $302E,$000A,$C0FC,$0024,$207C,$00FF,$0018,$41F0; $006B80
-    dc.w    $0000,$2A48,$7E1F,$3C3C,$0660,$4878,$0030,$4878; $006B90
-    dc.w    $0007,$4878,$0010,$4EB9,$0000,$0D64,$4FEF,$000C; $006BA0
-    dc.w    $45EE,$FF3C,$0C6E,$0007,$000E,$6C00,$029A,$302E; $006BB0
-    dc.w    $000E,$E548,$207C,$0005,$ECBC,$41F0,$0000,$2D48; $006BC0
-    dc.w    $FFFC,$1610,$0283,$0000,$00FF,$302E,$000E,$48C0; $006BD0
-    dc.w    $2F00,$302E,$000A,$48C0,$2F00,$4EBA,$02FE,$4E71; $006BE0
-    dc.w    $508F,$3800,$206E,$FFFC,$1010,$0280,$0000,$00FF; $006BF0
-    dc.w    $D040,$207C,$0005,$E9FA,$41F0,$0000,$2648,$206E; $006C00
-    dc.w    $FFFC,$1A28,$0001,$0285,$0000,$00FF,$6000,$00BE; $006C10
-    dc.w    $3003,$48C0,$7200,$122D,$0001,$B081,$6606,$343C; $006C20
-    dc.w    $0760,$6030,$B644,$6606,$343C,$0761,$6026,$3003; $006C30
-    dc.w    $48C0,$7201,$E1A9,$2001,$322E,$000A,$E549,$207C; $006C40
-    dc.w    $00FF,$A6A0,$C0B0,$1000,$6706,$343C,$0762,$6004; $006C50
-    dc.w    $343C,$0763,$7000,$102B,$0001,$0640,$0080,$34C0; $006C60
-    dc.w    $425A,$34C2,$7000,$1013,$0640,$0080,$34C0,$3003; $006C70
-    dc.w    $E748,$322E,$000A,$D241,$D041,$207C,$00FF,$BA80; $006C80
-    dc.w    $41F0,$0000,$2848,$7000,$1014,$7200,$122C,$0001; $006C90
-    dc.w    $9041,$3400,$6F2E,$3002,$48C0,$2F00,$3006,$48C0; $006CA0
-    dc.w    $2F00,$3007,$48C0,$2F00,$7000,$102B,$0001,$5080; $006CB0
-    dc.w    $2F00,$7000,$1013,$2F00,$4EB9,$0001,$DFBE,$4FEF; $006CC0
-    dc.w    $0014,$5246,$5247,$548B,$5345,$5243,$4A45,$6E00; $006CD0
-    dc.w    $FF40,$206E,$FFFC,$1028,$0002,$0280,$0000,$00FF; $006CE0
-    dc.w    $D040,$207C,$0005,$E9FA,$41F0,$0000,$2648,$206E; $006CF0
-    dc.w    $FFFC,$1628,$0002,$0283,$0000,$00FF,$206E,$FFFC; $006D00
-    dc.w    $1A28,$0003,$0285,$0000,$00FF,$4244,$6000,$00C6; $006D10
-    dc.w    $3004,$48C0,$7201,$E1A9,$2001,$322E,$000A,$C2FC; $006D20
-    dc.w    $000E,$2047,$3E2E,$000E,$DE47,$CF88,$D248,$207C; $006D30
-    dc.w    $00FF,$BD6C,$3230,$1000,$0281,$0000,$FFFF,$C081; $006D40
-    dc.w    $6706,$343C,$0764,$6004,$343C,$0765,$7000,$102B; $006D50
-    dc.w    $0001,$0640,$0080,$34C0,$425A,$34C2,$7000,$1013; $006D60
-    dc.w    $0640,$0080,$34C0,$3003,$E748,$322E,$000A,$D241; $006D70
-    dc.w    $D041,$207C,$00FF,$BA80,$41F0,$0000,$2848,$7000; $006D80
-    dc.w    $1014,$7200,$122C,$0001,$9041,$3400,$6F3C,$3002; $006D90
-    dc.w    $48C0,$2F00,$3006,$48C0,$2F00,$3007,$48C0,$2F00; $006DA0
-    dc.w    $7000,$102B,$0001,$5080,$2F00,$7000,$1013,$2F00; $006DB0
-    dc.w    $4EB9,$0001,$DFBE,$4878,$0002,$4878,$000E,$4EB9; $006DC0
-    dc.w    $0000,$0D64,$4FEF,$001C,$5246,$5247,$548B,$5345; $006DD0
-    dc.w    $5243,$5244,$4A45,$6E00,$FF38,$42A7,$42A7,$486E; $006DE0
-    dc.w    $FF3C,$206E,$FFFC,$1028,$0001,$0280,$0000,$00FF; $006DF0
-    dc.w    $206E,$FFFC,$1228,$0003,$0281,$0000,$00FF,$D041; $006E00
-    dc.w    $48C0,$2F00,$4878,$0007,$4878,$000F,$4EB9,$0000; $006E10
-    dc.w    $0D64,$302E,$000E,$48C0,$2F00,$302E,$000A,$48C0; $006E20
-    dc.w    $2F00,$4EB9,$0000,$9E1C,$302E,$000E,$48C0,$2F00; $006E30
-    dc.w    $302E,$000A,$48C0,$2F00,$4EBA,$03E0,$4E71,$4FEF; $006E40
-    dc.w    $0028,$6000,$008C,$267C,$0005,$E948,$4244,$4243; $006E50
-    dc.w    $605C,$7000,$102D,$0001,$B044,$6606,$343C,$0760; $006E60
-    dc.w    $6024,$3004,$48C0,$7201,$E1A9,$2001,$322E,$000A; $006E70
-    dc.w    $E549,$207C,$00FF,$08EC,$C0B0,$1000,$6706,$343C; $006E80
-    dc.w    $0761,$6002,$4242,$4A42,$6720,$7000,$102B,$0001; $006E90
-    dc.w    $0640,$007C,$34C0,$425A,$7000,$3002,$34C0,$7000; $006EA0
-    dc.w    $1013,$0640,$007C,$34C0,$5243,$548B,$5244,$0C44; $006EB0
-    dc.w    $0020,$6D9E,$42A7,$42A7,$486E,$FF3C,$3003,$48C0; $006EC0
-    dc.w    $2F00,$4878,$0007,$4878,$000F,$4EB9,$0000,$0D64; $006ED0
-    dc.w    $4CEE,$3CFC,$FF14,$4E5E,$4E75                      ; $006EE0 (end of previous function)
+; ============================================================================
+; ShowRelPanel -- Display character relationship/affinity panel
+; Called: 40 times.
+; Args: $0a(a6)=player_index (l), $0e(a6)=char_index (l)
+; Regs: D2-D5/A0-A5 saved. A2=result buf (A6-$C4). A5=player rec ($FF0018+p*36).
+; char<7: 2 loops over char record data; char>=7: 32-entry acquaintance scan.
+; ============================================================================
+ShowRelPanel:                                                ; $006B78
+    link    a6,#-$c4
+    movem.l d2-d7/a2-a5,-(sp)
+    move.w  $000a(a6),d0
+    mulu.w  #$24,d0
+    movea.l #$00ff0018,a0
+    lea     (a0,d0.w),a0
+    movea.l a0,a5
+    moveq   #$1f,d7
+    move.w  #$0660,d6
+    pea     ($0030).w
+    pea     ($0007).w
+    pea     ($0010).w
+    dc.w    $4eb9,$0000,$0d64            ; jsr GameCommand
+    lea     $000c(sp),sp
+    lea     -$c4(a6),a2
+    cmpi.w  #$7,$000e(a6)
+    bge.w   .alt_path
+    move.w  $000e(a6),d0
+    lsl.w   #2,d0
+    movea.l #$0005ecbc,a0
+    lea     (a0,d0.w),a0
+    move.l  a0,-$4(a6)
+    move.b  (a0),d3
+    andi.l  #$ff,d3
+    move.w  $000e(a6),d0
+    ext.l   d0
+    move.l  d0,-(sp)
+    move.w  $000a(a6),d0
+    ext.l   d0
+    move.l  d0,-(sp)
+    dc.w    $4eba,$02fe                  ; jsr BitFieldSearch (PC-rel)
+    nop
+    addq.l  #8,sp
+    move.w  d0,d4
+    movea.l -$4(a6),a0
+    move.b  (a0),d0
+    andi.l  #$ff,d0
+    add.w   d0,d0
+    movea.l #$0005e9fa,a0
+    lea     (a0,d0.w),a0
+    movea.l a0,a3
+    movea.l -$4(a6),a0
+    move.b  $1(a0),d5
+    andi.l  #$ff,d5
+    bra.w   .loop1_check
+.loop1_body:                             ; $006C20
+    move.w  d3,d0
+    ext.l   d0
+    moveq   #0,d1
+    move.b  $1(a5),d1
+    cmp.l   d1,d0
+    bne.b   .l1_b
+    move.w  #$0760,d2
+    bra.b   .l1_commit
+.l1_b:                                   ; $006C34
+    cmp.w   d4,d3
+    bne.b   .l1_c
+    move.w  #$0761,d2
+    bra.b   .l1_commit
+.l1_c:                                   ; $006C3E
+    move.w  d3,d0
+    ext.l   d0
+    moveq   #1,d1
+    lsl.l   d0,d1
+    move.l  d1,d0
+    move.w  $000a(a6),d1
+    lsl.w   #2,d1
+    movea.l #$00ffa6a0,a0
+    and.l   (a0,d1.w),d0
+    beq.b   .l1_d
+    move.w  #$0762,d2
+    bra.b   .l1_commit
+.l1_d:                                   ; $006C60
+    move.w  #$0763,d2
+.l1_commit:                              ; $006C64
+    moveq   #0,d0
+    move.b  $1(a3),d0
+    addi.w  #$0080,d0
+    move.w  d0,(a2)+
+    clr.w   (a2)+
+    move.w  d2,(a2)+
+    moveq   #0,d0
+    move.b  (a3),d0
+    addi.w  #$0080,d0
+    move.w  d0,(a2)+
+    move.w  d3,d0
+    lsl.w   #3,d0
+    move.w  $000a(a6),d1
+    add.w   d1,d1
+    add.w   d1,d0
+    movea.l #$00ffba80,a0
+    lea     (a0,d0.w),a0
+    movea.l a0,a4
+    moveq   #0,d0
+    move.b  (a4),d0
+    moveq   #0,d1
+    move.b  $1(a4),d1
+    sub.w   d1,d0
+    move.w  d0,d2
+    ble.b   .l1_nobar
+    move.w  d2,d0
+    ext.l   d0
+    move.l  d0,-(sp)
+    move.w  d6,d0
+    ext.l   d0
+    move.l  d0,-(sp)
+    move.w  d7,d0
+    ext.l   d0
+    move.l  d0,-(sp)
+    moveq   #0,d0
+    move.b  $1(a3),d0
+    addq.l  #8,d0
+    move.l  d0,-(sp)
+    moveq   #0,d0
+    move.b  (a3),d0
+    move.l  d0,-(sp)
+    dc.w    $4eb9,$0001,$dfbe            ; jsr $1DFBE
+    lea     $0014(sp),sp
+    addq.w  #1,d6
+.l1_nobar:                               ; $006CD4
+    addq.w  #1,d7
+    addq.l  #2,a3
+    subq.w  #1,d5
+    addq.w  #1,d3
+.loop1_check:                            ; $006CDC
+    tst.w   d5
+    bgt.w   .loop1_body
+    movea.l -$4(a6),a0
+    move.b  $2(a0),d0
+    andi.l  #$ff,d0
+    add.w   d0,d0
+    movea.l #$0005e9fa,a0
+    lea     (a0,d0.w),a0
+    movea.l a0,a3
+    movea.l -$4(a6),a0
+    move.b  $2(a0),d3
+    andi.l  #$ff,d3
+    movea.l -$4(a6),a0
+    move.b  $3(a0),d5
+    andi.l  #$ff,d5
+    clr.w   d4
+    bra.w   .loop2_check
+.loop2_body:                             ; $006D20
+    move.w  d4,d0
+    ext.l   d0
+    moveq   #1,d1
+    lsl.l   d0,d1
+    move.l  d1,d0
+    move.w  $000a(a6),d1
+    mulu.w  #$000e,d1
+    movea.l d7,a0
+    move.w  $000e(a6),d7
+    add.w   d7,d7
+    exg     d7,a0
+    add.w   a0,d1
+    movea.l #$00ffbd6c,a0
+    move.w  (a0,d1.w),d1
+    andi.l  #$ffff,d1
+    and.l   d1,d0
+    beq.b   .l2_b
+    move.w  #$0764,d2
+    bra.b   .l2_commit
+.l2_b:                                   ; $006D58
+    move.w  #$0765,d2
+.l2_commit:                              ; $006D5C
+    moveq   #0,d0
+    move.b  $1(a3),d0
+    addi.w  #$0080,d0
+    move.w  d0,(a2)+
+    clr.w   (a2)+
+    move.w  d2,(a2)+
+    moveq   #0,d0
+    move.b  (a3),d0
+    addi.w  #$0080,d0
+    move.w  d0,(a2)+
+    move.w  d3,d0
+    lsl.w   #3,d0
+    move.w  $000a(a6),d1
+    add.w   d1,d1
+    add.w   d1,d0
+    movea.l #$00ffba80,a0
+    lea     (a0,d0.w),a0
+    movea.l a0,a4
+    moveq   #0,d0
+    move.b  (a4),d0
+    moveq   #0,d1
+    move.b  $1(a4),d1
+    sub.w   d1,d0
+    move.w  d0,d2
+    ble.b   .l2_nobar
+    move.w  d2,d0
+    ext.l   d0
+    move.l  d0,-(sp)
+    move.w  d6,d0
+    ext.l   d0
+    move.l  d0,-(sp)
+    move.w  d7,d0
+    ext.l   d0
+    move.l  d0,-(sp)
+    moveq   #0,d0
+    move.b  $1(a3),d0
+    addq.l  #8,d0
+    move.l  d0,-(sp)
+    moveq   #0,d0
+    move.b  (a3),d0
+    move.l  d0,-(sp)
+    dc.w    $4eb9,$0001,$dfbe            ; jsr $1DFBE
+    pea     ($0002).w
+    pea     ($000e).w
+    dc.w    $4eb9,$0000,$0d64            ; jsr GameCommand
+    lea     $001c(sp),sp
+    addq.w  #1,d6
+.l2_nobar:                               ; $006DDA
+    addq.w  #1,d7
+    addq.l  #2,a3
+    subq.w  #1,d5
+    addq.w  #1,d3
+    addq.w  #1,d4
+.loop2_check:                            ; $006DE4
+    tst.w   d5
+    bgt.w   .loop2_body
+    clr.l   -(sp)
+    clr.l   -(sp)
+    pea     -$c4(a6)
+    movea.l -$4(a6),a0
+    move.b  $1(a0),d0
+    andi.l  #$ff,d0
+    movea.l -$4(a6),a0
+    move.b  $3(a0),d1
+    andi.l  #$ff,d1
+    add.w   d1,d0
+    ext.l   d0
+    move.l  d0,-(sp)
+    pea     ($0007).w
+    pea     ($000f).w
+    dc.w    $4eb9,$0000,$0d64            ; jsr GameCommand
+    move.w  $000e(a6),d0
+    ext.l   d0
+    move.l  d0,-(sp)
+    move.w  $000a(a6),d0
+    ext.l   d0
+    move.l  d0,-(sp)
+    dc.w    $4eb9,$0000,$9e1c            ; jsr $9E1C
+    move.w  $000e(a6),d0
+    ext.l   d0
+    move.l  d0,-(sp)
+    move.w  $000a(a6),d0
+    ext.l   d0
+    move.l  d0,-(sp)
+    dc.w    $4eba,$03e0                  ; jsr $722A (PC-rel)
+    nop
+    lea     $0028(sp),sp
+    bra.w   .exit
+.alt_path:                               ; $006E56
+    movea.l #$0005e948,a3
+    clr.w   d4
+    clr.w   d3
+    bra.b   .alt_check
+.alt_body:                               ; $006E62
+    moveq   #0,d0
+    move.b  $1(a5),d0
+    cmp.w   d4,d0
+    bne.b   .alt_b
+    move.w  #$0760,d2
+    bra.b   .alt_commit
+.alt_b:                                  ; $006E72
+    move.w  d4,d0
+    ext.l   d0
+    moveq   #1,d1
+    lsl.l   d0,d1
+    move.l  d1,d0
+    move.w  $000a(a6),d1
+    lsl.w   #2,d1
+    movea.l #$00ff08ec,a0
+    and.l   (a0,d1.w),d0
+    beq.b   .alt_c
+    move.w  #$0761,d2
+    bra.b   .alt_commit
+.alt_c:                                  ; $006E94
+    clr.w   d2
+.alt_commit:                             ; $006E96
+    tst.w   d2
+    beq.b   .alt_skip
+    moveq   #0,d0
+    move.b  $1(a3),d0
+    addi.w  #$007c,d0
+    move.w  d0,(a2)+
+    clr.w   (a2)+
+    moveq   #0,d0
+    move.w  d2,d0
+    move.w  d0,(a2)+
+    moveq   #0,d0
+    move.b  (a3),d0
+    addi.w  #$007c,d0
+    move.w  d0,(a2)+
+    addq.w  #1,d3
+.alt_skip:                               ; $006EBA
+    addq.l  #2,a3
+    addq.w  #1,d4
+.alt_check:                              ; $006EBE
+    cmpi.w  #$20,d4
+    blt.b   .alt_body
+    clr.l   -(sp)
+    clr.l   -(sp)
+    pea     -$c4(a6)
+    move.w  d3,d0
+    ext.l   d0
+    move.l  d0,-(sp)
+    pea     ($0007).w
+    pea     ($000f).w
+    dc.w    $4eb9,$0000,$0d64            ; jsr GameCommand
+.exit:                                   ; $006EE0
+    movem.l -$ec(a6),d2-d7/a2-a5
+    unlk    a6
+    rts
 ; ---------------------------------------------------------------------------
 ; BitFieldSearch -- Search bitfield in RAM for a set bit
 ; Args: $C(SP) = entity index (long), $12(SP) = table index (word)

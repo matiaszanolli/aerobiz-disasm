@@ -96,6 +96,7 @@ The Navigator's complete knowledge base. Updated after each session.
 - CharCodeCompare ($6F42): DONE -- 410 bytes, 22 calls, section_000200.asm; 7-category jump table (dc.w $303B/$4EFB pattern), calls CharPairIndex + RangeLookup + SignedDiv
 - CharPairIndex ($71DE): DONE -- 74 bytes, 1 call (from CharCodeCompare), section_000200.asm; triangular index for symmetric pair lookup
 - DrawBox ($5A04): DONE -- 608 bytes, 42 calls, section_000200.asm; LINK/MOVEM frame, sets 4 win vars, GameCommand #$1A fill + #$1B tiles; A3/A4 = &local_tile(A6-2), ADDQ.W #1,(A3) tile sequencing, BCC.W bounds check
+- ShowRelPanel ($6B78): DONE -- 882 bytes, 40 calls, section_000200.asm; LINK A6,#-$C4; D2-D7/A2-A5 save/restore; char<7: 2 bar-draw loops over char record ($5ECBC); char>=7: 32-entry acquaintance scan ($5E948); BLE skips bar-draw+D6-incr; calls GameCommand×4, BitFieldSearch(PC-rel), $1DFBE×2
 - TMSS boot ($200-$28C): not yet (standard Genesis boilerplate)
 - vasm bra.w: CONFIRMED correct displacement (no +2 bug like bsr.w)
 - vasm pea ($xxxx).w: CONFIRMED correct absolute short encoding

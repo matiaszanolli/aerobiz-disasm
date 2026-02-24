@@ -88,7 +88,7 @@ aerobiz-disasm/
 
 ### Translation Status
 
-~2,968 bytes of code translated from raw `dc.w` to 68000 mnemonics (all verified byte-identical):
+~5,700 bytes of code translated from raw `dc.w` to 68000 mnemonics (all verified byte-identical):
 
 - Exception handlers ($F84-$FE1) -- 94 bytes, full mnemonics
 - EXT/H-INT/V-INT interrupt handlers ($1480-$15AF) -- 304 bytes
@@ -100,8 +100,12 @@ aerobiz-disasm/
 - Utility cluster ($1D520-$1E233) -- 624 bytes, 11 functions (memory ops, input, RNG, tiles, resources)
 - Math primitives ($3E05A-$3E181) -- 296 bytes, 12 functions (multiply, signed/unsigned div/mod)
 - Text system ($3A942-$3B29B) -- 250 bytes, 5 functions (SetTextWindow, SetTextCursor, sprintf, PrintfNarrow, PrintfWide)
+- Display cluster ($5092-$51B5) -- 292 bytes, 6 functions (DisplaySetup, DisplayInitRows, DisplayInit15/0, DisplaySetupScaled, DisplayTileSetup)
+- Graphics/util ($4668-$74E0) -- 350 bytes, 7 functions (CmdPlaceTile, CmdPlaceTile2, CmdSetBackground, BitFieldSearch, GetByteField4, GetLowNibble, MemMove)
+- Input/game cluster ($1E290-$1E3DD) -- 268 bytes, 3 functions (ProcessInputLoop, PollInputChange, PreLoopInit)
+- Game UI cluster ($5A04-$74E0) -- 2,058 bytes, 7 functions (DrawBox, LoadScreen, MenuSelectEntry, CharCodeCompare, CharPairIndex, CharCodeScore, RangeMatch)
 
-85 functions named out of ~854 total. See [BACKLOG.md](BACKLOG.md) for the full task queue.
+96 functions named, 68 translated, out of ~854 total. See [BACKLOG.md](BACKLOG.md) for the full task queue.
 
 ## License
 

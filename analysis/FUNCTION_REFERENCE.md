@@ -7,8 +7,8 @@ Index of all identified functions. Updated as disassembly progresses.
 - **Total RTS (function endpoints):** 854
 - **Total RTE (interrupt returns):** 6
 - **Unique call targets:** 2,896
-- **Functions named:** 261
-- **Functions translated to mnemonics:** 249 (all named)
+- **Functions named:** 278
+- **Functions translated to mnemonics:** 266 (all named)
 
 ## Most-Called Functions
 
@@ -260,6 +260,23 @@ These are the most frequently called subroutines -- high-priority translation ta
 | $034CC4 | RemoveCharRelation | Remove character from relation, update bitmasks (3 calls) |
 | $036F12 | RecruitCharacter | Recruit character flow with dialog and negotiation (3 calls) |
 | $03ACDC | RenderTextBlock | Text rendering engine with escape codes (=,R,E,G,W,M,P) (3 calls) |
+| $00EB28 | PackSaveState | Save state packing to $FF1804 buffer (2 calls) |
+| $00F104 | ShowRouteInfo | Route information display with DrawBox (2 calls) |
+| $0112EE | ManageRouteSlots | Route slot management with RangeLookup (2 calls) |
+| $012E92 | ShowQuarterSummary | Quarter summary display for current player (2 calls) |
+| $014202 | ProcessCharActions | Character action processing (2 calls) |
+| $016958 | RunAssignmentUI | Assignment UI with GameCommand (2 calls) |
+| $018214 | ShowStatsSummary | Stats summary display with comparisons (2 calls) |
+| $01861A | RunCharManagement | Character management screen (2 calls) |
+| $019244 | FormatRelationDisplay | Relation display formatting (2 calls) |
+| $019660 | FormatRelationStats | Relation stats formatting with PrintfWide (2 calls) |
+| $0199FA | ShowRelationAction | Relation action display (2 calls) |
+| $019DE6 | ShowRelationResult | Relation result display (2 calls) |
+| $023EA8 | RunQuarterScreen | Quarter screen with GameCommand (2 calls) |
+| $0271C6 | ShowGameStatus | Game status display with ResourceLoad (2 calls) |
+| $029ABC | RunTurnSequence | Turn sequence with function table (2 calls) |
+| $02BDB8 | ShowAnnualReport | Annual report with year calculation (2 calls) |
+| $02C2FA | RunScenarioMenu | Scenario menu with function table (2 calls) |
 
 ### Interrupt Handlers
 
@@ -639,3 +656,20 @@ These are the most frequently called subroutines -- high-priority translation ta
 | $034CC4 | RemoveCharRelation | game | -- | translated |
 | $036F12 | RecruitCharacter | game | -- | translated |
 | $03ACDC | RenderTextBlock | text | -- | translated |
+| $00EB28 | PackSaveState | game | -- | translated |
+| $00F104 | ShowRouteInfo | game | -- | translated |
+| $0112EE | ManageRouteSlots | game | -- | translated |
+| $012E92 | ShowQuarterSummary | game | -- | translated |
+| $014202 | ProcessCharActions | game | -- | translated |
+| $016958 | RunAssignmentUI | game | -- | translated |
+| $018214 | ShowStatsSummary | game | -- | translated |
+| $01861A | RunCharManagement | game | -- | translated |
+| $019244 | FormatRelationDisplay | game | -- | translated |
+| $019660 | FormatRelationStats | game | -- | translated |
+| $0199FA | ShowRelationAction | game | -- | translated |
+| $019DE6 | ShowRelationResult | game | -- | translated |
+| $023EA8 | RunQuarterScreen | game | -- | translated |
+| $0271C6 | ShowGameStatus | game | -- | translated |
+| $029ABC | RunTurnSequence | game | -- | translated |
+| $02BDB8 | ShowAnnualReport | game | -- | translated |
+| $02C2FA | RunScenarioMenu | game | -- | translated |

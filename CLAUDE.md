@@ -89,8 +89,8 @@ disasm/aerobiz.asm (entry point)
 ### Key Stats (to be updated as disassembly progresses)
 
 - **68K modules**: 0 (translating in-place in section files for now)
-- **Functions identified**: 261 named, 2,896 unique call targets
-- **Translation progress**: ~47,494 bytes translated (exceptions, interrupts, boot, Z80 sound, GameCommand, main loop, utility cluster, display, graphics, memory, math, text, compression, input, UI dialogs, menu selection, screen loading, char code functions, DrawBox, ShowRelPanel, 180 unnamed call targets)
+- **Functions identified**: 278 named, 2,896 unique call targets
+- **Translation progress**: ~67,772 bytes translated (exceptions, interrupts, boot, Z80 sound, GameCommand, main loop, utility cluster, display, graphics, memory, math, text, compression, input, UI dialogs, menu selection, screen loading, char code functions, DrawBox, ShowRelPanel, save state, route management, quarter screens, relation displays, turn sequence, scenario menu, 197 unnamed call targets)
 
 ### ROM Address Mapping
 

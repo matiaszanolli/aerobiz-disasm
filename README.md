@@ -88,7 +88,7 @@ aerobiz-disasm/
 
 ### Translation Status
 
-~47,494 bytes of code translated from raw `dc.w` to 68000 mnemonics (all verified byte-identical):
+~67,772 bytes of code translated from raw `dc.w` to 68000 mnemonics (all verified byte-identical):
 
 - **System core** -- 944 bytes: exception handlers (94B), EXT/H-INT/V-INT interrupts (304B), boot init (166B), Z80 sound interface (140B), GameCommand dispatcher (240B)
 - **Main game loop** -- 262 bytes: GameEntry, GameLoopSetup, MainLoop, RangeLookup
@@ -108,8 +108,13 @@ aerobiz-disasm/
 - **Events** -- 426 bytes: CalcEventValue, WriteEventField, RunEventSequence, InitQuarterEvent, UpdateSlotEvents
 - **Page display** -- 156 bytes: TogglePageDisplay, CountRouteFlags
 - **Game logic** -- 1,954 bytes: RunPlayerTurn, RunAITurn, BuildRouteLoop, ProcessRouteAction, ProcessRouteChange, UpdateRouteMask, ProcessTradeAction, CalcPlayerRankings, RunAIStrategy
+- **Save/route management** -- 3,536 bytes: PackSaveState, ShowRouteInfo, ManageRouteSlots
+- **Quarter/report display** -- 4,326 bytes: ShowQuarterSummary, RunQuarterScreen, ShowAnnualReport, ShowGameStatus
+- **Character management** -- 3,838 bytes: ProcessCharActions, RunAssignmentUI, ShowStatsSummary, RunCharManagement
+- **Relation system** -- 4,234 bytes: FormatRelationDisplay, FormatRelationStats, ShowRelationAction, ShowRelationResult
+- **Turn/scenario** -- 2,744 bytes: RunTurnSequence, RunScenarioMenu
 
-261 functions named, 249 translated to mnemonics, out of ~854 total. See [BACKLOG.md](BACKLOG.md) for the full task queue.
+278 functions named, 266 translated to mnemonics, out of ~854 total. See [BACKLOG.md](BACKLOG.md) for the full task queue.
 
 ## License
 

@@ -7,8 +7,8 @@ Index of all identified functions. Updated as disassembly progresses.
 - **Total RTS (function endpoints):** 854
 - **Total RTE (interrupt returns):** 6
 - **Unique call targets:** 2,896
-- **Functions named:** 171
-- **Functions translated to mnemonics:** 159 (all named)
+- **Functions named:** 186
+- **Functions translated to mnemonics:** 174 (all named)
 
 ## Most-Called Functions
 
@@ -170,6 +170,21 @@ These are the most frequently called subroutines -- high-priority translation ta
 | $035CCC | FindBestCharValue | Max char value from 16 records in quarter range |
 | $03A7A0 | LoadGameGraphics | Bulk LZ decompress 90+100 entries + 4 DMA graphic loads |
 | $03A8D6 | ResetGameState | Clear/init 17 game state variables to defaults |
+| $004CB6 | DrawLayersReverse | Reverse-order (7→0) layer rendering via $4BC6 |
+| $004D04 | DrawLayersForward | Forward-order (0→7) layer rendering via $4BC6 |
+| $007B1E | HitTestMapTile | Coordinate hit-test vs $5E9FA/$5ECBC range table |
+| $00818A | CheckCharCompat | CharCodeCompare result vs record threshold |
+| $0081D2 | FindRelationRecord | Search $FF9A20 relation entries for char pair |
+| $00FFF8 | CountCharPerformance | Scan routes, count char performance via CalcCharOutput |
+| $01045A | SumPlayerStats | Sum 16 bytes from $FFB9E9 stat table |
+| $01E346 | WeightedAverage | (a×d3 + b×d2) / (d2+d3) via Multiply32+UnsignedDivide |
+| $022554 | CalcEventValue | $5FA2A table lookup or player stat sum mod $20 |
+| $023A8A | DecompressTilePair | LZ_Decompress 2 assets to $FF1804/$FF3804 |
+| $023B10 | TogglePageDisplay | XOR-toggle page buffer + VRAMBulkLoad + PollAction loop |
+| $023D80 | RunTransitionSteps | 3× subroutine call with $023E04 delays |
+| $023DB6 | UpdateIfActive | Conditional $023E04 call if $FF000A nonzero |
+| $0377C8 | ClearCharSprites | GameCmd16 wrapper: clear with #4/#$37 |
+| $038544 | CheckMatchSlots | Scan $FF8804 for non-$FF slot, return 1/0 |
 
 ### Interrupt Handlers
 
@@ -303,6 +318,8 @@ These are the most frequently called subroutines -- high-priority translation ta
 | $0045B2 | MemMove | memory | 19 | translated |
 | $0045E6 | CmdPlaceTile2 | graphics | 23 | translated |
 | $004668 | CmdPlaceTile | graphics | 46 | translated |
+| $004CB6 | DrawLayersReverse | graphics | -- | translated |
+| $004D04 | DrawLayersForward | graphics | -- | translated |
 | $005060 | InitTileBuffer | game | -- | translated |
 | $005092 | DisplaySetup | display | 101 | translated |
 | $0058FC | PlaceIconPair | game | 8 | translated |
@@ -322,6 +339,7 @@ These are the most frequently called subroutines -- high-priority translation ta
 | $005F00 | LoadTileGraphics | graphics | 3 | translated |
 | $005FF6 | LoadCompressedGfx | graphics | 7 | translated |
 | $006298 | ConfigScrollBar | game | 5 | translated |
+| $007B1E | HitTestMapTile | game | -- | translated |
 | $00634A | SetScrollBarMode | game | -- | translated |
 | $006B78 | ShowRelPanel | game | 40 | translated |
 | $006EEA | BitFieldSearch | game | 47 | translated |
@@ -340,6 +358,8 @@ These are the most frequently called subroutines -- high-priority translation ta
 | $007C3C | ShowCharProfile | game | 5 | translated |
 | $0074E0 | GetByteField4 | util | 36 | translated |
 | $007912 | ShowDialog | game | 38 | translated |
+| $00818A | CheckCharCompat | game | -- | translated |
+| $0081D2 | FindRelationRecord | game | -- | translated |
 | $008016 | CalcWeightedStat | game | 8 | translated |
 | $008458 | CalcCharAdvantage | game | 5 | translated |
 | $00814A | ClearBothPlanes | graphics | 15 | translated |
@@ -353,8 +373,10 @@ These are the most frequently called subroutines -- high-priority translation ta
 | $009E1C | DrawPlayerRoutes | game | 5 | translated |
 | $009F88 | LoadSlotGraphics | graphics | 3 | translated |
 | $009F4A | SelectMenuItem | game | 14 | translated |
+| $00FFF8 | CountCharPerformance | game | -- | translated |
 | $0100F2 | LoadScreenPalette | game | 7 | translated |
 | $0101CA | ShowPlayerChart | game | 5 | translated |
+| $01045A | SumPlayerStats | game | -- | translated |
 | $010686 | FindBestCharacter | game | 3 | translated |
 | $0108F2 | FindCharByValue | game | 3 | translated |
 | $011906 | CalcRouteRevenue | game | -- | translated |
@@ -395,6 +417,7 @@ These are the most frequently called subroutines -- high-priority translation ta
 | $01E0FE | CopyAlternateBytes | memory | -- | translated |
 | $01E1BA | StringAppend | util | -- | translated |
 | $01E16C | MemMoveWords | memory | 3 | translated |
+| $01E346 | WeightedAverage | math | -- | translated |
 | $01E3EE | StringConcat | util | -- | translated |
 | $01E1EC | ReadInput | input | 95 | translated |
 | $01E290 | ProcessInputLoop | input | 42 | translated |
@@ -450,12 +473,19 @@ These are the most frequently called subroutines -- high-priority translation ta
 | $01ACBA | DiagonalWipe | display | 5 | translated |
 | $01D8F4 | SetScrollOffset | display | 5 | translated |
 | $0206EE | CalcCharProfit | game | 4 | translated |
+| $022554 | CalcEventValue | game | -- | translated |
+| $023A8A | DecompressTilePair | graphics | -- | translated |
+| $023B10 | TogglePageDisplay | display | -- | translated |
 | $023B6A | AnimateScrollEffect | display | -- | translated |
+| $023D80 | RunTransitionSteps | display | -- | translated |
+| $023DB6 | UpdateIfActive | game | -- | translated |
 | $020A64 | ShowGameScreen | display | 5 | translated |
 | $021FD4 | CheckEventMatch | game | 5 | translated |
 | $02377C | DrawLabeledBox | game | 5 | translated |
 | $0237A8 | ClearListArea | display | 6 | translated |
 | $027AA4 | CountActivePlayers | game | 5 | translated |
 | $035CCC | FindBestCharValue | game | -- | translated |
+| $0377C8 | ClearCharSprites | game | -- | translated |
+| $038544 | CheckMatchSlots | game | -- | translated |
 | $03A7A0 | LoadGameGraphics | game | -- | translated |
 | $03A8D6 | ResetGameState | game | -- | translated |

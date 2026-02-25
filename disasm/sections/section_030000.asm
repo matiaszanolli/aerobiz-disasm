@@ -2655,11 +2655,11 @@
     dc.w    $7000,$3003,$EB88,$D7C0,$5242,$B444,$65D8,$4CEE; $03A590
     dc.w    $0C3C,$FFE8,$4E5E,$4E75                          ; $03A5A0
 ; ============================================================================
-; sub_03A5A8 -- (TODO: describe)
+; ShowCharPortrait -- (TODO: describe)
 ; Called: 8 times.
 ; 504 bytes | $03A5A8-$03A79F
 ; ============================================================================
-sub_03A5A8:                                                  ; $03A5A8
+ShowCharPortrait:                                                  ; $03A5A8
     link    a6,#-$4
     movem.l d2-d6/a2-a5,-(sp)
     move.l  $001c(a6),d2
@@ -2885,11 +2885,11 @@ SetTextWindow:
     movem.l (sp)+,d2-d5                                    ; $03A9A6
     rts                                                    ; $03A9AA
 ; ============================================================================
-; sub_03A9AC -- (TODO: describe)
+; ClearTileArea -- (TODO: describe)
 ; Called: ?? times.
 ; 36 bytes | $03A9AC-$03A9CF
 ; ============================================================================
-sub_03A9AC:                                                  ; $03A9AC
+ClearTileArea:                                                  ; $03A9AC
     move.l  #$8000,-(sp)
     pea     ($0020).w
     pea     ($0020).w

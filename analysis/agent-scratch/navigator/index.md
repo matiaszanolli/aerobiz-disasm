@@ -103,7 +103,7 @@ The Navigator's complete knowledge base. Updated after each session.
 - LoadDisplaySet ($1D444): DONE -- 220 bytes, 16 calls, section_010000.asm; 3-pointer table lookup via $47CEC/$FC0CA/$FC052
 - ShowText ($2FBD6): DONE -- 62 bytes, 37 calls, section_020000.asm; thin wrapper around ShowTextDialog
 - B-028 batch (10 functions, 1258 bytes): PlaceIconTiles (166B), ClearBothPlanes (64B), DrawStatDisplay (352B), GetCharStat (50B), SelectMenuItem (62B), InitCharRecord (78B), ShowPlayerInfo (274B), DrawTileGrid (126B), MulDiv (46B), ClearInfoPanel (40B)
-- B-029 batch (15 functions, 2304 bytes): sub_0058FC (98B), sub_005FF6 (174B), sub_0073A6 (92B), sub_007412 (206B), sub_007610 (140B), sub_008016 (180B), sub_009DC4 (88B), sub_0100F2 (216B), sub_01A506 (264B), sub_01D340 (58B), sub_0238F0 (64B), sub_023958 (98B), sub_023A34 (86B), sub_03A5A8 (504B), sub_03A9AC (36B)
+- B-029 batch (15 functions, 2304 bytes): PlaceIconPair (98B), LoadCompressedGfx (174B), UpdateCharField (92B), CalcCompatScore (206B), CalcTypeDistance (140B), CalcWeightedStat (180B), FindBitInField (88B), LoadScreenPalette (216B), CalcRelationValue (264B), SetDisplayMode (58B), InitInfoPanel (64B), AnimateInfoPanel (98B), PlaceItemTiles (86B), ShowCharPortrait (504B), ClearTileArea (36B)
 - TMSS boot ($200-$28C): not yet (standard Genesis boilerplate)
 - vasm bra.w: CONFIRMED correct displacement (no +2 bug like bsr.w)
 - vasm pea ($xxxx).w: CONFIRMED correct absolute short encoding

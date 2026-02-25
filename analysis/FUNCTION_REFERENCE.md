@@ -95,21 +95,21 @@ These are the most frequently called subroutines -- high-priority translation ta
 | $006B78 | ShowRelPanel | Display character relationship/affinity panel (40 calls) |
 | $0070DC | CharCodeScore | Compute percentage match score for two character codes (12 calls) |
 | $007158 | RangeMatch | Check if two char codes map to same range category (10 calls) |
-| $0058FC | sub_0058FC | Tile icon setup variant (8 calls) |
-| $005FF6 | sub_005FF6 | Compressed graphics loader by index (7 calls) |
-| $0073A6 | sub_0073A6 | Character record field updater (8 calls) |
-| $007412 | sub_007412 | Character compatibility scorer with range buckets (8 calls) |
-| $007610 | sub_007610 | Character type comparison via $FF99A4 table (10 calls) |
-| $008016 | sub_008016 | Stat-based value calculator (8 calls) |
-| $009DC4 | sub_009DC4 | Bit-field scanner in $FFA6A0 table (7 calls) |
-| $0100F2 | sub_0100F2 | Palette/resource loader with LZ decompress (7 calls) |
-| $01A506 | sub_01A506 | Multi-mode character value calculator (7 calls) |
-| $01D340 | sub_01D340 | Display mode setter via $FF1274 flags (7 calls) |
-| $0238F0 | sub_0238F0 | Init wrapper calling BSR.W + GameCommand #$1B (9 calls) |
-| $023958 | sub_023958 | 3-iteration loop calling $0239BA and $023A34 (9 calls) |
-| $023A34 | sub_023A34 | Tile placement loop for count items (9 calls) |
-| $03A5A8 | sub_03A5A8 | Display setup with palette, LZ, tiles, text (8 calls) |
-| $03A9AC | sub_03A9AC | GameCommand #$1A wrapper with $8000 priority (8 calls) |
+| $0058FC | PlaceIconPair | Tile icon setup variant (8 calls) |
+| $005FF6 | LoadCompressedGfx | Compressed graphics loader by index (7 calls) |
+| $0073A6 | UpdateCharField | Character record field updater (8 calls) |
+| $007412 | CalcCompatScore | Character compatibility scorer with range buckets (8 calls) |
+| $007610 | CalcTypeDistance | Character type comparison via $FF99A4 table (10 calls) |
+| $008016 | CalcWeightedStat | Stat-based value calculator (8 calls) |
+| $009DC4 | FindBitInField | Bit-field scanner in $FFA6A0 table (7 calls) |
+| $0100F2 | LoadScreenPalette | Palette/resource loader with LZ decompress (7 calls) |
+| $01A506 | CalcRelationValue | Multi-mode character value calculator (7 calls) |
+| $01D340 | SetDisplayMode | Display mode setter via $FF1274 flags (7 calls) |
+| $0238F0 | InitInfoPanel | Init wrapper calling BSR.W + GameCommand #$1B (9 calls) |
+| $023958 | AnimateInfoPanel | 3-iteration loop calling $0239BA and $023A34 (9 calls) |
+| $023A34 | PlaceItemTiles | Tile placement loop for count items (9 calls) |
+| $03A5A8 | ShowCharPortrait | Display setup with palette, LZ, tiles, text (8 calls) |
+| $03A9AC | ClearTileArea | GameCommand #$1A wrapper with $8000 priority (8 calls) |
 
 ### Interrupt Handlers
 
@@ -244,7 +244,7 @@ These are the most frequently called subroutines -- high-priority translation ta
 | $0045E6 | CmdPlaceTile2 | graphics | 23 | translated |
 | $004668 | CmdPlaceTile | graphics | 46 | translated |
 | $005092 | DisplaySetup | display | 101 | translated |
-| $0058FC | sub_0058FC | game | 8 | translated |
+| $0058FC | PlaceIconPair | game | 8 | translated |
 | $0050E2 | DisplayInitRows | display | -- | translated |
 | $005126 | DisplayInit15 | display | -- | translated |
 | $005132 | DisplayInit0 | display | -- | translated |
@@ -258,32 +258,32 @@ These are the most frequently called subroutines -- high-priority translation ta
 | $006A2E | LoadScreen | game | 38 | translated |
 | $00595E | PlaceIconTiles | graphics | 13 | translated |
 | $005A04 | DrawBox | game | 42 | translated |
-| $005FF6 | sub_005FF6 | graphics | 7 | translated |
+| $005FF6 | LoadCompressedGfx | graphics | 7 | translated |
 | $006B78 | ShowRelPanel | game | 40 | translated |
 | $006EEA | BitFieldSearch | game | 47 | translated |
 | $006F42 | CharCodeCompare | game | 22 | translated |
 | $0070DC | CharCodeScore | game | 12 | translated |
 | $007158 | RangeMatch | game | 10 | translated |
 | $0071DE | CharPairIndex | game | 1 | translated |
-| $0073A6 | sub_0073A6 | game | 8 | translated |
+| $0073A6 | UpdateCharField | game | 8 | translated |
 | $007402 | GetLowNibble | util | 20 | translated |
-| $007412 | sub_007412 | game | 8 | translated |
-| $007610 | sub_007610 | game | 10 | translated |
+| $007412 | CalcCompatScore | game | 8 | translated |
+| $007610 | CalcTypeDistance | game | 10 | translated |
 | $0074E0 | GetByteField4 | util | 36 | translated |
 | $007912 | ShowDialog | game | 38 | translated |
-| $008016 | sub_008016 | game | 8 | translated |
+| $008016 | CalcWeightedStat | game | 8 | translated |
 | $00814A | ClearBothPlanes | graphics | 15 | translated |
 | $0088EA | DrawStatDisplay | display | 11 | translated |
 | $009D92 | GetCharStat | game | 14 | translated |
-| $009DC4 | sub_009DC4 | game | 7 | translated |
+| $009DC4 | FindBitInField | game | 7 | translated |
 | $009F4A | SelectMenuItem | game | 14 | translated |
-| $0100F2 | sub_0100F2 | game | 7 | translated |
+| $0100F2 | LoadScreenPalette | game | 7 | translated |
 | $01183A | ShowTextDialog | game | 31 | translated |
 | $0181C6 | InitCharRecord | game | 11 | translated |
 | $01819C | GameCall | game | -- | named |
-| $01A506 | sub_01A506 | game | 7 | translated |
+| $01A506 | CalcRelationValue | game | 7 | translated |
 | $01B49A | GameUpdate2 | game | -- | named |
-| $01D340 | sub_01D340 | display | 7 | translated |
+| $01D340 | SetDisplayMode | display | 7 | translated |
 | $01D3AC | MenuSelectEntry | game | 14 | translated |
 | $01C43C | ShowPlayerInfo | display | 12 | translated |
 | $01D444 | LoadDisplaySet | game | 16 | translated |
@@ -310,14 +310,14 @@ These are the most frequently called subroutines -- high-priority translation ta
 | $026128 | GameUpdate4 | game | -- | named |
 | $02947A | GameLogic2 | game | -- | named |
 | $023930 | ClearInfoPanel | graphics | 11 | translated |
-| $0238F0 | sub_0238F0 | game | 9 | translated |
-| $023958 | sub_023958 | game | 9 | translated |
-| $023A34 | sub_023A34 | game | 9 | translated |
+| $0238F0 | InitInfoPanel | game | 9 | translated |
+| $023958 | AnimateInfoPanel | game | 9 | translated |
+| $023A34 | PlaceItemTiles | game | 9 | translated |
 | $02FBD6 | ShowText | game | 37 | translated |
 | $02F5A6 | GameUpdate1 | game | -- | named |
-| $03A5A8 | sub_03A5A8 | game | 8 | translated |
+| $03A5A8 | ShowCharPortrait | game | 8 | translated |
 | $03A942 | SetTextWindow | text | 124 | translated |
-| $03A9AC | sub_03A9AC | game | 8 | translated |
+| $03A9AC | ClearTileArea | game | 8 | translated |
 | $03AB2C | SetTextCursor | text | 174 | translated |
 | $03B22C | sprintf | text | 171 | translated |
 | $03B246 | PrintfNarrow | text | 65 | translated |

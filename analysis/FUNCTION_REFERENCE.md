@@ -7,8 +7,8 @@ Index of all identified functions. Updated as disassembly progresses.
 - **Total RTS (function endpoints):** 854
 - **Total RTE (interrupt returns):** 6
 - **Unique call targets:** 2,896
-- **Functions named:** 231
-- **Functions translated to mnemonics:** 219 (all named)
+- **Functions named:** 246
+- **Functions translated to mnemonics:** 234 (all named)
 
 ## Most-Called Functions
 
@@ -230,6 +230,21 @@ These are the most frequently called subroutines -- high-priority translation ta
 | $027F18 | BuildRouteLoop | Construct route loop from waypoints (3 calls) |
 | $02A738 | RunAITurn | Execute AI player turn logic (3 calls) |
 | $0357FE | ApplyCharBonus | Apply character bonus to player stats (3 calls) |
+| $0082E4 | InsertRelationRecord | Insert char pair into sorted relation table (3 calls) |
+| $00957C | FindRelationIndex | Find relation entry index for char pair (3 calls) |
+| $00A006 | RunScreenLoop | Screen interaction loop with display setup (3 calls) |
+| $00F5AA | ProcessRouteAction | Route action with dialog and retry loop (3 calls) |
+| $01052E | RankCharCandidates | Rank char candidates by compat and negotiation (3 calls) |
+| $0119B4 | ProcessRouteChange | Route change with validation and UI (3 calls) |
+| $011BB2 | UpdateRouteMask | Update route bitmask and process changes (3 calls) |
+| $01801C | CalcCityCharBonus | City character bonus to stats (3 calls) |
+| $01AEB8 | ShowPlayerCompare | Two-player comparison UI with input (3 calls) |
+| $021E5E | ProcessTradeAction | 5-mode trade action with jump table (3 calls) |
+| $0262E4 | CalcPlayerRankings | Compute player rankings by comparing stats (3 calls) |
+| $02C9C8 | RunPurchaseMenu | Purchase/acquisition menu loop (3 calls) |
+| $03204A | RunAIStrategy | AI strategic decision pipeline (3 calls) |
+| $0332DE | FindBestCharForSlot | Best char for slot by compat and profit (3 calls) |
+| $0366D0 | CollectCharRevenue | Collect revenue from assigned chars (3 calls) |
 
 ### Interrupt Handlers
 
@@ -579,3 +594,18 @@ These are the most frequently called subroutines -- high-priority translation ta
 | $027F18 | BuildRouteLoop | game | -- | translated |
 | $02A738 | RunAITurn | game | -- | translated |
 | $0357FE | ApplyCharBonus | game | -- | translated |
+| $0082E4 | InsertRelationRecord | game | -- | translated |
+| $00957C | FindRelationIndex | game | -- | translated |
+| $00A006 | RunScreenLoop | game | -- | translated |
+| $00F5AA | ProcessRouteAction | game | -- | translated |
+| $01052E | RankCharCandidates | game | -- | translated |
+| $0119B4 | ProcessRouteChange | game | -- | translated |
+| $011BB2 | UpdateRouteMask | game | -- | translated |
+| $01801C | CalcCityCharBonus | game | -- | translated |
+| $01AEB8 | ShowPlayerCompare | game | -- | translated |
+| $021E5E | ProcessTradeAction | game | -- | translated |
+| $0262E4 | CalcPlayerRankings | game | -- | translated |
+| $02C9C8 | RunPurchaseMenu | game | -- | translated |
+| $03204A | RunAIStrategy | game | -- | translated |
+| $0332DE | FindBestCharForSlot | game | -- | translated |
+| $0366D0 | CollectCharRevenue | game | -- | translated |

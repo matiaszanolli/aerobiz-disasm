@@ -88,7 +88,7 @@ aerobiz-disasm/
 
 ### Translation Status
 
-~33,070 bytes of code translated from raw `dc.w` to 68000 mnemonics (all verified byte-identical):
+~38,260 bytes of code translated from raw `dc.w` to 68000 mnemonics (all verified byte-identical):
 
 - **System core** -- 944 bytes: exception handlers (94B), EXT/H-INT/V-INT interrupts (304B), boot init (166B), Z80 sound interface (140B), GameCommand dispatcher (240B)
 - **Main game loop** -- 262 bytes: GameEntry, GameLoopSetup, MainLoop, RangeLookup
@@ -98,8 +98,8 @@ aerobiz-disasm/
 - **Compression** -- 596 bytes: LZ_Decompress (LZSS/LZ77)
 - **Display/graphics** -- 4,010 bytes: DisplaySetup cluster (6), CmdPlaceTile/2, CmdSetBackground, FillTileRect, LoadScreenGfx, PlaceIconTiles, PlaceIconPair, LoadCompressedGfx, ClearBothPlanes, DrawTileGrid, ClearInfoPanel, ClearTileArea, LoadScreenPalette, SetDisplayMode, ShowCharPortrait, PlaceCharSprite, LoadTileGraphics, LoadSlotGraphics, LoadMapTiles, PlaceFormattedTiles, SetDisplayPage, DrawTilemapLine, DrawLayersReverse, DrawLayersForward, UnpackPixelData, VerifyChecksum, FadePalette, DrawTileStrip
 - **Input** -- 268 bytes: ProcessInputLoop, PollInputChange, PreLoopInit
-- **Game UI** -- 11,424 bytes: DrawBox, ShowRelPanel, DrawStatDisplay, ShowDialog, ShowTextDialog, ShowText, ShowPlayerInfo, LoadScreen, MenuSelectEntry, SelectMenuItem, InitInfoPanel, AnimateInfoPanel, PlaceItemTiles, DrawCharInfoPanel, BrowsePartners, ClearListArea, ConfigScrollBar, SelectPreviewPage, ShowCharProfile, CharacterBrowser, BrowseCharList, PlaceCursor, DrawPlayerRoutes, ShowPlayerChart, ShowCharStats, DrawLabeledBox, AdjustScrollPos, GetModeRowOffset, SetScrollBarMode, InitTileBuffer, RefreshAndWait, HitTestMapTile, UpdateSlotDisplays, CopyRouteFields, DrawDualPanels, CalcPlayerWealth, ShowCharInfoPage, ShowPlayerScreen, CheckBitField, FindSlotByChar, SetupEventUI, ClassifyEvent, DrawRouteLines, DrawRoutePair, DrawCharDetailPanel
-- **Character system** -- 9,212 bytes: CharCodeCompare, CharPairIndex, CharCodeScore, RangeMatch, CalcCompatScore, CalcTypeDistance, CalcWeightedStat, CalcRelationValue, UpdateCharField, CalcCharValue, GetCharStat, InitCharRecord, FindBitInField, BitFieldSearch, CountMatchingChars, FindCharSlot, CalcNegotiationPower, CalcRevenue, CalcCharOutput, SetHighNibble, CalcCharAdvantage, CalcStatChange, CheckEventMatch, CountActivePlayers, CalcCharRating, FindBestCharacter, FindCharByValue, GetCharRelation, CalcCharProfit, CalcRouteRevenue, InitAllCharRecords, MatchCharSlots, FindBestCharValue, CheckCharCompat, FindRelationRecord, CountCharPerformance, SumPlayerStats, CheckMatchSlots, ClearCharSprites, CheckCharEligible, ScanRouteSlots, CalcCharScore, SumStatBytes, CountProfitableRelations, FindCharSlotInGroup, CalcQuarterBonus, CalcTotalCharValue, CalcPlayerFinances, CountUnprofitableRoutes, FindOpenSlot, ApplyCharBonus
+- **Game UI** -- 12,086 bytes: DrawBox, ShowRelPanel, DrawStatDisplay, ShowDialog, ShowTextDialog, ShowText, ShowPlayerInfo, LoadScreen, MenuSelectEntry, SelectMenuItem, InitInfoPanel, AnimateInfoPanel, PlaceItemTiles, DrawCharInfoPanel, BrowsePartners, ClearListArea, ConfigScrollBar, SelectPreviewPage, ShowCharProfile, CharacterBrowser, BrowseCharList, PlaceCursor, DrawPlayerRoutes, ShowPlayerChart, ShowCharStats, DrawLabeledBox, AdjustScrollPos, GetModeRowOffset, SetScrollBarMode, InitTileBuffer, RefreshAndWait, HitTestMapTile, UpdateSlotDisplays, CopyRouteFields, DrawDualPanels, CalcPlayerWealth, ShowCharInfoPage, ShowPlayerScreen, CheckBitField, FindSlotByChar, SetupEventUI, ClassifyEvent, DrawRouteLines, DrawRoutePair, DrawCharDetailPanel, RunScreenLoop, ShowPlayerCompare, RunPurchaseMenu
+- **Character system** -- 11,198 bytes: CharCodeCompare, CharPairIndex, CharCodeScore, RangeMatch, CalcCompatScore, CalcTypeDistance, CalcWeightedStat, CalcRelationValue, UpdateCharField, CalcCharValue, GetCharStat, InitCharRecord, FindBitInField, BitFieldSearch, CountMatchingChars, FindCharSlot, CalcNegotiationPower, CalcRevenue, CalcCharOutput, SetHighNibble, CalcCharAdvantage, CalcStatChange, CheckEventMatch, CountActivePlayers, CalcCharRating, FindBestCharacter, FindCharByValue, GetCharRelation, CalcCharProfit, CalcRouteRevenue, InitAllCharRecords, MatchCharSlots, FindBestCharValue, CheckCharCompat, FindRelationRecord, CountCharPerformance, SumPlayerStats, CheckMatchSlots, ClearCharSprites, CheckCharEligible, ScanRouteSlots, CalcCharScore, SumStatBytes, CountProfitableRelations, FindCharSlotInGroup, CalcQuarterBonus, CalcTotalCharValue, CalcPlayerFinances, CountUnprofitableRoutes, FindOpenSlot, ApplyCharBonus, InsertRelationRecord, FindRelationIndex, RankCharCandidates, CalcCityCharBonus, FindBestCharForSlot, CollectCharRevenue
 - **Resources** -- 522 bytes: ResourceLoad, ResourceUnload, TilePlacement, GameCmd16, ReadInput, PollAction, RandRange, LoadDisplaySet, VRAMBulkLoad
 - **Screen transitions** -- 1,480 bytes: DiagonalWipe, SetScrollOffset, SetScrollQuadrant, ShowGameScreen, ClearScreen, AnimateScrollEffect, RunTransitionSteps, UpdateIfActive, AnimateScrollWipe
 - **Sorting** -- 188 bytes: SortWordPairs
@@ -107,9 +107,9 @@ aerobiz-disasm/
 - **Resource loading** -- 552 bytes: LoadGameGraphics, ResetGameState, DecompressTilePair
 - **Events** -- 426 bytes: CalcEventValue, WriteEventField, RunEventSequence, InitQuarterEvent, UpdateSlotEvents
 - **Page display** -- 156 bytes: TogglePageDisplay, CountRouteFlags
-- **Game logic** -- 530 bytes: RunPlayerTurn, RunAITurn, BuildRouteLoop
+- **Game logic** -- 1,954 bytes: RunPlayerTurn, RunAITurn, BuildRouteLoop, ProcessRouteAction, ProcessRouteChange, UpdateRouteMask, ProcessTradeAction, CalcPlayerRankings, RunAIStrategy
 
-231 functions named, 219 translated to mnemonics, out of ~854 total. See [BACKLOG.md](BACKLOG.md) for the full task queue.
+246 functions named, 234 translated to mnemonics, out of ~854 total. See [BACKLOG.md](BACKLOG.md) for the full task queue.
 
 ## License
 

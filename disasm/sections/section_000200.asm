@@ -2546,22 +2546,82 @@ DrawBox:                                                     ; $005A04
     dc.w    $001A,$4E94,$4CEE,$1CFC,$FFB8,$4E5E,$4E75,$2F02; $005ED0
     dc.w    $222F,$000C,$202F,$0010,$206F,$0008,$4242,$6008; $005EE0
     dc.w    $3081,$5242,$5488,$5241,$B440,$65F4,$241F,$4E75; $005EF0
-    dc.w    $4E56,$FFC4,$48E7,$3C00,$242E,$0008,$262E,$0014; $005F00
-    dc.w    $282E,$0018,$7000,$3002,$E588,$207C,$000A,$E0C4; $005F10
-    dc.w    $2F30,$0800,$4879,$00FF,$899C,$4EB9,$0000,$3FEC; $005F20
-    dc.w    $3A03,$700D,$E16D,$8A44,$4878,$001E,$3005,$2F00; $005F30
-    dc.w    $486E,$FFC4,$6100,$FF98,$3002,$D040,$207C,$0004; $005F40
-    dc.w    $73D0,$3430,$0000,$0C42,$0010,$6718,$4878,$0010; $005F50
-    dc.w    $7000,$3003,$E988,$2F00,$3002,$E548,$207C,$0004; $005F60
-    dc.w    $7390,$6018,$4878,$0010,$7000,$3003,$E988,$2F00; $005F70
-    dc.w    $302E,$0022,$E548,$207C,$00FF,$03E0,$2F30,$0000; $005F80
-    dc.w    $4EB9,$0000,$5092,$4878,$001E,$7000,$3004,$2F00; $005F90
-    dc.w    $4879,$00FF,$899C,$4EB9,$0000,$45E6,$4FEF,$002C; $005FA0
-    dc.w    $486E,$FFC4,$4878,$0006,$4878,$0005,$7000,$302E; $005FB0
-    dc.w    $0012,$2F00,$7000,$302E,$000E,$2F00,$7000,$302E; $005FC0
-    dc.w    $001E,$2F00,$4878,$001B,$4EB9,$0000,$0D64,$4878; $005FD0
-    dc.w    $0001,$4878,$000E,$4EB9,$0000,$0D64,$4CEE,$003C; $005FE0
-    dc.w    $FFB4,$4E5E,$4E75                                ; $005FF0
+LoadTileGraphics:                                                  ; $005F00
+    link    a6,#-$3c
+    movem.l d2-d5,-(sp)
+    move.l  $0008(a6),d2
+    move.l  $0014(a6),d3
+    move.l  $0018(a6),d4
+    moveq   #$0,d0
+    move.w  d2,d0
+    lsl.l   #$2,d0
+    movea.l #$000ae0c4,a0
+    move.l  (a0,d0.l),-(sp)
+    pea     ($00FF899C).l
+    dc.w    $4eb9,$0000,$3fec                           ; jsr $003FEC
+    move.w  d3,d5
+    moveq   #$d,d0
+    lsl.w   d0,d5
+    or.w    d4,d5
+    pea     ($001E).w
+    move.w  d5,d0
+    move.l  d0,-(sp)
+    pea     -$003c(a6)
+    dc.w    $6100,$ff98                                 ; bsr.w $005EDE
+    move.w  d2,d0
+    add.w   d0,d0
+    movea.l #$000473d0,a0
+    move.w  (a0,d0.w),d2
+    cmpi.w  #$10,d2
+    beq.b   .l5f74
+    pea     ($0010).w
+    moveq   #$0,d0
+    move.w  d3,d0
+    lsl.l   #$4,d0
+    move.l  d0,-(sp)
+    move.w  d2,d0
+    lsl.w   #$2,d0
+    movea.l #$00047390,a0
+    bra.b   .l5f8c
+.l5f74:                                                 ; $005F74
+    pea     ($0010).w
+    moveq   #$0,d0
+    move.w  d3,d0
+    lsl.l   #$4,d0
+    move.l  d0,-(sp)
+    move.w  $0022(a6),d0
+    lsl.w   #$2,d0
+    movea.l #$00ff03e0,a0
+.l5f8c:                                                 ; $005F8C
+    move.l  (a0,d0.w),-(sp)
+    dc.w    $4eb9,$0000,$5092                           ; jsr $005092
+    pea     ($001E).w
+    moveq   #$0,d0
+    move.w  d4,d0
+    move.l  d0,-(sp)
+    pea     ($00FF899C).l
+    dc.w    $4eb9,$0000,$45e6                           ; jsr $0045E6
+    lea     $002c(sp),sp
+    pea     -$003c(a6)
+    pea     ($0006).w
+    pea     ($0005).w
+    moveq   #$0,d0
+    move.w  $0012(a6),d0
+    move.l  d0,-(sp)
+    moveq   #$0,d0
+    move.w  $000e(a6),d0
+    move.l  d0,-(sp)
+    moveq   #$0,d0
+    move.w  $001e(a6),d0
+    move.l  d0,-(sp)
+    pea     ($001B).w
+    dc.w    $4eb9,$0000,$0d64                           ; jsr $000D64
+    pea     ($0001).w
+    pea     ($000E).w
+    dc.w    $4eb9,$0000,$0d64                           ; jsr $000D64
+    movem.l -$004c(a6),d2-d5
+    unlk    a6
+    rts
 ; ============================================================================
 ; LoadCompressedGfx -- (TODO: describe)
 ; Called: 7 times.
@@ -4412,16 +4472,63 @@ CalcTypeDistance:                                                  ; $007610
     move.w  d2,d0
     movem.l (sp)+,d2-d3
     rts
-    dc.w    $4E56,$FFFC                                      ; $00769C
-    dc.w    $48E7,$3E00,$242E,$000C,$282E,$0008,$4243,$7000; $0076A0
-    dc.w    $3002,$2F00,$7000,$3004,$2F00,$4EBA,$26D6,$4E71; $0076B0
-    dc.w    $3C00,$7000,$3002,$2F00,$4EB9,$0000,$D648,$3A00; $0076C0
-    dc.w    $7000,$3005,$2F00,$7000,$3004,$2F00,$4EB9,$0000; $0076D0
-    dc.w    $6EEA,$4FEF,$0014,$48C0,$7200,$3202,$B081,$6718; $0076E0
-    dc.w    $7000,$3002,$2F00,$7000,$3004,$2F00,$4EBA,$002A; $0076F0
-    dc.w    $4E71,$0C40,$0001,$6602,$7601,$3406,$C4FC,$0019; $007700
-    dc.w    $3003,$C0FC,$0019,$9440,$0642,$0032,$3002,$4CEE; $007710
-    dc.w    $007C,$FFE8,$4E5E,$4E75,$48E7,$3800,$242F,$0014; $007720
+CalcCharRating:                                                  ; $00769C
+    link    a6,#-$4
+    movem.l d2-d6,-(sp)
+    move.l  $000c(a6),d2
+    move.l  $0008(a6),d4
+    clr.w   d3
+    moveq   #$0,d0
+    move.w  d2,d0
+    move.l  d0,-(sp)
+    moveq   #$0,d0
+    move.w  d4,d0
+    move.l  d0,-(sp)
+    dc.w    $4eba,$26d6                                 ; jsr $009D92
+    nop
+    move.w  d0,d6
+    moveq   #$0,d0
+    move.w  d2,d0
+    move.l  d0,-(sp)
+    dc.w    $4eb9,$0000,$d648                           ; jsr $00D648
+    move.w  d0,d5
+    moveq   #$0,d0
+    move.w  d5,d0
+    move.l  d0,-(sp)
+    moveq   #$0,d0
+    move.w  d4,d0
+    move.l  d0,-(sp)
+    dc.w    $4eb9,$0000,$6eea                           ; jsr $006EEA
+    lea     $0014(sp),sp
+    ext.l   d0
+    moveq   #$0,d1
+    move.w  d2,d1
+    cmp.l   d1,d0
+    beq.b   .l7708
+    moveq   #$0,d0
+    move.w  d2,d0
+    move.l  d0,-(sp)
+    moveq   #$0,d0
+    move.w  d4,d0
+    move.l  d0,-(sp)
+    dc.w    $4eba,$002a                                 ; jsr $007728
+    nop
+    cmpi.w  #$1,d0
+    bne.b   .l770a
+.l7708:                                                 ; $007708
+    moveq   #$1,d3
+.l770a:                                                 ; $00770A
+    move.w  d6,d2
+    mulu.w  #$19,d2
+    move.w  d3,d0
+    mulu.w  #$19,d0
+    sub.w   d0,d2
+    addi.w  #$32,d2
+    move.w  d2,d0
+    movem.l -$0018(a6),d2-d6
+    unlk    a6
+    rts
+    dc.w    $48E7,$3800,$242F,$0014; $007728
     dc.w    $282F,$0010,$0C42,$0020,$6416,$3002,$C0FC,$0006; $007730
     dc.w    $207C,$00FF,$0420,$41F0,$0000,$2248,$7606,$6012; $007740
     dc.w    $3002,$E548,$207C,$00FF,$0460,$41F0,$0000,$2248; $007750
@@ -4652,17 +4759,72 @@ ShowDialog:                                                  ; $007912
     dc.w    $2F00,$4EB9,$0000,$D648,$588F,$3400,$3005,$E548; $007A40
     dc.w    $207C,$00FF,$A6A0,$2030,$0000,$3202,$E549,$207C; $007A50
     dc.w    $0005,$ECDC,$C0B0,$1000,$6702,$7601,$3003,$4CDF; $007A60
-    dc.w    $003C,$4E75,$48E7,$2020,$242F,$0010,$246F,$000C; $007A70
-    dc.w    $3002,$0240,$000F,$6700,$0090,$3002,$0240,$0001; $007A80
-    dc.w    $671E,$7000,$302A,$0002,$5580,$7201,$B280,$6C0A; $007A90
-    dc.w    $7000,$302A,$0002,$5580,$6002,$7001,$3540,$0002; $007AA0
-    dc.w    $3002,$0240,$0002,$6724,$7000,$302A,$0002,$5480; $007AB0
-    dc.w    $0C80,$0000,$0090,$6C0A,$7000,$302A,$0002,$5480; $007AC0
-    dc.w    $6006,$203C,$0000,$0090,$3540,$0002,$3002,$0240; $007AD0
-    dc.w    $0008,$6714,$7000,$3012,$5480,$223C,$0000,$0100; $007AE0
-    dc.w    $4EB9,$0003,$E146,$3480,$3002,$0240,$0004,$6718; $007AF0
-    dc.w    $7000,$3012,$0680,$0000,$00FE,$223C,$0000,$0100; $007B00
-    dc.w    $4EB9,$0003,$E146,$3480,$4CDF,$0404,$4E75,$48E7; $007B10
+    dc.w    $003C,$4E75                                      ; $007A70
+AdjustScrollPos:                                                  ; $007A74
+    movem.l d2/a2,-(sp)
+    move.l  $0010(sp),d2
+    movea.l $000c(sp),a2
+    move.w  d2,d0
+    andi.w  #$f,d0
+    beq.w   .l7b18
+    move.w  d2,d0
+    andi.w  #$1,d0
+    beq.b   .l7ab0
+    moveq   #$0,d0
+    move.w  $0002(a2),d0
+    subq.l  #$2,d0
+    moveq   #$1,d1
+    cmp.l   d0,d1
+    bge.b   .l7aaa
+    moveq   #$0,d0
+    move.w  $0002(a2),d0
+    subq.l  #$2,d0
+    bra.b   .l7aac
+.l7aaa:                                                 ; $007AAA
+    moveq   #$1,d0
+.l7aac:                                                 ; $007AAC
+    move.w  d0,$0002(a2)
+.l7ab0:                                                 ; $007AB0
+    move.w  d2,d0
+    andi.w  #$2,d0
+    beq.b   .l7adc
+    moveq   #$0,d0
+    move.w  $0002(a2),d0
+    addq.l  #$2,d0
+    cmpi.l  #$90,d0
+    bge.b   .l7ad2
+    moveq   #$0,d0
+    move.w  $0002(a2),d0
+    addq.l  #$2,d0
+    bra.b   .l7ad8
+.l7ad2:                                                 ; $007AD2
+    move.l  #$90,d0
+.l7ad8:                                                 ; $007AD8
+    move.w  d0,$0002(a2)
+.l7adc:                                                 ; $007ADC
+    move.w  d2,d0
+    andi.w  #$8,d0
+    beq.b   .l7af8
+    moveq   #$0,d0
+    move.w  (a2),d0
+    addq.l  #$2,d0
+    move.l  #$0100,d1
+    dc.w    $4eb9,$0003,$e146                           ; jsr $03E146
+    move.w  d0,(a2)
+.l7af8:                                                 ; $007AF8
+    move.w  d2,d0
+    andi.w  #$4,d0
+    beq.b   .l7b18
+    moveq   #$0,d0
+    move.w  (a2),d0
+    addi.l  #$fe,d0
+    move.l  #$0100,d1
+    dc.w    $4eb9,$0003,$e146                           ; jsr $03E146
+    move.w  d0,(a2)
+.l7b18:                                                 ; $007B18
+    movem.l (sp)+,d2/a2
+    rts
+    dc.w    $48E7; $007B1E
     dc.w    $3830,$226F,$0018,$302F,$001E,$E548,$207C,$0005; $007B20
     dc.w    $ECBC,$41F0,$0000,$2648,$7000,$1013,$D040,$207C; $007B30
     dc.w    $0005,$E9FA,$41F0,$0000,$2448,$4242,$3829,$0002; $007B40
@@ -7174,15 +7336,43 @@ SelectMenuItem:                                                  ; $009F4A
     dc.w    $4eb9,$0001,$d3ac                           ; jsr $01D3AC
     addq.l  #$8,sp
     rts
-    dc.w    $48E7,$3C00,$242F,$0020                          ; $009F88
-    dc.w    $262F,$001C,$282F,$0018,$2A2F,$0014,$0C42,$0001; $009F90
-    dc.w    $662A,$4879,$0007,$0F18,$4878,$0002,$4878,$0008; $009FA0
-    dc.w    $3004,$48C0,$2F00,$3005,$48C0,$2F00,$42A7,$4878; $009FB0
-    dc.w    $001B,$4EB9,$0000,$0D64,$4FEF,$001C,$3003,$48C0; $009FC0
-    dc.w    $E588,$207C,$000A,$1AC8,$2F30,$0800,$4879,$00FF; $009FD0
-    dc.w    $899C,$4EB9,$0000,$3FEC,$4878,$0010,$4878,$03A4; $009FE0
-    dc.w    $4879,$00FF,$899C,$4EB9,$0000,$45E6,$4FEF,$0014; $009FF0
-    dc.w    $4CDF,$003C,$4E75,$48E7,$3020,$247C,$0004,$C974; $00A000
+LoadSlotGraphics:                                                  ; $009F88
+    movem.l d2-d5,-(sp)
+    move.l  $0020(sp),d2
+    move.l  $001c(sp),d3
+    move.l  $0018(sp),d4
+    move.l  $0014(sp),d5
+    cmpi.w  #$1,d2
+    bne.b   .l9fcc
+    pea     ($00070F18).l
+    pea     ($0002).w
+    pea     ($0008).w
+    move.w  d4,d0
+    ext.l   d0
+    move.l  d0,-(sp)
+    move.w  d5,d0
+    ext.l   d0
+    move.l  d0,-(sp)
+    clr.l   -(sp)
+    pea     ($001B).w
+    dc.w    $4eb9,$0000,$0d64                           ; jsr $000D64
+    lea     $001c(sp),sp
+.l9fcc:                                                 ; $009FCC
+    move.w  d3,d0
+    ext.l   d0
+    lsl.l   #$2,d0
+    movea.l #$000a1ac8,a0
+    move.l  (a0,d0.l),-(sp)
+    pea     ($00FF899C).l
+    dc.w    $4eb9,$0000,$3fec                           ; jsr $003FEC
+    pea     ($0010).w
+    pea     ($03A4).w
+    pea     ($00FF899C).l
+    dc.w    $4eb9,$0000,$45e6                           ; jsr $0045E6
+    lea     $0014(sp),sp
+    movem.l (sp)+,d2-d5
+    rts
+    dc.w    $48E7,$3020,$247C,$0004,$C974; $00A006
     dc.w    $4878,$0001,$4EB9,$0001,$D340,$4878,$0001,$4878; $00A010
     dc.w    $0001,$4EB9,$0001,$D3AC,$4FEF,$000C,$4EBA,$04F8; $00A020
     dc.w    $4E71,$4EBA,$1718,$4E71,$4EB9,$0003,$A8D6,$4242; $00A030

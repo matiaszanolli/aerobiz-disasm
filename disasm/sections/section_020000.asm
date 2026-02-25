@@ -113,40 +113,168 @@
     dc.w    $7600,$362A,$0008,$2003,$D683,$D680,$E58B,$D7AB; $0206B0
     dc.w    $0012,$6008,$426A,$000E,$426A,$0006,$7014,$D5C0; $0206C0
     dc.w    $5242,$B444,$6500,$FF40,$202B,$000E,$91AB,$0006; $0206D0
-    dc.w    $202B,$000A,$D1AB,$0006,$4CDF,$0C1C,$4E75,$48E7; $0206E0
-    dc.w    $3E30,$242F,$0024,$262F,$002C,$282F,$0020,$2A2F; $0206F0
-    dc.w    $0028,$3005,$C0FC,$000C,$207C,$00FF,$A6B8,$41F0; $020700
-    dc.w    $0000,$2448,$3002,$E548,$207C,$00FF,$1298,$41F0; $020710
-    dc.w    $0000,$2648,$7000,$102A,$0001,$0280,$0000,$FFFF; $020720
-    dc.w    $7200,$3203,$4EB9,$0003,$E05C,$3204,$D241,$207C; $020730
-    dc.w    $00FF,$0728,$1230,$1000,$0281,$0000,$00FF,$4EB9; $020740
-    dc.w    $0003,$E05C,$2A00,$EC85,$0C42,$0020,$654C,$7000; $020750
-    dc.w    $102B,$0003,$0280,$0000,$FFFF,$720C,$4EB9,$0003; $020760
-    dc.w    $E08A,$4A80,$6F18,$7000,$102B,$0003,$0280,$0000; $020770
-    dc.w    $FFFF,$720C,$4EB9,$0003,$E08A,$2F00,$6002,$42A7; $020780
-    dc.w    $7000,$102A,$0001,$0280,$0000,$FFFF,$7200,$3203; $020790
-    dc.w    $4EB9,$0003,$E05C,$221F,$602A,$7000,$102A,$0001; $0207A0
-    dc.w    $0280,$0000,$FFFF,$7200,$3203,$4EB9,$0003,$E05C; $0207B0
-    dc.w    $3202,$D241,$207C,$00FF,$0728,$1230,$1000,$0281; $0207C0
-    dc.w    $0000,$00FF,$4EB9,$0003,$E05C,$2C00,$EC86,$7000; $0207D0
-    dc.w    $3002,$2F00,$7000,$3004,$2F00,$4EB9,$0000,$6F42; $0207E0
-    dc.w    $508F,$3400,$7000,$302A,$0002,$7232,$4EB9,$0003; $0207F0
-    dc.w    $E08A,$2F00,$7000,$3002,$720A,$4EB9,$0003,$E08A; $020800
-    dc.w    $D09F,$2F00,$7000,$302A,$0002,$7232,$4EB9,$0003; $020810
-    dc.w    $E08A,$7200,$122A,$0008,$0281,$0000,$FFFF,$4EB9; $020820
-    dc.w    $0003,$E05C,$221F,$4EB9,$0003,$E08A,$7200,$122A; $020830
-    dc.w    $0008,$D041,$3800,$7000,$3002,$720A,$4EB9,$0003; $020840
-    dc.w    $E08A,$3239,$00FF,$1294,$48C1,$0681,$0000,$0032; $020850
-    dc.w    $4EB9,$0003,$E05C,$7200,$3204,$4EB9,$0003,$E05C; $020860
-    dc.w    $7200,$3203,$4EB9,$0003,$E05C,$E288,$2400,$223C; $020870
-    dc.w    $0000,$2710,$4EB9,$0003,$E0C6,$D045,$D046,$3400; $020880
-    dc.w    $3039,$00FF,$0006,$48C0,$7203,$4EB9,$0003,$E08A; $020890
-    dc.w    $0680,$0000,$001E,$7200,$3202,$4EB9,$0003,$E05C; $0208A0
-    dc.w    $7264,$4EB9,$0003,$E08A,$7201,$B280,$6C2A,$3039; $0208B0
-    dc.w    $00FF,$0006,$48C0,$7203,$4EB9,$0003,$E08A,$0680; $0208C0
-    dc.w    $0000,$001E,$7200,$3202,$4EB9,$0003,$E05C,$7264; $0208D0
-    dc.w    $4EB9,$0003,$E08A,$6002,$7001,$3400,$4CDF,$0C7C; $0208E0
-    dc.w    $4E75,$4E56,$FFF8,$48E7,$3038,$287C,$00FF,$09A2; $0208F0
+    dc.w    $202B,$000A,$D1AB,$0006,$4CDF,$0C1C,$4E75     ; $0206E0
+; ---------------------------------------------------------------------------
+CalcCharProfit:                                                  ; $0206EE
+    movem.l d2-d6/a2-a3,-(sp)
+    move.l  $0024(sp),d2
+    move.l  $002c(sp),d3
+    move.l  $0020(sp),d4
+    move.l  $0028(sp),d5
+    move.w  d5,d0
+    mulu.w  #$c,d0
+    movea.l #$00ffa6b8,a0
+    lea     (a0,d0.w),a0
+    movea.l a0,a2
+    move.w  d2,d0
+    lsl.w   #$2,d0
+    movea.l #$00ff1298,a0
+    lea     (a0,d0.w),a0
+    movea.l a0,a3
+    moveq   #$0,d0
+    move.b  $0001(a2),d0
+    andi.l  #$ffff,d0
+    moveq   #$0,d1
+    move.w  d3,d1
+    dc.w    $4eb9,$0003,$e05c                           ; jsr $03E05C
+    move.w  d4,d1
+    add.w   d1,d1
+    movea.l #$00ff0728,a0
+    move.b  (a0,d1.w),d1
+    andi.l  #$ff,d1
+    dc.w    $4eb9,$0003,$e05c                           ; jsr $03E05C
+    move.l  d0,d5
+    asr.l   #$6,d5
+    cmpi.w  #$20,d2
+    bcs.b   .l207aa
+    moveq   #$0,d0
+    move.b  $0003(a3),d0
+    andi.l  #$ffff,d0
+    moveq   #$c,d1
+    dc.w    $4eb9,$0003,$e08a                           ; jsr $03E08A
+    tst.l   d0
+    ble.b   .l2078e
+    moveq   #$0,d0
+    move.b  $0003(a3),d0
+    andi.l  #$ffff,d0
+    moveq   #$c,d1
+    dc.w    $4eb9,$0003,$e08a                           ; jsr $03E08A
+    move.l  d0,-(sp)
+    bra.b   .l20790
+.l2078e:                                                ; $02078E
+    clr.l   -(sp)
+.l20790:                                                ; $020790
+    moveq   #$0,d0
+    move.b  $0001(a2),d0
+    andi.l  #$ffff,d0
+    moveq   #$0,d1
+    move.w  d3,d1
+    dc.w    $4eb9,$0003,$e05c                           ; jsr $03E05C
+    move.l  (sp)+,d1
+    bra.b   .l207d4
+.l207aa:                                                ; $0207AA
+    moveq   #$0,d0
+    move.b  $0001(a2),d0
+    andi.l  #$ffff,d0
+    moveq   #$0,d1
+    move.w  d3,d1
+    dc.w    $4eb9,$0003,$e05c                           ; jsr $03E05C
+    move.w  d2,d1
+    add.w   d1,d1
+    movea.l #$00ff0728,a0
+    move.b  (a0,d1.w),d1
+    andi.l  #$ff,d1
+.l207d4:                                                ; $0207D4
+    dc.w    $4eb9,$0003,$e05c                           ; jsr $03E05C
+    move.l  d0,d6
+    asr.l   #$6,d6
+    moveq   #$0,d0
+    move.w  d2,d0
+    move.l  d0,-(sp)
+    moveq   #$0,d0
+    move.w  d4,d0
+    move.l  d0,-(sp)
+    dc.w    $4eb9,$0000,$6f42                           ; jsr $006F42
+    addq.l  #$8,sp
+    move.w  d0,d2
+    moveq   #$0,d0
+    move.w  $0002(a2),d0
+    moveq   #$32,d1
+    dc.w    $4eb9,$0003,$e08a                           ; jsr $03E08A
+    move.l  d0,-(sp)
+    moveq   #$0,d0
+    move.w  d2,d0
+    moveq   #$a,d1
+    dc.w    $4eb9,$0003,$e08a                           ; jsr $03E08A
+    add.l   (sp)+,d0
+    move.l  d0,-(sp)
+    moveq   #$0,d0
+    move.w  $0002(a2),d0
+    moveq   #$32,d1
+    dc.w    $4eb9,$0003,$e08a                           ; jsr $03E08A
+    moveq   #$0,d1
+    move.b  $0008(a2),d1
+    andi.l  #$ffff,d1
+    dc.w    $4eb9,$0003,$e05c                           ; jsr $03E05C
+    move.l  (sp)+,d1
+    dc.w    $4eb9,$0003,$e08a                           ; jsr $03E08A
+    moveq   #$0,d1
+    move.b  $0008(a2),d1
+    add.w   d1,d0
+    move.w  d0,d4
+    moveq   #$0,d0
+    move.w  d2,d0
+    moveq   #$a,d1
+    dc.w    $4eb9,$0003,$e08a                           ; jsr $03E08A
+    move.w  ($00FF1294).l,d1
+    ext.l   d1
+    addi.l  #$32,d1
+    dc.w    $4eb9,$0003,$e05c                           ; jsr $03E05C
+    moveq   #$0,d1
+    move.w  d4,d1
+    dc.w    $4eb9,$0003,$e05c                           ; jsr $03E05C
+    moveq   #$0,d1
+    move.w  d3,d1
+    dc.w    $4eb9,$0003,$e05c                           ; jsr $03E05C
+    lsr.l   #$1,d0
+    move.l  d0,d2
+    move.l  #$2710,d1
+    dc.w    $4eb9,$0003,$e0c6                           ; jsr $03E0C6
+    add.w   d5,d0
+    add.w   d6,d0
+    move.w  d0,d2
+    move.w  ($00FF0006).l,d0
+    ext.l   d0
+    moveq   #$3,d1
+    dc.w    $4eb9,$0003,$e08a                           ; jsr $03E08A
+    addi.l  #$1e,d0
+    moveq   #$0,d1
+    move.w  d2,d1
+    dc.w    $4eb9,$0003,$e05c                           ; jsr $03E05C
+    moveq   #$64,d1
+    dc.w    $4eb9,$0003,$e08a                           ; jsr $03E08A
+    moveq   #$1,d1
+    cmp.l   d0,d1
+    bge.b   .l208e8
+    move.w  ($00FF0006).l,d0
+    ext.l   d0
+    moveq   #$3,d1
+    dc.w    $4eb9,$0003,$e08a                           ; jsr $03E08A
+    addi.l  #$1e,d0
+    moveq   #$0,d1
+    move.w  d2,d1
+    dc.w    $4eb9,$0003,$e05c                           ; jsr $03E05C
+    moveq   #$64,d1
+    dc.w    $4eb9,$0003,$e08a                           ; jsr $03E08A
+    bra.b   .l208ea
+.l208e8:                                                ; $0208E8
+    moveq   #$1,d0
+.l208ea:                                                ; $0208EA
+    move.w  d0,d2
+    movem.l (sp)+,d2-d6/a2-a3
+    rts
+; ---------------------------------------------------------------------------
+    dc.w    $4E56,$FFF8,$48E7,$3038,$287C,$00FF,$09A2; $0208F0
     dc.w    $4878,$0020,$42A7,$2F0C,$4EB9,$0001,$D520,$4FEF; $020900
     dc.w    $000C,$247C,$00FF,$0420,$4243,$4242,$7000,$1012; $020910
     dc.w    $0C40,$0004,$6448,$486E,$FFF8,$486E,$FFFC,$3002; $020920

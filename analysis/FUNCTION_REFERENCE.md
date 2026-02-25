@@ -7,8 +7,8 @@ Index of all identified functions. Updated as disassembly progresses.
 - **Total RTS (function endpoints):** 854
 - **Total RTE (interrupt returns):** 6
 - **Unique call targets:** 2,896
-- **Functions named:** 141
-- **Functions translated to mnemonics:** 129 (all named)
+- **Functions named:** 156
+- **Functions translated to mnemonics:** 144 (all named)
 
 ## Most-Called Functions
 
@@ -140,6 +140,21 @@ These are the most frequently called subroutines -- high-priority translation ta
 | $021FD4 | CheckEventMatch | Event record search with 5 match modes (5 calls) |
 | $02377C | DrawLabeledBox | DrawBox + PrintfWide wrapper (5 calls) |
 | $027AA4 | CountActivePlayers | Count players with byte 0 == 1 (5 calls) |
+| $005F00 | LoadTileGraphics | LZ decompress + tile placement from $AE0C4 table (3 calls) |
+| $00769C | CalcCharRating | Stat-based character score centered at 50 (3 calls) |
+| $007A74 | AdjustScrollPos | D-pad adjusts 2D scroll position with clamping (3 calls) |
+| $009F88 | LoadSlotGraphics | Decompress graphics for character slot position (3 calls) |
+| $010686 | FindBestCharacter | Scan slots for best character in highest-need category (3 calls) |
+| $0108F2 | FindCharByValue | Find character with best/worst value in specific type (3 calls) |
+| $018EBA | GetCharRelation | Return status code $760-$765 for player-character relationship (3 calls) |
+| $01A672 | UpdateFlightSlots | Manage flight path slot assignments from bitfields (3 calls) |
+| $01ABB0 | AnimateFlightPaths | Place animated sprites for active flight paths (3 calls) |
+| $01AFCA | GetModeRowOffset | Simple lookup: mode 0-3 to row Y position (3 calls) |
+| $01D37A | SetDisplayPage | Set high byte of display mode register $FF1274 (3 calls) |
+| $01DE92 | LoadMapTiles | Decompress 3 map graphics, load tile grids (3 calls) |
+| $01DFBE | PlaceFormattedTiles | Format + place tile block on screen (3 calls) |
+| $01E16C | MemMoveWords | Direction-safe word-level memory copy (3 calls) |
+| $0206EE | CalcCharProfit | Complex character income with compat + year bonus (4 calls) |
 
 ### Interrupt Handlers
 
@@ -288,6 +303,7 @@ These are the most frequently called subroutines -- high-priority translation ta
 | $006A2E | LoadScreen | game | 38 | translated |
 | $00595E | PlaceIconTiles | graphics | 13 | translated |
 | $005A04 | DrawBox | game | 42 | translated |
+| $005F00 | LoadTileGraphics | graphics | 3 | translated |
 | $005FF6 | LoadCompressedGfx | graphics | 7 | translated |
 | $006298 | ConfigScrollBar | game | 5 | translated |
 | $006B78 | ShowRelPanel | game | 40 | translated |
@@ -297,11 +313,13 @@ These are the most frequently called subroutines -- high-priority translation ta
 | $007158 | RangeMatch | game | 10 | translated |
 | $0071DE | CharPairIndex | game | 1 | translated |
 | $007390 | SetHighNibble | game | 5 | translated |
+| $00769C | CalcCharRating | game | 3 | translated |
 | $0073A6 | UpdateCharField | game | 8 | translated |
 | $007402 | GetLowNibble | util | 20 | translated |
 | $007412 | CalcCompatScore | game | 8 | translated |
 | $007610 | CalcTypeDistance | game | 10 | translated |
 | $007784 | SelectPreviewPage | game | 5 | translated |
+| $007A74 | AdjustScrollPos | game | 3 | translated |
 | $007C3C | ShowCharProfile | game | 5 | translated |
 | $0074E0 | GetByteField4 | util | 36 | translated |
 | $007912 | ShowDialog | game | 38 | translated |
@@ -316,22 +334,32 @@ These are the most frequently called subroutines -- high-priority translation ta
 | $009D92 | GetCharStat | game | 14 | translated |
 | $009DC4 | FindBitInField | game | 7 | translated |
 | $009E1C | DrawPlayerRoutes | game | 5 | translated |
+| $009F88 | LoadSlotGraphics | graphics | 3 | translated |
 | $009F4A | SelectMenuItem | game | 14 | translated |
 | $0100F2 | LoadScreenPalette | game | 7 | translated |
 | $0101CA | ShowPlayerChart | game | 5 | translated |
+| $010686 | FindBestCharacter | game | 3 | translated |
+| $0108F2 | FindCharByValue | game | 3 | translated |
 | $01183A | ShowTextDialog | game | 31 | translated |
+| $018EBA | GetCharRelation | game | 3 | translated |
 | $0181C6 | InitCharRecord | game | 11 | translated |
 | $01819C | GameCall | game | -- | named |
 | $01A506 | CalcRelationValue | game | 7 | translated |
+| $01A672 | UpdateFlightSlots | game | 3 | translated |
+| $01ABB0 | AnimateFlightPaths | game | 3 | translated |
+| $01AFCA | GetModeRowOffset | game | 3 | translated |
 | $01B0CE | ShowCharStats | game | 5 | translated |
 | $01B49A | GameUpdate2 | game | -- | named |
 | $01D340 | SetDisplayMode | display | 7 | translated |
+| $01D37A | SetDisplayPage | display | 3 | translated |
 | $01D3AC | MenuSelectEntry | game | 14 | translated |
 | $01C43C | ShowPlayerInfo | display | 12 | translated |
 | $01D444 | LoadDisplaySet | game | 16 | translated |
 | $01D520 | MemFillByte | util | 71 | translated |
 | $01D538 | MemCopy | util | -- | translated |
 | $01D550 | MemFillWord | util | -- | translated |
+| $01DE92 | LoadMapTiles | graphics | 3 | translated |
+| $01DFBE | PlaceFormattedTiles | graphics | 3 | translated |
 | $01D568 | VRAMBulkLoad | graphics | 46 | translated |
 | $01D62C | PollAction | game | 65 | translated |
 | $01D6A4 | RandRange | math | 64 | translated |
@@ -342,6 +370,7 @@ These are the most frequently called subroutines -- high-priority translation ta
 | $00E08E | CalcCharValue | game | 18 | translated |
 | $01E044 | TilePlacement | graphics | 100 | translated |
 | $01E0B8 | GameCmd16 | game | 77 | translated |
+| $01E16C | MemMoveWords | memory | 3 | translated |
 | $01E1EC | ReadInput | input | 95 | translated |
 | $01E290 | ProcessInputLoop | input | 42 | translated |
 | $01E11C | MulDiv | math | 13 | translated |
@@ -395,6 +424,7 @@ These are the most frequently called subroutines -- high-priority translation ta
 | $01A2CE | BrowsePartners | game | 5 | translated |
 | $01ACBA | DiagonalWipe | display | 5 | translated |
 | $01D8F4 | SetScrollOffset | display | 5 | translated |
+| $0206EE | CalcCharProfit | game | 4 | translated |
 | $020A64 | ShowGameScreen | display | 5 | translated |
 | $021FD4 | CheckEventMatch | game | 5 | translated |
 | $02377C | DrawLabeledBox | game | 5 | translated |

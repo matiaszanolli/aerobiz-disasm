@@ -7,8 +7,8 @@ Index of all identified functions. Updated as disassembly progresses.
 - **Total RTS (function endpoints):** 854
 - **Total RTE (interrupt returns):** 6
 - **Unique call targets:** 2,896
-- **Functions named:** 216
-- **Functions translated to mnemonics:** 204 (all named)
+- **Functions named:** 231
+- **Functions translated to mnemonics:** 219 (all named)
 
 ## Most-Called Functions
 
@@ -215,6 +215,21 @@ These are the most frequently called subroutines -- high-priority translation ta
 | $02949A | InitQuarterEvent | Quarter table lookup to $FFBD4C/$FF1294 + CheckEventMatch |
 | $02F548 | FindCharSlotInGroup | Search $FF02E8 group for matching/empty character slot |
 | $0104CA | CountProfitableRelations | Count $FF9A20 relations where revenue > cost |
+| $004BC6 | FadePalette | Layer palette fade with 8-iteration loop (3 calls) |
+| $005C64 | DrawTileStrip | Tile strip drawing with offset calculation (3 calls) |
+| $0098D2 | DrawRouteLines | Draw route connection lines between cities (3 calls) |
+| $009994 | DrawRoutePair | Draw paired route display with labels (3 calls) |
+| $00D6BE | RunPlayerTurn | Execute single player's turn logic (3 calls) |
+| $00FDC4 | FindOpenSlot | Search player/route tables for open slot (3 calls) |
+| $00FF76 | CountUnprofitableRoutes | Count routes with negative profitability (3 calls) |
+| $0102CE | CalcTotalCharValue | Sum character values across all slots (3 calls) |
+| $0103B0 | CalcPlayerFinances | Calculate player financial summary (3 calls) |
+| $017CE6 | UpdateSlotEvents | Process slot-based event updates (3 calls) |
+| $01AFF0 | DrawCharDetailPanel | Character detail panel with stats display (3 calls) |
+| $023C9A | AnimateScrollWipe | Animated scroll wipe transition effect (3 calls) |
+| $027F18 | BuildRouteLoop | Construct route loop from waypoints (3 calls) |
+| $02A738 | RunAITurn | Execute AI player turn logic (3 calls) |
+| $0357FE | ApplyCharBonus | Apply character bonus to player stats (3 calls) |
 
 ### Interrupt Handlers
 
@@ -549,3 +564,18 @@ These are the most frequently called subroutines -- high-priority translation ta
 | $03A7A0 | LoadGameGraphics | game | -- | translated |
 | $03A8D6 | ResetGameState | game | -- | translated |
 | $03CB36 | ShowPlayerScreen | game | -- | translated |
+| $004BC6 | FadePalette | graphics | -- | translated |
+| $005C64 | DrawTileStrip | graphics | -- | translated |
+| $0098D2 | DrawRouteLines | game | -- | translated |
+| $009994 | DrawRoutePair | game | -- | translated |
+| $00D6BE | RunPlayerTurn | game | -- | translated |
+| $00FDC4 | FindOpenSlot | game | -- | translated |
+| $00FF76 | CountUnprofitableRoutes | game | -- | translated |
+| $0102CE | CalcTotalCharValue | game | -- | translated |
+| $0103B0 | CalcPlayerFinances | game | -- | translated |
+| $017CE6 | UpdateSlotEvents | game | -- | translated |
+| $01AFF0 | DrawCharDetailPanel | game | -- | translated |
+| $023C9A | AnimateScrollWipe | display | -- | translated |
+| $027F18 | BuildRouteLoop | game | -- | translated |
+| $02A738 | RunAITurn | game | -- | translated |
+| $0357FE | ApplyCharBonus | game | -- | translated |

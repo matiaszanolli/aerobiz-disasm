@@ -156,6 +156,7 @@ All verified byte-identical before applying. JSR abs.l kept as dc.w, BSR.W as dc
 
 | ID | Description | Commit | Date |
 |----|-------------|--------|------|
+| B-039 | Batch mnemonization of 15 targets (9234B: DecompressVDPTiles/RenderTileStrip/ShowCharDetail/CollectPlayerChars/ShowCharCompare/RunPlayerSelectUI/RunGameMenu/BrowseMapPages/BrowseRelations/CalcCityStats/ShowQuarterReport/CalcRelationScore/RemoveCharRelation/RecruitCharacter/RenderTextBlock) | PENDING | 2026-02-25 |
 | B-038 | Batch mnemonization of 15 targets (5190B: InsertRelationRecord/FindRelationIndex/RunScreenLoop/ProcessRouteAction/RankCharCandidates/ProcessRouteChange/UpdateRouteMask/CalcCityCharBonus/ShowPlayerCompare/ProcessTradeAction/CalcPlayerRankings/RunPurchaseMenu/RunAIStrategy/FindBestCharForSlot/CollectCharRevenue) | a7d07ca | 2026-02-25 |
 | B-037 | Batch mnemonization of 15 targets (2878B: FadePalette/DrawTileStrip/DrawRouteLines/DrawRoutePair/RunPlayerTurn/FindOpenSlot/CountUnprofitableRoutes/CalcTotalCharValue/CalcPlayerFinances/UpdateSlotEvents/DrawCharDetailPanel/AnimateScrollWipe/BuildRouteLoop/RunAITurn/ApplyCharBonus) | 8d85b82 | 2026-02-25 |
 | B-036 | Batch mnemonization of 15 targets (1028B: NopStub/CopyBytesToWords/RunEventSequence/SumStatBytes/CalcQuarterBonus/InitFlightDisplay/CountRouteFlags/CheckBitField/ClassifyEvent/SetupEventUI/VerifyChecksum/FindSlotByChar/InitQuarterEvent/FindCharSlotInGroup/CountProfitableRelations) | 0af386b | 2026-02-25 |

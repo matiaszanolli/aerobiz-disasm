@@ -7,8 +7,8 @@ Index of all identified functions. Updated as disassembly progresses.
 - **Total RTS (function endpoints):** 854
 - **Total RTE (interrupt returns):** 6
 - **Unique call targets:** 2,896
-- **Functions named:** 246
-- **Functions translated to mnemonics:** 234 (all named)
+- **Functions named:** 261
+- **Functions translated to mnemonics:** 249 (all named)
 
 ## Most-Called Functions
 
@@ -245,6 +245,21 @@ These are the most frequently called subroutines -- high-priority translation ta
 | $03204A | RunAIStrategy | AI strategic decision pipeline (3 calls) |
 | $0332DE | FindBestCharForSlot | Best char for slot by compat and profit (3 calls) |
 | $0366D0 | CollectCharRevenue | Collect revenue from assigned chars (3 calls) |
+| $004342 | DecompressVDPTiles | LZ/huffman decompressor with VDP direct writes (3 calls) |
+| $005CFE | RenderTileStrip | Tile strip rendering with GameCommand partial strip XOR (3 calls) |
+| $007D92 | ShowCharDetail | Character detail display with LZ graphics and stats (3 calls) |
+| $00E152 | CollectPlayerChars | Scan route/player slots collecting chars for player (3 calls) |
+| $00E6B2 | ShowCharCompare | Two-character comparison display with stats (3 calls) |
+| $010AB6 | RunPlayerSelectUI | 4-player selection UI with d-pad navigation (3 calls) |
+| $016F9E | RunGameMenu | Menu with DisplaySetup, LZ graphics, 5-case jump table (3 calls) |
+| $017566 | BrowseMapPages | Map page browser with cursor navigation (3 calls) |
+| $018F8E | BrowseRelations | 4-player relation browser with input navigation (3 calls) |
+| $01E98E | CalcCityStats | City stat calculator with sort top-3 to $FFBDE4 (3 calls) |
+| $02F712 | ShowQuarterReport | Quarter financial report with jump table (3 calls) |
+| $032D7A | CalcRelationScore | Weighted relation value calculator with formulas (3 calls) |
+| $034CC4 | RemoveCharRelation | Remove character from relation, update bitmasks (3 calls) |
+| $036F12 | RecruitCharacter | Recruit character flow with dialog and negotiation (3 calls) |
+| $03ACDC | RenderTextBlock | Text rendering engine with escape codes (=,R,E,G,W,M,P) (3 calls) |
 
 ### Interrupt Handlers
 
@@ -609,3 +624,18 @@ These are the most frequently called subroutines -- high-priority translation ta
 | $03204A | RunAIStrategy | game | -- | translated |
 | $0332DE | FindBestCharForSlot | game | -- | translated |
 | $0366D0 | CollectCharRevenue | game | -- | translated |
+| $004342 | DecompressVDPTiles | graphics | -- | translated |
+| $005CFE | RenderTileStrip | graphics | -- | translated |
+| $007D92 | ShowCharDetail | game | -- | translated |
+| $00E152 | CollectPlayerChars | game | -- | translated |
+| $00E6B2 | ShowCharCompare | game | -- | translated |
+| $010AB6 | RunPlayerSelectUI | game | -- | translated |
+| $016F9E | RunGameMenu | game | -- | translated |
+| $017566 | BrowseMapPages | game | -- | translated |
+| $018F8E | BrowseRelations | game | -- | translated |
+| $01E98E | CalcCityStats | game | -- | translated |
+| $02F712 | ShowQuarterReport | game | -- | translated |
+| $032D7A | CalcRelationScore | game | -- | translated |
+| $034CC4 | RemoveCharRelation | game | -- | translated |
+| $036F12 | RecruitCharacter | game | -- | translated |
+| $03ACDC | RenderTextBlock | text | -- | translated |

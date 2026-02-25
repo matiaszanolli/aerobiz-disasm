@@ -7,8 +7,8 @@ Index of all identified functions. Updated as disassembly progresses.
 - **Total RTS (function endpoints):** 854
 - **Total RTE (interrupt returns):** 6
 - **Unique call targets:** 2,896
-- **Functions named:** 186
-- **Functions translated to mnemonics:** 174 (all named)
+- **Functions named:** 201
+- **Functions translated to mnemonics:** 189 (all named)
 
 ## Most-Called Functions
 
@@ -185,6 +185,21 @@ These are the most frequently called subroutines -- high-priority translation ta
 | $023DB6 | UpdateIfActive | Conditional $023E04 call if $FF000A nonzero |
 | $0377C8 | ClearCharSprites | GameCmd16 wrapper: clear with #4/#$37 |
 | $038544 | CheckMatchSlots | Scan $FF8804 for non-$FF slot, return 1/0 |
+| $005EDE | FillSequentialWords | Fill buffer with sequential word values (d1, d1+1, d1+2...) |
+| $009C9E | UpdateSlotDisplays | Loop 4 slots calling $9A88, skip slot d4, then call d4 |
+| $00EFC8 | UnpackPixelData | Extract 2-bit pixels from bytes to $FF05C4 buffer |
+| $00F086 | CopyRouteFields | 4× MemCopy to $FF09C2/CA/CE/D6 from sequential source |
+| $00FEDA | CheckCharEligible | Quarter + char range + CalcTypeDistance eligibility check |
+| $0177C4 | DrawDualPanels | Two DrawBox calls + $F104 setup at different positions |
+| $01A468 | ScanRouteSlots | Iterate 4 route slots with type match via RangeLookup |
+| $01E14A | ToUpperCase | Convert character 'a'-'z' to uppercase |
+| $026270 | CalcPlayerWealth | Sum player fields from $FF0018/$FF0290/$FF03F0 tables |
+| $028EBE | WriteEventField | $5FAB6 record lookup, write byte to $FF1298 or $FF99A4 |
+| $02F430 | ShowCharInfoPage | SetTextWindow + DrawCharInfoPanel + optional preview |
+| $02F4EE | CalcCharScore | Quarter-based char field × score / 100 |
+| $03AAF4 | SetCursorY | Write stack arg to $FFBDA6 cursor_y |
+| $03AAFE | SetCursorX | Write stack arg to $FF128A cursor_x |
+| $03CB36 | ShowPlayerScreen | ResourceLoad + display setup + menu dispatch |
 
 ### Interrupt Handlers
 
@@ -322,6 +337,7 @@ These are the most frequently called subroutines -- high-priority translation ta
 | $004D04 | DrawLayersForward | graphics | -- | translated |
 | $005060 | InitTileBuffer | game | -- | translated |
 | $005092 | DisplaySetup | display | 101 | translated |
+| $005EDE | FillSequentialWords | game | -- | translated |
 | $0058FC | PlaceIconPair | game | 8 | translated |
 | $0050E2 | DisplayInitRows | display | -- | translated |
 | $005126 | DisplayInit15 | display | -- | translated |
@@ -367,6 +383,7 @@ These are the most frequently called subroutines -- high-priority translation ta
 | $008E0C | BrowseCharList | game | 5 | translated |
 | $0088EA | DrawStatDisplay | display | 11 | translated |
 | $0090F4 | CalcStatChange | game | 5 | translated |
+| $009C9E | UpdateSlotDisplays | game | -- | translated |
 | $009CEC | PlaceCursor | game | 5 | translated |
 | $009D92 | GetCharStat | game | 14 | translated |
 | $009DC4 | FindBitInField | game | 7 | translated |
@@ -377,6 +394,8 @@ These are the most frequently called subroutines -- high-priority translation ta
 | $0100F2 | LoadScreenPalette | game | 7 | translated |
 | $0101CA | ShowPlayerChart | game | 5 | translated |
 | $01045A | SumPlayerStats | game | -- | translated |
+| $0177C4 | DrawDualPanels | game | -- | translated |
+| $01A468 | ScanRouteSlots | game | -- | translated |
 | $010686 | FindBestCharacter | game | 3 | translated |
 | $0108F2 | FindCharByValue | game | 3 | translated |
 | $011906 | CalcRouteRevenue | game | -- | translated |
@@ -412,11 +431,15 @@ These are the most frequently called subroutines -- high-priority translation ta
 | $01D748 | ResourceUnload | game | 95 | translated |
 | $01D7BE | DrawTileGrid | graphics | 14 | translated |
 | $00E08E | CalcCharValue | game | 18 | translated |
+| $00EFC8 | UnpackPixelData | graphics | -- | translated |
+| $00F086 | CopyRouteFields | game | -- | translated |
+| $00FEDA | CheckCharEligible | game | -- | translated |
 | $01E044 | TilePlacement | graphics | 100 | translated |
 | $01E0B8 | GameCmd16 | game | 77 | translated |
 | $01E0FE | CopyAlternateBytes | memory | -- | translated |
 | $01E1BA | StringAppend | util | -- | translated |
 | $01E16C | MemMoveWords | memory | 3 | translated |
+| $01E14A | ToUpperCase | util | -- | translated |
 | $01E346 | WeightedAverage | math | -- | translated |
 | $01E3EE | StringConcat | util | -- | translated |
 | $01E1EC | ReadInput | input | 95 | translated |
@@ -427,13 +450,19 @@ These are the most frequently called subroutines -- high-priority translation ta
 | $01E402 | GameUpdate3 | game | -- | named |
 | $0213B6 | GameLogic1 | game | -- | named |
 | $026128 | GameUpdate4 | game | -- | named |
+| $026270 | CalcPlayerWealth | game | -- | translated |
+| $028EBE | WriteEventField | game | -- | translated |
 | $02947A | GameLogic2 | game | -- | named |
 | $023930 | ClearInfoPanel | graphics | 11 | translated |
 | $0238F0 | InitInfoPanel | game | 9 | translated |
 | $023958 | AnimateInfoPanel | game | 9 | translated |
 | $023A34 | PlaceItemTiles | game | 9 | translated |
+| $02F430 | ShowCharInfoPage | game | -- | translated |
+| $02F4EE | CalcCharScore | game | -- | translated |
 | $02FBD6 | ShowText | game | 37 | translated |
 | $02F5A6 | GameUpdate1 | game | -- | named |
+| $03AAF4 | SetCursorY | text | -- | translated |
+| $03AAFE | SetCursorX | text | -- | translated |
 | $03A5A8 | ShowCharPortrait | game | 8 | translated |
 | $03A942 | SetTextWindow | text | 124 | translated |
 | $03A9AC | ClearTileArea | game | 8 | translated |
@@ -489,3 +518,4 @@ These are the most frequently called subroutines -- high-priority translation ta
 | $038544 | CheckMatchSlots | game | -- | translated |
 | $03A7A0 | LoadGameGraphics | game | -- | translated |
 | $03A8D6 | ResetGameState | game | -- | translated |
+| $03CB36 | ShowPlayerScreen | game | -- | translated |

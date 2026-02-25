@@ -21,12 +21,12 @@ order with explicit sizes — the definitive layout reference.
 | `$FF0016`       | byte       | current_player       | Current player turn index (0–3)                   |
 | `$FF0018`       | $90 (144B) | player_records       | 4 × $24 (36) bytes per player                     |
 | `$FF0118`       | $08 (8B)   | player_word_tab      | 4 × word, one per player                          |
-| `$FF05C4`       | ?          | char_stat_array      | Character stat records, stride $39 (57B) per char |
+| `$FF05C4`       | $E4 (228B) | char_stat_array      | 4 players × $39 (57B) per-player stat records     |
 | `$FF08EC`       | $10 (16B)  | entity_bits          | Longword bitfield array indexed by entity         |
 | `$FF0A34`       | word       | ui_active_flag       | Nonzero = UI/input system active                  |
 | `$FF1000`       | word       | win_right_dup        | Duplicate of win_right ($FFBDA8)                  |
 | `$FF1290`       | word       | win_left_dup         | Duplicate of win_left ($FFBD68)                   |
-| `$FF1298`       | —          | char_stat_tab        | Per-char / per-stat-type 4-byte descriptor table  |
+| `$FF1298`       | $164 (356B)| char_stat_tab        | 89 stat-type descriptors × 4 bytes each           |
 | `$FF1800`       | word       | font_mode            | 0 = narrow, 1 = wide                              |
 | `$FF1802`       | word       | lz_init_flag         | LZ_Decompress init flag                           |
 | `$FF1804`       | —          | save_buf_base        | Save state buffer base                            |
@@ -165,16 +165,17 @@ PackSaveState: `pea $0030.w; pea $FF00E8.l`. Purpose unknown (?).
 
 ---
 
-### `$FF05C4`: Character Stat Array
+### `$FF05C4`: Per-Player Stat Array
 
 | Address   | Size | Name            | Description                                                        |
 |-----------|------|-----------------|--------------------------------------------------------------------|
-| `$FF05C4` | ?    | char_stat_array | Character stat records. Stride: `$39` (57) bytes per character, confirmed by GetCharStat (`mulu.w #$39,d0`). Field offset within each record is looked up from `char_stat_tab` ($FF1298). Exact total size and end address TBD — apparent overlap with `$FF1298` needs field-layout analysis. |
+| `$FF05C4` | $E4 (228B) | char_stat_array | 4 per-player stat records, stride $39 (57 bytes) each. `char_index` = player index (0–3). Field offset within each 57-byte record looked up from `char_stat_tab` ($FF1298) by stat_type. Populated by UnpackPixelData (57 compressed bytes → 228 bytes of 2-bit values). Ends at $FF06A7. |
 
-**Note:** `$FF05C4 + 89 × 57 = $FF1995` appears to overlap with `char_stat_tab`
-at `$FF1298`. This needs resolution — either the char count is lower, the
-stride is wrong, or the two tables interleave. Leave TBD until more functions
-are translated.
+**Resolution (B-045):** The apparent overlap ($FF05C4 + 89 × 57 = $FF1995 vs
+$FF1298) was caused by confusing `stat_type` count (89 = city count) with
+`char_index` count. GetCharStat takes two separate parameters: `char_index`
+(player, 0–3, ×$39) and `stat_type` (0–88, ×4 into descriptor table). The
+array has only 4 records (228 bytes), ending well before $FF1298.
 
 ---
 
@@ -225,7 +226,7 @@ PackSaveState: `pea $0040.w; pea $FF0728.l`. Follows char stat data. TBD.
 | `$FF1290` | word | win_left_dup   | Duplicate of `win_left` ($FFBD68). Written together with win_left.        |
 | `$FF1294` | word | stat_scale     | Stat computation scaling factor. Used in GetCharStat: `move.l #$82,d2; sub.l d1,d2` path. |
 | `$FF1296` | word | scenario_flag  | UI state flag. Cleared at scenario menu entry (`clr.w ($FF1296).l`).      |
-| `$FF1298` | —    | char_stat_tab  | 4-byte descriptor entries, indexed by `char_index * 4` (InitCharRecord) or `stat_type * 4` (GetCharStat). Byte 0 = field offset into the 57-byte char record; bytes 2–3 = type discriminator. 89 entries → $164 (356) bytes, ending ~$FF13FB. |
+| `$FF1298` | $164 (356B) | char_stat_tab | 89 stat-type descriptors × 4 bytes each (one per city). Byte 0 = field offset (0–$38) within 57-byte player record. Bytes 1–3 = type discriminator / init params. Indexed by `stat_type * 4` (GetCharStat) or `city_index * 4` (InitCharRecord, CalcCityCharBonus). Initialized by InitAllCharRecords (89 iterations). Ends at $FF13FB. |
 | `$FF13FC` | word | input_mode_flag | Nonzero = countdown / UI-input mode active (ProcessInputLoop, BrowseCharList). |
 
 ---
@@ -467,11 +468,9 @@ A5 = `$FFF010`. All offsets below are relative to A5.
 
 ## Notes
 
-1. **Overlapping addresses ($FF05C4 and $FF1298):** `char_stat_array` at $FF05C4
-   with stride $39 and 89 chars would end at $FF1995, which overlaps `char_stat_tab`
-   at $FF1298. Likely resolution: either the char count is smaller, the stat_tab
-   IS embedded within the char array region, or GetCharStat's `mulu #$39` is used
-   on a different index than char count. Needs field-level analysis before resolving.
+1. **Resolved (B-045):** `char_stat_array` at $FF05C4 has 4 records (228 bytes,
+   ending $FF06A7), not 89. The "89" is the stat_type/city count for the
+   descriptor table at $FF1298. No overlap.
 
 2. **Duplicate window variables:** `win_left`/`win_left_dup` and `win_right`/`win_right_dup`
    are written together by DrawBox and SetTextWindow. The lower-address duplicates

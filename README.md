@@ -44,6 +44,7 @@ aerobiz-disasm/
   analysis/
     ROM_MAP.md                   # ROM layout (code/data/padding)
     RAM_MAP.md                   # Work RAM variables and data structures
+    DATA_STRUCTURES.md           # Field-level layouts for game structs
     FUNCTION_REFERENCE.md        # All identified functions
     SYSTEM_EXECUTION_FLOW.md     # Boot, main loop, V-INT, game states
   docs/                          # Hardware reference documentation (symlinked)
@@ -83,13 +84,13 @@ aerobiz-disasm/
 |-------|-------------|--------|
 | 1. Initial dump | ROM as raw `dc.w` data, vector table labeled | Done |
 | 2. Code discovery | Trace execution, map ROM regions, identify functions | Done |
-| 3. Function translation | `dc.w` -> 68K mnemonics, name functions | Done (all JSR call targets) |
+| 3. Function translation | `dc.w` -> 68K mnemonics, name functions | **In progress** |
 | 4. Data analysis | Identify tables, strings, graphics data | **In progress** |
 | 5. Full understanding | Complete documentation, byte-identical rebuild | Not started |
 
 ### Translation Status
 
-~67,772 bytes of code translated from raw `dc.w` to 68000 mnemonics (all verified byte-identical):
+~126,998 bytes of code translated from raw `dc.w` to 68000 mnemonics (all verified byte-identical):
 
 - **System core** -- 944 bytes (5 groups): exception handlers, EXT/H-INT/V-INT interrupts, boot init, Z80 sound interface, GameCommand dispatcher
 - **Main loop & resources** -- 2,816 bytes (25 functions): GameEntry, MainLoop, RangeLookup, ResourceLoad, DiagonalWipe, ShowGameScreen, LoadGameGraphics, and 18 more
@@ -101,12 +102,15 @@ aerobiz-disasm/
 - **Character system** -- 14,462 bytes (62 functions): CharCodeCompare, CalcRelationValue, RecruitCharacter, CalcCharScore, FindBestCharacter, and 57 more
 - **Game logic & AI** -- 6,122 bytes (23 functions): RunPlayerTurn, RunAITurn, RunScenarioMenu, AnimateFlightPaths, RunEventSequence, SortWordPairs, and 17 more
 - **Management screens** -- 15,934 bytes (15 functions): PackSaveState, ShowRouteInfo, ShowQuarterSummary, RunQuarterScreen, ShowAnnualReport, RunCharManagement, ShowRelationAction, and 8 more
+- **Bulk translation (B-046)** -- 59,226 bytes (113 functions): Automated capstone-to-vasm translation of 7 major contiguous code blocks across 4 section files. Functions not yet named.
 
-278 functions named, 266 translated to mnemonics, out of ~854 total. See [BACKLOG.md](BACKLOG.md) for the full task queue.
+278 functions named, 379 translated to mnemonics, out of ~854 total. See [BACKLOG.md](BACKLOG.md) for the full task queue.
 
 **Milestone (B-031 through B-040):** All 854 unique JSR call targets from the function reference have been translated. Remaining untranslated code consists of inline routines, branch targets, and data-interleaved sections not reachable via JSR.
 
-**Phase 4 (B-041):** Work RAM map created — 50+ variables and 30+ regions extracted from PackSaveState ($00EB28). Key structures: player records (4 × 36B), character stat array (stride 57B), route slots (4 × 40 × 20B), city data (89 cities × 4 entries). See [analysis/RAM_MAP.md](analysis/RAM_MAP.md).
+**Bulk translation (B-046):** Automated translation tooling (`tools/translate_block.py`) converted 7 major code blocks (~59 KB, 113 functions) from dc.w to mnemonics. This nearly doubled total translation coverage from ~67 KB to ~127 KB.
+
+**Phase 4 (B-041 through B-045):** Work RAM map created — 50+ variables and 30+ regions. Data structure field layouts documented for player records (12 fields), route slots (13 fields), and char stat records (12 fields). String/text tables labeled. See [analysis/RAM_MAP.md](analysis/RAM_MAP.md) and [analysis/DATA_STRUCTURES.md](analysis/DATA_STRUCTURES.md).
 
 ## License
 

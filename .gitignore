@@ -9,6 +9,7 @@ build/
 # Agent runtime state (regenerated per session)
 analysis/agent-scratch/navigator/session_id.txt
 analysis/agent-scratch/engineer/findings.md
+analysis/agent-scratch/disasm/
 
 # Editor/IDE
 .vscode/

@@ -94,20 +94,35 @@ Pick the highest-priority unclaimed task. Mark it `IN PROGRESS` with your sessio
 **Acceptance:** `make verify` passes. 8 labels in section_040000.asm.
 
 ### B-044: Document game data structures (player records, route slots, char records)
-**Status:** TODO
+**Status:** DONE (2026-02-25)
 **Why:** PackSaveState revealed the raw block layout; now field-level semantics are needed. Player records ($FF0018, 36B each), route slots ($FF9A20, 20B each), char stat records ($FF05C4, 57B each) are the three major structs.
-**Approach:** Translate/read functions that access these structs with field offsets (ShowRouteInfo, ManageRouteSlots, CalcCharRating, etc.). Cross-reference with SNES/PC version docs if available.
-**Acceptance:** DATA_STRUCTURES.md with field-level layout for all three structs.
+**Approach:** Researched ~30+ functions that access these structs (CalcPlayerFinances, CalcPlayerWealth, FindRelationIndex, GetCharStat, CountActivePlayers, CountUnprofitableRoutes, plus untranslated code at NewQuarter/$027D66, ScenarioInit/$00BA7E, QuarterEnd/$0205B8). Player record: 12 fields mapped (active flag, hub city, route counts, cash, 3 quarterly accumulators + 3 previous-quarter copies, approval rating). Route slot: 13 fields mapped — first 12 bytes saved, last 8 are runtime-only. Char stat record: 12 direct offsets found, plus indirect access via GetCharStat descriptor table. Also documented 3 auxiliary per-player financial tables ($FF0290, $FF03F0, $FF09A2).
+**Acceptance:** `analysis/DATA_STRUCTURES.md` created with field-level layouts for all three structs plus auxiliary tables.
 
 ### B-045: Resolve char_stat_array / char_stat_tab overlap
-**Status:** TODO (depends on B-044)
+**Status:** DONE (2026-02-25)
 **Why:** $FF05C4 + 89 × 57 = $FF1995 appears to overlap with $FF1298 (char_stat_tab). Either the count or stride is wrong, or the tables interleave. Must be resolved before RAM_MAP can be considered accurate.
-**Approach:** Read UnpackPixelData fully. Trace InitCharRecord call chain. Confirm actual output stride and character count. Update RAM_MAP.md.
-**Acceptance:** Overlap resolved; RAM_MAP.md updated with correct ranges.
+**Approach:** Traced InitAllCharRecords (89-iteration loop, `cmpi.w #$59`), InitCharRecord, CalcCityCharBonus, GetCharStat, UnpackPixelData, and PackSaveState. Found that 89 is the stat_type/city descriptor count, NOT the char_index count. GetCharStat separates `char_index` (player, 0–3, ×$39) from `stat_type` (0–88, ×4). UnpackPixelData writes exactly 228 bytes (4×57) to $FF05C4, confirming 4 records. PackSaveState's 89-loop saves city data at $FFBA80, confirming 89 = cities.
+**Acceptance:** Overlap resolved; RAM_MAP.md and DATA_STRUCTURES.md updated with correct ranges ($FF05C4–$FF06A7, 228 bytes).
 
 ---
 
 ## Phase 3 -- Function Translation
+
+### B-046: Bulk translation of 7 major code blocks (113 functions, 59,226 bytes)
+**Status:** DONE (2026-02-25)
+**Why:** Largest contiguous untranslated dc.w blocks in the ROM. Translating them brings total coverage from ~67KB to ~127KB.
+**Approach:** Created `tools/translate_block.py` (automated capstone→vasm converter) and `tools/apply_translation.py` (smart section file patcher with ROM address matching and split-boundary handling). Translated 7 blocks across 4 section files:
+- $00A156-$00D5B5 (32 functions, 13,408B) in section_000200.asm
+- $02CAF6-$02F42F (25 functions, 10,554B) in section_020000.asm
+- $014692-$016957 (11 functions, 8,902B) in section_010000.asm
+- $02434C-$02626F (14 functions, 7,972B) in section_020000.asm
+- $030000-$032049 (10 functions, 8,266B) in section_030000.asm
+- $011CF6-$012E91 (11 functions, 4,508B) in section_010000.asm
+- $02A7C8-$02B887 (10 functions, 5,616B) in section_020000.asm — partial (jump table at $02B916 confused capstone)
+
+Tool fixes during translation: BTST/EXG/SWAP size qualifiers stripped, PEA abs.w sign fix ($FFFF→(-$1).w), MOVEQ sign fix ($FF→#-$1). Also fixed 39 pre-existing moveq sign warnings across all sections.
+**Acceptance:** `make verify` passes (MD5: 1269f44e846a88a2de945de082428b39). Zero assembler warnings.
 
 ### B-009: Translate exception handlers ($F84-$FE0)
 **Status:** DONE (2026-02-23)
@@ -191,6 +206,8 @@ All verified byte-identical before applying. JSR abs.l kept as dc.w, BSR.W as dc
 
 | ID | Description | Commit | Date |
 |----|-------------|--------|------|
+| B-045 | Resolve char_stat_array / char_stat_tab overlap (89 = stat_type/city count, not char_index; 4 records × 57B = 228B, no overlap) | -- | 2026-02-25 |
+| B-044 | Document game data structures (player record 12 fields, route slot 13 fields, char stat 12 fields, 3 auxiliary tables) | -- | 2026-02-25 |
 | B-040 | Batch mnemonization of 17 targets (20278B: PackSaveState/ShowRouteInfo/ManageRouteSlots/ShowQuarterSummary/ProcessCharActions/RunAssignmentUI/ShowStatsSummary/RunCharManagement/FormatRelationDisplay/FormatRelationStats/ShowRelationAction/ShowRelationResult/RunQuarterScreen/ShowGameStatus/RunTurnSequence/ShowAnnualReport/RunScenarioMenu) | 5821108 | 2026-02-25 |
 | B-039 | Batch mnemonization of 15 targets (9234B: DecompressVDPTiles/RenderTileStrip/ShowCharDetail/CollectPlayerChars/ShowCharCompare/RunPlayerSelectUI/RunGameMenu/BrowseMapPages/BrowseRelations/CalcCityStats/ShowQuarterReport/CalcRelationScore/RemoveCharRelation/RecruitCharacter/RenderTextBlock) | 2f2ae41 | 2026-02-25 |
 | B-038 | Batch mnemonization of 15 targets (5190B: InsertRelationRecord/FindRelationIndex/RunScreenLoop/ProcessRouteAction/RankCharCandidates/ProcessRouteChange/UpdateRouteMask/CalcCityCharBonus/ShowPlayerCompare/ProcessTradeAction/CalcPlayerRankings/RunPurchaseMenu/RunAIStrategy/FindBestCharForSlot/CollectCharRevenue) | a7d07ca | 2026-02-25 |

@@ -22,6 +22,7 @@ The Navigator's complete knowledge base. Updated after each session.
 | System execution flow | analysis/SYSTEM_EXECUTION_FLOW.md | Boot, main loop, V-INT, game states |
 | ROM map | analysis/ROM_MAP.md | ROM section layout (code/data/padding) |
 | RAM map | analysis/RAM_MAP.md | Work RAM variables, structs, save-state layout (50+ entries) |
+| Data structures | analysis/DATA_STRUCTURES.md | Player record, route slot, char stat record field layouts + auxiliary tables |
 
 ---
 
@@ -76,11 +77,17 @@ The Navigator's complete knowledge base. Updated after each session.
 
 ### Phase 4 Progress (Data Analysis)
 - B-041 RAM_MAP.md: DONE (2026-02-25) -- 50+ variables, 30+ regions, PackSaveState layout
-- B-042 String/text pointer table labels: TODO
-- B-043 City name table labels: TODO
-- B-044 Game data structs (player/char/route fields): TODO
-- B-045 Resolve char_stat_array/char_stat_tab overlap: TODO
-- Key RAM facts: player_records=$FF0018 (4×36B), char_stat_array=$FF05C4 (stride=$39), route_slots=$FF9A20 (4×40×20B), save_buf=$FF1804
+- B-042 String/text pointer table labels: DONE (2026-02-25) -- 7 pointer tables labeled
+- B-043 Name string pool labels: DONE (2026-02-25) -- 8 sub-region labels in section_040000
+- B-044 Game data structs: DONE (2026-02-25) -- DATA_STRUCTURES.md created
+- B-045 Resolve char_stat_array/char_stat_tab overlap: DONE (2026-02-25) -- 89=stat_type/city count, not char_index; 4 players × 57B = 228B, no overlap
+- Key RAM facts: player_records=$FF0018 (4×36B), char_stat_array=$FF05C4 (4×57B=228B), route_slots=$FF9A20 (4×40×20B), save_buf=$FF1804
+
+### Data Structure Key Facts (from DATA_STRUCTURES.md)
+- **Player record** ($FF0018, stride $24=36B, 4 players): active_flag+$00, hub_city+$01, domestic_slots+$04, intl_slots+$05, cash+$06(long), quarter_accum_a/b/c+$0A/+$0E/+$12(long), prev_quarter copies+$16/+$1A/+$1E, approval+$22(byte)
+- **Route slot** ($FF9A20, stride $14=20B, 4×40): city_a+$00, city_b+$01, plane_type+$02, frequency+$03, ticket_price+$04(word), revenue_target+$06(word), gross_revenue+$08(word), status_flags+$0A, service_quality+$0B. PackSaveState saves only first $0C bytes; +$0E-$12 are runtime-only.
+- **Per-player stat record** ($FF05C4, stride $39=57B, 4 players): char_index=player(0-3), 89 stat_types=cities. Accessed via GetCharStat($009D92) + char_stat_tab($FF1298, 89×4B descriptors). UnpackPixelData fills 228B (57 compressed bytes → 4 records). 12 direct offsets confirmed ($00-$0B).
+- **Auxiliary per-player tables**: $FF0290 (stride 6, expenses A-C), $FF03F0 (stride $C, expenses D-F + 3 persistent + 3 transient bytes), $FF09A2 (stride 8, income+expense longs)
 
 ### Translation Progress (Phase 3)
 - Exception handlers ($F84-$FE1): DONE -- 94 bytes, all mnemonics

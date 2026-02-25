@@ -104,6 +104,7 @@ The Navigator's complete knowledge base. Updated after each session.
 - ShowText ($2FBD6): DONE -- 62 bytes, 37 calls, section_020000.asm; thin wrapper around ShowTextDialog
 - B-028 batch (10 functions, 1258 bytes): PlaceIconTiles (166B), ClearBothPlanes (64B), DrawStatDisplay (352B), GetCharStat (50B), SelectMenuItem (62B), InitCharRecord (78B), ShowPlayerInfo (274B), DrawTileGrid (126B), MulDiv (46B), ClearInfoPanel (40B)
 - B-029 batch (15 functions, 2304 bytes): PlaceIconPair (98B), LoadCompressedGfx (174B), UpdateCharField (92B), CalcCompatScore (206B), CalcTypeDistance (140B), CalcWeightedStat (180B), FindBitInField (88B), LoadScreenPalette (216B), CalcRelationValue (264B), SetDisplayMode (58B), InitInfoPanel (64B), AnimateInfoPanel (98B), PlaceItemTiles (86B), ShowCharPortrait (504B), ClearTileArea (36B)
+- B-030 batch (15 functions, 4782 bytes): ClearScreen (98B), SetScrollQuadrant (114B), DrawCharInfoPanel (804B), CountMatchingChars (166B), FindCharSlot (114B), CalcNegotiationPower (476B), PlaceCharSprite (176B), CalcRevenue (704B), CalcCharOutput (568B), SortWordPairs (188B), BrowsePartners (410B), DiagonalWipe (510B), SetScrollOffset (152B), ShowGameScreen (212B), ClearListArea (40B)
 - TMSS boot ($200-$28C): not yet (standard Genesis boilerplate)
 - vasm bra.w: CONFIRMED correct displacement (no +2 bug like bsr.w)
 - vasm pea ($xxxx).w: CONFIRMED correct absolute short encoding

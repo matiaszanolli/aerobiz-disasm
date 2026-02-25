@@ -7,8 +7,8 @@ Index of all identified functions. Updated as disassembly progresses.
 - **Total RTS (function endpoints):** 854
 - **Total RTE (interrupt returns):** 6
 - **Unique call targets:** 2,896
-- **Functions named:** 111
-- **Functions translated to mnemonics:** 99 (all named)
+- **Functions named:** 126
+- **Functions translated to mnemonics:** 114 (all named)
 
 ## Most-Called Functions
 
@@ -110,6 +110,21 @@ These are the most frequently called subroutines -- high-priority translation ta
 | $023A34 | PlaceItemTiles | Tile placement loop for count items (9 calls) |
 | $03A5A8 | ShowCharPortrait | Display setup with palette, LZ, tiles, text (8 calls) |
 | $03A9AC | ClearTileArea | GameCommand #$1A wrapper with $8000 priority (8 calls) |
+| $0053BA | ClearScreen | Clear both scroll planes via GameCommand #$1A ×2 (7 calls) |
+| $005518 | SetScrollQuadrant | Tile grid lookup + scroll offset calculation (7 calls) |
+| $00643C | DrawCharInfoPanel | Character info display: LZ decompress, portrait, tiles, text (6 calls) |
+| $0074F8 | CountMatchingChars | Walk player roster counting stat matches (6 calls) |
+| $00759E | FindCharSlot | Search roster for character by type, return slot or $FF (5 calls) |
+| $00865E | CalcNegotiationPower | Character stat × compatibility + type distance adjustment (6 calls) |
+| $00883A | PlaceCharSprite | LZ decompress character sprite from $95A22 table (5 calls) |
+| $0092BC | CalcRevenue | 3-mode income calculation (compat/roster/network) (6 calls) |
+| $00969A | CalcCharOutput | Multi-type stat calculation via $5E31A tables (5 calls) |
+| $0109FA | SortWordPairs | Bubble sort array of (word,word) pairs by second field (5 calls) |
+| $01A2CE | BrowsePartners | Interactive player browser with input loop (5 calls) |
+| $01ACBA | DiagonalWipe | Screen transition via diagonal tile reveal, 2 modes (5 calls) |
+| $01D8F4 | SetScrollOffset | Write X/Y scroll values to $FF5804 buffer (5 calls) |
+| $020A64 | ShowGameScreen | Full screen load with 4 render phases (5 calls) |
+| $0237A8 | ClearListArea | GameCommand #$1A clear 10×29 at row 17, col 1 (6 calls) |
 
 ### Interrupt Handlers
 
@@ -340,3 +355,18 @@ These are the most frequently called subroutines -- high-priority translation ta
 | $00D602 | GameLoopSetup | game | -- | named |
 | $00D608 | MainLoop | game | -- | named |
 | $00D648 | RangeLookup | game | 114 | translated |
+| $0053BA | ClearScreen | display | 7 | translated |
+| $005518 | SetScrollQuadrant | display | 7 | translated |
+| $00643C | DrawCharInfoPanel | game | 6 | translated |
+| $0074F8 | CountMatchingChars | game | 6 | translated |
+| $00759E | FindCharSlot | game | 5 | translated |
+| $00865E | CalcNegotiationPower | game | 6 | translated |
+| $00883A | PlaceCharSprite | graphics | 5 | translated |
+| $0092BC | CalcRevenue | game | 6 | translated |
+| $00969A | CalcCharOutput | game | 5 | translated |
+| $0109FA | SortWordPairs | util | 5 | translated |
+| $01A2CE | BrowsePartners | game | 5 | translated |
+| $01ACBA | DiagonalWipe | display | 5 | translated |
+| $01D8F4 | SetScrollOffset | display | 5 | translated |
+| $020A64 | ShowGameScreen | display | 5 | translated |
+| $0237A8 | ClearListArea | display | 6 | translated |

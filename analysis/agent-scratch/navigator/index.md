@@ -102,6 +102,7 @@ The Navigator's complete knowledge base. Updated after each session.
 - sub_00E08E ($E08E): DONE -- 196 bytes, 18 calls, section_000200.asm; math-heavy with multiple Multiply32/SignedDiv calls
 - sub_01D444 ($1D444): DONE -- 220 bytes, 16 calls, section_010000.asm; 3-pointer table lookup via $47CEC/$FC0CA/$FC052
 - sub_02FBD6 ($2FBD6): DONE -- 62 bytes, 37 calls, section_020000.asm; thin wrapper around $01183A (ShowTextDialog)
+- B-028 batch (10 functions, 1258 bytes): sub_00595E (166B, GameCommand tile setup), sub_00814A (64B, dual GameCommand #$1A clear), sub_0088EA (352B, text display with bar data), sub_009D92 (50B, character attribute lookup), sub_009F4A (62B, menu selection wrapper), sub_0181C6 (78B, character init), sub_01C43C (274B, screen setup with LZ decompress), sub_01D7BE (126B, nested tile loop), sub_01E11C (46B, scaled division helper), sub_023930 (40B, GameCommand #$1A init)
 - TMSS boot ($200-$28C): not yet (standard Genesis boilerplate)
 - vasm bra.w: CONFIRMED correct displacement (no +2 bug like bsr.w)
 - vasm pea ($xxxx).w: CONFIRMED correct absolute short encoding

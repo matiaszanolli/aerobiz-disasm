@@ -156,6 +156,7 @@ All verified byte-identical before applying. JSR abs.l kept as dc.w, BSR.W as dc
 
 | ID | Description | Commit | Date |
 |----|-------------|--------|------|
+| B-031 | Batch mnemonization of 15 high-call-count targets (5336B: ConfigScrollBar/SetHighNibble/SelectPreviewPage/ShowCharProfile/CalcCharAdvantage/CharacterBrowser/BrowseCharList/CalcStatChange/PlaceCursor/DrawPlayerRoutes/ShowPlayerChart/ShowCharStats/CheckEventMatch/DrawLabeledBox/CountActivePlayers) | -- | 2026-02-24 |
 | B-030 | Batch mnemonization of 15 high-call-count targets (4782B: ClearScreen/SetScrollQuadrant/DrawCharInfoPanel/CountMatchingChars/FindCharSlot/CalcNegotiationPower/PlaceCharSprite/CalcRevenue/CalcCharOutput/SortWordPairs/BrowsePartners/DiagonalWipe/SetScrollOffset/ShowGameScreen/ClearListArea) | 0fe1212 | 2026-02-24 |
 | B-029 | Batch mnemonization of 15 high-call-count targets (2304B: PlaceIconPair/LoadCompressedGfx/UpdateCharField/CalcCompatScore/CalcTypeDistance/CalcWeightedStat/FindBitInField/LoadScreenPalette/CalcRelationValue/SetDisplayMode/InitInfoPanel/AnimateInfoPanel/PlaceItemTiles/ShowCharPortrait/ClearTileArea) | b0236fe | 2026-02-24 |
 | B-028 | Unnamed call targets batch 2 (10 functions, 1258B: PlaceIconTiles/ClearBothPlanes/DrawStatDisplay/GetCharStat/SelectMenuItem/InitCharRecord/ShowPlayerInfo/DrawTileGrid/MulDiv/ClearInfoPanel) | 5839ea2 | 2026-02-24 |

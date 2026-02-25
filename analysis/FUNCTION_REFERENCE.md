@@ -7,8 +7,8 @@ Index of all identified functions. Updated as disassembly progresses.
 - **Total RTS (function endpoints):** 854
 - **Total RTE (interrupt returns):** 6
 - **Unique call targets:** 2,896
-- **Functions named:** 126
-- **Functions translated to mnemonics:** 114 (all named)
+- **Functions named:** 141
+- **Functions translated to mnemonics:** 129 (all named)
 
 ## Most-Called Functions
 
@@ -125,6 +125,21 @@ These are the most frequently called subroutines -- high-priority translation ta
 | $01D8F4 | SetScrollOffset | Write X/Y scroll values to $FF5804 buffer (5 calls) |
 | $020A64 | ShowGameScreen | Full screen load with 4 render phases (5 calls) |
 | $0237A8 | ClearListArea | GameCommand #$1A clear 10×29 at row 17, col 1 (6 calls) |
+| $006298 | ConfigScrollBar | Configure/clear scrolling display via $FFBDAC bitfield (5 calls) |
+| $007390 | SetHighNibble | Mask byte+2 of record, set upper nibble (5 calls) |
+| $007784 | SelectPreviewPage | 2-page preview with d-pad, VRAMBulkLoad, input loop (5 calls) |
+| $007C3C | ShowCharProfile | Character display with portrait + text window (5 calls) |
+| $008458 | CalcCharAdvantage | Competitive advantage from stat diff + player ranking (5 calls) |
+| $008A4A | CharacterBrowser | Full-screen character selection UI with graphics + input (5 calls) |
+| $008E0C | BrowseCharList | Character list navigation with stat display + cursor (5 calls) |
+| $0090F4 | CalcStatChange | Attribute modification amount by mode, clamped (5 calls) |
+| $009CEC | PlaceCursor | Selection cursor tile placement with optional animation (5 calls) |
+| $009E1C | DrawPlayerRoutes | Player route icons on map from $FF0338 table (5 calls) |
+| $0101CA | ShowPlayerChart | Player comparison chart overlay (5 calls) |
+| $01B0CE | ShowCharStats | Character detail stats panel with formatted output (5 calls) |
+| $021FD4 | CheckEventMatch | Event record search with 5 match modes (5 calls) |
+| $02377C | DrawLabeledBox | DrawBox + PrintfWide wrapper (5 calls) |
+| $027AA4 | CountActivePlayers | Count players with byte 0 == 1 (5 calls) |
 
 ### Interrupt Handlers
 
@@ -274,29 +289,41 @@ These are the most frequently called subroutines -- high-priority translation ta
 | $00595E | PlaceIconTiles | graphics | 13 | translated |
 | $005A04 | DrawBox | game | 42 | translated |
 | $005FF6 | LoadCompressedGfx | graphics | 7 | translated |
+| $006298 | ConfigScrollBar | game | 5 | translated |
 | $006B78 | ShowRelPanel | game | 40 | translated |
 | $006EEA | BitFieldSearch | game | 47 | translated |
 | $006F42 | CharCodeCompare | game | 22 | translated |
 | $0070DC | CharCodeScore | game | 12 | translated |
 | $007158 | RangeMatch | game | 10 | translated |
 | $0071DE | CharPairIndex | game | 1 | translated |
+| $007390 | SetHighNibble | game | 5 | translated |
 | $0073A6 | UpdateCharField | game | 8 | translated |
 | $007402 | GetLowNibble | util | 20 | translated |
 | $007412 | CalcCompatScore | game | 8 | translated |
 | $007610 | CalcTypeDistance | game | 10 | translated |
+| $007784 | SelectPreviewPage | game | 5 | translated |
+| $007C3C | ShowCharProfile | game | 5 | translated |
 | $0074E0 | GetByteField4 | util | 36 | translated |
 | $007912 | ShowDialog | game | 38 | translated |
 | $008016 | CalcWeightedStat | game | 8 | translated |
+| $008458 | CalcCharAdvantage | game | 5 | translated |
 | $00814A | ClearBothPlanes | graphics | 15 | translated |
+| $008A4A | CharacterBrowser | game | 5 | translated |
+| $008E0C | BrowseCharList | game | 5 | translated |
 | $0088EA | DrawStatDisplay | display | 11 | translated |
+| $0090F4 | CalcStatChange | game | 5 | translated |
+| $009CEC | PlaceCursor | game | 5 | translated |
 | $009D92 | GetCharStat | game | 14 | translated |
 | $009DC4 | FindBitInField | game | 7 | translated |
+| $009E1C | DrawPlayerRoutes | game | 5 | translated |
 | $009F4A | SelectMenuItem | game | 14 | translated |
 | $0100F2 | LoadScreenPalette | game | 7 | translated |
+| $0101CA | ShowPlayerChart | game | 5 | translated |
 | $01183A | ShowTextDialog | game | 31 | translated |
 | $0181C6 | InitCharRecord | game | 11 | translated |
 | $01819C | GameCall | game | -- | named |
 | $01A506 | CalcRelationValue | game | 7 | translated |
+| $01B0CE | ShowCharStats | game | 5 | translated |
 | $01B49A | GameUpdate2 | game | -- | named |
 | $01D340 | SetDisplayMode | display | 7 | translated |
 | $01D3AC | MenuSelectEntry | game | 14 | translated |
@@ -369,4 +396,7 @@ These are the most frequently called subroutines -- high-priority translation ta
 | $01ACBA | DiagonalWipe | display | 5 | translated |
 | $01D8F4 | SetScrollOffset | display | 5 | translated |
 | $020A64 | ShowGameScreen | display | 5 | translated |
+| $021FD4 | CheckEventMatch | game | 5 | translated |
+| $02377C | DrawLabeledBox | game | 5 | translated |
 | $0237A8 | ClearListArea | display | 6 | translated |
+| $027AA4 | CountActivePlayers | game | 5 | translated |

@@ -90,7 +90,7 @@ aerobiz-disasm/
 
 ### Translation Status
 
-~191,218 bytes (~187 KB) of code translated from raw `dc.w` to 68000 mnemonics (all verified byte-identical):
+~236,000 bytes (~230 KB) of code translated from raw `dc.w` to 68000 mnemonics (all verified byte-identical):
 
 - **System core** -- 944 bytes (5 groups): exception handlers, EXT/H-INT/V-INT interrupts, boot init, Z80 sound interface, GameCommand dispatcher
 - **Main loop & resources** -- 2,816 bytes (25 functions): GameEntry, MainLoop, RangeLookup, ResourceLoad, DiagonalWipe, ShowGameScreen, LoadGameGraphics, and 18 more
@@ -102,13 +102,13 @@ aerobiz-disasm/
 - **Character system** -- 14,462 bytes (62 functions): CharCodeCompare, CalcRelationValue, RecruitCharacter, CalcCharScore, FindBestCharacter, and 57 more
 - **Game logic & AI** -- 6,122 bytes (23 functions): RunPlayerTurn, RunAITurn, RunScenarioMenu, AnimateFlightPaths, RunEventSequence, SortWordPairs, and 17 more
 - **Management screens** -- 15,934 bytes (15 functions): PackSaveState, ShowRouteInfo, ShowQuarterSummary, RunQuarterScreen, ShowAnnualReport, RunCharManagement, ShowRelationAction, and 8 more
-- **Bulk translation (B-046)** -- 123,446 bytes (321 functions): Automated capstone-to-vasm translation of 23 major contiguous code blocks across 4 section files. Functions not yet named.
+- **Bulk translation (B-046)** -- 168,556 bytes (537 functions): Automated capstone-to-vasm translation of 86 contiguous code blocks across 4 section files. Functions not yet named.
 
-278 functions named, 587 translated to mnemonics, out of ~854 total. See [BACKLOG.md](BACKLOG.md) for the full task queue.
+267 functions named, 804 translated to mnemonics, out of ~854 total. See [BACKLOG.md](BACKLOG.md) for the full task queue.
 
 **Milestone (B-031 through B-040):** All 854 unique JSR call targets from the function reference have been translated. Remaining untranslated code consists of inline routines, branch targets, and data-interleaved sections not reachable via JSR.
 
-**Bulk translation (B-046):** Automated translation tooling (`tools/translate_block.py`) converted 23 major code blocks (~120 KB, 321 functions) from dc.w to mnemonics across 4 section files. This nearly tripled total translation coverage from ~67 KB to ~191 KB.
+**Bulk translation (B-046):** Automated translation tooling (`tools/translate_block.py`) converted 86 code blocks (~165 KB, 537 functions) from dc.w to mnemonics across 4 section files. Only 17 blocks (~19 KB) remain untranslated, most containing jump tables or data-interleaved code that requires manual handling.
 
 **Phase 4 (B-041 through B-045):** Work RAM map created — 50+ variables and 30+ regions. Data structure field layouts documented for player records (12 fields), route slots (13 fields), and char stat records (12 fields). String/text tables labeled. See [analysis/RAM_MAP.md](analysis/RAM_MAP.md) and [analysis/DATA_STRUCTURES.md](analysis/DATA_STRUCTURES.md).
 

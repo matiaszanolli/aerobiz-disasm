@@ -109,12 +109,12 @@ Pick the highest-priority unclaimed task. Mark it `IN PROGRESS` with your sessio
 
 ## Phase 3 -- Function Translation
 
-### B-046: Bulk translation of 23 major code blocks (321 functions, 123,446 bytes)
+### B-046: Bulk translation of 86 code blocks (537 functions, ~168 KB)
 **Status:** DONE (2026-02-25)
-**Why:** Largest contiguous untranslated dc.w blocks in the ROM. Translating them brings total coverage from ~67KB to ~191KB.
-**Approach:** Created `tools/translate_block.py` (automated capstone→vasm converter) and `tools/apply_translation.py` (smart section file patcher with ROM address matching and split-boundary handling). Fixed cross-function branch labels (global `l_XXXXX` aliases at function starts) and external branch safety (dc.w for branches outside block range). Translated 23 blocks across 4 section files (6 in section_000200, 6 in section_010000, 6 in section_020000, 5 in section_030000).
+**Why:** Largest contiguous untranslated dc.w blocks in the ROM. Translating them brings total coverage from ~67KB to ~236KB.
+**Approach:** Created `tools/translate_block.py` (automated capstone→vasm converter) and `tools/apply_translation.py` (smart section file patcher with ROM address matching and split-boundary handling). Fixed cross-function branch labels (global `l_XXXXX` aliases at function starts) and external branch safety (dc.w for branches outside block range). Translated 86 blocks across 4 section files in 3 batches. Only 17 blocks (~19KB) remain, containing jump tables or data-interleaved code.
 
-Tool fixes during translation: BTST/EXG/SWAP size qualifiers stripped, PEA abs.w sign fix ($FFFF→(-$1).w), MOVEQ sign fix ($FF→#-$1), cross-function label aliasing, external branch dc.w fallback. Also fixed 39 pre-existing moveq sign warnings across all sections.
+Tool fixes during translation: BTST/EXG/SWAP size qualifiers stripped, PEA abs.w sign fix ($FFFF→(-$1).w), MOVEQ sign fix ($FF→#-$1), cross-function label aliasing, external branch dc.w fallback, byte-immediate junk high byte detection (ORI.B/ANDI.B etc. with non-zero high byte in extension word → dc.w). Also fixed 39 pre-existing moveq sign warnings across all sections.
 **Acceptance:** `make verify` passes (MD5: 1269f44e846a88a2de945de082428b39). Zero assembler warnings.
 
 ### B-009: Translate exception handlers ($F84-$FE0)

@@ -6,6 +6,14 @@ Lessons learned across sessions. **Read this before modifying code.**
 
 ## 68K Assembly Translation
 
+### Byte-Immediate Junk High Byte
+- Instructions like `ORI.B #imm,<ea>`, `ANDI.B`, `CMPI.B`, `SUBI.B`, `ADDI.B`, `EORI.B` use a word-sized immediate extension where only the **low byte** is the actual immediate value
+- The high byte is architecturally **undefined** — the original compiler may leave any value there
+- Example: ROM has `$0010 $3002` for `ORI.B #$02,(A0)` — the `$30` in the high byte is junk
+- vasm always zeroes the high byte, producing `$0010 $0002` — a 1-byte difference
+- **Fix:** Use `dc.w $0010,$3002` to preserve the exact original bytes
+- `translate_block.py` auto-detects this pattern and emits dc.w when high byte is non-zero
+
 ### ASL vs LSL -- Different Opcodes
 - `ASL.L #4,D0` = $E980 (type bits 4-3 = 00)
 - `LSL.L #4,D0` = $E988 (type bits 4-3 = 01)

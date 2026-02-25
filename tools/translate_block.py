@@ -59,6 +59,36 @@ def capstone_to_vasm(addr, raw_bytes, mnem, ops, branch_targets, func_start):
 
     # === Special cases: keep as dc.w ===
 
+    # DC.W from capstone (undefined opcodes) — keep as raw dc.w
+    if mnem == 'DC.W':
+        return f'dc.w    ${word0:04X}', True, None
+
+    # Byte-immediate instructions with junk high byte
+    # ORI.B, ANDI.B, EORI.B, CMPI.B, ADDI.B, SUBI.B use a word extension
+    # where only the low byte is the immediate. The high byte is architecturally
+    # undefined and the original compiler may leave junk there. vasm zeros it.
+    # Detect this by checking if high byte of extension word is non-zero.
+    byte_imm_opcodes = {
+        0x0000: 'ori.b',   # ORI.B #imm,<ea> (size=00)
+        0x0200: 'andi.b',  # ANDI.B
+        0x0400: 'subi.b',  # SUBI.B
+        0x0600: 'addi.b',  # ADDI.B
+        0x0A00: 'eori.b',  # EORI.B
+        0x0C00: 'cmpi.b',  # CMPI.B
+    }
+    opcode_base = word0 & 0xFF00
+    if instr_len >= 4 and opcode_base in byte_imm_opcodes:
+        # Check if bits[7:6] == 00 (byte size)
+        if (word0 & 0x00C0) == 0x0000:
+            ext_word = struct.unpack('>H', raw_bytes[2:4])[0]
+            high_byte = (ext_word >> 8) & 0xFF
+            if high_byte != 0:
+                # Junk in high byte — emit as dc.w to preserve original bytes
+                words = [f'${b1:02X}{b2:02X}' for b1, b2 in zip(raw_bytes[::2], raw_bytes[1::2])]
+                word_str = ','.join(words)
+                imm_val = ext_word & 0xFF
+                return f'dc.w    {word_str}', True, f'{byte_imm_opcodes[opcode_base]} #${imm_val:X},... - high byte ${high_byte:02X} is compiler junk'
+
     # JSR abs.l ($4EB9)
     if word0 == 0x4EB9 and instr_len == 6:
         target = struct.unpack('>I', raw_bytes[2:6])[0]

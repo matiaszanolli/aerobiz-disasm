@@ -3497,20 +3497,89 @@ MenuSelectEntry:                                             ; $01D3AC
     movem.l -$C(a6),d2/a2/a3
     unlk    a6
     rts
-    dc.w    $48E7,$303C,$262F,$001C,$2A7C,$0000          ; $01D444
-    dc.w    $0D64,$3039,$00FF,$1274,$0280,$0000,$0100,$0C80; $01D450
-    dc.w    $0000,$0100,$6600,$00B2,$4A43,$6D00,$00AC,$0C43; $01D460
-    dc.w    $0017,$6E00,$00A4,$3003,$C0FC,$0006,$207C,$0004; $01D470
-    dc.w    $7CEC,$41F0,$0000,$2448,$3010,$3400,$0C40,$00FF; $01D480
-    dc.w    $6606,$7000,$2840,$6010,$3002,$48C0,$E588,$207C; $01D490
-    dc.w    $000F,$C0CA,$2870,$0800,$302A,$0002,$3400,$0C40; $01D4A0
-    dc.w    $00FF,$6606,$7000,$2640,$6010,$3002,$48C0,$E588; $01D4B0
-    dc.w    $207C,$000F,$C0CA,$2670,$0800,$302A,$0004,$3400; $01D4C0
-    dc.w    $0C40,$00FF,$6606,$7000,$2440,$6010,$3002,$48C0; $01D4D0
-    dc.w    $E588,$207C,$000F,$C052,$2470,$0800,$4878,$0018; $01D4E0
-    dc.w    $4E95,$2F0A,$2F0B,$2F0C,$4878,$0016,$4E95,$3003; $01D4F0
-    dc.w    $48C0,$E588,$207C,$000F,$C13E,$2F30,$0800,$4878; $01D500
-    dc.w    $0017,$4E95,$4FEF,$001C,$7000,$4CDF,$3C0C,$4E75; $01D510
+; ============================================================================
+; sub_01D444 -- (TODO: describe)
+; Called: 16 times.
+; 220 bytes | $01D444-$01D51F
+; ============================================================================
+sub_01D444:                                                  ; $01D444
+    movem.l d2-d3/a2-a5,-(sp)
+    move.l  $001c(sp),d3
+    movea.l #$0d64,a5
+    move.w  ($00FF1274).l,d0
+    andi.l  #$0100,d0
+    cmpi.l  #$0100,d0
+    bne.w   .l1d518
+    tst.w   d3
+    blt.w   .l1d518
+    cmpi.w  #$17,d3
+    bgt.w   .l1d518
+    move.w  d3,d0
+    mulu.w  #$6,d0
+    movea.l #$00047cec,a0
+    lea     (a0,d0.w),a0
+    movea.l a0,a2
+    move.w  (a0),d0
+    move.w  d0,d2
+    cmpi.w  #$ff,d0
+    bne.b   .l1d498
+    moveq   #$0,d0
+    movea.l d0,a4
+    bra.b   .l1d4a8
+.l1d498:                                                ; $01D498
+    move.w  d2,d0
+    ext.l   d0
+    lsl.l   #$2,d0
+    movea.l #$000fc0ca,a0
+    movea.l (a0,d0.l),a4
+.l1d4a8:                                                ; $01D4A8
+    move.w  $0002(a2),d0
+    move.w  d0,d2
+    cmpi.w  #$ff,d0
+    bne.b   .l1d4ba
+    moveq   #$0,d0
+    movea.l d0,a3
+    bra.b   .l1d4ca
+.l1d4ba:                                                ; $01D4BA
+    move.w  d2,d0
+    ext.l   d0
+    lsl.l   #$2,d0
+    movea.l #$000fc0ca,a0
+    movea.l (a0,d0.l),a3
+.l1d4ca:                                                ; $01D4CA
+    move.w  $0004(a2),d0
+    move.w  d0,d2
+    cmpi.w  #$ff,d0
+    bne.b   .l1d4dc
+    moveq   #$0,d0
+    movea.l d0,a2
+    bra.b   .l1d4ec
+.l1d4dc:                                                ; $01D4DC
+    move.w  d2,d0
+    ext.l   d0
+    lsl.l   #$2,d0
+    movea.l #$000fc052,a0
+    movea.l (a0,d0.l),a2
+.l1d4ec:                                                ; $01D4EC
+    pea     ($0018).w
+    jsr     (a5)
+    move.l  a2,-(sp)
+    move.l  a3,-(sp)
+    move.l  a4,-(sp)
+    pea     ($0016).w
+    jsr     (a5)
+    move.w  d3,d0
+    ext.l   d0
+    lsl.l   #$2,d0
+    movea.l #$000fc13e,a0
+    move.l  (a0,d0.l),-(sp)
+    pea     ($0017).w
+    jsr     (a5)
+    lea     $001c(sp),sp
+.l1d518:                                                ; $01D518
+    moveq   #$0,d0
+    movem.l (sp)+,d2-d3/a2-a5
+    rts
 ; ============================================================================
 ; MemFillByte -- Fill memory with a byte value (71 calls)
 ; Args (stack): 4(sp)=dest, 8(sp)=fill byte, C(sp)=count

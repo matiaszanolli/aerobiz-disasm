@@ -8,7 +8,7 @@ Index of all identified functions. Updated as disassembly progresses.
 - **Total RTE (interrupt returns):** 6
 - **Unique call targets:** 2,896
 - **Functions named:** 96
-- **Functions translated to mnemonics:** 69 (exception handlers, EXT/H-INT/V-INT, boot post-init, Z80 sound interface, GameEntry/GameLoopSetup/MainLoop, GameCommand, RangeLookup, utility cluster: MemFillByte/MemCopy/MemFillWord/VRAMBulkLoad/PollAction/RandRange/ByteSum/ResourceLoad/ResourceUnload/TilePlacement/GameCmd16/ReadInput, math: Multiply32/SignedDiv/UnsignedDivide/UDiv_Overflow/UDiv_Full32/UnsignedMod/SignedMod + 5 FromPtr entries, text: SetTextWindow/SetTextCursor/sprintf/PrintfNarrow/PrintfWide, compression: LZ_Decompress, display: DisplaySetup/DisplayInitRows/DisplayInit15/DisplayInit0/DisplaySetupScaled/DisplayTileSetup, graphics: CmdPlaceTile/CmdPlaceTile2/CmdSetBackground, memory: MemMove, game: BitFieldSearch/PreLoopInit/ShowDialog/ShowTextDialog/MenuSelectEntry/LoadScreen/CharCodeScore/RangeMatch/CharCodeCompare/CharPairIndex/DrawBox/ShowRelPanel, util: GetLowNibble/GetByteField4, input: ProcessInputLoop/PollInputChange)
+- **Functions translated to mnemonics:** 74 (exception handlers, EXT/H-INT/V-INT, boot post-init, Z80 sound interface, GameEntry/GameLoopSetup/MainLoop, GameCommand, RangeLookup, utility cluster: MemFillByte/MemCopy/MemFillWord/VRAMBulkLoad/PollAction/RandRange/ByteSum/ResourceLoad/ResourceUnload/TilePlacement/GameCmd16/ReadInput, math: Multiply32/SignedDiv/UnsignedDivide/UDiv_Overflow/UDiv_Full32/UnsignedMod/SignedMod + 5 FromPtr entries, text: SetTextWindow/SetTextCursor/sprintf/PrintfNarrow/PrintfWide, compression: LZ_Decompress, display: DisplaySetup/DisplayInitRows/DisplayInit15/DisplayInit0/DisplaySetupScaled/DisplayTileSetup, graphics: CmdPlaceTile/CmdPlaceTile2/CmdSetBackground, memory: MemMove, game: BitFieldSearch/PreLoopInit/ShowDialog/ShowTextDialog/MenuSelectEntry/LoadScreen/CharCodeScore/RangeMatch/CharCodeCompare/CharPairIndex/DrawBox/ShowRelPanel/sub_02FBD6/sub_0068CA/sub_00E08E/sub_006760/sub_01D444, util: GetLowNibble/GetByteField4, input: ProcessInputLoop/PollInputChange)
 
 ## Most-Called Functions
 
@@ -237,6 +237,8 @@ These are the most frequently called subroutines -- high-priority translation ta
 | $00538E | CmdSetBackground | graphics | 46 | translated |
 | $005736 | PreGameInit | game | -- | named |
 | $0058EE | ErrorDisplay | exception | -- | named |
+| $006760 | sub_006760 | game | 17 | translated |
+| $0068CA | sub_0068CA | game | 21 | translated |
 | $006A2E | LoadScreen | game | 38 | translated |
 | $005A04 | DrawBox | game | 42 | translated |
 | $006B78 | ShowRelPanel | game | 40 | translated |
@@ -252,6 +254,7 @@ These are the most frequently called subroutines -- high-priority translation ta
 | $01819C | GameCall | game | -- | named |
 | $01B49A | GameUpdate2 | game | -- | named |
 | $01D3AC | MenuSelectEntry | game | 14 | translated |
+| $01D444 | sub_01D444 | game | 16 | translated |
 | $01D520 | MemFillByte | util | 71 | translated |
 | $01D538 | MemCopy | util | -- | translated |
 | $01D550 | MemFillWord | util | -- | translated |
@@ -261,6 +264,7 @@ These are the most frequently called subroutines -- high-priority translation ta
 | $01D6FC | ByteSum | util | -- | translated |
 | $01D71C | ResourceLoad | game | 106 | translated |
 | $01D748 | ResourceUnload | game | 95 | translated |
+| $00E08E | sub_00E08E | game | 18 | translated |
 | $01E044 | TilePlacement | graphics | 100 | translated |
 | $01E0B8 | GameCmd16 | game | 77 | translated |
 | $01E1EC | ReadInput | input | 95 | translated |
@@ -271,6 +275,7 @@ These are the most frequently called subroutines -- high-priority translation ta
 | $0213B6 | GameLogic1 | game | -- | named |
 | $026128 | GameUpdate4 | game | -- | named |
 | $02947A | GameLogic2 | game | -- | named |
+| $02FBD6 | sub_02FBD6 | game | 37 | translated |
 | $02F5A6 | GameUpdate1 | game | -- | named |
 | $03A942 | SetTextWindow | text | 124 | translated |
 | $03AB2C | SetTextCursor | text | 174 | translated |

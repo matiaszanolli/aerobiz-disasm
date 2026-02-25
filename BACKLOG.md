@@ -156,8 +156,8 @@ All verified byte-identical before applying. JSR abs.l kept as dc.w, BSR.W as dc
 
 | ID | Description | Commit | Date |
 |----|-------------|--------|------|
-| B-028 | Unnamed call targets batch 2 (10 functions, 1258B: sub_00595E/sub_00814A/sub_0088EA/sub_009D92/sub_009F4A/sub_0181C6/sub_01C43C/sub_01D7BE/sub_01E11C/sub_023930) | 5839ea2 | 2026-02-24 |
-| B-027 | Top unnamed call targets (5 functions, 1196B: sub_02FBD6/sub_0068CA/sub_00E08E/sub_006760/sub_01D444) | 4dfc342 | 2026-02-24 |
+| B-028 | Unnamed call targets batch 2 (10 functions, 1258B: PlaceIconTiles/ClearBothPlanes/DrawStatDisplay/GetCharStat/SelectMenuItem/InitCharRecord/ShowPlayerInfo/DrawTileGrid/MulDiv/ClearInfoPanel) | 5839ea2 | 2026-02-24 |
+| B-027 | Top unnamed call targets (5 functions, 1196B: ShowText/LoadScreenGfx/CalcCharValue/FillTileRect/LoadDisplaySet) | 4dfc342 | 2026-02-24 |
 | B-026 | ShowRelPanel ($006B78, 40 calls, 882B: char relationship/affinity panel, 2-path bar-draw loops) | 7b6a94b | 2026-02-24 |
 | B-025 | DrawBox ($005A04, 42 calls, 608B: corners+edges+fill tile loop) | fa57e84 | 2026-02-24 |
 | B-024 | Character code functions translated (CharCodeCompare $6F42 + CharPairIndex $71DE, 484 bytes, 7-category jump table) | d0078b6 | 2026-02-24 |

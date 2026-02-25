@@ -8,7 +8,7 @@ Index of all identified functions. Updated as disassembly progresses.
 - **Total RTE (interrupt returns):** 6
 - **Unique call targets:** 2,896
 - **Functions named:** 96
-- **Functions translated to mnemonics:** 84 (74 prior + 10 new: sub_00595E/sub_00814A/sub_0088EA/sub_009D92/sub_009F4A/sub_0181C6/sub_01C43C/sub_01D7BE/sub_01E11C/sub_023930)
+- **Functions translated to mnemonics:** 84 (all named)
 
 ## Most-Called Functions
 
@@ -237,10 +237,10 @@ These are the most frequently called subroutines -- high-priority translation ta
 | $00538E | CmdSetBackground | graphics | 46 | translated |
 | $005736 | PreGameInit | game | -- | named |
 | $0058EE | ErrorDisplay | exception | -- | named |
-| $006760 | sub_006760 | game | 17 | translated |
-| $0068CA | sub_0068CA | game | 21 | translated |
+| $006760 | FillTileRect | graphics | 17 | translated |
+| $0068CA | LoadScreenGfx | graphics | 21 | translated |
 | $006A2E | LoadScreen | game | 38 | translated |
-| $00595E | sub_00595E | game | 13 | translated |
+| $00595E | PlaceIconTiles | graphics | 13 | translated |
 | $005A04 | DrawBox | game | 42 | translated |
 | $006B78 | ShowRelPanel | game | 40 | translated |
 | $006EEA | BitFieldSearch | game | 47 | translated |
@@ -251,17 +251,17 @@ These are the most frequently called subroutines -- high-priority translation ta
 | $007402 | GetLowNibble | util | 20 | translated |
 | $0074E0 | GetByteField4 | util | 36 | translated |
 | $007912 | ShowDialog | game | 38 | translated |
-| $00814A | sub_00814A | game | 15 | translated |
-| $0088EA | sub_0088EA | game | 11 | translated |
-| $009D92 | sub_009D92 | game | 14 | translated |
-| $009F4A | sub_009F4A | game | 14 | translated |
+| $00814A | ClearBothPlanes | graphics | 15 | translated |
+| $0088EA | DrawStatDisplay | display | 11 | translated |
+| $009D92 | GetCharStat | game | 14 | translated |
+| $009F4A | SelectMenuItem | game | 14 | translated |
 | $01183A | ShowTextDialog | game | 31 | translated |
-| $0181C6 | sub_0181C6 | game | 11 | translated |
+| $0181C6 | InitCharRecord | game | 11 | translated |
 | $01819C | GameCall | game | -- | named |
 | $01B49A | GameUpdate2 | game | -- | named |
 | $01D3AC | MenuSelectEntry | game | 14 | translated |
-| $01C43C | sub_01C43C | game | 12 | translated |
-| $01D444 | sub_01D444 | game | 16 | translated |
+| $01C43C | ShowPlayerInfo | display | 12 | translated |
+| $01D444 | LoadDisplaySet | game | 16 | translated |
 | $01D520 | MemFillByte | util | 71 | translated |
 | $01D538 | MemCopy | util | -- | translated |
 | $01D550 | MemFillWord | util | -- | translated |
@@ -271,21 +271,21 @@ These are the most frequently called subroutines -- high-priority translation ta
 | $01D6FC | ByteSum | util | -- | translated |
 | $01D71C | ResourceLoad | game | 106 | translated |
 | $01D748 | ResourceUnload | game | 95 | translated |
-| $01D7BE | sub_01D7BE | game | 14 | translated |
-| $00E08E | sub_00E08E | game | 18 | translated |
+| $01D7BE | DrawTileGrid | graphics | 14 | translated |
+| $00E08E | CalcCharValue | game | 18 | translated |
 | $01E044 | TilePlacement | graphics | 100 | translated |
 | $01E0B8 | GameCmd16 | game | 77 | translated |
 | $01E1EC | ReadInput | input | 95 | translated |
 | $01E290 | ProcessInputLoop | input | 42 | translated |
-| $01E11C | sub_01E11C | game | 13 | translated |
+| $01E11C | MulDiv | math | 13 | translated |
 | $01E2F4 | PollInputChange | input | 18 | translated |
 | $01E398 | PreLoopInit | game | 57 | translated |
 | $01E402 | GameUpdate3 | game | -- | named |
 | $0213B6 | GameLogic1 | game | -- | named |
 | $026128 | GameUpdate4 | game | -- | named |
 | $02947A | GameLogic2 | game | -- | named |
-| $023930 | sub_023930 | game | 11 | translated |
-| $02FBD6 | sub_02FBD6 | game | 37 | translated |
+| $023930 | ClearInfoPanel | graphics | 11 | translated |
+| $02FBD6 | ShowText | game | 37 | translated |
 | $02F5A6 | GameUpdate1 | game | -- | named |
 | $03A942 | SetTextWindow | text | 124 | translated |
 | $03AB2C | SetTextCursor | text | 174 | translated |

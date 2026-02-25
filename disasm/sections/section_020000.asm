@@ -919,11 +919,11 @@
     dc.w    $4878,$000C,$4878,$0006,$4878,$000A,$42A7,$4878; $023910
     dc.w    $001B,$4EB9,$0000,$0D64,$4FEF,$0024,$241F,$4E75; $023920
 ; ============================================================================
-; sub_023930 -- (TODO: describe)
+; ClearInfoPanel -- Clear info panel area with priority flag via GameCommand #$1A
 ; Called: 11 times.
 ; 40 bytes | $023930-$023957
 ; ============================================================================
-sub_023930:                                                  ; $023930
+ClearInfoPanel:                                                  ; $023930
     move.l  #$8000,-(sp)
     pea     ($000A).w
     pea     ($000C).w
@@ -4048,11 +4048,11 @@ sub_023930:                                                  ; $023930
     dc.w    $2F00,$3002,$48C0,$2F00,$4EB9,$0000,$6B78,$242E; $02FBC0
     dc.w    $FFF8,$4E5E,$4E75                                ; $02FBD0
 ; ============================================================================
-; sub_02FBD6 -- (TODO: describe)
+; ShowText -- Thin wrapper around ShowTextDialog with simplified params
 ; Called: 37 times.
 ; 62 bytes | $02FBD6-$02FC13
 ; ============================================================================
-sub_02FBD6:                                                  ; $02FBD6
+ShowText:                                                  ; $02FBD6
     movem.l d2-d3,-(sp)
     move.l  $0018(sp),d2
     move.l  $0010(sp),d3

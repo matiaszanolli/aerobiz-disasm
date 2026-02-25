@@ -2132,11 +2132,11 @@ ShowTextDialog:                                              ; $01183A
     dc.w    $2F00,$4EBA,$0012,$4E71,$508F,$5242,$0C42,$0059; $0181B0
     dc.w    $65EA,$241F,$4E75                                ; $0181C0
 ; ============================================================================
-; sub_0181C6 -- (TODO: describe)
+; InitCharRecord -- Initialize character record from player data
 ; Called: 11 times.
 ; 78 bytes | $0181C6-$018213
 ; ============================================================================
-sub_0181C6:                                                  ; $0181C6
+InitCharRecord:                                                  ; $0181C6
     movem.l d2-d3/a2,-(sp)
     move.l  $0010(sp),d2
     move.l  $0014(sp),d3
@@ -3225,11 +3225,11 @@ sub_0181C6:                                                  ; $0181C6
     dc.w    $6B78,$3007,$48C0,$2F00,$6100,$F4F0,$4EB9,$0001; $01C420
     dc.w    $D748,$4CEE,$00FC,$FFE4,$4E5E,$4E75              ; $01C430
 ; ============================================================================
-; sub_01C43C -- (TODO: describe)
+; ShowPlayerInfo -- Display player info screen with formatted data
 ; Called: 12 times.
 ; 274 bytes | $01C43C-$01C54D
 ; ============================================================================
-sub_01C43C:                                                  ; $01C43C
+ShowPlayerInfo:                                                  ; $01C43C
     movem.l d2/a2,-(sp)
     move.l  $000c(sp),d2
     move.w  d2,d0
@@ -3583,11 +3583,11 @@ MenuSelectEntry:                                             ; $01D3AC
     unlk    a6
     rts
 ; ============================================================================
-; sub_01D444 -- (TODO: describe)
+; LoadDisplaySet -- Load triple-pointer display resource set from table
 ; Called: 16 times.
 ; 220 bytes | $01D444-$01D51F
 ; ============================================================================
-sub_01D444:                                                  ; $01D444
+LoadDisplaySet:                                                  ; $01D444
     movem.l d2-d3/a2-a5,-(sp)
     move.l  $001c(sp),d3
     movea.l #$0d64,a5
@@ -3946,11 +3946,11 @@ ResourceUnload:                                                  ; $01D748
     dc.w    $48C0,$2F00,$3003,$48C0,$2F00,$486E,$FFF8,$4EBA; $01D7A0
     dc.w    $06A2,$4E71,$4CEE,$000C,$FFF0,$4E5E,$4E75       ; $01D7B0
 ; ============================================================================
-; sub_01D7BE -- (TODO: describe)
+; DrawTileGrid -- Draw grid of tiles from data buffer in nested row/col loop
 ; Called: 14 times.
 ; 126 bytes | $01D7BE-$01D83B
 ; ============================================================================
-sub_01D7BE:                                                  ; $01D7BE
+DrawTileGrid:                                                  ; $01D7BE
     movem.l d2-d6/a2,-(sp)
     move.l  $001c(sp),d3
     move.l  $0020(sp),d5
@@ -4192,11 +4192,11 @@ GameCmd16:                                                       ; $01E0B8
     dc.w    $000C,$226F,$0008,$206F,$0004,$4241,$6008,$1091; $01E100
     dc.w    $5241,$5288,$5489,$B240,$6DF4,$4E75              ; $01E110
 ; ============================================================================
-; sub_01E11C -- (TODO: describe)
+; MulDiv -- Multiply then divide: (a * b) / c via Multiply32 + SignedDiv
 ; Called: 13 times.
 ; 46 bytes | $01E11C-$01E149
 ; ============================================================================
-sub_01E11C:                                                  ; $01E11C
+MulDiv:                                                  ; $01E11C
     move.l  d2,-(sp)
     move.l  $0010(sp),d2
     tst.w   d2

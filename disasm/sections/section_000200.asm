@@ -2089,11 +2089,11 @@ CmdSetBackground:                                              ; $00538E
     dc.w    $0012,$48C0,$2F00,$302E,$000E,$48C0,$2F00,$42A7; $005940
     dc.w    $4878,$001B,$4EB9,$0000,$0D64,$4E5E,$4E75       ; $005950
 ; ============================================================================
-; sub_00595E -- (TODO: describe)
+; PlaceIconTiles -- Place tile icons by game element type (switch on type 1-4)
 ; Called: 13 times.
 ; 166 bytes | $00595E-$005A03
 ; ============================================================================
-sub_00595E:                                                  ; $00595E
+PlaceIconTiles:                                                  ; $00595E
     link    a6,#-$4
     movem.l d2-d7,-(sp)
     move.l  $000c(a6),d6
@@ -2579,11 +2579,11 @@ DrawBox:                                                     ; $005A04
     dc.w    $0022,$6704,$7019,$6002,$7002,$2F00,$3005,$2F00; $006740
     dc.w    $4EB9,$0000,$5F00,$4CEE,$3CFC,$FFA4,$4E5E,$4E75; $006750
 ; ============================================================================
-; sub_006760 -- Fill tile buffer and submit via VRAMBulkLoad+GameCommand #$1A
+; FillTileRect -- Fill rectangular VRAM area with repeating tile pattern
 ; Called: 17 times.
 ; 362 bytes | $006760-$0068C9
 ; ============================================================================
-sub_006760:                                                  ; $006760
+FillTileRect:                                                  ; $006760
     link    a6,#-$24
     movem.l d2-d7/a2-a4,-(sp)
     move.l  $0020(a6),d2
@@ -2723,11 +2723,11 @@ sub_006760:                                                  ; $006760
     unlk    a6
     rts
 ; ============================================================================
-; sub_0068CA -- Load and display compressed screen graphics
+; LoadScreenGfx -- Load and display compressed screen graphics
 ; Called: 21 times.
 ; 356 bytes | $0068CA-$006A2D
 ; ============================================================================
-sub_0068CA:                                                  ; $0068CA
+LoadScreenGfx:                                                  ; $0068CA
     link    a6,#$0
     movem.l d2/a2-a3,-(sp)
     move.l  $0008(a6),d2
@@ -3933,11 +3933,11 @@ ShowDialog:                                                  ; $007912
     dc.w    $3400,$6002,$4242,$0C42,$0032,$6504,$7A01,$6002; $008130
     dc.w    $4245,$3005,$4CDF,$0C3C,$4E75                    ; $008140
 ; ============================================================================
-; sub_00814A -- (TODO: describe)
+; ClearBothPlanes -- Clear both scroll planes via GameCommand #$1A
 ; Called: 15 times.
 ; 64 bytes | $00814A-$008189
 ; ============================================================================
-sub_00814A:                                                  ; $00814A
+ClearBothPlanes:                                                  ; $00814A
     clr.l   -(sp)
     pea     ($0020).w
     pea     ($0020).w
@@ -4077,11 +4077,11 @@ sub_00814A:                                                  ; $00814A
     dc.w    $0030,$4878,$0001,$4878,$000E,$4EB9,$0000,$0D64; $0088D0
     dc.w    $4CEE,$040C,$FF34,$4E5E,$4E75                    ; $0088E0
 ; ============================================================================
-; sub_0088EA -- (TODO: describe)
+; DrawStatDisplay -- Draw statistic bar display with text labels
 ; Called: 11 times.
 ; 352 bytes | $0088EA-$008A49
 ; ============================================================================
-sub_0088EA:                                                  ; $0088EA
+DrawStatDisplay:                                                  ; $0088EA
     link    a6,#$0
     movem.l d2-d6/a2,-(sp)
     move.l  $0014(a6),d2
@@ -4513,11 +4513,11 @@ sub_0088EA:                                                  ; $0088EA
     dc.w    $4FEF,$002C,$4878,$0018,$4E92,$588F,$4CDF,$041C; $009D80
     dc.w    $4E75                                             ; $009D90
 ; ============================================================================
-; sub_009D92 -- (TODO: describe)
+; GetCharStat -- Look up character attribute from stat table
 ; Called: 14 times.
 ; 50 bytes | $009D92-$009DC3
 ; ============================================================================
-sub_009D92:                                                  ; $009D92
+GetCharStat:                                                  ; $009D92
     move.w  $000a(sp),d0
     lsl.w   #$2,d0
     movea.l #$00ff1298,a0
@@ -4558,11 +4558,11 @@ sub_009D92:                                                  ; $009D92
     dc.w    $0024,$508A,$5242,$0C42,$0004,$6D00,$FF28,$4CEE; $009F30
     dc.w    $0C7C,$FFC4,$4E5E,$4E75,$4E75                    ; $009F40
 ; ============================================================================
-; sub_009F4A -- (TODO: describe)
+; SelectMenuItem -- Map selection index to menu entry, dispatch via MenuSelectEntry
 ; Called: 14 times.
 ; 62 bytes | $009F4A-$009F87
 ; ============================================================================
-sub_009F4A:                                                  ; $009F4A
+SelectMenuItem:                                                  ; $009F4A
     move.l  $0004(sp),d1
     cmpi.w  #$7,d1
     bge.b   .l9f58
@@ -5726,11 +5726,11 @@ RangeLookup:                                                ; $00D648
     dc.w    $2F00,$3006,$48C0,$2F00,$4878,$0001,$4878,$001A; $00E070
     dc.w    $4E95,$3003,$4CEE,$3CFC,$FF78,$4E5E,$4E75       ; $00E080
 ; ============================================================================
-; sub_00E08E -- (TODO: describe)
+; CalcCharValue -- Calculate character effectiveness from stats and game phase
 ; Called: 18 times.
 ; 196 bytes | $00E08E-$00E151
 ; ============================================================================
-sub_00E08E:                                                  ; $00E08E
+CalcCharValue:                                                  ; $00E08E
     movem.l d2-d4/a2,-(sp)
     move.l  $001c(sp),d2
     move.l  $0018(sp),d3

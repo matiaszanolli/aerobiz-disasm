@@ -81,11 +81,11 @@ Pick the highest-priority unclaimed task. Mark it `IN PROGRESS` with your sessio
 **Acceptance:** `analysis/RAM_MAP.md` created with 50+ named addresses, grouped by region, with PackSaveState-derived sizes.
 **Known issue:** Apparent overlap between char_stat_array ($FF05C4, stride $39 × 89 chars = ends $FF1995) and char_stat_tab ($FF1298). Needs field-level analysis to resolve.
 
-### B-042: Label string / text pointer tables in section_040000.asm
-**Status:** TODO
-**Why:** 8 pointer tables at $0475DC–$0488D7 and the string region at $03E1AC–$041FFF are raw dc.w. Adding labels makes cross-references visible and enables printf-string analysis.
-**Approach:** Identify table boundaries (pointer entries vs padding). Add assembly labels. Optionally decode ASCII inline via comments.
-**Acceptance:** Pointer tables and string region have named labels in section_030000.asm and section_040000.asm.
+### B-042: Label string / text pointer tables in section files
+**Status:** DONE (2026-02-25)
+**Why:** 7 pointer tables at $0475DC–$0488D7 and the string region at $03E1AC–$041FFF are raw dc.w. Adding labels makes cross-references visible and enables printf-string analysis.
+**Approach:** Decoded ROM to identify 7 major pointer tables: ScenarioStrPtrs (9), ScenarioDescPtrs (21), DialoguePtrs (128), SfxNamePtrs (11), AdvisorTextPtrs (118), EventNamePtrs (17), StatusMsgPtrs (100). Split mid-line dc.w where tables don't start on 16-byte boundaries. Added GameStrings label at $03E1AC (679 strings, 15.4 KB).
+**Acceptance:** `make verify` passes. 7 pointer table labels + 1 string region label in section_030000.asm and section_040000.asm.
 
 ### B-043: Document city names tables in section_040000.asm
 **Status:** TODO

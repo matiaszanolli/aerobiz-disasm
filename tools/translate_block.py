@@ -228,7 +228,7 @@ def convert_single_operand(op, mnem, size, addr, branch_targets, func_start):
         m = re.match(r'\$([0-9a-fA-F]+)', op)
         if m:
             target = int(m.group(1), 16)
-            label = f'.l{target:05x}'
+            label = f'l_{target:05x}'
             branch_targets.add(target)
             return label
 
@@ -239,7 +239,7 @@ def convert_single_operand(op, mnem, size, addr, branch_targets, func_start):
             m = re.match(r'\$([0-9a-fA-F]+)', parts[1].strip())
             if m:
                 target = int(m.group(1), 16)
-                label = f'.l{target:05x}'
+                label = f'l_{target:05x}'
                 branch_targets.add(target)
                 return f'{parts[0].strip().lower()},{label}'
 
@@ -382,9 +382,9 @@ def format_reg_range(prefix, nums):
 
     return '/'.join(ranges)
 
-def translate_function(lines, func_start, func_end):
+def translate_function(lines, func_start, func_end, global_branch_targets=None, block_start=None, block_end=None):
     """Translate a function from capstone output to vasm assembly."""
-    branch_targets = set()
+    branch_targets = set(global_branch_targets) if global_branch_targets else set()
     instructions = []
 
     # First pass: parse all instructions and collect branch targets
@@ -414,17 +414,47 @@ def translate_function(lines, func_start, func_end):
     # Second pass: generate vasm output
     output = []
     for addr, raw_bytes, mnem, ops in instructions:
-        # Insert branch target label if needed
-        if addr in branch_targets:
-            output.append(f'.l{addr:05x}:')
+        # Insert branch target label if needed (skip func_start — already emitted by caller)
+        if addr in branch_targets and addr != func_start:
+            output.append(f'l_{addr:05x}:')
 
-        vasm, is_dcw, comment = capstone_to_vasm(addr, raw_bytes, mnem, ops, branch_targets, func_start)
+        # Check if this is a branch to an external address (outside block range)
+        # If so, emit as dc.w to avoid unresolvable label references
+        external_branch = False
+        if block_start is not None and block_end is not None:
+            mnem_lower = mnem.split('.')[0].lower()
+            if mnem_lower in ('bra', 'beq', 'bne', 'bcc', 'bcs', 'bge', 'bgt', 'ble', 'blt',
+                              'bhi', 'bls', 'bpl', 'bmi', 'bvc', 'bvs'):
+                m_target = re.match(r'\$([0-9a-fA-F]+)', ops)
+                if m_target:
+                    target = int(m_target.group(1), 16)
+                    if target < block_start or target >= block_end:
+                        external_branch = True
+            if mnem_lower in ('dbra', 'dbeq', 'dbne', 'dbf'):
+                parts = ops.split(',')
+                if len(parts) >= 2:
+                    m_target = re.match(r'\s*\$([0-9a-fA-F]+)', parts[-1])
+                    if m_target:
+                        target = int(m_target.group(1), 16)
+                        if target < block_start or target >= block_end:
+                            external_branch = True
 
-        # Format with proper indentation and address comment
-        if comment:
-            line = f'    {vasm:<52s}; {comment}'
+        if external_branch:
+            # Emit as dc.w to avoid external label references
+            words = [f'${b1:02X}{b2:02X}' for b1, b2 in zip(raw_bytes[::2], raw_bytes[1::2])]
+            word_str = ','.join(words)
+            mnem_lower = mnem.split('.')[0].lower()
+            m_target = re.match(r'.*\$([0-9a-fA-F]+)', ops)
+            target = int(m_target.group(1), 16) if m_target else 0
+            line = f'    dc.w    {word_str:<52s}; {mnem_lower} ${target:06X}'
         else:
-            line = f'    {vasm}'
+            vasm, is_dcw, comment = capstone_to_vasm(addr, raw_bytes, mnem, ops, branch_targets, func_start)
+
+            # Format with proper indentation and address comment
+            if comment:
+                line = f'    {vasm:<52s}; {comment}'
+            else:
+                line = f'    {vasm}'
 
         output.append(line)
 
@@ -449,6 +479,32 @@ def find_rts_boundaries(lines, block_start, block_end):
             current_start = func_end
 
     return functions
+
+def collect_all_branch_targets(lines, functions):
+    """Collect all branch targets across all functions (for cross-function labels)."""
+    all_targets = set()
+    for fstart, fend in functions:
+        for line in lines:
+            parsed = parse_disasm_line(line)
+            if not parsed:
+                continue
+            addr, raw_bytes, mnem, ops = parsed
+            if addr < fstart or addr >= fend:
+                continue
+            mnem_lower = mnem.split('.')[0].lower()
+            if mnem_lower in ('bra', 'beq', 'bne', 'bcc', 'bcs', 'bge', 'bgt', 'ble', 'blt',
+                              'bhi', 'bls', 'bpl', 'bmi', 'bvc', 'bvs'):
+                m = re.match(r'\$([0-9a-fA-F]+)', ops)
+                if m:
+                    all_targets.add(int(m.group(1), 16))
+            if mnem_lower in ('dbra', 'dbeq', 'dbne', 'dbf'):
+                parts = ops.split(',')
+                if len(parts) >= 2:
+                    m = re.match(r'\s*\$([0-9a-fA-F]+)', parts[-1])
+                    if m:
+                        all_targets.add(int(m.group(1), 16))
+    return all_targets
+
 
 def main():
     if len(sys.argv) < 2:
@@ -484,6 +540,10 @@ def main():
 
     functions = find_rts_boundaries(lines, start_addr, end_addr)
 
+    # Collect branch targets globally to handle cross-function branches
+    global_branch_targets = collect_all_branch_targets(lines, functions)
+    func_starts = {fstart for fstart, _ in functions}
+
     print(f'; === Translated block ${start_addr:06X}-${end_addr:06X} ===')
     print(f'; {len(functions)} functions, {end_addr - start_addr} bytes')
     print()
@@ -495,8 +555,11 @@ def main():
         print(f'; {size} bytes | ${fstart:06X}-${fend-1:06X}')
         print(f'; ============================================================================')
         print(f'func_{fstart:06X}:')
+        # Emit l_XXXXX alias if this function start is a branch target from another function
+        if fstart in global_branch_targets:
+            print(f'l_{fstart:05x}:')
 
-        output = translate_function(lines, fstart, fend)
+        output = translate_function(lines, fstart, fend, global_branch_targets, start_addr, end_addr)
         for line in output:
             print(line)
 

@@ -109,19 +109,12 @@ Pick the highest-priority unclaimed task. Mark it `IN PROGRESS` with your sessio
 
 ## Phase 3 -- Function Translation
 
-### B-046: Bulk translation of 7 major code blocks (113 functions, 59,226 bytes)
+### B-046: Bulk translation of 23 major code blocks (321 functions, 123,446 bytes)
 **Status:** DONE (2026-02-25)
-**Why:** Largest contiguous untranslated dc.w blocks in the ROM. Translating them brings total coverage from ~67KB to ~127KB.
-**Approach:** Created `tools/translate_block.py` (automated capstone→vasm converter) and `tools/apply_translation.py` (smart section file patcher with ROM address matching and split-boundary handling). Translated 7 blocks across 4 section files:
-- $00A156-$00D5B5 (32 functions, 13,408B) in section_000200.asm
-- $02CAF6-$02F42F (25 functions, 10,554B) in section_020000.asm
-- $014692-$016957 (11 functions, 8,902B) in section_010000.asm
-- $02434C-$02626F (14 functions, 7,972B) in section_020000.asm
-- $030000-$032049 (10 functions, 8,266B) in section_030000.asm
-- $011CF6-$012E91 (11 functions, 4,508B) in section_010000.asm
-- $02A7C8-$02B887 (10 functions, 5,616B) in section_020000.asm — partial (jump table at $02B916 confused capstone)
+**Why:** Largest contiguous untranslated dc.w blocks in the ROM. Translating them brings total coverage from ~67KB to ~191KB.
+**Approach:** Created `tools/translate_block.py` (automated capstone→vasm converter) and `tools/apply_translation.py` (smart section file patcher with ROM address matching and split-boundary handling). Fixed cross-function branch labels (global `l_XXXXX` aliases at function starts) and external branch safety (dc.w for branches outside block range). Translated 23 blocks across 4 section files (6 in section_000200, 6 in section_010000, 6 in section_020000, 5 in section_030000).
 
-Tool fixes during translation: BTST/EXG/SWAP size qualifiers stripped, PEA abs.w sign fix ($FFFF→(-$1).w), MOVEQ sign fix ($FF→#-$1). Also fixed 39 pre-existing moveq sign warnings across all sections.
+Tool fixes during translation: BTST/EXG/SWAP size qualifiers stripped, PEA abs.w sign fix ($FFFF→(-$1).w), MOVEQ sign fix ($FF→#-$1), cross-function label aliasing, external branch dc.w fallback. Also fixed 39 pre-existing moveq sign warnings across all sections.
 **Acceptance:** `make verify` passes (MD5: 1269f44e846a88a2de945de082428b39). Zero assembler warnings.
 
 ### B-009: Translate exception handlers ($F84-$FE0)

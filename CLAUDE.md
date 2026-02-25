@@ -90,7 +90,7 @@ disasm/aerobiz.asm (entry point)
 
 - **68K modules**: 0 (translating in-place in section files for now)
 - **Functions identified**: 278 named, 2,896 unique call targets
-- **Translation progress**: ~126,998 bytes translated (exceptions, interrupts, boot, Z80 sound, GameCommand, main loop, utility cluster, display, graphics, memory, math, text, compression, input, UI dialogs, menu selection, screen loading, char code functions, DrawBox, ShowRelPanel, save state, route management, quarter screens, relation displays, turn sequence, scenario menu, 197+113 unnamed call targets)
+- **Translation progress**: ~191,218 bytes translated (exceptions, interrupts, boot, Z80 sound, GameCommand, main loop, utility cluster, display, graphics, memory, math, text, compression, input, UI dialogs, menu selection, screen loading, char code functions, DrawBox, ShowRelPanel, save state, route management, quarter screens, relation displays, turn sequence, scenario menu, 321 bulk-translated unnamed functions)
 - **Phase 4 status**: RAM_MAP.md created (50+ variables, 20+ named regions from PackSaveState). String/text tables labeled (B-042/B-043). DATA_STRUCTURES.md created with field-level layouts for player records (12 fields), route slots (13 fields), char stat records (12 fields), and 3 auxiliary per-player tables.
 
 ### ROM Address Mapping

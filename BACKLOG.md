@@ -156,7 +156,7 @@ All verified byte-identical before applying. JSR abs.l kept as dc.w, BSR.W as dc
 
 | ID | Description | Commit | Date |
 |----|-------------|--------|------|
-| B-036 | Batch mnemonization of 15 targets (1028B: NopStub/CopyBytesToWords/RunEventSequence/SumStatBytes/CalcQuarterBonus/InitFlightDisplay/CountRouteFlags/CheckBitField/ClassifyEvent/SetupEventUI/VerifyChecksum/FindSlotByChar/InitQuarterEvent/FindCharSlotInGroup/CountProfitableRelations) | -- | 2026-02-25 |
+| B-036 | Batch mnemonization of 15 targets (1028B: NopStub/CopyBytesToWords/RunEventSequence/SumStatBytes/CalcQuarterBonus/InitFlightDisplay/CountRouteFlags/CheckBitField/ClassifyEvent/SetupEventUI/VerifyChecksum/FindSlotByChar/InitQuarterEvent/FindCharSlotInGroup/CountProfitableRelations) | 0af386b | 2026-02-25 |
 | B-035 | Batch mnemonization of 15 targets (1376B: FillSequentialWords/UpdateSlotDisplays/UnpackPixelData/CopyRouteFields/CheckCharEligible/DrawDualPanels/ScanRouteSlots/ToUpperCase/CalcPlayerWealth/WriteEventField/ShowCharInfoPage/CalcCharScore/SetCursorY/SetCursorX/ShowPlayerScreen) | fb09f0e | 2026-02-25 |
 | B-034 | Batch mnemonization of 15 targets (1648B: DrawLayersReverse/DrawLayersForward/HitTestMapTile/CheckCharCompat/FindRelationRecord/CountCharPerformance/SumPlayerStats/WeightedAverage/CalcEventValue/DecompressTilePair/TogglePageDisplay/RunTransitionSteps/UpdateIfActive/ClearCharSprites/CheckMatchSlots) | e769c4c | 2026-02-25 |
 | B-033 | Batch mnemonization of 15 targets (2290B: InitTileBuffer/SetScrollBarMode/CalcRouteRevenue/InitAllCharRecords/ClearFlightSlots/MatchCharSlots/RefreshAndWait/DrawTilemapLine/CopyAlternateBytes/StringAppend/StringConcat/AnimateScrollEffect/FindBestCharValue/LoadGameGraphics/ResetGameState) | 2bb3c72 | 2026-02-25 |

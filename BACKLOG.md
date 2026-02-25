@@ -87,11 +87,11 @@ Pick the highest-priority unclaimed task. Mark it `IN PROGRESS` with your sessio
 **Approach:** Decoded ROM to identify 7 major pointer tables: ScenarioStrPtrs (9), ScenarioDescPtrs (21), DialoguePtrs (128), SfxNamePtrs (11), AdvisorTextPtrs (118), EventNamePtrs (17), StatusMsgPtrs (100). Split mid-line dc.w where tables don't start on 16-byte boundaries. Added GameStrings label at $03E1AC (679 strings, 15.4 KB).
 **Acceptance:** `make verify` passes. 7 pointer table labels + 1 string region label in section_030000.asm and section_040000.asm.
 
-### B-043: Document city names tables in section_040000.asm
-**Status:** TODO
-**Why:** Three copies of city name data at $0459xx, $045Axx, $045Cxx. Understanding the format (null-separated ASCII, count = 89 cities) enables labeling and data format documentation.
-**Approach:** Decode the three tables. Document format (encoding, entry count, separator). Add labels and counts comment in section_040000.asm.
-**Acceptance:** City name tables labeled; DATA_STRUCTURES.md entry added.
+### B-043: Label name string pool in section_040000.asm
+**Status:** DONE (2026-02-25)
+**Why:** Large name/data string pool at $04554F–$046384 (~3.6 KB, 405 strings) contains city names, airline names, aircraft models, venue names, country names, month abbreviations, and business categories — all used by game UI. Not "3 copies" as originally thought; one contiguous pool with sub-regions.
+**Approach:** Decoded ROM to find exact pool boundaries and sub-region transitions. Added 8 labels: NameStringPool (master), BusinessCategories, VenueNames, CityNames (~200 cities), AirlineNames (~30), CountryNames (~50), AircraftModels (~40), MonthNames (12). Split mid-line dc.w where needed.
+**Acceptance:** `make verify` passes. 8 labels in section_040000.asm.
 
 ### B-044: Document game data structures (player records, route slots, char records)
 **Status:** TODO

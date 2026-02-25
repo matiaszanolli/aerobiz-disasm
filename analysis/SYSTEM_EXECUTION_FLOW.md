@@ -89,7 +89,7 @@ MainLoop ($00D608):
   $00D61A: jsr $0213B6   -- game logic (quarterly turn processing?)
   $00D620: jsr $02947A   -- game logic (events/AI?)
   $00D626: pea $0001
-  $00D62A: jsr $01819C   -- game call with parameter
+  $00D62A: jsr $01819C   -- InitAllCharRecords (init all char records 0-$58)
   $00D630: subq.l #4,a7  -- stack cleanup
   $00D632: jsr $01E402   -- game update 3
   $00D638: jsr $026128   -- game update 4
@@ -106,7 +106,7 @@ MainLoop ($00D608):
 | $01B49A | Game update 2 | |
 | $0213B6 | Game logic | Main turn processing? |
 | $02947A | Game logic | Events/AI? |
-| $01819C | Parameterized call | Takes 1 longword parameter |
+| $01819C | InitAllCharRecords | Init all char records 0-$58, optional pre-init call |
 | $01E402 | Game update 3 | |
 | $026128 | Game update 4 | Last update before loop |
 

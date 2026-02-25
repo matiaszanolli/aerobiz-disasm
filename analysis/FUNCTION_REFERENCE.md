@@ -81,7 +81,7 @@ These are the most frequently called subroutines -- high-priority translation ta
 | $01B49A | GameUpdate2 | Main loop: second update call |
 | $0213B6 | GameLogic1 | Main loop: game logic (quarterly turn?) |
 | $02947A | GameLogic2 | Main loop: game logic (events/AI?) |
-| $01819C | GameCall | Main loop: parameterized call |
+| $01819C | InitAllCharRecords | Main loop: init all character records 0-$58 |
 | $01E402 | GameUpdate3 | Main loop: third update call |
 | $026128 | GameUpdate4 | Main loop: fourth update call |
 | $006A2E | LoadScreen | Load and initialize a game screen (38 calls) |

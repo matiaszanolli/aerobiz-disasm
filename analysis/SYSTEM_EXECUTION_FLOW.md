@@ -80,7 +80,7 @@ $00D600: rts
 ## Main Game Loop ($00D602-$00D644)
 
 ```
-$00D602: jsr $01E398     -- one-time pre-loop init (turn setup?)
+$00D602: jsr $01E398     -- PreLoopInit (one-time pre-loop initialization)
 
 MainLoop ($00D608):
   $00D608: jsr $02F5A6   -- game update 1
@@ -89,7 +89,7 @@ MainLoop ($00D608):
   $00D61A: jsr $0213B6   -- game logic (quarterly turn processing?)
   $00D620: jsr $02947A   -- game logic (events/AI?)
   $00D626: pea $0001
-  $00D62A: jsr $01819C   -- InitAllCharRecords (init all char records 0-$58)
+  $00D62A: jsr $01819C   -- InitAllCharRecords
   $00D630: subq.l #4,a7  -- stack cleanup
   $00D632: jsr $01E402   -- game update 3
   $00D638: jsr $026128   -- game update 4
@@ -101,7 +101,7 @@ MainLoop ($00D608):
 
 | Address | Probable Role | Notes |
 |---------|--------------|-------|
-| $01E398 | Pre-loop init | Called once before loop starts |
+| $01E398 | PreLoopInit | Called once before loop starts |
 | $02F5A6 | Game update 1 | First call each iteration |
 | $01B49A | Game update 2 | |
 | $0213B6 | Game logic | Main turn processing? |
@@ -261,17 +261,31 @@ Z80 driver size: 5458 bytes
 
 ## Game State Machine
 
-(To be documented -- suspected states based on string analysis:)
+Based on 278 named functions translated so far, the following subsystems have been confirmed:
+
+### Confirmed Subsystems
+
+| Subsystem | Key Functions | Notes |
+|-----------|--------------|-------|
+| **Title / Scenario** | RunScenarioMenu ($02C2FA) | Scenario selection screen |
+| **Player Selection** | RunPlayerSelectUI ($010AB6) | Player/company setup |
+| **Menus** | RunGameMenu ($016F9E) | Main in-game menu |
+| **Purchasing** | RunPurchaseMenu ($02C9C8) | Fleet/asset purchasing |
+| **Quarterly Turn** | RunQuarterScreen ($023EA8), RunTurnSequence ($029ABC) | Main gameplay loop at $D608 |
+| **Route Management** | ShowRouteInfo ($00F104), ManageRouteSlots ($0112EE), ProcessRouteAction, ProcessRouteChange, UpdateRouteMask | Open, close, adjust routes |
+| **Character Management** | RunCharManagement ($01861A), RunAssignmentUI ($016958), ProcessCharActions ($014202) | Staff hiring/assignment |
+| **Relations / Diplomacy** | FormatRelationDisplay, FormatRelationStats, ShowRelationAction, ShowRelationResult, BrowseRelations | Inter-company relations |
+| **Financial Reports** | ShowQuarterReport ($02F712), ShowAnnualReport ($02BDB8), ShowQuarterSummary ($012E92) | Quarterly and annual |
+| **Game Status** | ShowGameStatus ($0271C6), ShowStatsSummary ($018214) | Rankings, stats overview |
+| **AI** | RunAITurn, RunAIStrategy | Computer player logic |
+| **Save / Load** | PackSaveState ($00EB28) | Uses SRAM at $200001-$203FFF |
+
+### Suspected States (not yet confirmed in code)
+
 - KOEI logo / splash screen
-- Title screen / scenario selection
 - Company setup (name, home base, skill level)
-- Quarterly turn (main gameplay loop at $D608)
-  - Route management (open, close, adjust)
-  - Fleet management (buy/sell planes)
-  - Business ventures (purchase, sell, advertise)
-  - Regional hub management
-  - Advisor meeting
 - Events / news (wars, oil prices, airport expansions)
-- Financial reports (quarterly, annual)
+- Business ventures (purchase, sell, advertise)
+- Regional hub management
+- Advisor meeting
 - Victory / defeat conditions
-- Save/Load (uses SRAM at $200001-$203FFF)

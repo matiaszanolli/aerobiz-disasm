@@ -156,6 +156,7 @@ All verified byte-identical before applying. JSR abs.l kept as dc.w, BSR.W as dc
 
 | ID | Description | Commit | Date |
 |----|-------------|--------|------|
+| B-029 | Batch mnemonization of 15 high-call-count unnamed targets (2304B) across 4 section files | -- | 2026-02-24 |
 | B-028 | Unnamed call targets batch 2 (10 functions, 1258B: PlaceIconTiles/ClearBothPlanes/DrawStatDisplay/GetCharStat/SelectMenuItem/InitCharRecord/ShowPlayerInfo/DrawTileGrid/MulDiv/ClearInfoPanel) | 5839ea2 | 2026-02-24 |
 | B-027 | Top unnamed call targets (5 functions, 1196B: ShowText/LoadScreenGfx/CalcCharValue/FillTileRect/LoadDisplaySet) | 4dfc342 | 2026-02-24 |
 | B-026 | ShowRelPanel ($006B78, 40 calls, 882B: char relationship/affinity panel, 2-path bar-draw loops) | 7b6a94b | 2026-02-24 |

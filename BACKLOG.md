@@ -72,6 +72,41 @@ Pick the highest-priority unclaimed task. Mark it `IN PROGRESS` with your sessio
 
 ---
 
+## Phase 4 -- Data Analysis
+
+### B-041: Build RAM variable map
+**Status:** DONE (2026-02-25)
+**Why:** All translated functions reference RAM variables. A central map is needed to understand what the code reads/writes and to resolve struct layouts.
+**Approach:** Grepped all $FFxxxx references from section files. Traced PackSaveState ($00EB28) sequentially — it copies 30+ RAM regions in address order with explicit sizes, giving the definitive layout. Cross-referenced GetCharStat, InitCharRecord, DrawPlayerRoutes, FindBitInField, and V-INT handler for additional context.
+**Acceptance:** `analysis/RAM_MAP.md` created with 50+ named addresses, grouped by region, with PackSaveState-derived sizes.
+**Known issue:** Apparent overlap between char_stat_array ($FF05C4, stride $39 × 89 chars = ends $FF1995) and char_stat_tab ($FF1298). Needs field-level analysis to resolve.
+
+### B-042: Label string / text pointer tables in section_040000.asm
+**Status:** TODO
+**Why:** 8 pointer tables at $0475DC–$0488D7 and the string region at $03E1AC–$041FFF are raw dc.w. Adding labels makes cross-references visible and enables printf-string analysis.
+**Approach:** Identify table boundaries (pointer entries vs padding). Add assembly labels. Optionally decode ASCII inline via comments.
+**Acceptance:** Pointer tables and string region have named labels in section_030000.asm and section_040000.asm.
+
+### B-043: Document city names tables in section_040000.asm
+**Status:** TODO
+**Why:** Three copies of city name data at $0459xx, $045Axx, $045Cxx. Understanding the format (null-separated ASCII, count = 89 cities) enables labeling and data format documentation.
+**Approach:** Decode the three tables. Document format (encoding, entry count, separator). Add labels and counts comment in section_040000.asm.
+**Acceptance:** City name tables labeled; DATA_STRUCTURES.md entry added.
+
+### B-044: Document game data structures (player records, route slots, char records)
+**Status:** TODO
+**Why:** PackSaveState revealed the raw block layout; now field-level semantics are needed. Player records ($FF0018, 36B each), route slots ($FF9A20, 20B each), char stat records ($FF05C4, 57B each) are the three major structs.
+**Approach:** Translate/read functions that access these structs with field offsets (ShowRouteInfo, ManageRouteSlots, CalcCharRating, etc.). Cross-reference with SNES/PC version docs if available.
+**Acceptance:** DATA_STRUCTURES.md with field-level layout for all three structs.
+
+### B-045: Resolve char_stat_array / char_stat_tab overlap
+**Status:** TODO (depends on B-044)
+**Why:** $FF05C4 + 89 × 57 = $FF1995 appears to overlap with $FF1298 (char_stat_tab). Either the count or stride is wrong, or the tables interleave. Must be resolved before RAM_MAP can be considered accurate.
+**Approach:** Read UnpackPixelData fully. Trace InitCharRecord call chain. Confirm actual output stride and character count. Update RAM_MAP.md.
+**Acceptance:** Overlap resolved; RAM_MAP.md updated with correct ranges.
+
+---
+
 ## Phase 3 -- Function Translation
 
 ### B-009: Translate exception handlers ($F84-$FE0)

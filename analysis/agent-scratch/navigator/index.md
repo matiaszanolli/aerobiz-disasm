@@ -21,6 +21,7 @@ The Navigator's complete knowledge base. Updated after each session.
 | Function reference | analysis/FUNCTION_REFERENCE.md | All identified functions (auto-generated) |
 | System execution flow | analysis/SYSTEM_EXECUTION_FLOW.md | Boot, main loop, V-INT, game states |
 | ROM map | analysis/ROM_MAP.md | ROM section layout (code/data/padding) |
+| RAM map | analysis/RAM_MAP.md | Work RAM variables, structs, save-state layout (50+ entries) |
 
 ---
 
@@ -72,6 +73,14 @@ The Navigator's complete knowledge base. Updated after each session.
 - Z80 sound driver: custom (not GEMS/SMPS), entry: DI+LD SP,$2000+JP $E0, uses YM2612+PSG
 - Most-called function: $000D64 (306 calls), $03E05C (204), $03AB2C (174)
 - V-INT subsystem update targets (corrected): $0016D4, $00175C, $001864, $0018D0
+
+### Phase 4 Progress (Data Analysis)
+- B-041 RAM_MAP.md: DONE (2026-02-25) -- 50+ variables, 30+ regions, PackSaveState layout
+- B-042 String/text pointer table labels: TODO
+- B-043 City name table labels: TODO
+- B-044 Game data structs (player/char/route fields): TODO
+- B-045 Resolve char_stat_array/char_stat_tab overlap: TODO
+- Key RAM facts: player_records=$FF0018 (4×36B), char_stat_array=$FF05C4 (stride=$39), route_slots=$FF9A20 (4×40×20B), save_buf=$FF1804
 
 ### Translation Progress (Phase 3)
 - Exception handlers ($F84-$FE1): DONE -- 94 bytes, all mnemonics
@@ -185,3 +194,6 @@ The Navigator's complete knowledge base. Updated after each session.
 | Function reference | analysis/FUNCTION_REFERENCE.md | -- |
 | String tables / text | analysis/ROM_MAP.md / Game Strings | -- |
 | City name data | analysis/ROM_MAP.md (search: city) | -- |
+| Work RAM variables | analysis/RAM_MAP.md | -- |
+| Player / char / route structs | analysis/RAM_MAP.md / Regions | -- |
+| Save state layout | analysis/RAM_MAP.md / PackSaveState | -- |

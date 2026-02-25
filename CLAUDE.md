@@ -91,6 +91,7 @@ disasm/aerobiz.asm (entry point)
 - **68K modules**: 0 (translating in-place in section files for now)
 - **Functions identified**: 278 named, 2,896 unique call targets
 - **Translation progress**: ~67,772 bytes translated (exceptions, interrupts, boot, Z80 sound, GameCommand, main loop, utility cluster, display, graphics, memory, math, text, compression, input, UI dialogs, menu selection, screen loading, char code functions, DrawBox, ShowRelPanel, save state, route management, quarter screens, relation displays, turn sequence, scenario menu, 197 unnamed call targets)
+- **Phase 4 status**: RAM_MAP.md created (50+ variables, 20+ named regions from PackSaveState). String/text tables and game data structures (player records, route slots, char records) pending.
 
 ### ROM Address Mapping
 
@@ -110,6 +111,7 @@ disasm/aerobiz.asm (entry point)
 | All documentation index | [docs/DOCUMENTATION_INDEX.md](docs/DOCUMENTATION_INDEX.md) |
 | Function reference (auto-gen) | [analysis/FUNCTION_REFERENCE.md](analysis/FUNCTION_REFERENCE.md) |
 | System execution flow | [analysis/SYSTEM_EXECUTION_FLOW.md](analysis/SYSTEM_EXECUTION_FLOW.md) |
+| Work RAM variable map | [analysis/RAM_MAP.md](analysis/RAM_MAP.md) |
 
 ## Module Categories
 

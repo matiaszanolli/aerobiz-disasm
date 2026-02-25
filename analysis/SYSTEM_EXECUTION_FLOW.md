@@ -29,8 +29,10 @@ $00030A: bsr $003BE8 (early init -- RAM/VDP setup)
 
 $00030E-$000336: Initialize Work RAM variables
   - A5 = $FFF010 (base pointer for work RAM variables, used throughout game)
-  - Clear flags: $02FB(A5), $0B2A(A5), $001C(A5), $002B(A5), $004B(A5)
-  - Clear words/longs: $0BCE(A5), $0BD0(A5), $0BD4(A5), $0C70(A5)
+  - Clear flags: $02FB(A5) input_enable, $0B2A(A5) display_update,
+    $001C(A5) boot_flag, $002B(A5) vint_dispatch, $004B(A5) dma_pending
+  - Clear words/longs: $0BCE(A5) vsub2_trigger, $0BD0(A5) vsub2_callback,
+    $0BD4(A5) vsub1_enable, $0C70(A5) unknown
 
 $00033A: jsr $00070A(pc) -- hardware init subroutine
 
@@ -127,62 +129,62 @@ $0014FC: A4 = $C00004 (VDP control port)
 $001502-$001506: Reset H-scroll counter to 0
 
 $001508-$00151A: DMA/VRAM transfer (conditional)
-  - Test flag at $004B(A5)
-  - If set: bsr $00163E (DMA transfer routine), clear flag
+  - Test dma_pending at $004B(A5)
+  - If set: bsr $00163E (DMA_Transfer), clear dma_pending
 
 $00151A-$001526: Display update (conditional)
-  - Test byte at $0B2A(A5)
-  - If non-zero: bsr $001660
+  - Test display_update at $0B2A(A5)
+  - If non-zero: bsr $001660 (DisplayUpdate)
 
-$001526-$001532: Operation (conditional)
-  - Test byte at $0BD4(A5)
-  - If non-zero: bsr $000C38
+$001526-$001532: VInt Sub1 - color fade/cycle (conditional)
+  - Test vsub1_enable at $0BD4(A5)
+  - If non-zero: bsr $000C38 (uses vsub1_data_ptr at $0BDC(A5))
 
-$001532-$00153E: Operation (conditional)
-  - Test word at $0BCE(A5)
-  - If non-zero: bsr $0016CC
+$001532-$00153E: VInt Sub2 - callback (conditional)
+  - Test vsub2_trigger at $0BCE(A5)
+  - If non-zero: bsr $0016CC (calls vsub2_callback at $0BD0(A5))
 
 $00153E-$00154A: Input/controller read (conditional)
-  - Test byte at $02FB(A5)
-  - If non-zero: bsr $000B42
+  - Test input_enable at $02FB(A5)
+  - If non-zero: bsr $000B42 (ControllerRead)
 
-$00154A-$001582: Multi-dispatch based on $002B(A5) bits
-  - Bit 0 set: bsr $001346, clear $002B(A5), done
-  - Bit 1 set: bsr $001390, done
-  - Bit 2 set: bsr $001404, done
+$00154A-$001582: Multi-dispatch based on vint_dispatch at $002B(A5)
+  - Bit 0 set: bsr $001346 (VInt_Sub1), clear vint_dispatch, done
+  - Bit 1 set: bsr $001390 (VInt_Sub2), done
+  - Bit 2 set: bsr $001404 (VInt_Sub3), done
 
 $001582-$00158A: A1 = $FFFBFC, bsr $00192E (controller polling?)
 
 $00158C-$0015A2: Four subsystem update calls (PC-relative)
-  - jsr $0016D4(pc) -- subsystem update 1
-  - jsr $001760(pc) -- subsystem update 2
-  - jsr $001864(pc) -- subsystem update 3
-  - jsr $0018D4(pc) -- subsystem update 4
+  - jsr $0016D4(pc) -- SubsysUpdate1 (VDP reg staging via ram_sub at $FFF000)
+  - jsr $00175C(pc) -- SubsysUpdate2 (vsub4 callback dispatch)
+  - jsr $001864(pc) -- SubsysUpdate3
+  - jsr $0018D0(pc) -- SubsysUpdate4 (uses vsub4_data_ptr/vsub4_callback)
   (Each followed by NOP for alignment)
 
-$0015A4-$0015A8: Clear flag at $0036(A5)
+$0015A4-$0015A8: Clear vint_processed at $0036(A5)
 
 $0015AA: movem.l (sp)+,d0-d7/a0-a6  -- restore ALL registers
 $0015AE: rte
 ```
 
-### V-INT Key Subroutines (to be analyzed)
+### V-INT Key Subroutines
 
-| Address | Role | Trigger |
-|---------|------|---------|
-| $00163E | DMA/VRAM transfer | Flag $004B(A5) |
-| $001660 | Display update | Byte $0B2A(A5) |
-| $000C38 | Unknown | Byte $0BD4(A5) |
-| $0016CC | Unknown | Word $0BCE(A5) |
-| $000B42 | Controller/input read | Byte $02FB(A5) |
-| $001346 | Handler type 1 | Bit 0 of $002B(A5) |
-| $001390 | Handler type 2 | Bit 1 of $002B(A5) |
-| $001404 | Handler type 3 | Bit 2 of $002B(A5) |
-| $00192E | Controller polling | Always called |
-| $0016D4 | Subsystem update 1 | Always called |
-| $001760 | Subsystem update 2 | Always called |
-| $001864 | Subsystem update 3 | Always called |
-| $0018D4 | Subsystem update 4 | Always called |
+| Address | Name | Trigger | Notes |
+|---------|------|---------|-------|
+| $00163E | DMA_Transfer | dma_pending $004B(A5) | Transfers staged DMA data to VDP |
+| $001660 | DisplayUpdate | display_update $0B2A(A5) | Refresh screen state |
+| $000C38 | VInt_ColorFade | vsub1_enable $0BD4(A5) | Color fade/cycle via vsub1_data_ptr |
+| $0016CC | VInt_Callback | vsub2_trigger $0BCE(A5) | Calls function at vsub2_callback |
+| $000B42 | ControllerRead | input_enable $02FB(A5) | Reads joypad, writes ctrl_state |
+| $001346 | VInt_Sub1 | Bit 0 of vint_dispatch | |
+| $001390 | VInt_Sub2 | Bit 1 of vint_dispatch | |
+| $001404 | VInt_Sub3 | Bit 2 of vint_dispatch | |
+| $00192E | ControllerPoll | Always | Writes to ctrl_io ($FFFBFC) |
+| $0016D4 | SubsysUpdate1 | Always | VDP reg staging via ram_sub ($FFF000) |
+| $00175C | SubsysUpdate2 | Always | Vsub4 callback dispatch |
+| $001864 | SubsysUpdate3 | Always | |
+| $0018D0 | SubsysUpdate4 | Always | Uses vsub4_data_ptr/vsub4_callback |
 
 ## H-INT Handler ($001484-$0014E4)
 
@@ -194,13 +196,13 @@ $001486: ori #$0700,sr        -- disable interrupts during handler
 $00148A: movem.l d0-d2/a0/a5,-(sp) -- save working registers
 
 $00148E: A5 = $FFF010 (work RAM base)
-$001494-$00149C: Increment H-scroll line counter at $0C50(A5)
+$001494-$00149C: Increment hscroll_line_ctr at $0C50(A5)
 
-$0014A2-$0014A8: Test flag at $0C46(A5)
+$0014A2-$0014A8: Test hscroll_enable at $0C46(A5)
   - If clear: skip to restore
 
 $0014AA-$0014DC: HScroll position update
-  - Read scroll tables from $0C48(A5) and $0C4C(A5)
+  - Read scroll tables from hscroll_tab_b $0C48(A5) and hscroll_tab_a $0C4C(A5)
   - Calculate scroll A and scroll B values
   - Write to VDP: move.l #$40000010,$C00004 (VSRAM write addr 0)
   - Write scroll B value to VDP data
@@ -289,3 +291,10 @@ Based on 278 named functions translated so far, the following subsystems have be
 - Regional hub management
 - Advisor meeting
 - Victory / defeat conditions
+
+---
+
+## Cross-References
+
+- **RAM variable details**: [analysis/RAM_MAP.md](RAM_MAP.md) — all A5-relative offsets with names and sizes
+- **Function details**: [analysis/FUNCTION_REFERENCE.md](FUNCTION_REFERENCE.md) — all 278 named functions

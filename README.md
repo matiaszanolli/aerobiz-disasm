@@ -43,6 +43,7 @@ aerobiz-disasm/
       section_XXXXXX.asm         # ROM data sections (64KB each)
   analysis/
     ROM_MAP.md                   # ROM layout (code/data/padding)
+    RAM_MAP.md                   # Work RAM variables and data structures
     FUNCTION_REFERENCE.md        # All identified functions
     SYSTEM_EXECUTION_FLOW.md     # Boot, main loop, V-INT, game states
   docs/                          # Hardware reference documentation (symlinked)
@@ -82,8 +83,8 @@ aerobiz-disasm/
 |-------|-------------|--------|
 | 1. Initial dump | ROM as raw `dc.w` data, vector table labeled | Done |
 | 2. Code discovery | Trace execution, map ROM regions, identify functions | Done |
-| 3. Function translation | `dc.w` -> 68K mnemonics, name functions | **In progress** (all JSR call targets done) |
-| 4. Data analysis | Identify tables, strings, graphics data | Partial |
+| 3. Function translation | `dc.w` -> 68K mnemonics, name functions | Done (all JSR call targets) |
+| 4. Data analysis | Identify tables, strings, graphics data | **In progress** |
 | 5. Full understanding | Complete documentation, byte-identical rebuild | Not started |
 
 ### Translation Status
@@ -104,6 +105,8 @@ aerobiz-disasm/
 278 functions named, 266 translated to mnemonics, out of ~854 total. See [BACKLOG.md](BACKLOG.md) for the full task queue.
 
 **Milestone (B-031 through B-040):** All 854 unique JSR call targets from the function reference have been translated. Remaining untranslated code consists of inline routines, branch targets, and data-interleaved sections not reachable via JSR.
+
+**Phase 4 (B-041):** Work RAM map created — 50+ variables and 30+ regions extracted from PackSaveState ($00EB28). Key structures: player records (4 × 36B), character stat array (stride 57B), route slots (4 × 40 × 20B), city data (89 cities × 4 entries). See [analysis/RAM_MAP.md](analysis/RAM_MAP.md).
 
 ## License
 

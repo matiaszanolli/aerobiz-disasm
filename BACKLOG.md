@@ -156,6 +156,7 @@ All verified byte-identical before applying. JSR abs.l kept as dc.w, BSR.W as dc
 
 | ID | Description | Commit | Date |
 |----|-------------|--------|------|
+| B-033 | Batch mnemonization of 15 targets (2290B: InitTileBuffer/SetScrollBarMode/CalcRouteRevenue/InitAllCharRecords/ClearFlightSlots/MatchCharSlots/RefreshAndWait/DrawTilemapLine/CopyAlternateBytes/StringAppend/StringConcat/AnimateScrollEffect/FindBestCharValue/LoadGameGraphics/ResetGameState) | PENDING | 2026-02-25 |
 | B-032 | Batch mnemonization of 15 targets (3284B: LoadTileGraphics/CalcCharRating/AdjustScrollPos/LoadSlotGraphics/FindBestCharacter/FindCharByValue/GetCharRelation/UpdateFlightSlots/AnimateFlightPaths/GetModeRowOffset/SetDisplayPage/LoadMapTiles/PlaceFormattedTiles/MemMoveWords/CalcCharProfit) | 3844575 | 2026-02-24 |
 | B-031 | Batch mnemonization of 15 high-call-count targets (5336B: ConfigScrollBar/SetHighNibble/SelectPreviewPage/ShowCharProfile/CalcCharAdvantage/CharacterBrowser/BrowseCharList/CalcStatChange/PlaceCursor/DrawPlayerRoutes/ShowPlayerChart/ShowCharStats/CheckEventMatch/DrawLabeledBox/CountActivePlayers) | ae5b0cb | 2026-02-24 |
 | B-030 | Batch mnemonization of 15 high-call-count targets (4782B: ClearScreen/SetScrollQuadrant/DrawCharInfoPanel/CountMatchingChars/FindCharSlot/CalcNegotiationPower/PlaceCharSprite/CalcRevenue/CalcCharOutput/SortWordPairs/BrowsePartners/DiagonalWipe/SetScrollOffset/ShowGameScreen/ClearListArea) | 0fe1212 | 2026-02-24 |

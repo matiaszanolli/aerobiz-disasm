@@ -88,24 +88,25 @@ aerobiz-disasm/
 
 ### Translation Status
 
-~19,070 bytes of code translated from raw `dc.w` to 68000 mnemonics (all verified byte-identical):
+~26,140 bytes of code translated from raw `dc.w` to 68000 mnemonics (all verified byte-identical):
 
 - **System core** -- 944 bytes: exception handlers (94B), EXT/H-INT/V-INT interrupts (304B), boot init (166B), Z80 sound interface (140B), GameCommand dispatcher (240B)
 - **Main game loop** -- 262 bytes: GameEntry, GameLoopSetup, MainLoop, RangeLookup
 - **Math** -- 342 bytes: Multiply32, SignedDiv, UnsignedDivide, UnsignedMod, SignedMod (12 functions + MulDiv)
-- **Memory/util** -- 680 bytes: MemFillByte, MemCopy, MemFillWord, MemMove, ByteSum, GetLowNibble, GetByteField4, MemMoveWords
+- **Memory/util** -- 760 bytes: MemFillByte, MemCopy, MemFillWord, MemMove, ByteSum, GetLowNibble, GetByteField4, MemMoveWords, CopyAlternateBytes, StringAppend, StringConcat
 - **Text** -- 250 bytes: SetTextWindow, SetTextCursor, sprintf, PrintfNarrow, PrintfWide
 - **Compression** -- 596 bytes: LZ_Decompress (LZSS/LZ77)
-- **Display/graphics** -- 2,758 bytes: DisplaySetup cluster (6), CmdPlaceTile/2, CmdSetBackground, FillTileRect, LoadScreenGfx, PlaceIconTiles, PlaceIconPair, LoadCompressedGfx, ClearBothPlanes, DrawTileGrid, ClearInfoPanel, ClearTileArea, LoadScreenPalette, SetDisplayMode, ShowCharPortrait, PlaceCharSprite, LoadTileGraphics, LoadSlotGraphics, LoadMapTiles, PlaceFormattedTiles, SetDisplayPage
+- **Display/graphics** -- 3,322 bytes: DisplaySetup cluster (6), CmdPlaceTile/2, CmdSetBackground, FillTileRect, LoadScreenGfx, PlaceIconTiles, PlaceIconPair, LoadCompressedGfx, ClearBothPlanes, DrawTileGrid, ClearInfoPanel, ClearTileArea, LoadScreenPalette, SetDisplayMode, ShowCharPortrait, PlaceCharSprite, LoadTileGraphics, LoadSlotGraphics, LoadMapTiles, PlaceFormattedTiles, SetDisplayPage, DrawTilemapLine
 - **Input** -- 268 bytes: ProcessInputLoop, PollInputChange, PreLoopInit
-- **Game UI** -- 8,484 bytes: DrawBox, ShowRelPanel, DrawStatDisplay, ShowDialog, ShowTextDialog, ShowText, ShowPlayerInfo, LoadScreen, MenuSelectEntry, SelectMenuItem, InitInfoPanel, AnimateInfoPanel, PlaceItemTiles, DrawCharInfoPanel, BrowsePartners, ClearListArea, ConfigScrollBar, SelectPreviewPage, ShowCharProfile, CharacterBrowser, BrowseCharList, PlaceCursor, DrawPlayerRoutes, ShowPlayerChart, ShowCharStats, DrawLabeledBox, AdjustScrollPos, GetModeRowOffset
-- **Character system** -- 6,288 bytes: CharCodeCompare, CharPairIndex, CharCodeScore, RangeMatch, CalcCompatScore, CalcTypeDistance, CalcWeightedStat, CalcRelationValue, UpdateCharField, CalcCharValue, GetCharStat, InitCharRecord, FindBitInField, BitFieldSearch, CountMatchingChars, FindCharSlot, CalcNegotiationPower, CalcRevenue, CalcCharOutput, SetHighNibble, CalcCharAdvantage, CalcStatChange, CheckEventMatch, CountActivePlayers, CalcCharRating, FindBestCharacter, FindCharByValue, GetCharRelation, CalcCharProfit
+- **Game UI** -- 8,656 bytes: DrawBox, ShowRelPanel, DrawStatDisplay, ShowDialog, ShowTextDialog, ShowText, ShowPlayerInfo, LoadScreen, MenuSelectEntry, SelectMenuItem, InitInfoPanel, AnimateInfoPanel, PlaceItemTiles, DrawCharInfoPanel, BrowsePartners, ClearListArea, ConfigScrollBar, SelectPreviewPage, ShowCharProfile, CharacterBrowser, BrowseCharList, PlaceCursor, DrawPlayerRoutes, ShowPlayerChart, ShowCharStats, DrawLabeledBox, AdjustScrollPos, GetModeRowOffset, SetScrollBarMode, InitTileBuffer, RefreshAndWait
+- **Character system** -- 6,998 bytes: CharCodeCompare, CharPairIndex, CharCodeScore, RangeMatch, CalcCompatScore, CalcTypeDistance, CalcWeightedStat, CalcRelationValue, UpdateCharField, CalcCharValue, GetCharStat, InitCharRecord, FindBitInField, BitFieldSearch, CountMatchingChars, FindCharSlot, CalcNegotiationPower, CalcRevenue, CalcCharOutput, SetHighNibble, CalcCharAdvantage, CalcStatChange, CheckEventMatch, CountActivePlayers, CalcCharRating, FindBestCharacter, FindCharByValue, GetCharRelation, CalcCharProfit, CalcRouteRevenue, InitAllCharRecords, MatchCharSlots, FindBestCharValue
 - **Resources** -- 522 bytes: ResourceLoad, ResourceUnload, TilePlacement, GameCmd16, ReadInput, PollAction, RandRange, LoadDisplaySet, VRAMBulkLoad
-- **Screen transitions** -- 876 bytes: DiagonalWipe, SetScrollOffset, SetScrollQuadrant, ShowGameScreen, ClearScreen
+- **Screen transitions** -- 1,180 bytes: DiagonalWipe, SetScrollOffset, SetScrollQuadrant, ShowGameScreen, ClearScreen, AnimateScrollEffect
 - **Sorting** -- 188 bytes: SortWordPairs
-- **Flight system** -- 554 bytes: UpdateFlightSlots, AnimateFlightPaths
+- **Flight system** -- 592 bytes: UpdateFlightSlots, AnimateFlightPaths, ClearFlightSlots
+- **Resource loading** -- 418 bytes: LoadGameGraphics, ResetGameState
 
-156 functions named, 144 translated to mnemonics, out of ~854 total. See [BACKLOG.md](BACKLOG.md) for the full task queue.
+171 functions named, 159 translated to mnemonics, out of ~854 total. See [BACKLOG.md](BACKLOG.md) for the full task queue.
 
 ## License
 

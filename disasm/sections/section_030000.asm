@@ -1487,15 +1487,61 @@
     dc.w    $6F06,$3D43,$FFFC,$2C02,$588A,$5243,$7000,$1014; $035C90
     dc.w    $7200,$122C,$0001,$D081,$7200,$3203,$B081,$6E00; $035CA0
     dc.w    $FEE0,$0C55,$0020,$6404,$3A15,$6004,$3A2E,$FFFC; $035CB0
-    dc.w    $3005,$4CEE,$3CFC,$FFD0,$4E5E,$4E75,$48E7,$3C20; $035CC0
-    dc.w    $2A2F,$0018,$3039,$00FF,$0006,$48C0,$6C02,$5680; $035CD0
-    dc.w    $E480,$0640,$0037,$3800,$4243,$247C,$00FF,$A6B8; $035CE0
-    dc.w    $4242,$7000,$102A,$0006,$48C0,$7200,$3204,$B081; $035CF0
-    dc.w    $6E30,$7000,$3004,$7200,$122A,$0007,$48C1,$B081; $035D00
-    dc.w    $6C20,$3002,$2F00,$3005,$2F00,$4EB9,$0000,$8016; $035D10
-    dc.w    $508F,$0C40,$FFFF,$670A,$B66A,$0002,$6404,$362A; $035D20
-    dc.w    $0002,$700C,$D5C0,$5242,$0C42,$0010,$65B4,$3003; $035D30
-    dc.w    $4CDF,$043C,$4E75,$4E56,$FFFC,$48E7,$3F3C,$2C2E; $035D40
+    dc.w    $3005,$4CEE,$3CFC,$FFD0,$4E5E,$4E75              ; $035CC0
+; ============================================================================
+; FindBestCharValue -- (TODO: describe)
+; 122 bytes | $035CCC-$035D45
+; ============================================================================
+FindBestCharValue:                                                  ; $035CCC
+    movem.l d2-d5/a2,-(sp)
+    move.l  $0018(sp),d5
+    move.w  ($00FF0006).l,d0
+    ext.l   d0
+    bge.b   .l35ce0
+    addq.l  #$3,d0
+.l35ce0:                                                ; $035CE0
+    asr.l   #$2,d0
+    addi.w  #$37,d0
+    move.w  d0,d4
+    clr.w   d3
+    movea.l #$00ffa6b8,a2
+    clr.w   d2
+.l35cf2:                                                ; $035CF2
+    moveq   #$0,d0
+    move.b  $0006(a2),d0
+    ext.l   d0
+    moveq   #$0,d1
+    move.w  d4,d1
+    cmp.l   d1,d0
+    bgt.b   .l35d32
+    moveq   #$0,d0
+    move.w  d4,d0
+    moveq   #$0,d1
+    move.b  $0007(a2),d1
+    ext.l   d1
+    cmp.l   d1,d0
+    bge.b   .l35d32
+    move.w  d2,d0
+    move.l  d0,-(sp)
+    move.w  d5,d0
+    move.l  d0,-(sp)
+    dc.w    $4eb9,$0000,$8016                           ; jsr $008016
+    addq.l  #$8,sp
+    cmpi.w  #$ffff,d0
+    beq.b   .l35d32
+    cmp.w   $0002(a2),d3
+    bcc.b   .l35d32
+    move.w  $0002(a2),d3
+.l35d32:                                                ; $035D32
+    moveq   #$c,d0
+    adda.l  d0,a2
+    addq.w  #$1,d2
+    cmpi.w  #$10,d2
+    bcs.b   .l35cf2
+    move.w  d3,d0
+    movem.l (sp)+,d2-d5/a2
+    rts
+    dc.w    $4E56,$FFFC,$48E7,$3F3C,$2C2E                    ; $035D46
     dc.w    $000C,$4BEE,$FFFC,$3006,$E548,$207C,$0005,$ECBC; $035D50
     dc.w    $41F0,$0000,$2648,$7000,$3006,$2F00,$7000,$302E; $035D60
     dc.w    $000A,$2F00,$4EB9,$0000,$6EEA,$508F,$3A00,$3C3C; $035D70
@@ -2818,33 +2864,125 @@ ShowCharPortrait:                                                  ; $03A5A8
     movem.l -$0028(a6),d2-d6/a2-a5
     unlk    a6
     rts
-    dc.w    $48E7,$203C,$247C,$00FF,$1804,$267C,$0000,$0D64; $03A7A0
-    dc.w    $287C,$0000,$45E6,$2A7C,$0000,$3FEC,$4878,$0001; $03A7B0
-    dc.w    $4878,$0404,$4879,$0004,$8958,$4E94,$4FEF,$000C; $03A7C0
-    dc.w    $4242,$7000,$3002,$E588,$207C,$0007,$80BC,$2F30; $03A7D0
-    dc.w    $0800,$2F0A,$4E95,$4878,$0001,$7000,$3002,$0680; $03A7E0
-    dc.w    $0000,$0405,$2F00,$2F0A,$4E94,$4FEF,$0014,$5242; $03A7F0
-    dc.w    $0C42,$005A,$65CC,$4242,$7000,$3002,$E588,$207C; $03A800
-    dc.w    $0007,$8224,$2F30,$0800,$2F0A,$4E95,$4878,$0002; $03A810
-    dc.w    $7000,$3002,$D080,$0680,$0000,$045F,$2F00,$2F0A; $03A820
-    dc.w    $4E94,$4FEF,$0014,$5242,$0C42,$0064,$65CA,$42A7; $03A830
-    dc.w    $2F3C,$0000,$A4E0,$4879,$0004,$897C,$4878,$0080; $03A840
-    dc.w    $4878,$0002,$4878,$0005,$4E93,$42A7,$2F3C,$0000; $03A850
-    dc.w    $A5E0,$4879,$0004,$8C7C,$4878,$0020,$4878,$0002; $03A860
-    dc.w    $4878,$0005,$4E93,$4FEF,$0030,$42A7,$2F3C,$0000; $03A870
-    dc.w    $A620,$4879,$0004,$8A7C,$4878,$0100,$4878,$0002; $03A880
-    dc.w    $4878,$0005,$4E93,$42A7,$2F3C,$0000,$A820,$4879; $03A890
-    dc.w    $0004,$8CBC,$4878,$0030,$4878,$0002,$4878,$0005; $03A8A0
-    dc.w    $4E93,$4FEF,$0030,$2F39,$000A,$1B48,$2F0A,$4E95; $03A8B0
-    dc.w    $4878,$0006,$4878,$0544,$2F0A,$4E94,$4FEF,$0014; $03A8C0
-    dc.w    $4CDF,$3C04,$4E75,$4279,$00FF,$1800,$4279,$00FF; $03A8D0
-    dc.w    $128A,$4279,$00FF,$BDA6,$4279,$00FF,$1290,$33FC; $03A8E0
-    dc.w    $001F,$00FF,$1000,$33FC,$0001,$00FF,$99DE,$4279; $03A8F0
-    dc.w    $00FF,$BD4A,$33FC,$0001,$00FF,$A77A,$4279,$00FF; $03A900
-    dc.w    $BDA4,$4279,$00FF,$BD68,$4279,$00FF,$B9E4,$7020; $03A910
-    dc.w    $33C0,$00FF,$BD48,$33C0,$00FF,$BDA8,$4279,$00FF; $03A920
-    dc.w    $13FC,$4279,$00FF,$A7D8,$33FC,$0001,$00FF,$128C; $03A930
-    dc.w    $4E75                                           ; $03A940 | rts (prev fn)
+; ============================================================================
+; LoadGameGraphics -- (TODO: describe)
+; 310 bytes | $03A7A0-$03A8D5
+; ============================================================================
+LoadGameGraphics:                                                  ; $03A7A0
+    movem.l d2/a2-a5,-(sp)
+    movea.l #$00ff1804,a2
+    movea.l #$0d64,a3
+    movea.l #$45e6,a4
+    movea.l #$3fec,a5
+    pea     ($0001).w
+    pea     ($0404).w
+    pea     ($00048958).l
+    jsr     (a4)
+    lea     $000c(sp),sp
+    clr.w   d2
+.l3a7d2:                                                ; $03A7D2
+    moveq   #$0,d0
+    move.w  d2,d0
+    lsl.l   #$2,d0
+    movea.l #$000780bc,a0
+    move.l  (a0,d0.l),-(sp)
+    move.l  a2,-(sp)
+    jsr     (a5)
+    pea     ($0001).w
+    moveq   #$0,d0
+    move.w  d2,d0
+    addi.l  #$0405,d0
+    move.l  d0,-(sp)
+    move.l  a2,-(sp)
+    jsr     (a4)
+    lea     $0014(sp),sp
+    addq.w  #$1,d2
+    cmpi.w  #$5a,d2
+    bcs.b   .l3a7d2
+    clr.w   d2
+.l3a808:                                                ; $03A808
+    moveq   #$0,d0
+    move.w  d2,d0
+    lsl.l   #$2,d0
+    movea.l #$00078224,a0
+    move.l  (a0,d0.l),-(sp)
+    move.l  a2,-(sp)
+    jsr     (a5)
+    pea     ($0002).w
+    moveq   #$0,d0
+    move.w  d2,d0
+    add.l   d0,d0
+    addi.l  #$045f,d0
+    move.l  d0,-(sp)
+    move.l  a2,-(sp)
+    jsr     (a4)
+    lea     $0014(sp),sp
+    addq.w  #$1,d2
+    cmpi.w  #$64,d2
+    bcs.b   .l3a808
+    clr.l   -(sp)
+    move.l  #$a4e0,-(sp)
+    pea     ($0004897C).l
+    pea     ($0080).w
+    pea     ($0002).w
+    pea     ($0005).w
+    jsr     (a3)
+    clr.l   -(sp)
+    move.l  #$a5e0,-(sp)
+    pea     ($00048C7C).l
+    pea     ($0020).w
+    pea     ($0002).w
+    pea     ($0005).w
+    jsr     (a3)
+    lea     $0030(sp),sp
+    clr.l   -(sp)
+    move.l  #$a620,-(sp)
+    pea     ($00048A7C).l
+    pea     ($0100).w
+    pea     ($0002).w
+    pea     ($0005).w
+    jsr     (a3)
+    clr.l   -(sp)
+    move.l  #$a820,-(sp)
+    pea     ($00048CBC).l
+    pea     ($0030).w
+    pea     ($0002).w
+    pea     ($0005).w
+    jsr     (a3)
+    lea     $0030(sp),sp
+    move.l  ($000A1B48).l,-(sp)
+    move.l  a2,-(sp)
+    jsr     (a5)
+    pea     ($0006).w
+    pea     ($0544).w
+    move.l  a2,-(sp)
+    jsr     (a4)
+    lea     $0014(sp),sp
+    movem.l (sp)+,d2/a2-a5
+    rts
+; ============================================================================
+; ResetGameState -- (TODO: describe)
+; 108 bytes | $03A8D6-$03A941
+; ============================================================================
+ResetGameState:                                                  ; $03A8D6
+    clr.w   ($00FF1800).l
+    clr.w   ($00FF128A).l
+    clr.w   ($00FFBDA6).l
+    clr.w   ($00FF1290).l
+    move.w  #$1f,($00FF1000).l
+    move.w  #$1,($00FF99DE).l
+    clr.w   ($00FFBD4A).l
+    move.w  #$1,($00FFA77A).l
+    clr.w   ($00FFBDA4).l
+    clr.w   ($00FFBD68).l
+    clr.w   ($00FFB9E4).l
+    moveq   #$20,d0
+    move.w  d0,($00FFBD48).l
+    move.w  d0,($00FFBDA8).l
+    clr.w   ($00FF13FC).l
+    clr.w   ($00FFA7D8).l
+    move.w  #$1,($00FF128C).l
+    rts
 ; ---------------------------------------------------------------------------
 ; SetTextWindow - Define text rendering window bounds
 ; Params: left (SP+4), top (SP+8), width (SP+12), height (SP+16)

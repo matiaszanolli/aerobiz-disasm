@@ -7,8 +7,8 @@ Index of all identified functions. Updated as disassembly progresses.
 - **Total RTS (function endpoints):** 854
 - **Total RTE (interrupt returns):** 6
 - **Unique call targets:** 2,896
-- **Functions named:** 156
-- **Functions translated to mnemonics:** 144 (all named)
+- **Functions named:** 171
+- **Functions translated to mnemonics:** 159 (all named)
 
 ## Most-Called Functions
 
@@ -155,6 +155,21 @@ These are the most frequently called subroutines -- high-priority translation ta
 | $01DFBE | PlaceFormattedTiles | Format + place tile block on screen (3 calls) |
 | $01E16C | MemMoveWords | Direction-safe word-level memory copy (3 calls) |
 | $0206EE | CalcCharProfit | Complex character income with compat + year bonus (4 calls) |
+| $005060 | InitTileBuffer | Copy ROM $472CE to tile buffer $FF14BC, clear $FFA7DC |
+| $00634A | SetScrollBarMode | Mode switch: clear/set $FFBDAC scroll bar params |
+| $011906 | CalcRouteRevenue | Route revenue via CalcCharRating + SignedDiv, returns ×3 |
+| $01819C | InitAllCharRecords | Loop 0-$58 calling InitCharRecord for each slot |
+| $01A64C | ClearFlightSlots | GameCmd16 clear sprites, zero $FF153C flight buffer |
+| $01B324 | MatchCharSlots | Cross-range character matching via RangeLookup + BitFieldSearch |
+| $01D310 | RefreshAndWait | GameCommand #$E + #$14, return input bit |
+| $01DC26 | DrawTilemapLine | Bresenham line drawing into tilemap buffer |
+| $01E0FE | CopyAlternateBytes | Word-to-byte downsample copy (stride 2 to 1) |
+| $01E1BA | StringAppend | strcat: find null terminator, append source string |
+| $01E3EE | StringConcat | Stack calling convention wrapper for StringAppend |
+| $023B6A | AnimateScrollEffect | 3-phase scroll animation with step variation, mod $100 |
+| $035CCC | FindBestCharValue | Max char value from 16 records in quarter range |
+| $03A7A0 | LoadGameGraphics | Bulk LZ decompress 90+100 entries + 4 DMA graphic loads |
+| $03A8D6 | ResetGameState | Clear/init 17 game state variables to defaults |
 
 ### Interrupt Handlers
 
@@ -288,6 +303,7 @@ These are the most frequently called subroutines -- high-priority translation ta
 | $0045B2 | MemMove | memory | 19 | translated |
 | $0045E6 | CmdPlaceTile2 | graphics | 23 | translated |
 | $004668 | CmdPlaceTile | graphics | 46 | translated |
+| $005060 | InitTileBuffer | game | -- | translated |
 | $005092 | DisplaySetup | display | 101 | translated |
 | $0058FC | PlaceIconPair | game | 8 | translated |
 | $0050E2 | DisplayInitRows | display | -- | translated |
@@ -306,6 +322,7 @@ These are the most frequently called subroutines -- high-priority translation ta
 | $005F00 | LoadTileGraphics | graphics | 3 | translated |
 | $005FF6 | LoadCompressedGfx | graphics | 7 | translated |
 | $006298 | ConfigScrollBar | game | 5 | translated |
+| $00634A | SetScrollBarMode | game | -- | translated |
 | $006B78 | ShowRelPanel | game | 40 | translated |
 | $006EEA | BitFieldSearch | game | 47 | translated |
 | $006F42 | CharCodeCompare | game | 22 | translated |
@@ -340,16 +357,20 @@ These are the most frequently called subroutines -- high-priority translation ta
 | $0101CA | ShowPlayerChart | game | 5 | translated |
 | $010686 | FindBestCharacter | game | 3 | translated |
 | $0108F2 | FindCharByValue | game | 3 | translated |
+| $011906 | CalcRouteRevenue | game | -- | translated |
 | $01183A | ShowTextDialog | game | 31 | translated |
 | $018EBA | GetCharRelation | game | 3 | translated |
 | $0181C6 | InitCharRecord | game | 11 | translated |
-| $01819C | GameCall | game | -- | named |
+| $01819C | InitAllCharRecords | game | -- | translated |
 | $01A506 | CalcRelationValue | game | 7 | translated |
+| $01A64C | ClearFlightSlots | game | -- | translated |
 | $01A672 | UpdateFlightSlots | game | 3 | translated |
 | $01ABB0 | AnimateFlightPaths | game | 3 | translated |
 | $01AFCA | GetModeRowOffset | game | 3 | translated |
 | $01B0CE | ShowCharStats | game | 5 | translated |
+| $01B324 | MatchCharSlots | game | -- | translated |
 | $01B49A | GameUpdate2 | game | -- | named |
+| $01D310 | RefreshAndWait | display | -- | translated |
 | $01D340 | SetDisplayMode | display | 7 | translated |
 | $01D37A | SetDisplayPage | display | 3 | translated |
 | $01D3AC | MenuSelectEntry | game | 14 | translated |
@@ -358,6 +379,7 @@ These are the most frequently called subroutines -- high-priority translation ta
 | $01D520 | MemFillByte | util | 71 | translated |
 | $01D538 | MemCopy | util | -- | translated |
 | $01D550 | MemFillWord | util | -- | translated |
+| $01DC26 | DrawTilemapLine | graphics | -- | translated |
 | $01DE92 | LoadMapTiles | graphics | 3 | translated |
 | $01DFBE | PlaceFormattedTiles | graphics | 3 | translated |
 | $01D568 | VRAMBulkLoad | graphics | 46 | translated |
@@ -370,7 +392,10 @@ These are the most frequently called subroutines -- high-priority translation ta
 | $00E08E | CalcCharValue | game | 18 | translated |
 | $01E044 | TilePlacement | graphics | 100 | translated |
 | $01E0B8 | GameCmd16 | game | 77 | translated |
+| $01E0FE | CopyAlternateBytes | memory | -- | translated |
+| $01E1BA | StringAppend | util | -- | translated |
 | $01E16C | MemMoveWords | memory | 3 | translated |
+| $01E3EE | StringConcat | util | -- | translated |
 | $01E1EC | ReadInput | input | 95 | translated |
 | $01E290 | ProcessInputLoop | input | 42 | translated |
 | $01E11C | MulDiv | math | 13 | translated |
@@ -425,8 +450,12 @@ These are the most frequently called subroutines -- high-priority translation ta
 | $01ACBA | DiagonalWipe | display | 5 | translated |
 | $01D8F4 | SetScrollOffset | display | 5 | translated |
 | $0206EE | CalcCharProfit | game | 4 | translated |
+| $023B6A | AnimateScrollEffect | display | -- | translated |
 | $020A64 | ShowGameScreen | display | 5 | translated |
 | $021FD4 | CheckEventMatch | game | 5 | translated |
 | $02377C | DrawLabeledBox | game | 5 | translated |
 | $0237A8 | ClearListArea | display | 6 | translated |
 | $027AA4 | CountActivePlayers | game | 5 | translated |
+| $035CCC | FindBestCharValue | game | -- | translated |
+| $03A7A0 | LoadGameGraphics | game | -- | translated |
+| $03A8D6 | ResetGameState | game | -- | translated |

@@ -4657,13 +4657,52 @@ CalcCharRating:                                                  ; $00769C
     movem.l -$0018(a6),d2-d6
     unlk    a6
     rts
-    dc.w    $48E7,$3800,$242F,$0014; $007728
-    dc.w    $282F,$0010,$0C42,$0020,$6416,$3002,$C0FC,$0006; $007730
-    dc.w    $207C,$00FF,$0420,$41F0,$0000,$2248,$7606,$6012; $007740
-    dc.w    $3002,$E548,$207C,$00FF,$0460,$41F0,$0000,$2248; $007750
-    dc.w    $7604,$4241,$4242,$6010,$7000,$1011,$B044,$6604; $007760
-    dc.w    $7201,$6008,$5289,$5242,$B443,$65EC,$3001,$4CDF; $007770
-    dc.w    $001C,$4E75                                      ; $007780
+; ============================================================================
+; FindSlotByChar -- (TODO: describe)
+; Called: ?? times.
+; 92 bytes | $007728-$007783
+; ============================================================================
+FindSlotByChar:                                                  ; $007728
+    movem.l d2-d4,-(sp)
+    move.l  $0014(sp),d2
+    move.l  $0010(sp),d4
+    cmpi.w  #$20,d2
+    bcc.b   .l7750
+    move.w  d2,d0
+    mulu.w  #$6,d0
+    movea.l #$00ff0420,a0
+    lea     (a0,d0.w),a0
+    movea.l a0,a1
+    moveq   #$6,d3
+    bra.b   .l7762
+.l7750:                                                 ; $007750
+    move.w  d2,d0
+    lsl.w   #$2,d0
+    movea.l #$00ff0460,a0
+    lea     (a0,d0.w),a0
+    movea.l a0,a1
+    moveq   #$4,d3
+.l7762:                                                 ; $007762
+    clr.w   d1
+    clr.w   d2
+    bra.b   .l7778
+.l7768:                                                 ; $007768
+    moveq   #$0,d0
+    move.b  (a1),d0
+    cmp.w   d4,d0
+    bne.b   .l7774
+    moveq   #$1,d1
+    bra.b   .l777c
+.l7774:                                                 ; $007774
+    addq.l  #$1,a1
+    addq.w  #$1,d2
+.l7778:                                                 ; $007778
+    cmp.w   d3,d2
+    bcs.b   .l7768
+.l777c:                                                 ; $00777C
+    move.w  d1,d0
+    movem.l (sp)+,d2-d4
+    rts
 ; ============================================================================
 ; SelectPreviewPage -- (TODO: describe)
 ; Called: ?? times.
@@ -4883,12 +4922,41 @@ ShowDialog:                                                  ; $007912
     dc.w    $3002,$48C0,$7201,$E1A9,$2001,$3205,$C2FC,$000E; $0079F0
     dc.w    $3C04,$DC46,$D246,$207C,$00FF,$BD6C,$3230,$1000; $007A00
     dc.w    $0281,$0000,$FFFF,$C081,$6702,$7601,$3003,$4CDF; $007A10
-    dc.w    $007C,$4E75,$48E7,$3C00,$242F,$0018,$282F,$001C; $007A20
-    dc.w    $2A2F,$0014,$4243,$0C42,$00FF,$6610,$3004,$48C0; $007A30
-    dc.w    $2F00,$4EB9,$0000,$D648,$588F,$3400,$3005,$E548; $007A40
-    dc.w    $207C,$00FF,$A6A0,$2030,$0000,$3202,$E549,$207C; $007A50
-    dc.w    $0005,$ECDC,$C0B0,$1000,$6702,$7601,$3003,$4CDF; $007A60
-    dc.w    $003C,$4E75                                      ; $007A70
+    dc.w    $007C,$4E75                                      ; $007A20
+; ============================================================================
+; CheckBitField -- (TODO: describe)
+; Called: ?? times.
+; 80 bytes | $007A24-$007A73
+; ============================================================================
+CheckBitField:                                                  ; $007A24
+    movem.l d2-d5,-(sp)
+    move.l  $0018(sp),d2
+    move.l  $001c(sp),d4
+    move.l  $0014(sp),d5
+    clr.w   d3
+    cmpi.w  #$ff,d2
+    bne.b   .l7a4c
+    move.w  d4,d0
+    ext.l   d0
+    move.l  d0,-(sp)
+    dc.w    $4eb9,$0000,$d648                           ; jsr $00D648
+    addq.l  #$4,sp
+    move.w  d0,d2
+.l7a4c:                                                 ; $007A4C
+    move.w  d5,d0
+    lsl.w   #$2,d0
+    movea.l #$00ffa6a0,a0
+    move.l  (a0,d0.w),d0
+    move.w  d2,d1
+    lsl.w   #$2,d1
+    movea.l #$0005ecdc,a0
+    and.l   (a0,d1.w),d0
+    beq.b   .l7a6c
+    moveq   #$1,d3
+.l7a6c:                                                 ; $007A6C
+    move.w  d3,d0
+    movem.l (sp)+,d2-d5
+    rts
 AdjustScrollPos:                                                  ; $007A74
     movem.l d2/a2,-(sp)
     move.l  $0010(sp),d2
@@ -7706,7 +7774,13 @@ DrawPlayerRoutes:                                                  ; $009E1C
     movem.l -$003c(a6),d2-d6/a2-a3
     unlk    a6
     rts
-    dc.w    $4E75                                            ; $009F48
+; ============================================================================
+; NopStub -- (TODO: describe)
+; Called: ?? times.
+; 2 bytes | $009F48-$009F49
+; ============================================================================
+NopStub:                                                  ; $009F48
+    rts
 ; ============================================================================
 ; SelectMenuItem -- Map selection index to menu entry, dispatch via MenuSelectEntry
 ; Called: 14 times.
@@ -9353,12 +9427,43 @@ CopyRouteFields:                                                  ; $00F086
     dc.w    $4E75,$48E7,$2030,$242F,$0014,$267C,$00FF,$1804; $00F520
     dc.w    $244B,$3002,$2F00,$200B,$5C80,$2F00,$4EB9,$0001; $00F530
     dc.w    $D6FC,$508F,$3540,$0002,$3542,$0004,$4CDF,$0C04; $00F540
-    dc.w    $4E75,$48E7,$2030,$242F,$0010,$267C,$00FF,$1804; $00F550
-    dc.w    $4878,$2000,$7000,$3002,$720D,$E3A8,$0680,$0020; $00F560
-    dc.w    $0003,$2F00,$4879,$00FF,$1804,$4EB9,$0001,$E0FE; $00F570
-    dc.w    $244B,$302A,$0004,$2F00,$200B,$5C80,$2F00,$4EB9; $00F580
-    dc.w    $0001,$D6FC,$4FEF,$0014,$B06A,$0002,$6604,$7001; $00F590
-    dc.w    $6002,$7000,$4CDF,$0C04,$4E75,$4E56,$FFAC,$48E7; $00F5A0
+    dc.w    $4E75                                            ; $00F550
+; ============================================================================
+; VerifyChecksum -- (TODO: describe)
+; Called: ?? times.
+; 88 bytes | $00F552-$00F5A9
+; ============================================================================
+VerifyChecksum:                                                  ; $00F552
+    movem.l d2/a2-a3,-(sp)
+    move.l  $0010(sp),d2
+    movea.l #$00ff1804,a3
+    pea     ($2000).w
+    moveq   #$0,d0
+    move.w  d2,d0
+    moveq   #$d,d1
+    lsl.l   d1,d0
+    addi.l  #$00200003,d0
+    move.l  d0,-(sp)
+    pea     ($00FF1804).l
+    dc.w    $4eb9,$0001,$e0fe                           ; jsr $01E0FE
+    movea.l a3,a2
+    move.w  $0004(a2),d0
+    move.l  d0,-(sp)
+    move.l  a3,d0
+    addq.l  #$6,d0
+    move.l  d0,-(sp)
+    dc.w    $4eb9,$0001,$d6fc                           ; jsr $01D6FC
+    lea     $0014(sp),sp
+    cmp.w   $0002(a2),d0
+    bne.b   .lf5a2
+    moveq   #$1,d0
+    bra.b   .lf5a4
+.lf5a2:                                                 ; $00F5A2
+    moveq   #$0,d0
+.lf5a4:                                                 ; $00F5A4
+    movem.l (sp)+,d2/a2-a3
+    rts
+    dc.w    $4E56,$FFAC,$48E7                                ; $00F5AA
     dc.w    $3C00,$7400,$1439,$00FF,$0016,$3639,$00FF,$9A1C; $00F5B0
     dc.w    $4878,$0001,$42A7,$4EB9,$0001,$E0B8,$4878,$0004; $00F5C0
     dc.w    $4878,$003B,$4EB9,$0001,$E0B8,$42A7,$4878,$000D; $00F5D0

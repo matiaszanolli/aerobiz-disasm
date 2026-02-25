@@ -7,8 +7,8 @@ Index of all identified functions. Updated as disassembly progresses.
 - **Total RTS (function endpoints):** 854
 - **Total RTE (interrupt returns):** 6
 - **Unique call targets:** 2,896
-- **Functions named:** 201
-- **Functions translated to mnemonics:** 189 (all named)
+- **Functions named:** 216
+- **Functions translated to mnemonics:** 204 (all named)
 
 ## Most-Called Functions
 
@@ -200,6 +200,21 @@ These are the most frequently called subroutines -- high-priority translation ta
 | $03AAF4 | SetCursorY | Write stack arg to $FFBDA6 cursor_y |
 | $03AAFE | SetCursorX | Write stack arg to $FF128A cursor_x |
 | $03CB36 | ShowPlayerScreen | ResourceLoad + display setup + menu dispatch |
+| $009F48 | NopStub | Empty function (just RTS) |
+| $01E0E0 | CopyBytesToWords | Copy bytes to word-aligned positions (stride-2 dest) |
+| $028B46 | RunEventSequence | ClearTileArea + 5 sequential event subroutines |
+| $010492 | SumStatBytes | Sum 16 bytes from $FFB9E8[player*32+i*2] |
+| $0140DC | CalcQuarterBonus | Quarter-adjusted percentage: (quarter/4+30)*input*20/100 |
+| $01A60E | InitFlightDisplay | DrawTileGrid + GameCmd16 + MemFillByte flight buffer |
+| $027184 | CountRouteFlags | Count set bits in $FF08EC[player] 32-bit mask, minus 1 |
+| $007A24 | CheckBitField | RangeLookup + $FFA6A0/$5ECDC bitmask test |
+| $0232B6 | ClassifyEvent | Map event codes to categories 1-5 |
+| $0225B8 | SetupEventUI | Event display setup with MenuSelectEntry dispatch |
+| $00F552 | VerifyChecksum | CopyAlternateBytes + ByteSum checksum comparison |
+| $007728 | FindSlotByChar | Search $FF0420/$FF0460 records for character match |
+| $02949A | InitQuarterEvent | Quarter table lookup to $FFBD4C/$FF1294 + CheckEventMatch |
+| $02F548 | FindCharSlotInGroup | Search $FF02E8 group for matching/empty character slot |
+| $0104CA | CountProfitableRelations | Count $FF9A20 relations where revenue > cost |
 
 ### Interrupt Handlers
 
@@ -355,6 +370,8 @@ These are the most frequently called subroutines -- high-priority translation ta
 | $005F00 | LoadTileGraphics | graphics | 3 | translated |
 | $005FF6 | LoadCompressedGfx | graphics | 7 | translated |
 | $006298 | ConfigScrollBar | game | 5 | translated |
+| $007728 | FindSlotByChar | game | -- | translated |
+| $007A24 | CheckBitField | game | -- | translated |
 | $007B1E | HitTestMapTile | game | -- | translated |
 | $00634A | SetScrollBarMode | game | -- | translated |
 | $006B78 | ShowRelPanel | game | 40 | translated |
@@ -384,6 +401,7 @@ These are the most frequently called subroutines -- high-priority translation ta
 | $0088EA | DrawStatDisplay | display | 11 | translated |
 | $0090F4 | CalcStatChange | game | 5 | translated |
 | $009C9E | UpdateSlotDisplays | game | -- | translated |
+| $009F48 | NopStub | game | -- | translated |
 | $009CEC | PlaceCursor | game | 5 | translated |
 | $009D92 | GetCharStat | game | 14 | translated |
 | $009DC4 | FindBitInField | game | 7 | translated |
@@ -393,9 +411,13 @@ These are the most frequently called subroutines -- high-priority translation ta
 | $00FFF8 | CountCharPerformance | game | -- | translated |
 | $0100F2 | LoadScreenPalette | game | 7 | translated |
 | $0101CA | ShowPlayerChart | game | 5 | translated |
+| $010492 | SumStatBytes | game | -- | translated |
+| $0104CA | CountProfitableRelations | game | -- | translated |
 | $01045A | SumPlayerStats | game | -- | translated |
+| $0140DC | CalcQuarterBonus | game | -- | translated |
 | $0177C4 | DrawDualPanels | game | -- | translated |
 | $01A468 | ScanRouteSlots | game | -- | translated |
+| $01A60E | InitFlightDisplay | game | -- | translated |
 | $010686 | FindBestCharacter | game | 3 | translated |
 | $0108F2 | FindCharByValue | game | 3 | translated |
 | $011906 | CalcRouteRevenue | game | -- | translated |
@@ -433,12 +455,14 @@ These are the most frequently called subroutines -- high-priority translation ta
 | $00E08E | CalcCharValue | game | 18 | translated |
 | $00EFC8 | UnpackPixelData | graphics | -- | translated |
 | $00F086 | CopyRouteFields | game | -- | translated |
+| $00F552 | VerifyChecksum | game | -- | translated |
 | $00FEDA | CheckCharEligible | game | -- | translated |
 | $01E044 | TilePlacement | graphics | 100 | translated |
 | $01E0B8 | GameCmd16 | game | 77 | translated |
 | $01E0FE | CopyAlternateBytes | memory | -- | translated |
 | $01E1BA | StringAppend | util | -- | translated |
 | $01E16C | MemMoveWords | memory | 3 | translated |
+| $01E0E0 | CopyBytesToWords | memory | -- | translated |
 | $01E14A | ToUpperCase | util | -- | translated |
 | $01E346 | WeightedAverage | math | -- | translated |
 | $01E3EE | StringConcat | util | -- | translated |
@@ -451,14 +475,18 @@ These are the most frequently called subroutines -- high-priority translation ta
 | $0213B6 | GameLogic1 | game | -- | named |
 | $026128 | GameUpdate4 | game | -- | named |
 | $026270 | CalcPlayerWealth | game | -- | translated |
+| $027184 | CountRouteFlags | game | -- | translated |
+| $028B46 | RunEventSequence | game | -- | translated |
 | $028EBE | WriteEventField | game | -- | translated |
 | $02947A | GameLogic2 | game | -- | named |
 | $023930 | ClearInfoPanel | graphics | 11 | translated |
 | $0238F0 | InitInfoPanel | game | 9 | translated |
 | $023958 | AnimateInfoPanel | game | 9 | translated |
 | $023A34 | PlaceItemTiles | game | 9 | translated |
+| $02949A | InitQuarterEvent | game | -- | translated |
 | $02F430 | ShowCharInfoPage | game | -- | translated |
 | $02F4EE | CalcCharScore | game | -- | translated |
+| $02F548 | FindCharSlotInGroup | game | -- | translated |
 | $02FBD6 | ShowText | game | 37 | translated |
 | $02F5A6 | GameUpdate1 | game | -- | named |
 | $03AAF4 | SetCursorY | text | -- | translated |
@@ -503,6 +531,8 @@ These are the most frequently called subroutines -- high-priority translation ta
 | $01D8F4 | SetScrollOffset | display | 5 | translated |
 | $0206EE | CalcCharProfit | game | 4 | translated |
 | $022554 | CalcEventValue | game | -- | translated |
+| $0225B8 | SetupEventUI | game | -- | translated |
+| $0232B6 | ClassifyEvent | game | -- | translated |
 | $023A8A | DecompressTilePair | graphics | -- | translated |
 | $023B10 | TogglePageDisplay | display | -- | translated |
 | $023B6A | AnimateScrollEffect | display | -- | translated |

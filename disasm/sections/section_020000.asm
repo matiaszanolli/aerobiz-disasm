@@ -5407,10 +5407,10 @@ InitInfoPanel:                                                  ; $0238F0
     move.l  $0008(sp),d2
     move.w  d2,d0
     move.l  d0,-(sp)
-    dc.w    $6100,$ff60                                 ; bsr.w $02385C
+    bsr.w HandleScenarioMenuSelect
     move.w  d2,d0
     move.l  d0,-(sp)
-    dc.w    $6100,$ff92                                 ; bsr.w $023896
+    bsr.w ValidateMenuOption
     pea     ($000700A8).l
     pea     ($000A).w
     pea     ($000C).w
@@ -5987,7 +5987,7 @@ RunQuarterScreen:                                                  ; $023EA8
     move.l  d0,-(sp)
     dc.w    $4eb9,$0001,$c43c                           ; jsr $01C43C
     lea     $0018(sp),sp
-    dc.w    $6100,$ff34                                 ; bsr.w $023E40
+    bsr.w ValidateCharCode
     moveq   #$e,d3
     move.l  #$8000,-(sp)
     pea     ($0002).w
@@ -6047,7 +6047,7 @@ RunQuarterScreen:                                                  ; $023EA8
     move.l  d0,-(sp)
     dc.w    $4eb9,$0001,$c43c                           ; jsr $01C43C
     lea     $001c(sp),sp
-    dc.w    $6100,$fe7c                                 ; bsr.w $023E40
+    bsr.w ValidateCharCode
     move.l  #$8000,-(sp)
     pea     ($0002).w
     pea     ($0002).w
@@ -7485,7 +7485,7 @@ InitGraphicsMemory:
     move.w  d7, d0
     ext.l   d0
     move.l  d0, -(a7)
-    dc.w    $6100,$FC72                                 ; bsr.w $024C10
+    bsr.w OrchestrateGraphicsPipeline
     jsr ResourceUnload
     clr.l   -(a7)
     jsr ReadInput
@@ -7660,7 +7660,7 @@ InitGraphicsMemory:
     move.w  d7, d0
     ext.l   d0
     move.l  d0, -(a7)
-    dc.w    $6100,$FA6E                                 ; bsr.w $024C10
+    bsr.w OrchestrateGraphicsPipeline
     lea     $10(a7), a7
     bra.w   .l24ffa
 .l251ac:
@@ -8586,7 +8586,7 @@ HandleRouteSelectionS2:
     move.w  d3, d0
     ext.l   d0
     move.l  d0, -(a7)
-    dc.w    $6100,$FDF4                                 ; bsr.w $0259FC
+    bsr.w RenderPlayerDataDisplay
     lea     $2c(a7), a7
     clr.w   d7
 .l25c10:
@@ -9319,7 +9319,7 @@ l_2641a:
     moveq   #$0,d0
     move.w  d2, d0
     move.l  d0, -(a7)
-    dc.w    $6100,$FE46                                 ; bsr.w $026270
+    bsr.w CalcPlayerWealth
     addq.l  #$4, a7
     add.l   $4(a3), d0
     add.l   d0, $4(a2)
@@ -11022,7 +11022,7 @@ l_27670:
     moveq   #$0,d0
     move.w  d4, d0
     move.l  d0, -(a7)
-    dc.w    $6100,$FAE8                                 ; bsr.w $027184
+    bsr.w CountRouteFlags
     addq.l  #$4, a7
     cmpi.w  #$6, d0
     bcs.b   l_276e2
@@ -11704,7 +11704,7 @@ l_27dbc:
     movea.l  #$00FF01B0,a0
     pea     (a0, d2.w)
     jsr     (a4)
-    dc.w    $6100,$E4B8                                 ; bsr.w $0262E4
+    bsr.w CalcPlayerRankings
     pea     ($0006).w
     clr.l   -(a7)
     move.w  d3, d0
@@ -12288,7 +12288,7 @@ ValidateGameStateS2:
     move.w  d2, d0
     ext.l   d0
     move.l  d0, -(a7)
-    dc.w    $6100,$FF8C                                 ; bsr.w $028436
+    bsr.w SnapshotGameState
     move.w  d0, d5
     ext.l   d0
     move.l  d0, -(a7)
@@ -23240,7 +23240,7 @@ l_2fd20:
     move.l  d0, -(a7)
     move.w  d4, d0
     move.l  d0, -(a7)
-    dc.w    $6100,$FE98                                 ; bsr.w $02FBD6
+    bsr.w ShowText
     lea     $10(a7), a7
     addq.w  #$1, d3
     cmpi.w  #$2, d3
@@ -23265,7 +23265,7 @@ l_2fd70:
     move.l  d0, -(a7)
     move.w  d4, d0
     move.l  d0, -(a7)
-    dc.w    $6100,$FE5E                                 ; bsr.w $02FBD6
+    bsr.w ShowText
     lea     $10(a7), a7
     addq.w  #$1, d2
     cmpi.w  #$3, d2

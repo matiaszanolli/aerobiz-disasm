@@ -1208,7 +1208,8 @@ RunPlayerSelectUI:                                                  ; $010AB6
     movem.l -$0030(a6),d2-d5/a2-a5
     unlk    a6
     rts
-    dc.w    $48E7,$3C00; $010CAC
+CalcCharDisplayIndex_Prelude:                                ; $010CAC
+    dc.w    $48E7,$3C00                                      ; movem.l d2-d5/a2-a3,-(sp) [falls through]
 ; === Translated block $010CB0-$0112EE ===
 ; 3 functions, 1598 bytes
 
@@ -1342,7 +1343,7 @@ l_10e22:
     move.l  d0, -(a7)
     move.w  d6, d0
     move.l  d0, -(a7)
-    dc.w    $6100,$FE60                                 ; bsr.w $010CAC
+    bsr.w CalcCharDisplayIndex_Prelude
     lea     $10(a7), a7
     tst.b   $1(a2)
     bne.b   l_10ea6
@@ -1497,7 +1498,7 @@ l_10fde:
     pea     ($0004).w
     move.w  d6, d0
     move.l  d0, -(a7)
-    dc.w    $6100,$FCAA                                 ; bsr.w $010CAC
+    bsr.w CalcCharDisplayIndex_Prelude
 l_11004:
     jsr ResourceUnload
     movem.l -$38(a6), d2-d7/a2-a5
@@ -1765,7 +1766,7 @@ ManageRouteSlots:                                                  ; $0112EE
     move.w  $000a(a6),d0
     ext.l   d0
     move.l  d0,-(sp)
-    dc.w    $6100,$f9ae                                 ; bsr.w $010D08
+    bsr.w RenderRouteSlotScreen
     move.w  #$026a,-$0012(a6)
     move.w  #$04ae,-$0010(a6)
     move.w  #$0666,-$000e(a6)
@@ -1871,7 +1872,7 @@ ManageRouteSlots:                                                  ; $0112EE
     move.w  $000a(a6),d0
     ext.l   d0
     move.l  d0,-(sp)
-    dc.w    $6100,$fb62                                 ; bsr.w $011014
+    bsr.w ShowRouteDetailsDialog
     addq.l  #$8,sp
 .l114b6:                                                ; $0114B6
     clr.w   d7
@@ -3417,7 +3418,7 @@ CalcRouteProfit:
     move.w  d4, d0
     ext.l   d0
     move.l  d0, -(a7)
-    dc.w    $6100,$FA66                                 ; bsr.w $011F6E
+    bsr.w UpdateRouteRevenue
     movem.l -$44(a6), d2-d7/a2-a5
     unlk    a6
     rts
@@ -7232,7 +7233,7 @@ RankCharCandidatesFull:
     move.l  a2, -(a7)
     jsr FormatRelationStats
     pea     ($0020).w
-    dc.w    $6100,$FE38                                 ; bsr.w $014D64
+    bsr.w WaitStableInput
     lea     $1c(a7), a7
     clr.w   -$54(a6)
     clr.w   d7
@@ -11719,7 +11720,7 @@ CalcCityCharBonus:                                                  ; $01801C
     moveq   #$0,d0
     move.w  d2,d0
     move.l  d0,-(sp)
-    dc.w    $6100,$ff06                                 ; bsr.w $017F4C
+    bsr.w ResetEventData
     addq.l  #$4,sp
 .l1804a:                                                ; $01804A
     cmpi.w  #$20,d2
@@ -11868,7 +11869,7 @@ InitAllCharRecords:                                                  ; $01819C
     move.l  $0008(sp),d2
     tst.w   d2
     beq.b   .l181aa
-    dc.w    $6100,$fcc8                                 ; bsr.w $017E70
+    bsr.w HandleEventCallback
 .l181aa:                                                ; $0181AA
     clr.w   d2
 .l181ac:                                                ; $0181AC
@@ -11898,7 +11899,7 @@ InitCharRecord:                                                  ; $0181C6
     moveq   #$0,d0
     move.w  d2,d0
     move.l  d0,-(sp)
-    dc.w    $6100,$fe3c                                 ; bsr.w $01801C
+    bsr.w CalcCityCharBonus
     move.w  d2,d0
     lsl.w   #$2,d0
     movea.l #$00ff1298,a0
@@ -14999,7 +15000,7 @@ BrowsePartners:                                                  ; $01A2CE
     ext.l   d0
     move.l  d0,-(sp)
     move.l  a2,-(sp)
-    dc.w    $6100,$f2c8                                 ; bsr.w $019660
+    bsr.w FormatRelationStats
     lea     $0018(sp),sp
     clr.w   d5
     move.w  d2,d3
@@ -15915,7 +15916,7 @@ AnimateFlightPaths:                                                  ; $01ABB0
     move.w  $000a(a6),d0
     ext.l   d0
     move.l  d0,-(sp)
-    dc.w    $6100,$f9c4                                 ; bsr.w $01A672
+    bsr.w UpdateFlightSlots
 .l1acb0:                                                ; $01ACB0
     movem.l -$0040(a6),d2-d6/a2-a4
     unlk    a6
@@ -17231,7 +17232,7 @@ l_1bb94:
     move.w  d3, d0
     ext.l   d0
     move.l  d0, -(a7)
-    dc.w    $6100,$FD7E                                 ; bsr.w $01B91A
+    bsr.w RunMainMenu
     addq.l  #$4, a7
 l_1bba0:
     moveq   #$0,d0
@@ -17453,7 +17454,7 @@ l_1bdfe:
     move.w  d6, d0
     ext.l   d0
     move.l  d0, -(a7)
-    dc.w    $6100,$FBBE                                 ; bsr.w $01BA1C
+    bsr.w DisplayMenuOption
     lea     $30(a7), a7
     bra.b   l_1beb8
 l_1be66:
@@ -17542,7 +17543,7 @@ l_1bf48:
     move.w  d6, d0
     ext.l   d0
     move.l  d0, -(a7)
-    dc.w    $6100,$FAB0                                 ; bsr.w $01BA1C
+    bsr.w DisplayMenuOption
     lea     $10(a7), a7
 l_1bf72:
     clr.l   -(a7)
@@ -17641,7 +17642,7 @@ l_1c05a:
     move.w  d6, d0
     ext.l   d0
     move.l  d0, -(a7)
-    dc.w    $6100,$F97A                                 ; bsr.w $01BA1C
+    bsr.w DisplayMenuOption
     lea     $1c(a7), a7
     move.w  d2, d3
 l_1c0aa:
@@ -17724,7 +17725,7 @@ l_1c0c2:
     move.w  d6, d0
     ext.l   d0
     move.l  d0, -(a7)
-    dc.w    $6100,$F878                                 ; bsr.w $01BA1C
+    bsr.w DisplayMenuOption
     lea     $10(a7), a7
     bra.w   l_1c052
 l_1c1ae:
@@ -17746,7 +17747,7 @@ l_1c1ae:
     move.w  d6, d0
     ext.l   d0
     move.l  d0, -(a7)
-    dc.w    $6100,$F838                                 ; bsr.w $01BA1C
+    bsr.w DisplayMenuOption
     lea     $18(a7), a7
     cmp.w   d3, d2
     bne.b   l_1c212
@@ -17955,7 +17956,7 @@ l_1c3ce:
     move.w  d7, d0
     ext.l   d0
     move.l  d0, -(a7)
-    dc.w    $6100,$F4F0                                 ; bsr.w $01B91A
+    bsr.w RunMainMenu
     jsr ResourceUnload
     movem.l -$1c(a6), d2-d7
     unlk    a6
@@ -18385,7 +18386,7 @@ l_1c89e:
     move.l  d0, -(a7)
     move.w  d7, d0
     move.l  d0, -(a7)
-    dc.w    $6100,$F0D4                                 ; bsr.w $01B9A0
+    bsr.w HandleMenuSelection
     lea     $c(a7), a7
 l_1c8d2:
     jsr ClearFlightSlots
@@ -18425,7 +18426,7 @@ l_1c92e:
     move.w  $a(a6), d0
     ext.l   d0
     move.l  d0, -(a7)
-    dc.w    $6100,$EFE2                                 ; bsr.w $01B91A
+    bsr.w RunMainMenu
     move.l  ($000A1B54).l, -(a7)
     pea     ($00FF1804).l
     jsr LZ_Decompress
@@ -18496,7 +18497,7 @@ l_1c9d8:
     move.w  $a(a6), d0
     ext.l   d0
     move.l  d0, -(a7)
-    dc.w    $6100,$FA00                                 ; bsr.w $01C43C
+    bsr.w ShowPlayerInfo
     lea     $30(a7), a7
     jsr ResourceUnload
     clr.w   d3
@@ -18529,7 +18530,7 @@ l_1ca4a:
     move.w  $a(a6), d0
     ext.l   d0
     move.l  d0, -(a7)
-    dc.w    $6100,$EE6A                                 ; bsr.w $01B91A
+    bsr.w RunMainMenu
     move.l  ($000A1B54).l, -(a7)
     pea     ($00FF1804).l
     jsr LZ_Decompress
@@ -18860,7 +18861,7 @@ l_1ce56:
     move.w  d2, d0
     ext.l   d0
     move.l  d0, -(a7)
-    dc.w    $6100,$EA76                                 ; bsr.w $01B91A
+    bsr.w RunMainMenu
     lea     $1c(a7), a7
     move.w  d2, d0
     lsl.w   #$5, d0
@@ -19002,7 +19003,7 @@ l_1d046:
     move.w  d2, d0
     ext.l   d0
     move.l  d0, -(a7)
-    dc.w    $6100,$FB2E                                 ; bsr.w $01CB82
+    bsr.w RenderDisplayBuffer
     addq.l  #$8, a7
     bra.w   l_1ce56
 l_1d05c:
@@ -19027,7 +19028,7 @@ l_1d05c:
     move.w  d6, d0
     ext.l   d0
     move.l  d0, -(a7)
-    dc.w    $6100,$E886                                 ; bsr.w $01B91A
+    bsr.w RunMainMenu
     lea     $1c(a7), a7
     bra.b   l_1d0ba
 l_1d09c:
@@ -19183,7 +19184,7 @@ AllocGraphicsMemory:
     move.w  d5, d0
     ext.l   d0
     move.l  d0, -(a7)
-    dc.w    $6100,$E78C                                 ; bsr.w $01BA1C
+    bsr.w DisplayMenuOption
     pea     ($0039).w
     pea     ($0013).w
     pea     ($0001).w
@@ -19309,7 +19310,7 @@ MenuSelectEntry:                                             ; $01D3AC
     cmp.l   d0,d1                                        ; active?
     bne.s   .done                                        ; no -> exit
     pea     ($0001).w
-    dc.w    $6100,$FF64                                  ; bsr.w $01D340
+    bsr.w SetDisplayMode
     addq.l  #4,sp
     tst.w   d2                                           ; index >= 0?
     bge.s   .check_upper
@@ -19907,7 +19908,7 @@ SetScrollOffset:                                                  ; $01D8F4
     pea     ($0008).w
     clr.l   -(sp)
     move.l  a2,-(sp)
-    dc.w    $6100,$fbf4                                 ; bsr.w $01D520
+    bsr.w MemFillByte
     lea     $000c(sp),sp
     bra.b   .l1d94a
 .l1d934:                                                ; $01D934
@@ -19962,7 +19963,7 @@ PackGameState:
     move.l  a4, d0
     addi.l  #$5000, d0
     move.l  d0, -(a7)
-    dc.w    $6100,$FB62                                 ; bsr.w $01D520
+    bsr.w MemFillByte
     lea     $c(a7), a7
     tst.w   d3
     bne.b   l_1d9d6
@@ -20521,14 +20522,14 @@ LoadMapTiles:                                                  ; $01DE92
     pea     ($0002).w
     pea     ($000A).w
     pea     ($0740).w
-    dc.w    $6100,$f8fc                                 ; bsr.w $01D7BE
+    bsr.w DrawTileGrid
     pea     ($0004959E).l
     move.l  a2,-(sp)
     jsr     (a3)
     move.l  a2,-(sp)
     pea     ($0014).w
     pea     ($0760).w
-    dc.w    $6100,$f9d0                                 ; bsr.w $01D8AA
+    bsr.w ProcessTextControl
     lea     $002c(sp),sp
     pea     ($0004E1D8).l
     move.l  a2,-(sp)
@@ -20618,7 +20619,7 @@ l_1dfa8:
     pea     ($0020).w
     clr.l   -(a7)
     move.l  a3, -(a7)
-    dc.w    $6100,$F56E                                 ; bsr.w $01D520
+    bsr.w MemFillByte
     lea     $c(a7), a7
 l_1dfb8:
     movem.l (a7)+, d2-d3/a2-a5
@@ -20634,12 +20635,12 @@ PlaceFormattedTiles:                                                  ; $01DFBE
     pea     -$0020(a6)
     move.w  $001a(a6),d0
     move.l  d0,-(sp)
-    dc.w    $6100,$ff52                                 ; bsr.w $01DF30
+    bsr.w RoundValue
     pea     -$0020(a6)
     pea     ($0001).w
     move.w  d3,d0
     move.l  d0,-(sp)
-    dc.w    $6100,$f8bc                                 ; bsr.w $01D8AA
+    bsr.w ProcessTextControl
     cmpi.w  #$e,d4
     bne.b   .l1dffe
     cmpi.w  #$1e,d2
@@ -20969,7 +20970,7 @@ l_1e240:
     addq.l  #$8, a7
 l_1e250:
     clr.l   -(a7)
-    dc.w    $6100,$FF98                                 ; bsr.w $01E1EC
+    bsr.w ReadInput
     addq.l  #$4, a7
     tst.w   d0
     bne.b   l_1e240
@@ -20981,7 +20982,7 @@ l_1e25e:
     addq.l  #$8, a7
 l_1e26e:
     clr.l   -(a7)
-    dc.w    $6100,$FF7A                                 ; bsr.w $01E1EC
+    bsr.w ReadInput
     addq.l  #$4, a7
     move.w  d0, d2
     beq.b   l_1e25e
@@ -21009,7 +21010,7 @@ ProcessInputLoop:                                                     ; $01E290
     BRA.S   .pil_after                                                ; else skip
 .pil_loop:                                                            ; $01E2B0
     CLR.L   -(SP)
-    dc.w    $6100,$FF38                                               ; bsr.w ReadInput [$1E1EC]
+    bsr.w ReadInput
     ADDQ.L  #4,SP
     CMP.W   D3,D0                                                     ; compare with target
     BNE.S   .pil_after                                                ; if match, continue; else exit
@@ -21028,7 +21029,7 @@ ProcessInputLoop:                                                     ; $01E290
     MOVE.W  #1,($00FFA7D8).L                                         ; set init flag
 .pil_epilogue:                                                        ; $01E2E6
     CLR.L   -(SP)
-    dc.w    $6100,$FF02                                               ; bsr.w ReadInput [$1E1EC]
+    bsr.w ReadInput
     ADDQ.L  #4,SP
     MOVEM.L (SP)+,D2-D3
     RTS
@@ -21037,13 +21038,13 @@ PollInputChange:                                                      ; $01E2F4
     MOVEM.L D2-D4,-(SP)
     MOVE.L  $10(SP),D3                                                ; arg (loop count)
     CLR.L   -(SP)
-    dc.w    $6100,$FEEC                                               ; bsr.w ReadInput [$1E1EC]
+    bsr.w ReadInput
     ADDQ.L  #4,SP
     MOVE.W  D0,D4                                                     ; D4 = initial input
     BRA.S   .pic_check
 .pic_loop:                                                            ; $01E308
     CLR.L   -(SP)
-    dc.w    $6100,$FEE0                                               ; bsr.w ReadInput [$1E1EC]
+    bsr.w ReadInput
     ADDQ.L  #4,SP
     MOVE.W  D0,D2                                                     ; D2 = new input
     TST.W   D2
@@ -21147,7 +21148,7 @@ StringConcat:                                                  ; $01E3EE
     movea.l $0004(sp),a0
     move.l  a1,-(sp)
     move.l  a0,-(sp)
-    dc.w    $6100,$fdbe                                 ; bsr.w $01E1BA
+    bsr.w StringAppend
     addq.l  #$8,sp
     rts
 ; === Translated block $01E402-$01E98E ===
@@ -23207,7 +23208,7 @@ l_1f866:
     moveq   #$0,d0
     move.w  d5, d0
     move.l  d0, -(a7)
-    dc.w    $6100,$F88C                                 ; bsr.w $01F0FA
+    bsr.w ValidateInputState
     addq.l  #$4, a7
     tst.w   d0
     beq.w   l_1fb52

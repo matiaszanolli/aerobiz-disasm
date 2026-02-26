@@ -218,7 +218,13 @@ All verified byte-identical before applying. JSR abs.l kept as dc.w, BSR.W as dc
 **Status:** DONE (2026-02-26)
 **Why:** 490 PC-relative JSR calls (`dc.w $4EBA,$XXXX`) remained as raw hex. Completing B-049's work.
 **Approach:** Built `/tmp/symbolize_bsr.py`. Target address extracted from comment annotations (3 formats: `($ADDR)`, `[$ADDR]`, `jsr $ADDR(pc)`; plus `; $INSTR_ADDR |` format where address is the instruction's own address — compute target as `instr_addr + 2 + sign_extend(displacement)`). Safety tested: `jsr (Label,PC)` syntax verified byte-identical with vasm `-no-opt`. Added 5 new labels for unlabeled entry points: `VDPWriteColorsPath`, `VDPWriteZ80Path`, `CmdTestVRAM_WithA3` (alt-entry points within functions), `PrepareRelationPush` ($01C28E thunk), `DegradeSkillLinked` ($032FEC LINK prefix). All 490 calls symbolized; 0 `dc.w $4EBA` remaining.
-**Acceptance:** `make verify` passes (MD5: 1269f44e846a88a2de945de082428b39). Boot sequence reads `jsr (VDP_Init1,PC)`, `jsr (VDP_Init2,PC)`, etc.
+**Acceptance:** `make verify` passes (MD5: 1269f44e846a88a2de945de082432b39). Boot sequence reads `jsr (VDP_Init1,PC)`, `jsr (VDP_Init2,PC)`, etc.
+
+### B-051: Symbolize bsr.w call references
+**Status:** DONE (2026-02-26)
+**Why:** 337 BSR.W calls (`dc.w $6100,$XXXX`) remained as raw hex. Also disproved the long-standing vasm BSR.W +2 displacement bug concern.
+**Approach:** Built `/tmp/symbolize_bsr_w.py`. Same label-map approach as B-049/B-050. Comment formats: `($ADDR)`, `[$ADDR]`, `bsr.w $ADDR`, `$INSTR_ADDR | bsr.w FuncName` (compute from instruction addr + displacement), and `bsr.w FuncName` (no address — reverse label lookup by name). Safety test: confirmed `bsr.w Label` is byte-identical — NO +2 bug. KNOWN_ISSUES.md updated to reflect this. Added 2 more alt-entry labels: `PollInputStatus_Main` ($001C72), `CalcCharDisplayIndex_Prelude` ($010CAC). 5 remaining dc.w: 1 mid-function call ($00192E, possibly mislabeled as ControllerPoll), 4 calls into EarlyInit at $003CE0 (deep alt-entry, not worth labeling).
+**Acceptance:** `make verify` passes (MD5: 1269f44e846a88a2de945de082428b39). 332 of 337 BSR.W calls symbolized.
 
 ---
 
@@ -226,6 +232,7 @@ All verified byte-identical before applying. JSR abs.l kept as dc.w, BSR.W as dc
 
 | ID | Description | Commit | Date |
 |----|-------------|--------|------|
+| B-051 | Symbolize 332/337 bsr.w calls; disprove vasm BSR.W +2 bug; 7 new alt-entry labels total | -- | 2026-02-26 |
 | B-050 | Symbolize 490 jsr (d16,PC) calls to `jsr (FunctionName,PC)` + 5 new alt-entry labels | -- | 2026-02-26 |
 | B-049 | Symbolize 2,869 jsr abs.l calls from raw dc.w to `jsr FunctionName` (236 unique targets) | -- | 2026-02-26 |
 | B-048 | Document game phase flow: initialization, main loop, turns, quarters, win/loss conditions | -- | 2026-02-26 |

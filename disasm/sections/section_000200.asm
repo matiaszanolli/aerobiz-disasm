@@ -30,11 +30,11 @@ EntryPoint:
 
     tst.w   VDP_CTRL                                        ; $0002FA: read/clear VDP status
 .vblank_wait:                                               ; $000300
-    dc.w    $6100,$09DA                                     ; bsr.w WaitVBlank ($000CDC)
+    bsr.w WaitVBlank
     andi.w  #$0002,d0                                       ; check status bit 1
     bne.s   .vblank_wait                                    ; loop while set
 ; --- Early init (RAM/VDP setup) ---
-    dc.w    $6100,$38DC                                     ; bsr.w EarlyInit ($003BE8)
+    bsr.w EarlyInit
 ; --- Set up work RAM base and clear game state flags ---
     moveq   #0,d0                                           ; D0 = 0 (clear value)
     movea.l #$00FFF010,a5                                   ; A5 = work RAM base pointer
@@ -227,7 +227,7 @@ l_004d8:
     ori.l   #$40000090, d0
 l_004e4:
     move.l  d0, $42(a5)
-    dc.w    $6100,$0C34                                 ; bsr.w $00111E
+    bsr.w TriggerVDPDMA
 l_004ec:
     move.w  (a7)+, sr
     rts
@@ -552,7 +552,7 @@ CmdTestVRAM:
 CmdTestVRAM_WithA3:                                          ; $0007DC
     move.w  sr, -(a7)
     ori.w   #$700, sr
-    dc.w    $6100,$0966                                 ; bsr.w $00114A
+    bsr.w VDPWriteZ80Path
     lea     $80e(pc), a4
     move.b  (a4), $6(a3)
     moveq   #$0,d0
@@ -676,7 +676,7 @@ l_00900:
     lsl.l   #$2, d5
 l_00908:
     movem.l d0-d2, -(a7)
-    dc.w    $6100,$0810                                 ; bsr.w $00111E
+    bsr.w TriggerVDPDMA
     movem.l (a7)+, d0-d2
     move.l  $42(a5), d0
     move.l  $24(a5), d0
@@ -736,7 +736,7 @@ l_009b4:
     lsl.l   #$2, d5
 l_009bc:
     movem.l d0-d2, -(a7)
-    dc.w    $6100,$075C                                 ; bsr.w $00111E
+    bsr.w TriggerVDPDMA
     movem.l (a7)+, d0-d2
     move.l  $42(a5), d0
     move.l  $24(a5), d0
@@ -778,7 +778,7 @@ CmdWaitDMA:
     btst    #$5, d0
     bne.b   l_00a48
 l_00a3e:
-    dc.w    $6100,$09C4                                 ; bsr.w $001404
+    bsr.w VInt_Handler3
     move.b  $2b(a5), d0
     bne.b   l_00a3e
 l_00a48:
@@ -939,7 +939,7 @@ l_00b8a:
     ori.l   #$40000080, d5
     move.l  d5, $42(a5)
     movem.l d0-d6/a2, -(a7)
-    dc.w    $6100,$054A                                 ; bsr.w $00111E
+    bsr.w TriggerVDPDMA
     movem.l (a7)+, d0-d6/a2
 l_00bda:
     addq.w  #$2, d3
@@ -1020,7 +1020,7 @@ VInt_Sub1:
     move.w  (a0), d0
     btst    #$3, d0
     beq.b   l_00cda
-    dc.w    $6100,$046E                                 ; bsr.w $00111E
+    bsr.w TriggerVDPDMA
     moveq   #$0,d0
     move.w  $be0(a5), d0
     addq.w  #$1, d0
@@ -1563,7 +1563,7 @@ l_0116a:
 ; ============================================================================
 WaitVDPAndWrite:
 l_0117a:
-    dc.w    $6100,$FB60                                 ; bsr.w $000CDC
+    bsr.w WaitVBlank
     andi.w  #$2, d0
     bne.b   l_0117a
     move.b  $1d(a5), d0
@@ -1634,12 +1634,12 @@ l_0121c:
     bclr    #$7, d0
     movea.l  #$00C00000,a3
     moveq   #$1,d1
-    dc.w    $6100,$0144                                 ; bsr.w $001386
+    bsr.w BulkCopyVDP
 l_01244:
-    dc.w    $6100,$FF24                                 ; bsr.w $00116A
+    bsr.w SetVDPDisplayBit
     move.w  $c70(a5), d0
     bne.b   l_01252
-    dc.w    $6100,$FF0E                                 ; bsr.w $00115E
+    bsr.w ReleaseZ80BusDirect
 l_01252:
     move.w  (a7)+, sr
     rts
@@ -1930,31 +1930,31 @@ VBlankInt:                                                  ; $0014E6
 ; --- DMA/VRAM transfer ---
     btst    #0,$004B(a5)                                    ; DMA transfer pending?
     beq.s   .no_dma
-    dc.w    $6100,$012C                                     ; bsr.w DMA_Transfer ($00163E)
+    bsr.w DMA_Transfer
     bclr    #0,$004B(a5)                                    ; clear DMA flag
 ; --- Display update ---
 .no_dma:                                                    ; $00151A
     moveq   #0,d0
     move.b  $0B2A(a5),d0                                    ; display update flag
     beq.s   .no_display
-    dc.w    $6100,$013C                                     ; bsr.w DisplayUpdate ($001660)
+    bsr.w DisplayUpdate
 ; --- Subsystem 1 ---
 .no_display:                                                ; $001526
     moveq   #0,d0
     move.b  $0BD4(a5),d0
     beq.s   .no_sub1
-    dc.w    $6100,$F708                                     ; bsr.w VInt_Sub1 ($000C38)
+    bsr.w VInt_Sub1
 ; --- Subsystem 2 ---
 .no_sub1:                                                   ; $001532
     move.w  $0BCE(a5),d0                                    ; word flag
     beq.w   .no_sub2
-    dc.w    $6100,$0190                                     ; bsr.w VInt_Sub2 ($0016CC)
+    bsr.w VInt_Sub2
 ; --- Controller/input read ---
 .no_sub2:                                                   ; $00153E
     moveq   #0,d0
     move.b  $02FB(a5),d0                                    ; input enable flag
     beq.s   .no_input
-    dc.w    $6100,$F5FA                                     ; bsr.w ControllerRead ($000B42)
+    bsr.w ControllerRead
 ; --- Multi-dispatch on $002B(A5) bits 0/1/2 ---
 .no_input:                                                  ; $00154A
     moveq   #0,d0
@@ -1962,19 +1962,19 @@ VBlankInt:                                                  ; $0014E6
     beq.w   .poll                                           ; skip if no bits set
     btst    #0,$002B(a5)                                    ; bit 0 set?
     beq.s   .try_bit1
-    dc.w    $6100,$FDE8                                     ; bsr.w VInt_Handler1 ($001346)
+    bsr.w VInt_Handler1
     moveq   #0,d0
     move.b  d0,$002B(a5)                                    ; clear all dispatch flags
     bra.s   .poll
 .try_bit1:                                                  ; $001568
     btst    #1,$002B(a5)                                    ; bit 1 set?
     beq.s   .try_bit2
-    dc.w    $6100,$FE1E                                     ; bsr.w VInt_Handler2 ($001390)
+    bsr.w VInt_Handler2
     bra.s   .poll
 .try_bit2:                                                  ; $001576
     btst    #2,$002B(a5)                                    ; bit 2 set?
     beq.s   .poll
-    dc.w    $6100,$FE84                                     ; bsr.w VInt_Handler3 ($001404)
+    bsr.w VInt_Handler3
 ; --- Controller poll + 4 subsystem updates (always run) ---
 .poll:                                                      ; $001582
     dc.w    $43F9,$00FF,$FBFC                               ; lea $00FFFBFC,a1
@@ -2004,13 +2004,13 @@ SelectVDPInit:
     bne.b   l_015d0
     btst    #$2, d0
     beq.w   l_015d4
-    dc.w    $6100,$FB72                                 ; bsr.w $001138
+    bsr.w VDPWriteColorsPath
     bra.b   l_015d4
 l_015ca:
-    dc.w    $6100,$FB52                                 ; bsr.w $00111E
+    bsr.w TriggerVDPDMA
     bra.b   l_015d4
 l_015d0:
-    dc.w    $6100,$FB54                                 ; bsr.w $001126
+    bsr.w DispatchVDPWrite
 l_015d4:
     rts
 
@@ -2045,7 +2045,7 @@ l_015fc:
     or.l    d1, d0
     ori.l   #$40000080, d0
     move.l  d0, $42(a5)
-    dc.w    $6100,$FAE8                                 ; bsr.w $00111E
+    bsr.w TriggerVDPDMA
     movem.l (a7)+, a0
     rts
 
@@ -2100,7 +2100,7 @@ l_016a8:
     move.b  #$1, $b2d(a5)
 l_016ba:
     jsr (InitSpriteLinks,PC)
-    dc.w    $6100,$FF16                                 ; bsr.w $0015D6
+    bsr.w InitDisplayLayout
     move.w  $b26(a5), d0
 l_016c6:
     move.w  d0, $b28(a5)
@@ -2356,10 +2356,10 @@ l_01938:
     lea     $a(a2), a2
     dbra    d0, $1938
     moveq   #$0,d0
-    dc.w    $6100,$0014                                 ; bsr.w $00195C
+    bsr.w ReadPortByte
     move.b  d0, (a1)
     moveq   #$1,d0
-    dc.w    $6100,$000C                                 ; bsr.w $00195C
+    bsr.w ReadPortByte
     move.b  d0, $1(a1)
     jsr (ReleaseZ80BusDirect,PC)
     rts
@@ -2530,7 +2530,7 @@ l_01a56:
     move.w  d2, d0
     not.b   d0
     andi.w  #$f, d0
-    dc.w    $6100,$FF7A                                 ; bsr.w $001A14
+    bsr.w XorAndUpdate
     lea     $4(a1), a1
     rts
 
@@ -2545,12 +2545,12 @@ l_01aa2:
     btst    #$4, (a0)
     beq.w   l_01ace
     move.w  #$ff, d7
-    dc.w    $6100,$01CC                                 ; bsr.w $001C86
+    bsr.w WaitInputZero
     bcs.w   l_01ace
     moveq   #$0,d6
-    dc.w    $6100,$01A8                                 ; bsr.w $001C6C
+    bsr.w PollInputStatus
     bcs.w   l_01ace
-    dc.w    $6100,$0008                                 ; bsr.w $001AD4
+    bsr.w ParseInputData
 l_01ace:
     move.b  #$60, (a0)
     rts
@@ -2562,11 +2562,11 @@ l_01ace:
 ParseInputData:
 l_01ad4:
     moveq   #$0,d2
-    dc.w    $6100,$0194                                 ; bsr.w $001C6C
+    bsr.w PollInputStatus
     bcs.w   l_01c9a
     andi.w  #$f, d0
     move.b  d0, d2
-    dc.w    $6100,$0186                                 ; bsr.w $001C6C
+    bsr.w PollInputStatus
     bcs.w   l_01c9a
     asl.b   #$4, d0
     or.b    d0, d2
@@ -2577,11 +2577,11 @@ l_01ad4:
     bsr.b   $1B02
     bcs.w   l_01c9a
     bra.b   l_01b22
-    dc.w    $6100,$0168                                 ; bsr.w $001C6C
+    bsr.w PollInputStatus
     bcs.w   l_01c9a
     andi.b  #$f, d0
     or.b    d0, d2
-    dc.w    $6100,$015A                                 ; bsr.w $001C6C
+    bsr.w PollInputStatus
     bcs.w   l_01c9a
     asl.w   #$4, d2
     andi.w  #$f, d0
@@ -2598,7 +2598,7 @@ l_01b22:
     move.w  d2, d3
     swap    d2
     move.b  d2, d0
-    dc.w    $6100,$FEE6                                 ; bsr.w $001A14
+    bsr.w XorAndUpdate
     move.w  d3, (a1)+
     andi.w  #$ff, d3
     moveq   #$0,d0
@@ -2635,23 +2635,23 @@ l_01b70:
     move.w  #$ff, d7
     btst    #$4, (a0)
     beq.w   l_01be6
-    dc.w    $6100,$00FE                                 ; bsr.w $001C86
+    bsr.w WaitInputZero
     bcs.w   l_01be6
     andi.b  #$f, d0
-    dc.w    $6100,$00DE                                 ; bsr.w $001C72
+    bsr.w PollInputStatus_Main
     bcs.w   l_01be6
     andi.b  #$f, d0
-    dc.w    $6100,$00E6                                 ; bsr.w $001C86
+    bsr.w WaitInputZero
     bcs.w   l_01be6
     move.b  d0, (a2)+
-    dc.w    $6100,$00C8                                 ; bsr.w $001C72
+    bsr.w PollInputStatus_Main
     bcs.w   l_01be6
     move.b  d0, (a2)+
-    dc.w    $6100,$00D2                                 ; bsr.w $001C86
+    bsr.w WaitInputZero
     bcs.w   l_01be6
     move.b  d0, (a2)+
     moveq   #$0,d6
-    dc.w    $6100,$00AC                                 ; bsr.w $001C6C
+    bsr.w PollInputStatus
     bcs.w   l_01be6
     move.b  d0, (a2)+
     andi.l  #$f0f0f0f, -(a2)
@@ -2692,17 +2692,17 @@ l_01c0a:
 ; ============================================================================
 ParseInputNibbles:
 l_01c10:
-    dc.w    $6100,$003C                                 ; bsr.w $001C4E
-    dc.w    $6100,$0056                                 ; bsr.w $001C6C
+    bsr.w CombineNibbles
+    bsr.w PollInputStatus
     bcs.w   l_01c9a
     not.b   d0
     andi.w  #$f, d0
     move.b  d0, d2
     move.w  #$1, (a1)+
     move.b  d1, d0
-    dc.w    $6100,$FDE8                                 ; bsr.w $001A14
+    bsr.w XorAndUpdate
     move.b  d2, d0
-    dc.w    $6100,$FDE2                                 ; bsr.w $001A14
+    bsr.w XorAndUpdate
     lea     $4(a1), a1
     rts
 
@@ -2716,7 +2716,7 @@ l_01c3a:
     bcs.w   l_01c9a
     clr.w   (a1)+
     move.b  d1, d0
-    dc.w    $6100,$FDCE                                 ; bsr.w $001A14
+    bsr.w XorAndUpdate
     lea     $6(a1), a1
     rts
 
@@ -2725,11 +2725,11 @@ l_01c3a:
 ; 30 bytes | $001C4E-$001C6B
 ; ============================================================================
 CombineNibbles:
-    dc.w    $6100,$001C                                 ; bsr.w $001C6C
+    bsr.w PollInputStatus
     bcs.w   l_01c9a
     andi.w  #$f, d0
     move.w  d0, d1
-    dc.w    $6100,$000E                                 ; bsr.w $001C6C
+    bsr.w PollInputStatus
     bcs.w   l_01c9a
     asl.w   #$4, d0
     or.b    d0, d1
@@ -2743,6 +2743,7 @@ CombineNibbles:
 PollInputStatus:
     bchg    #$0, d6
     bne.b   l_01c86
+PollInputStatus_Main:                                        ; $001C72
     move.b  #$20, (a0)
 l_01c76:
     move.b  (a0), d0
@@ -2792,7 +2793,7 @@ l_01cc0:
     move.w  (a0)+, (a1)+
     dbra    d0, $1CC0
 l_01cc6:
-    dc.w    $6100,$0090                                 ; bsr.w $001D58
+    bsr.w UpdateAnimTimer
     move.b  #$1, $36(a5)
 l_01cd0:
     move.b  $36(a5), d0
@@ -4424,7 +4425,7 @@ TilePlaceComposite:
     move.w  d3, d0
     move.l  d0, -(a7)
     move.l  a3, -(a7)
-    dc.w    $6100,$FEAE                                 ; bsr.w $0045E6
+    bsr.w CmdPlaceTile2
     move.l  a2, -(a7)
     move.w  d4, d0
     move.l  d0, -(a7)
@@ -4434,7 +4435,7 @@ TilePlaceComposite:
     move.l  d0, -(a7)
     move.w  d3, d0
     move.l  d0, -(a7)
-    dc.w    $6100,$FF58                                 ; bsr.w $0046A6
+    bsr.w FillTileSequence
     lea     $20(a7), a7
     movem.l (a7)+, d2-d5/a2-a3
     rts
@@ -4456,7 +4457,7 @@ TilePaletteRotate:
     move.w  d3, d0
     move.l  d0, -(a7)
     move.l  a3, -(a7)
-    dc.w    $6100,$FEE6                                 ; bsr.w $004668
+    bsr.w CmdPlaceTile
     move.l  a2, -(a7)
     move.w  d4, d0
     move.l  d0, -(a7)
@@ -4466,7 +4467,7 @@ TilePaletteRotate:
     move.l  d0, -(a7)
     move.w  d3, d0
     move.l  d0, -(a7)
-    dc.w    $6100,$FF0E                                 ; bsr.w $0046A6
+    bsr.w FillTileSequence
     lea     $20(a7), a7
     movem.l (a7)+, d2-d5/a2-a3
     rts
@@ -4506,7 +4507,7 @@ l_047c2:
     lea     -$200(a6), a0
     pea     (a0, d0.w)
     move.l  a2, -(a7)
-    dc.w    $6100,$FDBE                                 ; bsr.w $0045B2
+    bsr.w MemMove
     lea     $c(a7), a7
     addq.w  #$1, d2
 l_047fc:
@@ -4523,7 +4524,7 @@ l_04802:
     andi.w  #$7ff, d0
     move.l  d0, -(a7)
     pea     -$200(a6)
-    dc.w    $6100,$FE4C                                 ; bsr.w $004668
+    bsr.w CmdPlaceTile
     movem.l -$21c(a6), d2-d6/a2-a3
     unlk    a6
     rts
@@ -4546,7 +4547,7 @@ BuildPaletteWord:
     move.w  d4, d0
     move.l  d0, -(a7)
     move.l  $8(a6), -(a7)
-    dc.w    $6100,$FF52                                 ; bsr.w $0047A4
+    bsr.w LoadPaletteDataTile
     clr.w   (a2)+
     move.w  d3, d0
     add.w   d0, d0
@@ -4938,7 +4939,7 @@ WriteCharUIDisplay:
     movea.l  #$00FF1400,a0
     pea     (a0, d0.w)
     move.l  a2, -(a7)
-    dc.w    $6100,$F9F8                                 ; bsr.w $0045B2
+    bsr.w MemMove
     lea     $28(a7), a7
     movem.l (a7)+, d2-d3/a2-a3
     rts
@@ -5051,7 +5052,7 @@ FadePalette:                                                  ; $004BC6
     move.w  d7,d0
     add.w   d0,d0
     pea     -$80(a6,d0.w)
-    dc.w    $6100,$fec2                                 ; bsr.w $004B6C
+    bsr.w WriteCharUIDisplay
 .l4cac:                                                 ; $004CAC
     movem.l -$0098(a6),d2-d7
     unlk    a6
@@ -5076,7 +5077,7 @@ DrawLayersReverse:                                                  ; $004CB6
     move.w  d5,d0
     move.l  d0,-(sp)
     move.l  a2,-(sp)
-    dc.w    $6100,$feea                                 ; bsr.w $004BC6
+    bsr.w FadePalette
     lea     $0010(sp),sp
     tst.w   d3
     beq.b   .l4cf8
@@ -5112,7 +5113,7 @@ DrawLayersForward:                                                  ; $004D04
     move.w  d5,d0
     move.l  d0,-(sp)
     move.l  a2,-(sp)
-    dc.w    $6100,$fe9c                                 ; bsr.w $004BC6
+    bsr.w FadePalette
     lea     $0010(sp),sp
     tst.w   d3
     beq.b   .l4d46
@@ -5203,7 +5204,7 @@ l_04dc8:
     add.w   d0, d0
     lea     -$86(a6), a0
     pea     (a0, d0.w)
-    dc.w    $6100,$FD78                                 ; bsr.w $004B6C
+    bsr.w WriteCharUIDisplay
     lea     $c(a7), a7
     tst.w   $16(a6)
     beq.b   l_04e14
@@ -5293,7 +5294,7 @@ l_04e9c:
     add.w   d0, d0
     lea     -$86(a6), a0
     pea     (a0, d0.w)
-    dc.w    $6100,$FCA4                                 ; bsr.w $004B6C
+    bsr.w WriteCharUIDisplay
     lea     $c(a7), a7
     tst.w   $16(a6)
     beq.b   l_04ee8
@@ -5325,7 +5326,7 @@ NormalizeDisplayAttrs:
     move.l  d0, -(a7)
     pea     -$86(a6)
     move.l  $8(a6), -(a7)
-    dc.w    $6100,$F696                                 ; bsr.w $0045B2
+    bsr.w MemMove
     lea     $c(a7), a7
     clr.w   -$4(a6)
 l_04f26:
@@ -5445,7 +5446,7 @@ l_0500e:
     move.w  $12(a6), d0
     move.l  d0, -(a7)
     pea     -$86(a6)
-    dc.w    $6100,$FB44                                 ; bsr.w $004B6C
+    bsr.w WriteCharUIDisplay
     lea     $c(a7), a7
     tst.w   $1a(a6)
     beq.b   l_05048
@@ -5475,7 +5476,7 @@ InitTileBuffer:                                                  ; $005060
     pea     ($0040).w
     clr.l   -(sp)
     pea     ($00FF14BC).l
-    dc.w    $6100,$fae8                                 ; bsr.w $004B6C
+    bsr.w WriteCharUIDisplay
     lea     $0018(sp),sp
     clr.w   ($00FFA7DC).l
     rts
@@ -5506,7 +5507,7 @@ DisplaySetup:                                                  ; $005092
     MOVE.W  D3,D0
     MOVE.L  D0,-(SP)                                           ; push index
     MOVE.L  A2,-(SP)                                           ; push dest
-    dc.w    $6100,$FA96                                        ; bsr.w $004B6C
+    bsr.w WriteCharUIDisplay
     LEA     $C(SP),SP
 .ds_done:                                                      ; $0050DC
     MOVEM.L (SP)+,D2-D3/A2
@@ -5529,7 +5530,7 @@ DisplayInitRows:                                               ; $0050E2
     PEA     ($0040).W                                          ; push 64 (width)
     CLR.L   -(SP)                                              ; push 0 (index)
     PEA     ($00FF14BC).L                                      ; push table address
-    dc.w    $6100,$FAC0                                        ; bsr.w $004BC6
+    bsr.w FadePalette
     LEA     $10(SP),SP                                         ; pop 4 args
     TST.W   D2
     BEQ.S   .dir_setzero                                       ; if row count == 0
@@ -5545,7 +5546,7 @@ DisplayInitRows:                                               ; $0050E2
 ; ---------------------------------------------------------------------------
 DisplayInit15:                                                 ; $005126
     PEA     ($000F).W                                          ; push 15
-    dc.w    $6100,$FFB6                                        ; bsr.w DisplayInitRows
+    bsr.w DisplayInitRows
     ADDQ.L  #4,SP
     RTS
 ; ---------------------------------------------------------------------------
@@ -5553,7 +5554,7 @@ DisplayInit15:                                                 ; $005126
 ; ---------------------------------------------------------------------------
 DisplayInit0:                                                  ; $005132
     CLR.L   -(SP)                                              ; push 0
-    dc.w    $6100,$FFAC                                        ; bsr.w DisplayInitRows
+    bsr.w DisplayInitRows
     ADDQ.L  #4,SP
     RTS
 ; ---------------------------------------------------------------------------
@@ -5574,7 +5575,7 @@ DisplaySetupScaled:                                            ; $00513C
     LSL.W   #4,D0                                              ; D0 = (size/4) * 16
     MOVE.L  D0,-(SP)                                           ; push scaled index
     MOVE.L  A2,-(SP)                                           ; push dest
-    dc.w    $6100,$FF2E                                        ; bsr.w DisplaySetup
+    bsr.w DisplaySetup
     LEA     $C(SP),SP
     MOVEM.L (SP)+,D2/A2
     RTS
@@ -5721,7 +5722,7 @@ CopyBufferPair:
     move.w  d7, d0
     move.l  d0, -(a7)
     clr.l   -(a7)
-    dc.w    $6100,$FEF8                                 ; bsr.w $0051B6
+    bsr.w CopyWithMultiply
     lea     $20(a7), a7
     move.w  d2, d0
     move.l  d0, -(a7)
@@ -5737,7 +5738,7 @@ CopyBufferPair:
     move.w  d7, d0
     move.l  d0, -(a7)
     pea     ($0001).w
-    dc.w    $6100,$FED0                                 ; bsr.w $0051B6
+    bsr.w CopyWithMultiply
     lea     $20(a7), a7
     movem.l (a7)+, d2-d7
     rts
@@ -6150,7 +6151,7 @@ InitScrollModes:
     lea     $30(a7), a7
     pea     ($0003).w
     clr.l   -(a7)
-    dc.w    $6100,$FDEC                                 ; bsr.w $005518
+    bsr.w SetScrollQuadrant
     addq.l  #$8, a7
     movem.l (a7)+, a2-a3
     rts
@@ -6174,8 +6175,8 @@ PreGameInit:
     pea     ($0001).w
     pea     ($0007).w
     jsr     (a2)
-    dc.w    $6100,$FE44                                 ; bsr.w $0055B0
-    dc.w    $6100,$FEE4                                 ; bsr.w $005654
+    bsr.w ConfigDmaMode
+    bsr.w InitScrollModes
     pea     ($000C).w
     jsr     (a2)
     lea     $28(a7), a7
@@ -6189,8 +6190,8 @@ PreGameInit:
 ResetScrollModes:
     pea     ($000D).w
     jsr GameCommand
-    dc.w    $6100,$FE24                                 ; bsr.w $0055B0
-    dc.w    $6100,$FEC4                                 ; bsr.w $005654
+    bsr.w ConfigDmaMode
+    bsr.w InitScrollModes
     pea     ($000C).w
     jsr GameCommand
     addq.l  #$8, a7
@@ -7042,7 +7043,7 @@ LoadTileGraphics:                                                  ; $005F00
     move.w  d5,d0
     move.l  d0,-(sp)
     pea     -$003c(a6)
-    dc.w    $6100,$ff98                                 ; bsr.w $005EDE
+    bsr.w FillSequentialWords
     move.w  d2,d0
     add.w   d0,d0
     movea.l #$000473d0,a0
@@ -7307,7 +7308,7 @@ l_06238:
     move.l  d0, -(a7)
     move.w  ($00FFA788).l, d0
     move.l  d0, -(a7)
-    dc.w    $6100,$FF42                                 ; bsr.w $00618C
+    bsr.w CalcScrollBarPos
     addq.l  #$8, a7
 l_0624e:
     movea.l (a7)+, a2
@@ -7332,22 +7333,22 @@ DispatchScrollUpdates:
     move.w  (a2), d0
     andi.w  #$1, d0
     beq.b   l_06270
-    dc.w    $6100,$FE36                                 ; bsr.w $0060A4
+    bsr.w UpdateScrollBar1
 l_06270:
     move.w  (a2), d0
     andi.w  #$2, d0
     beq.b   l_0627c
-    dc.w    $6100,$FE9E                                 ; bsr.w $006118
+    bsr.w UpdateScrollBar2
 l_0627c:
     move.w  (a2), d0
     andi.w  #$4, d0
     beq.b   l_06288
-    dc.w    $6100,$FF70                                 ; bsr.w $0061F6
+    bsr.w UpdateScrollCounters
 l_06288:
     move.w  (a2), d0
     andi.w  #$8, d0
     beq.b   l_06294
-    dc.w    $6100,$FFC0                                 ; bsr.w $006252
+    bsr.w TickAnimCounter
 l_06294:
     movea.l (a7)+, a2
     rts
@@ -7451,7 +7452,7 @@ SetScrollBarMode:                                                  ; $00634A
     move.l  d0,-(sp)
     move.w  $000e(a6),d0
     move.l  d0,-(sp)
-    dc.w    $6100,$fde8                                 ; bsr.w $00618C
+    bsr.w CalcScrollBarPos
     move.w  $0016(a6),(a2)
     move.w  $001a(a6),$0002(a2)
     clr.w   $0004(a2)
@@ -8678,7 +8679,7 @@ CharCodeScore:                                               ; $0070DC
     move.w  d2,d0
     ext.l   d0
     move.l  d0,-(sp)                                     ; push D2 sign-extended
-    dc.w    $6100,$FE4C                                  ; bsr.w $006F42 (CharCodeCompare)
+    bsr.w CharCodeCompare
     addq.l  #8,sp                                        ; clean 2 args
     move.w  d0,d2                                        ; D2 = compare result
     tst.w   d2                                           ; result == 0?
@@ -8872,7 +8873,7 @@ l_0725e:
     move.w  (a3), d0
     ext.l   d0
     move.l  d0, -(a7)
-    dc.w    $6100,$FC62                                 ; bsr.w $006EEA
+    bsr.w BitFieldSearch
     addq.l  #$8, a7
     move.w  d0, d4
     cmpi.w  #$ff, d0
@@ -9043,7 +9044,7 @@ CalcCompatScore:                                                  ; $007412
     moveq   #$0,d0
     move.b  (a2),d0
     move.l  d0,-(sp)
-    dc.w    $6100,$fb18                                 ; bsr.w $006F42
+    bsr.w CharCodeCompare
     move.w  d0,d2
     cmpi.w  #$3200,d2
     bls.b   .l7438
@@ -9156,7 +9157,7 @@ CountMatchingChars:                                                  ; $0074F8
     move.w  d3,d0
     ext.l   d0
     move.l  d0,-(sp)
-    dc.w    $6100,$f9c8                                 ; bsr.w $006EEA
+    bsr.w BitFieldSearch
     lea     $000c(sp),sp
     move.w  d0,d5
     cmpi.w  #$ff,d5
@@ -9613,7 +9614,7 @@ ShowDialog:                                                  ; $007912
     bne.s   .check_f2                                        ; no, check flag2
     pea     ($001A).w
     pea     ($0008).w
-    dc.w    $6100,$FE02                                      ; bsr.w $007784 (input fn)
+    bsr.w SelectPreviewPage
     addq.l  #8,sp                                            ; clean args
     move.w  d0,d3                                            ; d3 = result
     bra.s   .epilogue
@@ -11324,7 +11325,7 @@ DrawStatDisplay:                                                  ; $0088EA
     move.w  d4,d0
     ext.l   d0
     move.l  d0,-(sp)
-    dc.w    $6100,$fe16                                 ; bsr.w $00883A
+    bsr.w PlaceCharSprite
     move.w  d4,d0
     lsl.w   #$2,d0
     movea.l #$0005e7e4,a0
@@ -11673,7 +11674,7 @@ BrowseCharList:                                                  ; $008E0C
     ext.l   d0
     move.l  d0,-(sp)
     move.l  a2,-(sp)
-    dc.w    $6100,$ecca                                 ; bsr.w $007B1E
+    bsr.w HitTestMapTile
     lea     $000c(sp),sp
     move.w  d0,d3
     cmpi.w  #$ff,d0
@@ -11687,7 +11688,7 @@ BrowseCharList:                                                  ; $008E0C
     move.w  d3,d0
     ext.l   d0
     move.l  d0,-(sp)
-    dc.w    $6100,$fa6e                                 ; bsr.w $0088EA
+    bsr.w DrawStatDisplay
     lea     $0014(sp),sp
 .l8e82:                                                 ; $008E82
     move.w  d3,d4
@@ -11787,7 +11788,7 @@ BrowseCharList:                                                  ; $008E0C
     move.w  $000a(a6),d0
     ext.l   d0
     move.l  d0,-(sp)
-    dc.w    $6100,$faa6                                 ; bsr.w $008A4A
+    bsr.w CharacterBrowser
     move.w  d0,d6
     pea     ($077E).w
     pea     ($0006).w
@@ -11845,12 +11846,12 @@ BrowseCharList:                                                  ; $008E0C
     ext.l   d0
     move.l  d0,-(sp)
     move.l  a2,-(sp)
-    dc.w    $6100,$ea0a                                 ; bsr.w $007A74
+    bsr.w AdjustScrollPos
     move.w  (a3),d0
     ext.l   d0
     move.l  d0,-(sp)
     move.l  a2,-(sp)
-    dc.w    $6100,$eaa8                                 ; bsr.w $007B1E
+    bsr.w HitTestMapTile
     lea     $0010(sp),sp
     move.w  d0,d3
     cmpi.w  #$ff,d0
@@ -11864,7 +11865,7 @@ BrowseCharList:                                                  ; $008E0C
     move.w  d3,d0
     ext.l   d0
     move.l  d0,-(sp)
-    dc.w    $6100,$f84c                                 ; bsr.w $0088EA
+    bsr.w DrawStatDisplay
     lea     $0014(sp),sp
 .l90a4:                                                 ; $0090A4
     move.w  d3,d4
@@ -12999,7 +13000,7 @@ l_09ba4:
     pea     ($0002).w
     move.l  a3, -(a7)
     move.l  a4, -(a7)
-    dc.w    $6100,$FDE0                                 ; bsr.w $009994
+    bsr.w DrawRoutePair
     lea     $10(a7), a7
 l_09bba:
     moveq   #$14,d0
@@ -13072,7 +13073,7 @@ l_09c60:
     pea     ($0001).w
     move.l  a3, -(a7)
     move.l  a4, -(a7)
-    dc.w    $6100,$FD24                                 ; bsr.w $009994
+    bsr.w DrawRoutePair
     lea     $10(a7), a7
 l_09c76:
     moveq   #$14,d0
@@ -13111,7 +13112,7 @@ UpdateSlotDisplays:                                                  ; $009C9E
     move.w  d2,d0
     ext.l   d0
     move.l  d0,-(sp)
-    dc.w    $6100,$fdc6                                 ; bsr.w $009A88
+    bsr.w ProcessCharRoster
     lea     $000c(sp),sp
 .l9cc8:                                                 ; $009CC8
     addq.w  #$1,d2
@@ -13124,7 +13125,7 @@ UpdateSlotDisplays:                                                  ; $009C9E
     move.w  d4,d0
     ext.l   d0
     move.l  d0,-(sp)
-    dc.w    $6100,$fda8                                 ; bsr.w $009A88
+    bsr.w ProcessCharRoster
     lea     $000c(sp),sp
     movem.l (sp)+,d2-d4
     rts
@@ -14890,7 +14891,7 @@ ProcessPlayerSelectInput:
     andi.l  #$ff, d2
 .l0b15a:
     pea     ($0007).w
-    dc.w    $6100,$FDCE                                 ; bsr.w $00AF2E
+    bsr.w PlacePlayerNameLabels
     pea     ($0014).w
     pea     ($000E).w
     jsr     (a3)
@@ -15182,7 +15183,7 @@ RunModelSelectUI:
     pea     ($0004).w
     jsr LoadScreenGfx
     pea     ($0007).w
-    dc.w    $6100,$FAC6                                 ; bsr.w $00AF2E
+    bsr.w PlacePlayerNameLabels
     lea     $20(a7), a7
     jsr ResourceUnload
     movea.l  #$000475E8,a2
@@ -15230,7 +15231,7 @@ RunModelSelectUI:
     move.w  -$2(a6), d0
     ext.l   d0
     move.l  d0, -(a7)
-    dc.w    $6100,$FA32                                 ; bsr.w $00AF2E
+    bsr.w PlacePlayerNameLabels
     jsr ResourceUnload
     move.w  d3, d0
     ext.l   d0
@@ -15398,7 +15399,7 @@ RunModelSelectUI:
     pea     ($0004).w
     jsr LoadScreenGfx
     pea     ($0007).w
-    dc.w    $6100,$F80C                                 ; bsr.w $00AF2E
+    bsr.w PlacePlayerNameLabels
     lea     $20(a7), a7
     jsr ResourceUnload
 .l0b72e:
@@ -15849,7 +15850,7 @@ RunAircraftPurchase:
     addq.w  #$1, d3
     cmpi.w  #$4, d3
     blt.b   .l0bc2e
-    dc.w    $6100,$FDC2                                 ; bsr.w $00BA3E
+    bsr.w ComputeDividends
     movem.l (a7)+, d2-d6/a2-a5
     rts
 
@@ -17194,8 +17195,8 @@ LoadAllGameData:
     mulu.w  #$3c, d0
     addi.w  #$50, d0
     move.w  d0, ($00FFA6B2).l
-    dc.w    $6100,$FB9E                                 ; bsr.w $00C68A
-    dc.w    $6100,$FA50                                 ; bsr.w $00C540
+    bsr.w BuildAircraftAttrTable
+    bsr.w SortAircraftByMetric
     pea     ($0004).w
     pea     ($00FF0012).l
     clr.l   -(a7)
@@ -17892,7 +17893,7 @@ DisplayEventChoice:
     clr.l   -(a7)
     pea     -$80(a6)
     clr.l   -(a7)
-    dc.w    $6100,$F326                                 ; bsr.w $00C61E
+    bsr.w DisplayMessageWithParams
     lea     $14(a7), a7
     clr.w   d3
 .l0d300:
@@ -18137,12 +18138,12 @@ InitGameAudioState:
 ; ============================================================================
 GameEntry:                                                   ; $00D5B6
     jsr PreGameInit
-    dc.w    $6100,$FE58                                      ; bsr.w GameInit1 [$D416]
-    dc.w    $6100,$FF96                                      ; bsr.w GameInit2 [$D558]
+    bsr.w InitGameGraphicsMode
+    bsr.w InitGameAudioState
     pea     ($0001).w                                        ; Push argument 1
     jsr GameSetup1
     jsr GameSetup2
-    dc.w    $6100,$FF2A                                      ; bsr.w GameInit5 [$D500]
+    bsr.w ClearDisplayBuffers
     pea     ($0010).w                                        ; Push display mode $10
     clr.l   -(sp)                                            ; Push zero (default param)
     pea     $0007651E                                        ; Push display config ptr
@@ -19212,7 +19213,7 @@ CollectPlayerChars:                                                  ; $00E152
     move.l  d0,-(sp)
     move.w  d7,d0
     move.l  d0,-(sp)
-    dc.w    $6100,$fe56                                 ; bsr.w $00E08E
+    bsr.w CalcCharValue
     move.l  d0,$0006(a3)
     pea     ($000A).w
     move.w  d5,d0
@@ -19285,7 +19286,7 @@ CollectPlayerChars:                                                  ; $00E152
     move.l  d0,-(sp)
     move.w  d7,d0
     move.l  d0,-(sp)
-    dc.w    $6100,$fd9a                                 ; bsr.w $00E08E
+    bsr.w CalcCharValue
     move.l  d0,$0006(a3)
     pea     ($000A).w
     move.w  d5,d0
@@ -19485,7 +19486,7 @@ RunPlayerStatCompareUI:
     move.w  d3, d0
     ext.l   d0
     move.l  d0, -(a7)
-    dc.w    $6100,$FE10                                 ; bsr.w $00E344
+    bsr.w DrawPlayerComparisonStats
     addq.l  #$8, a7
 l_0e538:
     clr.l   -(a7)
@@ -19508,7 +19509,7 @@ l_0e554:
     move.w  d3, d0
     ext.l   d0
     move.l  d0, -(a7)
-    dc.w    $6100,$FDD8                                 ; bsr.w $00E344
+    bsr.w DrawPlayerComparisonStats
     addq.l  #$8, a7
     clr.w   d2
     clr.w   d4
@@ -19679,7 +19680,7 @@ ShowCharCompare:                                                  ; $00E6B2
     move.l  d0,-(sp)
     move.w  d2,d0
     move.l  d0,-(sp)
-    dc.w    $6100,$f96a                                 ; bsr.w $00E08E
+    bsr.w CalcCharValue
     lea     $0024(sp),sp
     move.l  d0,d2
     move.l  #$8000,-(sp)
@@ -19832,7 +19833,7 @@ ProcessRouteEventLogic:
     move.w  d2, d0
     ext.l   d0
     move.l  d0, -(a7)
-    dc.w    $6100,$F84A                                 ; bsr.w $00E152
+    bsr.w CollectPlayerChars
     lea     $24(a7), a7
     move.w  d0, d4
     jsr ResourceUnload
@@ -19859,7 +19860,7 @@ l_0e920:
     move.l  d0, -(a7)
     move.w  d2, d0
     move.l  d0, -(a7)
-    dc.w    $6100,$FD56                                 ; bsr.w $00E6B2
+    bsr.w ShowCharCompare
     move.w  d0, d3
     cmpi.w  #$1, d3
     bne.b   l_0e96a
@@ -19897,7 +19898,7 @@ l_0e96c:
     move.l  d0, -(a7)
     move.w  d2, d0
     move.l  d0, -(a7)
-    dc.w    $6100,$F6C0                                 ; bsr.w $00E08E
+    bsr.w CalcCharValue
     move.l  d0, d2
     add.l   d0, d0
     add.l   d2, d0
@@ -19942,7 +19943,7 @@ l_0ea3e:
     move.w  d2, d0
     ext.l   d0
     move.l  d0, -(a7)
-    dc.w    $6100,$FA5E                                 ; bsr.w $00E4AA
+    bsr.w RunPlayerStatCompareUI
     addq.l  #$8, a7
     move.w  d0, d3
     cmpi.w  #$ff, d0

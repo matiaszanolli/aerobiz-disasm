@@ -43,14 +43,15 @@ Lessons learned across sessions. **Read this before modifying code.**
 - Extension word $2000 = D2.W index register, displacement $00
 - **Rule:** When translating dc.w with 3+ words, decode the addressing mode bits before choosing mnemonic syntax
 
-### vasm BSR.W -- Displacement May Be Off by +2
-vasm's `bsr.w` may generate a displacement 2 bytes too large. This was confirmed in the
-VRD sister project and applies to the same assembler.
+### vasm BSR.W -- Displacement Confirmed CORRECT (No Bug)
+**Tested and verified (B-051, 2026-02-26):** `bsr.w Label` generates the correct displacement.
+The +2 bug concern from the VRD sister project does NOT apply to this assembler/project.
 
-**Prefer alternatives:**
-- `bsr.s label` -- for targets within +/-127 bytes (always correct, shorter)
-- `jsr label(pc)` -- for longer-range PC-relative calls
-- `jsr label` -- when `label` is an absolute `equ` constant
+**Safe to use:** `bsr.w Label` generates byte-identical output verified against MD5
+`1269f44e846a88a2de945de082428b39`. All 332 BSR.W calls in the ROM have been symbolized
+using `bsr.w Label` syntax. Previously suggested alternatives are still valid but unnecessary:
+- `bsr.s label` -- for targets within +/-127 bytes (shorter encoding, fewer bytes)
+- `jsr (label,PC)` -- explicit PC-relative JSR (4 bytes vs BSR.W 4 bytes, same size)
 
 ### MOVE.W #$0000 vs CLR.W -- Different Encodings
 - `MOVE.W #$0000,(addr)` = 6 bytes

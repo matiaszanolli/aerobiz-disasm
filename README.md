@@ -102,13 +102,13 @@ aerobiz-disasm/
 - **Character system** -- 14,462 bytes (62 functions): CharCodeCompare, CalcRelationValue, RecruitCharacter, CalcCharScore, FindBestCharacter, and 57 more
 - **Game logic & AI** -- 6,122 bytes (23 functions): RunPlayerTurn, RunAITurn, RunScenarioMenu, AnimateFlightPaths, RunEventSequence, SortWordPairs, and 17 more
 - **Management screens** -- 15,934 bytes (15 functions): PackSaveState, ShowRouteInfo, ShowQuarterSummary, RunQuarterScreen, ShowAnnualReport, RunCharManagement, ShowRelationAction, and 8 more
-- **Bulk translation (B-046)** -- 168,556 bytes (537 functions): Automated capstone-to-vasm translation of 86 contiguous code blocks across 4 section files. Functions not yet named.
+- **Bulk translation (B-046)** -- ~252,000 bytes (860 functions): Automated capstone-to-vasm translation of 104 contiguous code blocks across 4 section files. Includes jump-table-aware disassembly, misaligned block boundaries, and cross-section blocks. Functions not yet named.
 
-267 functions named, 804 translated to mnemonics, out of ~854 total. See [BACKLOG.md](BACKLOG.md) for the full task queue.
+267 functions named, 860 translated to mnemonics, out of ~860 total. See [BACKLOG.md](BACKLOG.md) for the full task queue.
 
 **Milestone (B-031 through B-040):** All 854 unique JSR call targets from the function reference have been translated. Remaining untranslated code consists of inline routines, branch targets, and data-interleaved sections not reachable via JSR.
 
-**Bulk translation (B-046):** Automated translation tooling (`tools/translate_block.py`) converted 86 code blocks (~165 KB, 537 functions) from dc.w to mnemonics across 4 section files. Only 17 blocks (~19 KB) remain untranslated, most containing jump tables or data-interleaved code that requires manual handling.
+**Bulk translation complete (B-046):** All translatable code blocks converted. Only 1 block (~726 bytes) of data/text tables remains as dc.w (system strings and tile patterns at $3D16-$3FEC), plus ~1,896 bytes of data tables in the $1D20 region. Translation tooling: `tools/translate_block.py` (capstone-to-vasm converter), `tools/disasm_jtab.py` (jump-table-aware disassembler), `tools/find_dcw_blocks.py` (block scanner).
 
 **Phase 4 (B-041 through B-045):** Work RAM map created — 50+ variables and 30+ regions. Data structure field layouts documented for player records (12 fields), route slots (13 fields), and char stat records (12 fields). String/text tables labeled. See [analysis/RAM_MAP.md](analysis/RAM_MAP.md) and [analysis/DATA_STRUCTURES.md](analysis/DATA_STRUCTURES.md).
 

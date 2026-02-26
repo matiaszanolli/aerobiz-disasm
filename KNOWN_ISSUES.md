@@ -14,6 +14,18 @@ Lessons learned across sessions. **Read this before modifying code.**
 - **Fix:** Use `dc.w $0010,$3002` to preserve the exact original bytes
 - `translate_block.py` auto-detects this pattern and emits dc.w when high byte is non-zero
 
+### Indexed Extension Word Junk Bits
+- On 68000, the index extension word `(d8,An,Xn)` has bits 10-8 unused (scale factor only exists on 68020+)
+- The original compiler may leave non-zero values in these bits
+- Example: ROM has `$2A36 $3A3C` for `MOVE.L $3C(A6,D3.L),D5` — bits 10-8 = `010` (junk)
+- vasm zeroes bits 10-8, producing `$2A36 $383C` — a 1-byte difference
+- **Fix:** Use `dc.w $2A36,$3A3C` to preserve the exact original bytes
+
+### abs.w Suffix Must Be Preserved
+- With vasm `-no-opt`, bare addresses like `$01F0` may default to abs.l (6 bytes) instead of abs.w (4 bytes)
+- If capstone reports `LEA $1f0.w, A0`, the `.w` suffix MUST be preserved in the vasm output as `($01F0).w`
+- Omitting the suffix causes 2 extra bytes per instruction, breaking the ROM layout
+
 ### ASL vs LSL -- Different Opcodes
 - `ASL.L #4,D0` = $E980 (type bits 4-3 = 00)
 - `LSL.L #4,D0` = $E988 (type bits 4-3 = 01)

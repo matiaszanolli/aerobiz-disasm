@@ -109,12 +109,12 @@ Pick the highest-priority unclaimed task. Mark it `IN PROGRESS` with your sessio
 
 ## Phase 3 -- Function Translation
 
-### B-046: Bulk translation of 86 code blocks (537 functions, ~168 KB)
+### B-046: Bulk translation of 104 code blocks (860 functions, ~252 KB)
 **Status:** DONE (2026-02-25)
-**Why:** Largest contiguous untranslated dc.w blocks in the ROM. Translating them brings total coverage from ~67KB to ~236KB.
-**Approach:** Created `tools/translate_block.py` (automated capstone→vasm converter) and `tools/apply_translation.py` (smart section file patcher with ROM address matching and split-boundary handling). Fixed cross-function branch labels (global `l_XXXXX` aliases at function starts) and external branch safety (dc.w for branches outside block range). Translated 86 blocks across 4 section files in 3 batches. Only 17 blocks (~19KB) remain, containing jump tables or data-interleaved code.
+**Why:** Translate all remaining dc.w code blocks to 68K mnemonics. Brings total coverage from ~67KB to ~252KB.
+**Approach:** Created `tools/translate_block.py` (automated capstone→vasm converter), `tools/disasm_jtab.py` (jump-table-aware disassembler), and `tools/find_dcw_blocks.py` (block scanner). Translated 104 blocks across 4 section files in multiple batches. Handled jump tables (6 blocks with PC-relative indexed dispatch), misaligned block boundaries (3 blocks starting mid-MOVEM), cross-section blocks (2 blocks spanning section file boundaries), mixed data+code blocks, and I/O port data regions.
 
-Tool fixes during translation: BTST/EXG/SWAP size qualifiers stripped, PEA abs.w sign fix ($FFFF→(-$1).w), MOVEQ sign fix ($FF→#-$1), cross-function label aliasing, external branch dc.w fallback, byte-immediate junk high byte detection (ORI.B/ANDI.B etc. with non-zero high byte in extension word → dc.w). Also fixed 39 pre-existing moveq sign warnings across all sections.
+Tool fixes: BSR.B/BSR.W → dc.w (displacement safety), MOVE.W (PC,Dn) → dc.w (jump table dispatch), abs.w suffix preservation (prevent vasm -no-opt abs.l expansion), byte-immediate junk high byte detection, indexed extension word junk bits (bits 10-8 unused on 68000). Only data tables remain as dc.w (~2.6 KB: system strings, tile patterns, palette tables).
 **Acceptance:** `make verify` passes (MD5: 1269f44e846a88a2de945de082428b39). Zero assembler warnings.
 
 ### B-009: Translate exception handlers ($F84-$FE0)

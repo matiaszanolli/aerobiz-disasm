@@ -95,6 +95,12 @@ def capstone_to_vasm(addr, raw_bytes, mnem, ops, branch_targets, func_start):
         w1, w2 = struct.unpack('>HH', raw_bytes[2:6])
         return f'dc.w    ${word0:04X},${w1:04X},${w2:04X}', True, f'jsr ${target:06X}'
 
+    # BSR.B ($61xx where xx != 00 and xx != FF)
+    if (word0 & 0xFF00) == 0x6100 and (word0 & 0xFF) not in (0x00, 0xFF):
+        disp = struct.unpack('b', bytes([word0 & 0xFF]))[0]
+        target = addr + 2 + disp
+        return f'dc.w    ${word0:04X}', True, f'bsr.b ${target:06X}'
+
     # BSR.W ($6100)
     if word0 == 0x6100:
         disp = struct.unpack('>h', raw_bytes[2:4])[0]
@@ -106,6 +112,14 @@ def capstone_to_vasm(addr, raw_bytes, mnem, ops, branch_targets, func_start):
         disp = struct.unpack('>h', raw_bytes[2:4])[0]
         target = addr + 2 + disp
         return f'dc.w    ${word0:04X},${raw_bytes[2]:02X}{raw_bytes[3]:02X}', True, f'jsr ${target:06X}(pc)'
+
+    # MOVE.W (d8,PC,Dn) - jump table entry read ($303B, $323B, etc.)
+    if instr_len >= 4 and (word0 & 0xF1FF) == 0x303B:
+        ext = struct.unpack('>H', raw_bytes[2:4])[0]
+        dn = (word0 >> 9) & 7
+        idx_reg = (ext >> 12) & 7
+        disp = ext & 0xFF
+        return f'dc.w    ${word0:04X},${ext:04X}', True, f'move.w ({disp},pc,d{idx_reg}.l),d{dn}'
 
     # JMP (d16,PC) ($4EFB) - jump table dispatch
     if word0 == 0x4EFB:
@@ -287,7 +301,8 @@ def convert_single_operand(op, mnem, size, addr, branch_targets, func_start):
         suffix = m.group(2)
         if suffix == 'l' or needs_abs_l(val):
             return f'(${val:08X}).l'
-        return f'${val:04X}'
+        # Preserve .w suffix to prevent vasm from using abs.l with -no-opt
+        return f'(${val:04X}).w'
 
     # Bare absolute address (no suffix): $XXXX
     m = re.match(r'^\$([0-9a-fA-F]+)$', op)
@@ -569,6 +584,10 @@ def main():
         end_addr = all_parsed[-1][0] + len(all_parsed[-1][1])
 
     functions = find_rts_boundaries(lines, start_addr, end_addr)
+
+    # If no functions found (cross-section block with no RTS), treat entire range as one block
+    if not functions:
+        functions = [(start_addr, end_addr)]
 
     # Collect branch targets globally to handle cross-function branches
     global_branch_targets = collect_all_branch_targets(lines, functions)

@@ -15664,28 +15664,170 @@ l_1aa52:
     movem.l (a7)+, d2-d7/a2-a5
     rts
 
-    dc.w    $4E56,$FFFC,$48E7,$3F30; $01AA58
-    dc.w    $266E,$0008,$226E,$0010,$206E,$000C,$247C,$00FF; $01AA60
-    dc.w    $153C,$4242,$B7CA,$672A,$102B,$0001,$B02A,$0001; $01AA70
-    dc.w    $6620,$102B,$0002,$B02A,$0002,$6616,$4878,$0012; $01AA80
-    dc.w    $42A7,$2F0B,$4EB9,$0001,$D520,$4FEF,$000C,$6000; $01AA90
-    dc.w    $0106,$7012,$D5C0,$5242,$0C42,$0004,$6DC6,$7400; $01AAA0
-    dc.w    $1410,$7000,$1028,$0001,$3D40,$FFFE,$7C00,$1C11; $01AAB0
-    dc.w    $7E00,$1E29,$0001,$B446,$6606,$BE6E,$FFFE,$67BC; $01AAC0
-    dc.w    $363C,$8560,$B446,$6204,$7800,$6002,$7801,$4A44; $01AAD0
-    dc.w    $670A,$7800,$3802,$7000,$3006,$6008,$7800,$3806; $01AAE0
-    dc.w    $7000,$3002,$9880,$3A2E,$FFFE,$9A47,$3005,$48C0; $01AAF0
-    dc.w    $3204,$48C1,$D281,$B081,$6E48,$3004,$48C0,$6C02; $01AB00
-    dc.w    $5280,$E280,$3205,$48C1,$B081,$6C04,$5843,$6032; $01AB10
-    dc.w    $3004,$48C0,$6C02,$5280,$E280,$4480,$3205,$48C1; $01AB20
-    dc.w    $B081,$6C04,$5043,$601A,$3005,$48C0,$3204,$48C1; $01AB30
-    dc.w    $D281,$4481,$B081,$6F06,$0643,$000C,$6004,$0043; $01AB40
-    dc.w    $1000,$B446,$6308,$203C,$0000,$0800,$6002,$7000; $01AB50
-    dc.w    $8640,$4A45,$6F06,$3005,$48C0,$6006,$3005,$48C0; $01AB60
-    dc.w    $4480,$D044,$3800,$0C44,$0080,$6308,$203C,$0000; $01AB70
-    dc.w    $0080,$6002,$7040,$3800,$3742,$0004,$376E,$FFFE; $01AB80
-    dc.w    $0006,$3746,$0008,$3747,$000A,$426B,$000C,$3744; $01AB90
-    dc.w    $000E,$3743,$0010,$4CEE,$0CFC,$FFDC,$4E5E,$4E75; $01ABA0
+
+; === Translated block $01AA58-$01ABB0 ===
+; 1 functions, 344 bytes
+
+; ============================================================================
+; func_01AA58 -- (TODO: name)
+; 344 bytes | $01AA58-$01ABAF
+; ============================================================================
+func_01AA58:
+    link    a6,#-$4
+    movem.l d2-d7/a2-a3, -(a7)
+    movea.l $8(a6), a3
+    movea.l $10(a6), a1
+    movea.l $c(a6), a0
+    movea.l  #$00FF153C,a2
+    clr.w   d2
+l_1aa74:
+    cmpa.l  a2, a3
+    beq.b   l_1aaa2
+    move.b  $1(a3), d0
+    cmp.b   $1(a2), d0
+    bne.b   l_1aaa2
+    move.b  $2(a3), d0
+    cmp.b   $2(a2), d0
+    bne.b   l_1aaa2
+l_1aa8c:
+    pea     ($0012).w
+    clr.l   -(a7)
+    move.l  a3, -(a7)
+    dc.w    $4EB9,$0001,$D520                           ; jsr $01D520
+    lea     $c(a7), a7
+    bra.w   l_1aba6
+l_1aaa2:
+    moveq   #$12,d0
+    adda.l  d0, a2
+    addq.w  #$1, d2
+    cmpi.w  #$4, d2
+    blt.b   l_1aa74
+    moveq   #$0,d2
+    move.b  (a0), d2
+    moveq   #$0,d0
+    move.b  $1(a0), d0
+    move.w  d0, -$2(a6)
+    moveq   #$0,d6
+    move.b  (a1), d6
+    moveq   #$0,d7
+    move.b  $1(a1), d7
+    cmp.w   d6, d2
+    bne.b   l_1aad0
+    cmp.w   -$2(a6), d7
+    beq.b   l_1aa8c
+l_1aad0:
+    move.w  #$8560, d3
+    cmp.w   d6, d2
+    bhi.b   l_1aadc
+    moveq   #$0,d4
+    bra.b   l_1aade
+l_1aadc:
+    moveq   #$1,d4
+l_1aade:
+    tst.w   d4
+    beq.b   l_1aaec
+    moveq   #$0,d4
+    move.w  d2, d4
+    moveq   #$0,d0
+    move.w  d6, d0
+    bra.b   l_1aaf4
+l_1aaec:
+    moveq   #$0,d4
+    move.w  d6, d4
+    moveq   #$0,d0
+    move.w  d2, d0
+l_1aaf4:
+    sub.l   d0, d4
+    move.w  -$2(a6), d5
+    sub.w   d7, d5
+    move.w  d5, d0
+    ext.l   d0
+    move.w  d4, d1
+    ext.l   d1
+    add.l   d1, d1
+    cmp.l   d1, d0
+    bgt.b   l_1ab52
+    move.w  d4, d0
+    ext.l   d0
+    bge.b   l_1ab12
+    addq.l  #$1, d0
+l_1ab12:
+    asr.l   #$1, d0
+    move.w  d5, d1
+    ext.l   d1
+    cmp.l   d1, d0
+    bge.b   l_1ab20
+    addq.w  #$4, d3
+    bra.b   l_1ab52
+l_1ab20:
+    move.w  d4, d0
+    ext.l   d0
+    bge.b   l_1ab28
+    addq.l  #$1, d0
+l_1ab28:
+    asr.l   #$1, d0
+    neg.l   d0
+    move.w  d5, d1
+    ext.l   d1
+    cmp.l   d1, d0
+    bge.b   l_1ab38
+    addq.w  #$8, d3
+    bra.b   l_1ab52
+l_1ab38:
+    move.w  d5, d0
+    ext.l   d0
+    move.w  d4, d1
+    ext.l   d1
+    add.l   d1, d1
+    neg.l   d1
+    cmp.l   d1, d0
+    ble.b   l_1ab4e
+    addi.w  #$c, d3
+    bra.b   l_1ab52
+l_1ab4e:
+    ori.w   #$1000, d3
+l_1ab52:
+    cmp.w   d6, d2
+    bls.b   l_1ab5e
+    move.l  #$800, d0
+    bra.b   l_1ab60
+l_1ab5e:
+    moveq   #$0,d0
+l_1ab60:
+    or.w    d0, d3
+    tst.w   d5
+    ble.b   l_1ab6c
+    move.w  d5, d0
+    ext.l   d0
+    bra.b   l_1ab72
+l_1ab6c:
+    move.w  d5, d0
+    ext.l   d0
+    neg.l   d0
+l_1ab72:
+    add.w   d4, d0
+    move.w  d0, d4
+    cmpi.w  #$80, d4
+    bls.b   l_1ab84
+    move.l  #$80, d0
+    bra.b   l_1ab86
+l_1ab84:
+    moveq   #$40,d0
+l_1ab86:
+    move.w  d0, d4
+    move.w  d2, $4(a3)
+    move.w  -$2(a6), $6(a3)
+    move.w  d6, $8(a3)
+    move.w  d7, $a(a3)
+    clr.w   $c(a3)
+    move.w  d4, $e(a3)
+    move.w  d3, $10(a3)
+l_1aba6:
+    movem.l -$24(a6), d2-d7/a2-a3
+    unlk    a6
+    rts
+
+
 ; ---------------------------------------------------------------------------
 AnimateFlightPaths:                                                  ; $01ABB0
     link    a6,#-$20
@@ -17661,33 +17803,164 @@ l_1c26c:
     rts
 
     dc.w    $2F02; $01C28E
-    dc.w    $242F,$000C,$4878,$0020,$4878,$0020,$42A7,$42A7; $01C290
-    dc.w    $4EB9,$0003,$A942,$4FEF,$0010,$3002,$48C0,$720A; $01C2A0
-    dc.w    $B081,$6200,$0088,$D080,$303B,$0806,$4EFB,$0002; $01C2B0
-    dc.w    $0016,$001E,$0046,$002E,$004E,$005E,$0026,$0056; $01C2C0
-    dc.w    $0036,$0066,$006E,$4EB9,$0003,$6F12,$605E,$4EB9; $01C2D0
-    dc.w    $0001,$4202,$6056,$4EB9,$0000,$F5AA,$604E,$4EB9; $01C2E0
-    dc.w    $0002,$C9C8,$6046,$4EB9,$0002,$F712,$33FC,$0001; $01C2F0
-    dc.w    $00FF,$14B8,$6036,$4EB9,$0002,$7F18,$602E,$4EB9; $01C300
-    dc.w    $0002,$9ABC,$6026,$4EB9,$0001,$2E92,$601E,$4EB9; $01C310
-    dc.w    $0000,$D6BE,$6016,$4EB9,$0002,$3EA8,$600E,$4EB9; $01C320
-    dc.w    $0001,$6F9E,$0C40,$0001,$6602,$740B,$3002,$241F; $01C330
-    dc.w    $4E75,$4E56,$FFFC,$48E7,$3F00,$242E,$0010,$2E2E; $01C340
-    dc.w    $0008,$3002,$0040,$8000,$33C0,$00FF,$A6B0,$4EB9; $01C350
-    dc.w    $0002,$0A64,$4EB9,$0001,$D748,$0C42,$0020,$6C04; $01C360
-    dc.w    $7C06,$6002,$7C04,$3A3C,$00E2,$603C,$7811,$7608; $01C370
-    dc.w    $4242,$601C,$3002,$48C0,$D0AE,$FFFC,$2040,$1010; $01C380
-    dc.w    $5A43,$3003,$0C40,$0012,$6D04,$5C44,$7608,$5242; $01C390
-    dc.w    $B446,$6DE0,$4878,$0001,$4878,$000E,$4EB9,$0000; $01C3A0
-    dc.w    $0D64,$508F,$7002,$B145,$42A7,$4878,$0003,$4EB9; $01C3B0
-    dc.w    $0001,$D62C,$508F,$0280,$0000,$0010,$67AE,$4878; $01C3C0
-    dc.w    $0001,$4878,$0003,$4EB9,$0001,$D62C,$508F,$0280; $01C3D0
-    dc.w    $0000,$0010,$67E8,$4EB9,$0001,$D71C,$4EB9,$0001; $01C3E0
-    dc.w    $E398,$4878,$0001,$302E,$000E,$48C0,$2F00,$3007; $01C3F0
-    dc.w    $48C0,$2F00,$4EB9,$0000,$6A2E,$4878,$0002,$302E; $01C400
-    dc.w    $000E,$48C0,$2F00,$3007,$48C0,$2F00,$4EB9,$0000; $01C410
-    dc.w    $6B78,$3007,$48C0,$2F00,$6100,$F4F0,$4EB9,$0001; $01C420
-    dc.w    $D748,$4CEE,$00FC,$FFE4,$4E5E,$4E75              ; $01C430
+
+; === Translated block $01C290-$01C43C ===
+; 2 functions, 428 bytes
+
+; ============================================================================
+; func_01C290 -- (TODO: name)
+; 178 bytes | $01C290-$01C341
+; ============================================================================
+func_01C290:
+    move.l  $c(a7), d2
+    pea     ($0020).w
+    pea     ($0020).w
+    clr.l   -(a7)
+    clr.l   -(a7)
+    dc.w    $4EB9,$0003,$A942                           ; jsr $03A942
+    lea     $10(a7), a7
+    move.w  d2, d0
+    ext.l   d0
+    moveq   #$A,d1
+    cmp.l   d1, d0
+    bhi.w   l_1c33c
+    add.l   d0, d0
+    dc.w    $303B,$0806                                 ; move.w (6,pc,d0.l),d0
+    dc.w    $4EFB,$0002                                 ; jmp (pc,d0.w)
+    dc.w    $0016
+    dc.w    $001E
+    dc.w    $0046
+    dc.w    $002E
+    dc.w    $004E
+    dc.w    $005E
+    dc.w    $0026
+    dc.w    $0056
+    dc.w    $0036
+    dc.w    $0066
+    dc.w    $006E
+    dc.w    $4EB9,$0003,$6F12                           ; jsr $036F12
+    bra.b   l_1c33c
+    dc.w    $4EB9,$0001,$4202                           ; jsr $014202
+    bra.b   l_1c33c
+    dc.w    $4EB9,$0000,$F5AA                           ; jsr $00F5AA
+    bra.b   l_1c33c
+    dc.w    $4EB9,$0002,$C9C8                           ; jsr $02C9C8
+    bra.b   l_1c33c
+    dc.w    $4EB9,$0002,$F712                           ; jsr $02F712
+    move.w  #$1, ($00FF14B8).l
+    bra.b   l_1c33c
+    dc.w    $4EB9,$0002,$7F18                           ; jsr $027F18
+    bra.b   l_1c33c
+    dc.w    $4EB9,$0002,$9ABC                           ; jsr $029ABC
+    bra.b   l_1c33c
+    dc.w    $4EB9,$0001,$2E92                           ; jsr $012E92
+    bra.b   l_1c33c
+    dc.w    $4EB9,$0000,$D6BE                           ; jsr $00D6BE
+    bra.b   l_1c33c
+    dc.w    $4EB9,$0002,$3EA8                           ; jsr $023EA8
+    bra.b   l_1c33c
+    dc.w    $4EB9,$0001,$6F9E                           ; jsr $016F9E
+    cmpi.w  #$1, d0
+    bne.b   l_1c33c
+    moveq   #$B,d2
+l_1c33c:
+    move.w  d2, d0
+    move.l  (a7)+, d2
+    rts
+
+; ============================================================================
+; func_01C342 -- (TODO: name)
+; 250 bytes | $01C342-$01C43B
+; ============================================================================
+func_01C342:
+    link    a6,#-$4
+    movem.l d2-d7, -(a7)
+    move.l  $10(a6), d2
+    move.l  $8(a6), d7
+    move.w  d2, d0
+    ori.w   #$8000, d0
+    move.w  d0, ($00FFA6B0).l
+    dc.w    $4EB9,$0002,$0A64                           ; jsr $020A64
+    dc.w    $4EB9,$0001,$D748                           ; jsr $01D748
+    cmpi.w  #$20, d2
+    bge.b   l_1c374
+    moveq   #$6,d6
+    bra.b   l_1c376
+l_1c374:
+    moveq   #$4,d6
+l_1c376:
+    move.w  #$e2, d5
+    bra.b   l_1c3b8
+l_1c37c:
+    moveq   #$11,d4
+    moveq   #$8,d3
+    clr.w   d2
+    bra.b   l_1c3a0
+l_1c384:
+    move.w  d2, d0
+    ext.l   d0
+    add.l   -$4(a6), d0
+    movea.l d0, a0
+    move.b  (a0), d0
+    addq.w  #$5, d3
+    move.w  d3, d0
+    cmpi.w  #$12, d0
+    blt.b   l_1c39e
+    addq.w  #$6, d4
+    moveq   #$8,d3
+l_1c39e:
+    addq.w  #$1, d2
+l_1c3a0:
+    cmp.w   d6, d2
+    blt.b   l_1c384
+    pea     ($0001).w
+    pea     ($000E).w
+    dc.w    $4EB9,$0000,$0D64                           ; jsr $000D64
+    addq.l  #$8, a7
+    moveq   #$2,d0
+    eor.w   d0, d5
+l_1c3b8:
+    clr.l   -(a7)
+    pea     ($0003).w
+    dc.w    $4EB9,$0001,$D62C                           ; jsr $01D62C
+    addq.l  #$8, a7
+    andi.l  #$10, d0
+    beq.b   l_1c37c
+l_1c3ce:
+    pea     ($0001).w
+    pea     ($0003).w
+    dc.w    $4EB9,$0001,$D62C                           ; jsr $01D62C
+    addq.l  #$8, a7
+    andi.l  #$10, d0
+    beq.b   l_1c3ce
+    dc.w    $4EB9,$0001,$D71C                           ; jsr $01D71C
+    dc.w    $4EB9,$0001,$E398                           ; jsr $01E398
+    pea     ($0001).w
+    move.w  $e(a6), d0
+    ext.l   d0
+    move.l  d0, -(a7)
+    move.w  d7, d0
+    ext.l   d0
+    move.l  d0, -(a7)
+    dc.w    $4EB9,$0000,$6A2E                           ; jsr $006A2E
+    pea     ($0002).w
+    move.w  $e(a6), d0
+    ext.l   d0
+    move.l  d0, -(a7)
+    move.w  d7, d0
+    ext.l   d0
+    move.l  d0, -(a7)
+    dc.w    $4EB9,$0000,$6B78                           ; jsr $006B78
+    move.w  d7, d0
+    ext.l   d0
+    move.l  d0, -(a7)
+    dc.w    $6100,$F4F0                                 ; bsr.w $01B91A
+    dc.w    $4EB9,$0001,$D748                           ; jsr $01D748
+    movem.l -$1c(a6), d2-d7
+    unlk    a6
+    rts
+
+
 ; ============================================================================
 ; ShowPlayerInfo -- Display player info screen with formatted data
 ; Called: 12 times.
@@ -20572,8 +20845,27 @@ MemMoveWords:                                                  ; $01E16C
 .l1e1a2:                                                ; $01E1A2
     rts
 ; ---------------------------------------------------------------------------
-    dc.w    $2F0A,$246F,$0008,$226F,$000C,$204A,$14D9,$66FC; $01E1A4
-    dc.w    $2008,$245F,$4E75                                       ; $01E1B0
+
+; === Translated block $01E1A4-$01E1BA ===
+; 1 functions, 22 bytes
+
+; ============================================================================
+; func_01E1A4 -- (TODO: name)
+; 22 bytes | $01E1A4-$01E1B9
+; ============================================================================
+func_01E1A4:
+    move.l  a2, -(a7)
+    movea.l $8(a7), a2
+    movea.l $c(a7), a1
+    movea.l a2, a0
+l_1e1b0:
+    move.b  (a1)+, (a2)+
+    bne.b   l_1e1b0
+    move.l  a0, d0
+    movea.l (a7)+, a2
+    rts
+
+
 ; ============================================================================
 ; StringAppend -- (TODO: describe)
 ; 30 bytes | $01E1BA-$01E1D7
@@ -23587,11 +23879,45 @@ l_1ff96:
     movem.l (a7)+, d2-d5/a2
     rts
 
-    dc.w    $4E56; $01FF9E
-    dc.w    $FFFC,$48E7,$3F3C,$262E,$0010,$2C2E,$0008,$2E2E; $01FFA0
-    dc.w    $000C,$3006,$C0FC,$0024,$207C,$00FF,$0018,$41F0; $01FFB0
-    dc.w    $0000,$2D48,$FFFC,$3006,$C0FC,$0320,$3207,$C2FC; $01FFC0
-    dc.w    $0014,$D041,$207C,$00FF,$9A20,$41F0,$0000,$2448; $01FFD0
-    dc.w    $3006,$C0FC,$0140,$3207,$E749,$D041,$207C,$00FF; $01FFE0
-    dc.w    $B4E4,$41F0,$0000,$2A48,$7000,$3007,$2F00,$7000; $01FFF0
+
+; === Translated block $01FF9E-$020000 ===
+; 1 functions, 98 bytes
+
+; ============================================================================
+; func_01FF9E -- (TODO: name)
+; 98 bytes | $01FF9E-$01FFFF
+; ============================================================================
+func_01FF9E:
+    link    a6,#-$4
+    movem.l d2-d7/a2-a5, -(a7)
+    move.l  $10(a6), d3
+    move.l  $8(a6), d6
+    move.l  $c(a6), d7
+    move.w  d6, d0
+    mulu.w  #$24, d0
+    movea.l  #$00FF0018,a0
+    lea     (a0,d0.w), a0
+    move.l  a0, -$4(a6)
+    move.w  d6, d0
+    mulu.w  #$320, d0
+    move.w  d7, d1
+    mulu.w  #$14, d1
+    add.w   d1, d0
+    movea.l  #$00FF9A20,a0
+    lea     (a0,d0.w), a0
+    movea.l a0, a2
+    move.w  d6, d0
+    mulu.w  #$140, d0
+    move.w  d7, d1
+    lsl.w   #$3, d1
+    add.w   d1, d0
+    movea.l  #$00FFB4E4,a0
+    lea     (a0,d0.w), a0
+    movea.l a0, a5
+    moveq   #$0,d0
+    move.w  d7, d0
+    move.l  d0, -(a7)
+    moveq   #$0,d0
+
+
 

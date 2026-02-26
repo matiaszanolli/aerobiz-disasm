@@ -105,6 +105,14 @@ Pick the highest-priority unclaimed task. Mark it `IN PROGRESS` with your sessio
 **Approach:** Traced InitAllCharRecords (89-iteration loop, `cmpi.w #$59`), InitCharRecord, CalcCityCharBonus, GetCharStat, UnpackPixelData, and PackSaveState. Found that 89 is the stat_type/city descriptor count, NOT the char_index count. GetCharStat separates `char_index` (player, 0–3, ×$39) from `stat_type` (0–88, ×4). UnpackPixelData writes exactly 228 bytes (4×57) to $FF05C4, confirming 4 records. PackSaveState's 89-loop saves city data at $FFBA80, confirming 89 = cities.
 **Acceptance:** Overlap resolved; RAM_MAP.md and DATA_STRUCTURES.md updated with correct ranges ($FF05C4–$FF06A7, 228 bytes).
 
+### B-047: Name pre-identified functions and GameCommand handlers
+**Status:** DONE (2026-02-25)
+**Why:** 593 functions used placeholder `func_XXXXXX` labels. Naming them makes the disassembly readable.
+**Approach:** Two batches:
+- Batch 1 (31 renames): Applied descriptive names from FUNCTION_REFERENCE.md that were documented but not yet applied to source labels. Global find-and-replace across all 4 section files. Includes boot (HardwareInit, EarlyInit, PreGameInit), V-INT (DMA_Transfer, DisplayUpdate, SubsysUpdate1-4, VInt_Handler1-3), VDP (VDP_Init1-4), and game flow (GameEntry, GameUpdate1-4, GameLogic1-2, GameSetup1-2).
+- Batch 2 (42 GameCommand handlers): Analyzed code for all 47 handlers (cmds 0-46). Named 37 with func_ labels, added 5 new labels for Z80 sound handlers that were inline (CmdSendZ80Byte, CmdTriggerZ80, CmdLoadZ80Tables, CmdLoadZ80Encoded, CmdStoreWorkByte), split CmdSystemReset from CmdInitCharTable (cmd 30 = reset, cmd 31 = actual init). Decoded CmdStoreWorkByte from dc.w to mnemonics. Annotated GameCommandTable with handler names.
+**Acceptance:** `make verify` passes (MD5: 1269f44e846a88a2de945de082428b39). 525 func_ labels remaining.
+
 ---
 
 ## Phase 3 -- Function Translation
@@ -199,6 +207,7 @@ All verified byte-identical before applying. JSR abs.l kept as dc.w, BSR.W as dc
 
 | ID | Description | Commit | Date |
 |----|-------------|--------|------|
+| B-047 | Name 68 functions: 31 pre-named (boot/VInt/VDP/game flow) + 42 GameCommand handlers (VDP/DMA/sprite/Z80/input) | -- | 2026-02-25 |
 | B-045 | Resolve char_stat_array / char_stat_tab overlap (89 = stat_type/city count, not char_index; 4 records × 57B = 228B, no overlap) | -- | 2026-02-25 |
 | B-044 | Document game data structures (player record 12 fields, route slot 13 fields, char stat 12 fields, 3 auxiliary tables) | -- | 2026-02-25 |
 | B-040 | Batch mnemonization of 17 targets (20278B: PackSaveState/ShowRouteInfo/ManageRouteSlots/ShowQuarterSummary/ProcessCharActions/RunAssignmentUI/ShowStatsSummary/RunCharManagement/FormatRelationDisplay/FormatRelationStats/ShowRelationAction/ShowRelationResult/RunQuarterScreen/ShowGameStatus/RunTurnSequence/ShowAnnualReport/RunScenarioMenu) | 5821108 | 2026-02-25 |

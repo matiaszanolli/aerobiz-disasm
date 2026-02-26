@@ -6,6 +6,80 @@ Pick the highest-priority unclaimed task. Mark it `IN PROGRESS` with your sessio
 
 ---
 
+## Phase 5 -- Full Understanding
+
+### B-054: Label and document remaining dc.w data regions
+**Status:** OPEN
+**Priority:** P1
+**Why:** Two dc.w regions remain completely unlabeled in the code sections: the TMSS string block at $3D16-$3FEC (~726 bytes) and the display/palette data region at $1D20 (~1,896 bytes). Labeling and annotating these is a prerequisite for complete ROM documentation.
+**Approach:**
+- `$3D16-$3FEC`: TMSS license strings ("PRODUCED BY OR UNDER LICENSE FROM SEGA ENTERPRISES LTD." + tile pattern bitmaps). Decode ASCII runs, identify tile pattern bytes, add `TMSSStrings:` and `TMSSTilePatterns:` labels.
+- `$1D20` region: Color gradient tables (confirmed: 11-entry blue fade palette, $0E60 → $0000). Identify all sub-tables, add descriptive labels (e.g., `GradientPaletteBlue:`, `FadeTable:`). Cross-reference which functions reference each table.
+**Acceptance:** All dc.w in those two regions labeled with comments explaining what each chunk is. `make verify` passes.
+
+---
+
+### B-055: Function description wave 1 — system / boot / VDP (≈100 functions)
+**Status:** OPEN
+**Priority:** P1
+**Why:** 592 of 755 function headers contain `(TODO: name)` as their description — only the label exists, no explanation of what the function does. This is the core Phase 5 gap. Wave 1 covers the most-understood layer: system, boot, interrupt, VDP, and input functions in section_000200.
+**Approach:** Read each function body, trace its behavior, write a 1-line description replacing `(TODO: name)`. Prioritize:
+1. GameCommand handler cluster (CmdSetVDPReg, CmdSetScrollMode, CmdLoadTiles, etc. — 47 handlers already named, just need descriptions)
+2. V-INT subsystem (SubsysUpdate1-4, VInt_Handler1-3, DMA_Transfer, DisplayUpdate)
+3. Boot / hardware init cluster (VDP_Init1-4, HardwareInit, EarlyInit, WaitVBlank, Z80_SoundInit)
+4. Input cluster (ControllerRead, ReadPortByte, WaitForKeyPress, WaitStableInput, etc.)
+**Acceptance:** All `(TODO: name)` replaced by real descriptions for the section_000200 system functions. Zero TODOs in the boot/interrupt/VDP/input function headers.
+
+---
+
+### B-056: Cross-reference index (who calls what)
+**Status:** OPEN
+**Priority:** P1
+**Why:** All 3,696 call instructions are now symbolic. Grep is sufficient to answer "who calls X?" for any function. A generated cross-reference document makes this instantly available without grepping.
+**Approach:** Write a Python script that:
+1. Scans all section files for `jsr FunctionName`, `jsr (FunctionName,PC)`, `bsr.w FunctionName`
+2. Builds a dict: `{callee: [caller, caller, ...]}` (callers identified by the nearest preceding global label)
+3. Outputs `analysis/CALL_GRAPH.md`: sorted by callee, each with caller list and call count
+**Acceptance:** `analysis/CALL_GRAPH.md` generated with all 595 named functions. Top-called functions (GameCommand, Multiply32, etc.) show full caller lists. Script committed to `tools/`.
+
+---
+
+### B-057: Function description wave 2 — game UI / character system (≈200 functions)
+**Status:** OPEN
+**Priority:** P2
+**Why:** Continuation of B-055. Game UI and character system functions in sections 010000 and 020000 are more complex — they require reading multi-screen control flows and cross-referencing RAM variables.
+**Approach:** Systematic pass through section_010000 and section_020000 function headers. For each `(TODO: name)`, read the function body, trace RAM accesses against RAM_MAP.md, identify the subsystem (from GAME_PHASE_FLOW.md), write description. Group into sub-waves by subsystem: character management, route management, financial, AI.
+**Acceptance:** Zero `(TODO: name)` or `(TODO: describe)` in section_010000 and section_020000.
+
+---
+
+### B-058: Function description wave 3 — game logic / management screens (≈200 functions)
+**Status:** OPEN
+**Priority:** P2
+**Why:** Continuation of B-057. Section_030000 covers display primitives, text rendering, math, and management screen logic.
+**Approach:** Same as B-057 for section_030000. Math and text functions tend to be easier to describe (pure computation); management screen functions require more context from GAME_PHASE_FLOW.md.
+**Acceptance:** Zero `(TODO: name)` or `(TODO: describe)` in section_030000.
+
+---
+
+### B-059: Game data tables documentation
+**Status:** OPEN
+**Priority:** P2
+**Why:** The data sections (040000-0F0000) contain game configuration tables: aircraft model stats, city data, route pricing, scenario configurations. These are referenced by code but not yet systematically documented.
+**Approach:** Identify data table references in translated code (e.g., `lea SomeTable(pc), a0` patterns, indexed loads), decode the table format from access patterns, add labels and field-level comments. Key targets: aircraft stats table, city coordinates/data, route pricing lookup, scenario init data.
+**Acceptance:** `analysis/DATA_TABLES.md` created documenting game configuration tables. Labels added in section_040000-0F0000 for major game tables.
+
+---
+
+### B-060: Module extraction (code reorganization)
+**Status:** OPEN
+**Priority:** P3
+**Why:** Currently all 860 translated functions live inline in the 4 monolithic section files alongside data. Extracting them to `disasm/modules/68k/<category>/` improves navigability and enables per-function git history.
+**Approach:** For each translated function block: extract code to `disasm/modules/68k/<category>/FunctionName.asm`, replace in section file with a `dcb.b N, 0` fill + `include` directive (or use an offset-tracking approach). Requires careful byte counting to preserve ROM layout. Pilot with 5-10 functions before bulk application.
+**Acceptance:** All 860 functions in module files. Section files contain only data + include directives. `make verify` passes.
+
+---
+
 ## P0 -- Blockers
 
 ### B-001: Initial ROM dump as dc.w

@@ -9,13 +9,13 @@ Pick the highest-priority unclaimed task. Mark it `IN PROGRESS` with your sessio
 ## Phase 5 -- Full Understanding
 
 ### B-054: Label and document remaining dc.w data regions
-**Status:** OPEN
+**Status:** DONE (2026-02-26)
 **Priority:** P1
 **Why:** Two dc.w regions remain completely unlabeled in the code sections: the TMSS string block at $3D16-$3FEC (~726 bytes) and the display/palette data region at $1D20 (~1,896 bytes). Labeling and annotating these is a prerequisite for complete ROM documentation.
-**Approach:**
-- `$3D16-$3FEC`: TMSS license strings ("PRODUCED BY OR UNDER LICENSE FROM SEGA ENTERPRISES LTD." + tile pattern bitmaps). Decode ASCII runs, identify tile pattern bytes, add `TMSSStrings:` and `TMSSTilePatterns:` labels.
-- `$1D20` region: Color gradient tables (confirmed: 11-entry blue fade palette, $0E60 → $0000). Identify all sub-tables, add descriptive labels (e.g., `GradientPaletteBlue:`, `FadeTable:`). Cross-reference which functions reference each table.
-**Acceptance:** All dc.w in those two regions labeled with comments explaining what each chunk is. `make verify` passes.
+**Approach:** Decoded both regions by cross-referencing with the functions that access them (EarlyInit for $3D16, Init5/CmdPlaceTile2/InitAnimTable for $1D20).
+- `$3D16-$3F6F` (858 bytes): 9 labels added — TMSSRegionTable, TMSSCharTable, TMSSTopStr, TMSSSystemsStr, TMSSNTSCMegaDriveStr, TMSSNTSCGenesisStr, TMSSPALStr, TMSSFontTiles (59-tile 1bpp glyph set). The complete TMSS boot screen text renderer. Note: $3F70-$3FEB is code (LZ_Decompress helper), not data.
+- `$1D1A-$24B7` (1,686 bytes): 5 labels added — BlueAnimPalette (31-word cycling gradient, boot palette animation), InitSpriteTiles (50 tiles × 32 bytes 4bpp VDP data), TileIndexTable_A (48-word frame A tile slots), TileIndexTable_B (48-word frame B tile slots), FadeInPalette (15-word white-to-blue fade gradient for screen transitions).
+**Acceptance:** `make verify` passes (MD5: 1269f44e846a88a2de945de082428b39). All sub-regions labeled and commented.
 
 ---
 
@@ -33,14 +33,11 @@ Pick the highest-priority unclaimed task. Mark it `IN PROGRESS` with your sessio
 ---
 
 ### B-056: Cross-reference index (who calls what)
-**Status:** OPEN
+**Status:** DONE (2026-02-26)
 **Priority:** P1
 **Why:** All 3,696 call instructions are now symbolic. Grep is sufficient to answer "who calls X?" for any function. A generated cross-reference document makes this instantly available without grepping.
-**Approach:** Write a Python script that:
-1. Scans all section files for `jsr FunctionName`, `jsr (FunctionName,PC)`, `bsr.w FunctionName`
-2. Builds a dict: `{callee: [caller, caller, ...]}` (callers identified by the nearest preceding global label)
-3. Outputs `analysis/CALL_GRAPH.md`: sorted by callee, each with caller list and call count
-**Acceptance:** `analysis/CALL_GRAPH.md` generated with all 595 named functions. Top-called functions (GameCommand, Multiply32, etc.) show full caller lists. Script committed to `tools/`.
+**Approach:** `tools/gen_call_graph.py` — single-pass scanner tracking current function by nearest preceding global label, matching all 4 call patterns.
+**Acceptance:** `analysis/CALL_GRAPH.md` (7,415 lines): 605 unique callees, 3,698 total call sites, 366 leaf functions, 287 root functions. Top callers: GameCommand (226/126), sprintf (130/55), SetTextCursor (123/46).
 
 ---
 

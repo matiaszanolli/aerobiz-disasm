@@ -2823,6 +2823,13 @@ l_01d08:
 l_01d18:
     rts
 
+; Blue-dominant cycling gradient palette (31 words = 62 bytes)
+; Used by InitAnimTable and UpdateAnimTimer to animate the boot-screen palette
+; at RAM $FFF06A. Each call copies 11 consecutive words from this table to VRAM
+; color RAM via the DMA buffer. The counter in $46(a5) steps backward by 2 per
+; frame, cycling through the table to produce a smooth blue shimmer effect.
+; Color format: %0000BBB0GGG0RRR0
+BlueAnimPalette:                                                ; $001D1A
     dc.w    $0EC0,$0EA0,$0E80; $001D1A
     dc.w    $0E60,$0E40,$0E20,$0E00,$0C00,$0A00,$0800,$0600; $001D20
     dc.w    $0800,$0A00,$0C00,$0E00,$0E20,$0E40,$0E60,$0E80; $001D30
@@ -2854,6 +2861,14 @@ l_01d86:
     rts
 
 
+; 4bpp VDP tile graphics data (50 tiles x 32 bytes = 1600 bytes = 800 words)
+; Written wholesale to VRAM address 0 at boot by Init5 ($10DA):
+;   movea.l #$00001D88,a6 / move.l #$40000000,(VDP_CTRL) / move.w (a6)+,(VDP_DATA) x800
+; Also used by CmdPlaceTile2: pea($1D88).l, pea($0200).w, pea($0033).w loads
+; 51 tiles (4bpp, 16 bytes/tile) into VRAM slot $0200 (tile 512+).
+; Data is nibble-packed 4bpp format: each nibble = palette index 0-15.
+; First 40 bytes ($1D88-$1DAF) are zero = 1.25 blank tiles (transparent fill).
+InitSpriteTiles:                                                ; $001D88
     dc.w    $0000,$0000,$0000,$0000; $001D88
     dc.w    $0000,$0000,$0000,$0000,$0000,$0000,$0000,$0000; $001D90
     dc.w    $0000,$0000,$0000,$0000,$0000,$0000,$0000,$0111; $001DA0
@@ -2954,20 +2969,35 @@ l_01d86:
     dc.w    $9110,$0010,$8991,$0010,$8999,$1010,$8899,$9100; $002390
     dc.w    $8899,$9100,$8889,$9910,$1010,$0001,$0011,$0011; $0023A0
     dc.w    $0010,$1101,$0010,$0001,$0010,$0001,$0000,$0000; $0023B0
-    dc.w    $0000,$0000,$0000,$0000,$0000,$0000,$0000,$0000; $0023C0
+    dc.w    $0000,$0000,$0000,$0000,$0000,$0000,$0000,$0000; $0023C0 | tail of InitSpriteTiles + 8 bytes pad
+
+; Tile slot index tables (two parallel 48-word arrays, frame A and frame B)
+; These map 48 logical tile positions to VRAM tile slot indices.
+; Table A and Table B differ only at position 11: A uses $000B/$0000, B uses $0030/$0031.
+; Likely used for two-frame animation or dual-plane display configuration.
+; Each table: 4 leading zero words (header/pad), then 44 slot indices.
+TileIndexTable_A:                                               ; $0023D0
     dc.w    $0000,$0000,$0000,$0000,$0001,$0002,$0003,$0004; $0023D0
     dc.w    $0005,$0006,$0007,$0008,$0009,$000A,$000B,$0000; $0023E0
     dc.w    $000C,$000D,$000E,$000F,$0010,$0011,$0012,$0013; $0023F0
     dc.w    $0014,$0015,$0016,$0017,$0018,$0019,$001A,$001B; $002400
     dc.w    $001C,$001D,$001E,$001F,$0020,$0021,$0022,$0023; $002410
     dc.w    $0024,$0025,$0026,$0027,$0028,$0029,$002A,$002B; $002420
+TileIndexTable_B:                                               ; $002430
     dc.w    $002C,$002D,$002E,$002F,$0001,$0002,$0003,$0004; $002430
     dc.w    $0005,$0006,$0007,$0008,$0009,$000A,$0030,$0031; $002440
     dc.w    $000C,$000D,$000E,$000F,$0010,$0011,$0012,$0013; $002450
     dc.w    $0014,$0015,$0016,$0017,$0018,$0019,$001A,$001B; $002460
     dc.w    $001C,$001D,$001E,$001F,$0020,$0021,$0022,$0023; $002470
     dc.w    $0024,$0025,$0026,$0027,$0028,$0029,$002A,$002B; $002480
-    dc.w    $002C,$002D,$002E,$002F,$0000,$0EEE,$0EC0,$0EA0; $002490
+    dc.w    $002C,$002D,$002E,$002F,$0000                  ; $002490 | last entries + $0000 terminator
+
+; White-to-blue color gradient palette (15 words = 30 bytes)
+; Used for screen fade transitions. Sequence: white ($0EEE) -> full blue ($0E00)
+; -> dim blue ($0600) -> rising back to medium blue ($0C00).
+; Color format: %0000BBB0GGG0RRR0 (3-bit channels, 8 levels each)
+FadeInPalette:                                                  ; $00249A
+    dc.w    $0EEE,$0EC0,$0EA0; $00249A
     dc.w    $0E80,$0E60,$0E40,$0E20,$0E00,$0C00,$0A00,$0800; $0024A0
     dc.w    $0600,$0800,$0A00,$0C00; $0024B0
 
@@ -3630,15 +3660,82 @@ l_03d14:
     rts
 
 
-    dc.w    $4A00,$5545,$004A,$0000,$0042; $003D16
-    dc.w    $0055,$0000,$0053,$0045,$0000,$0061,$0000,$0644; $003D20
-    dc.w    $4556,$454C,$4F50,$4544,$2046,$4F52,$2055,$5345; $003D30
-    dc.w    $204F,$4E4C,$5920,$5749,$5448,$0012,$2600,$0F53; $003D40
-    dc.w    $5953,$5445,$4D53,$2E00,$0C4E,$5453,$4320,$4D45; $003D50
-    dc.w    $4741,$2044,$5249,$5645,$000D,$4E54,$5343,$2047; $003D60
-    dc.w    $454E,$4553,$4953,$0004,$5041,$4C20,$414E,$4420; $003D70
-    dc.w    $4652,$454E,$4348,$2053,$4543,$414D,$204D,$4547; $003D80
-    dc.w    $4120,$4452,$4956,$4500,$0000,$0000,$0000,$0000; $003D90
+; TMSS boot-screen data block ($003D16-$003F6F, 858 bytes)
+; EarlyInit ($003BE8) reads region code then renders Sega license text to VDP
+; using WriteVDPTileRow ($003CE0). Data layout: region table, char->offset table,
+; null-terminated draw strings (each prefixed by a VDP tile-column byte), then
+; 59 tiles of 1bpp glyph bitmaps for the character rendering engine.
+
+; 4-byte region code table indexed by version register bits[7:6] (0-3).
+; EarlyInit: clr.l d0 / move.b ($A10001),d0 / lsr.b #6,d0 / andi.b #3,d0 /
+;   lea TMSSRegionTable(pc),a0 / move.b (a0,d0.w),d0 -> system identifier char
+; Byte values: [0]='J' (Japan), [1]=$00 (none), [2]='U' (USA), [3]='E' (Europe)
+TMSSRegionTable:                                                ; $003D16
+    dc.w    $4A00,$5545                                         ; $003D16 | J\0UE
+
+; 6-byte entry lookup table: word(match_char) | long(byte offset from TMSSRegionTable)
+; EarlyInit scans this for the system char, then uses the offset to find the
+; region-specific draw string. Terminated by $0000.
+; Entry 0: 'J' ($004A) -> offset $42 -> $3D58 (TMSSNTSCMegaDriveStr)
+; Entry 1: 'U' ($0055) -> offset $53 -> $3D69 (TMSSNTSCGenesisStr)
+; Entry 2: 'E' ($0045) -> offset $61 -> $3D77 (TMSSPALStr)
+; Entry 3: $0000 -> end of table
+TMSSCharTable:                                                  ; $003D1A
+    dc.w    $004A,$0000,$0042; $003D1A | 'J', offset=$42
+    dc.w    $0055,$0000,$0053,$0045,$0000,$0061,$0000          ; $003D20 | 'U'->$53, 'E'->$61
+
+; Draw string: [byte col=6] "DEVELOPED FOR USE ONLY WITH\0"
+; EarlyInit: lea TMSSTopStr(pc),a0 / move.b (a0)+,d0 / bsr WriteVDPTileRow
+; WriteVDPTileRow uses d0=tile_column, d1=tile_row, then (a0)+... until null.
+TMSSTopStr:                                                     ; $003D2E
+    dc.w    $0644,$4556,$454C,$4F50,$4544,$2046,$4F52,$2055    ; $003D2E | col=6,"DEVELOPED FOR U"
+    dc.w    $5345,$204F,$4E4C,$5920,$5749,$5448,$0012          ; $003D3E | "SE ONLY WITH\0"
+
+; $003D4A: word $0012 -- high byte=$00 (end-of-string), low byte=$12=18 (col for TMSSSpaceStr)
+; TMSSSpaceStr is at odd address $003D4B (the low byte of word $0012).
+; EarlyInit: lea $3D4B(pc),a0 / move.b (a0)+,d0 (reads col $12) / bsr WriteVDPTileRow
+; Draw string: [byte col=18] "&\0"  (separator character)
+;   $003D4C: $2600 = '&'(high),$00(low) -- '&' is printed, then null terminates
+    dc.w    $2600                                               ; $003D4C | '&'\0
+
+; Draw string: [byte col=15] "SYSTEMS.\0"
+; EarlyInit: lea $3D4E(pc),a0 / move.b (a0)+,d0 (reads col $0F) / bsr WriteVDPTileRow
+; $003D4E is the high byte of this word: col=$0F
+TMSSSystemsStr:                                                 ; $003D4E (word-aligned)
+    dc.w    $0F53,$5953,$5445,$4D53,$2E00                      ; $003D4E | col=15,"SYSTEMS\0"
+
+; Draw string: [byte col=12] "NTSC MEGA DRIVE\0"
+; Pointed to by TMSSCharTable entry 0 (Japan system 'J').
+; $003D58 is the high byte of word $0C4E: col=$0C
+TMSSNTSCMegaDriveStr:                                          ; $003D58 (word-aligned)
+    dc.w    $0C4E,$5453,$4320,$4D45,$4741,$2044,$5249,$5645    ; $003D58 | col=12,"NTSC MEGA DRIVE"
+    dc.w    $000D                                               ; $003D68 | \0 (end), then $0D=col for next
+
+; Draw string: [byte col=13] "NTSC GENESIS\0"
+; Pointed to by TMSSCharTable entry 1 (USA system 'U').
+; $003D69 is the low byte of word $000D at $003D68: col=$0D
+; (Note: the \0 terminator of NTSCMegaDrive and the column byte share word $000D)
+TMSSNTSCGenesisStr:                                            ; $003D69 (odd-byte, within word at $3D68)
+    dc.w    $4E54,$5343,$2047,$454E,$4553,$4953,$0004          ; $003D6A | "NTSC GENESIS\0"
+
+; Draw string: [byte col=4] "PAL AND FRENCH SECAM MEGA DRIVE\0"
+; Pointed to by TMSSCharTable entry 2 (Europe system 'E').
+; $003D77 is the low byte of word $0004 at $003D76: col=$04
+; (Note: the \0 terminator of NTSCGenesis and the column byte share word $0004)
+TMSSPALStr:                                                    ; $003D77 (odd-byte, within word at $3D76)
+    dc.w    $5041,$4C20,$414E,$4420,$4652,$454E,$4348,$2053    ; $003D78 | "PAL AND FRENCH S"
+    dc.w    $4543,$414D,$204D,$4547                            ; $003D88 | "ECAM MEG"
+    dc.w    $4120,$4452,$4956,$4500                            ; $003D90 | "A DRIVE\0"
+
+; 1bpp 8x8 glyph bitmaps for the TMSS text rendering engine (59 tiles x 8 bytes = 472 bytes)
+; EarlyInit loads all 59 tiles via the WriteVDPTileRow bitstream loop:
+;   lea TMSSFontTiles(pc),a0 / move.w #$3A,d0 / outer dbra d0 (59 tiles)
+;   Inner: 8 bytes per tile, each bit expanded to a 4-pixel VDP run via
+;   ROL.L #4 + ROR.B #1 + BCC + OR.L pattern.
+; Tile coverage: '!'=0x00 (#0), '"'=0x01, ASCII punct, digits 0-9, uppercase A-Z,
+;   plus misc glyphs. Tiles read MSB-first; each byte = 1 row of 8 pixels.
+TMSSFontTiles:                                                  ; $003D98
+    dc.w    $0000,$0000,$0000,$0000; $003D98 | blank tile (8 zeros)
     dc.w    $1818,$1818,$0018,$1800,$3636,$4800,$0000,$0000; $003DA0
     dc.w    $1212,$7F12,$7F24,$2400,$083F,$483E,$097E,$0800; $003DB0
     dc.w    $7152,$7408,$1725,$4700,$1824,$1829,$4546,$3900; $003DC0

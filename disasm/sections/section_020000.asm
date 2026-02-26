@@ -13,7 +13,7 @@
 CalcTradeGains:
     move.w  d6, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$0376                                 ; jsr $02037C(pc)
+    jsr (GetRouteSlotDetails,PC)
     nop
     addq.l  #$8, a7
     move.w  d0, d4
@@ -31,7 +31,7 @@ CalcTradeGains:
     moveq   #$0,d0
     move.w  d6, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$0412                                 ; jsr $020448(pc)
+    jsr (CalcSlotValue,PC)
     nop
     addq.l  #$8, a7
     move.l  d0, -(a7)
@@ -42,7 +42,7 @@ CalcTradeGains:
     moveq   #$0,d0
     move.w  d6, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$03FA                                 ; jsr $020448(pc)
+    jsr (CalcSlotValue,PC)
     nop
     addq.l  #$8, a7
     add.l   (a7)+, d0
@@ -630,7 +630,7 @@ l_20616:
     move.b  (a2), d0
     andi.l  #$ffff, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$005E                                 ; jsr $0206EE(pc)
+    jsr (CalcCharProfit,PC)
     nop
     lea     $10(a7), a7
     move.w  d0, $6(a2)
@@ -1080,7 +1080,7 @@ InitializeRouteDisplay:
     moveq   #$0,d0
     move.w  d2, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$021C                                 ; jsr $020DB8(pc)
+    jsr (RenderRouteUIElements,PC)
     nop
     lea     $2c(a7), a7
     pea     ($0001).w
@@ -1223,7 +1223,7 @@ InitializeRouteDisplay:
     moveq   #$0,d0
     move.w  d2, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$04F8                                 ; jsr $0212A2(pc)
+    jsr (DisplayRouteEvent,PC)
     nop
 l_20dae:
     movem.l -$20(a6), d2-d4/a2-a5
@@ -1708,9 +1708,9 @@ GameLogic1:
     pea     ($0004).w
     jsr LoadScreenGfx
     lea     $1c(a7), a7
-    dc.w    $4EBA,$0012                                 ; jsr $0213F4(pc)
+    jsr (InitRouteFields,PC)
     nop
-    dc.w    $4EBA,$00EE                                 ; jsr $0214D6(pc)
+    jsr (FinalizeRouteConfig,PC)
     nop
     jsr SetupEventUI
     rts
@@ -1720,11 +1720,11 @@ GameLogic1:
 ; 20 bytes | $0213F4-$021407
 ; ============================================================================
 InitRouteFields:
-    dc.w    $4EBA,$0012                                 ; jsr $021408(pc)
+    jsr (InitRouteFieldA,PC)
     nop
-    dc.w    $4EBA,$004A                                 ; jsr $021446(pc)
+    jsr (InitRouteFieldB,PC)
     nop
-    dc.w    $4EBA,$008A                                 ; jsr $02148C(pc)
+    jsr (InitRouteFieldC,PC)
     nop
     rts
 
@@ -1747,7 +1747,7 @@ l_21424:
     bne.b   l_21436
     move.b  (a2), d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$0CEA                                 ; jsr $02211A(pc)
+    jsr (ProcessEventState,PC)
     nop
     addq.l  #$4, a7
 l_21436:
@@ -1821,11 +1821,11 @@ l_214d0:
 ; 20 bytes | $0214D6-$0214E9
 ; ============================================================================
 FinalizeRouteConfig:
-    dc.w    $4EBA,$0012                                 ; jsr $0214EA(pc)
+    jsr (InitializeRoutePipeline,PC)
     nop
-    dc.w    $4EBA,$053C                                 ; jsr $021A1A(pc)
+    jsr (FinalizeCandidateRoutes,PC)
     nop
-    dc.w    $4EBA,$061E                                 ; jsr $021B02(pc)
+    jsr (FinalizeRouteSelection,PC)
     nop
     rts
 
@@ -1834,15 +1834,15 @@ FinalizeRouteConfig:
 ; 32 bytes | $0214EA-$021509
 ; ============================================================================
 InitializeRoutePipeline:
-    dc.w    $4EBA,$001E                                 ; jsr $02150A(pc)
+    jsr (SelectActiveRoute,PC)
     nop
-    dc.w    $4EBA,$016E                                 ; jsr $021660(pc)
+    jsr (ProcessRouteOptionB,PC)
     nop
-    dc.w    $4EBA,$027A                                 ; jsr $021772(pc)
+    jsr (MatchRouteOption,PC)
     nop
-    dc.w    $4EBA,$0326                                 ; jsr $021824(pc)
+    jsr (ProcessRouteOptionC,PC)
     nop
-    dc.w    $4EBA,$046A                                 ; jsr $02196E(pc)
+    jsr (ProcessRouteOptionD,PC)
     nop
     rts
 
@@ -1903,7 +1903,7 @@ l_21574:
     beq.b   l_21590
     move.b  (a4), d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$0B90                                 ; jsr $02211A(pc)
+    jsr (ProcessEventState,PC)
     nop
     addq.l  #$4, a7
 l_21590:
@@ -1916,13 +1916,13 @@ l_2159a:
     moveq   #$0,d0
     move.b  (a2), d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$0A00                                 ; jsr $021FA6(pc)
+    jsr (CheckEventCondition,PC)
     nop
     addq.l  #$8, a7
     tst.w   d0
     beq.b   l_215bc
     pea     ($0002).w
-    dc.w    $4EBA,$0B64                                 ; jsr $02211A(pc)
+    jsr (ProcessEventState,PC)
     nop
     addq.l  #$4, a7
 l_215bc:
@@ -1930,13 +1930,13 @@ l_215bc:
     moveq   #$0,d0
     move.b  (a2), d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$09DE                                 ; jsr $021FA6(pc)
+    jsr (CheckEventCondition,PC)
     nop
     addq.l  #$8, a7
     tst.w   d0
     beq.b   l_215de
     pea     ($0003).w
-    dc.w    $4EBA,$0B42                                 ; jsr $02211A(pc)
+    jsr (ProcessEventState,PC)
     nop
     addq.l  #$4, a7
 l_215de:
@@ -1944,24 +1944,24 @@ l_215de:
     moveq   #$0,d0
     move.b  (a2), d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$09BC                                 ; jsr $021FA6(pc)
+    jsr (CheckEventCondition,PC)
     nop
     addq.l  #$8, a7
     tst.w   d0
     beq.b   l_21600
     pea     ($0004).w
-    dc.w    $4EBA,$0B20                                 ; jsr $02211A(pc)
+    jsr (ProcessEventState,PC)
     nop
     addq.l  #$4, a7
 l_21600:
     move.b  (a2), d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$0D54                                 ; jsr $02235A(pc)
+    jsr (CheckRouteEventMatch,PC)
     nop
     addq.l  #$4, a7
     tst.w   d0
     beq.b   l_21616
-    dc.w    $4EBA,$0D9A                                 ; jsr $0223AC(pc)
+    jsr (FinalizeRouteEvent,PC)
     nop
 l_21616:
     addq.l  #$1, a2
@@ -2065,11 +2065,11 @@ l_21712:
     movea.l d0, a0
     move.b  $3(a5, a0.l), d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$0C38                                 ; jsr $02235A(pc)
+    jsr (CheckRouteEventMatch,PC)
     nop
     tst.w   d0
     beq.b   l_21730
-    dc.w    $4EBA,$0C80                                 ; jsr $0223AC(pc)
+    jsr (FinalizeRouteEvent,PC)
     nop
 l_21730:
     move.b  #$1, (a2)
@@ -2119,7 +2119,7 @@ l_2179e:
 l_217a2:
     move.w  d2, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$0DAC                                 ; jsr $022554(pc)
+    jsr (CalcEventValue,PC)
     nop
     move.w  d0, d3
     clr.l   -(a7)
@@ -2144,18 +2144,18 @@ l_217a2:
     tst.w   d0
     beq.b   l_217ea
     pea     ($0003).w
-    dc.w    $4EBA,$0936                                 ; jsr $02211A(pc)
+    jsr (ProcessEventState,PC)
     nop
     addq.l  #$4, a7
 l_217ea:
     move.b  d3, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$0B6A                                 ; jsr $02235A(pc)
+    jsr (CheckRouteEventMatch,PC)
     nop
     addq.l  #$4, a7
     tst.w   d0
     beq.b   l_21800
-    dc.w    $4EBA,$0BB0                                 ; jsr $0223AC(pc)
+    jsr (FinalizeRouteEvent,PC)
     nop
 l_21800:
     movea.l  #$00FF09C6,a2
@@ -2189,7 +2189,7 @@ l_21840:
     clr.l   -(a7)
     move.w  d2, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$0782                                 ; jsr $021FD4(pc)
+    jsr (CheckEventMatch,PC)
     nop
     lea     $10(a7), a7
     tst.w   d0
@@ -2197,7 +2197,7 @@ l_21840:
     pea     ($0001).w
     move.w  d2, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$076C                                 ; jsr $021FD4(pc)
+    jsr (CheckEventMatch,PC)
     nop
     addq.l  #$8, a7
     tst.w   d0
@@ -2275,11 +2275,11 @@ l_21912:
     beq.w   l_2183a
     move.b  d2, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$0A2A                                 ; jsr $02235A(pc)
+    jsr (CheckRouteEventMatch,PC)
     nop
     tst.w   d0
     beq.b   l_2193e
-    dc.w    $4EBA,$0A72                                 ; jsr $0223AC(pc)
+    jsr (FinalizeRouteEvent,PC)
     nop
 l_2193e:
     movea.l  #$00FF09C6,a2
@@ -2324,7 +2324,7 @@ l_21998:
     clr.l   -(a7)
     move.w  d2, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$062A                                 ; jsr $021FD4(pc)
+    jsr (CheckEventMatch,PC)
     nop
     lea     $10(a7), a7
     tst.w   d0
@@ -2332,7 +2332,7 @@ l_21998:
     pea     ($0001).w
     move.w  d2, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$0614                                 ; jsr $021FD4(pc)
+    jsr (CheckEventMatch,PC)
     nop
     addq.l  #$8, a7
     tst.w   d0
@@ -2342,11 +2342,11 @@ l_21998:
     movea.l  #$0005ECBC,a0
     move.b  (a0,d0.w), d1
     move.l  d1, -(a7)
-    dc.w    $4EBA,$097E                                 ; jsr $02235A(pc)
+    jsr (CheckRouteEventMatch,PC)
     nop
     tst.w   d0
     beq.b   l_219ea
-    dc.w    $4EBA,$09C6                                 ; jsr $0223AC(pc)
+    jsr (FinalizeRouteEvent,PC)
     nop
 l_219ea:
     movea.l  #$00FF09C6,a2
@@ -2368,9 +2368,9 @@ l_21a14:
 ; 14 bytes | $021A1A-$021A27
 ; ============================================================================
 FinalizeCandidateRoutes:
-    dc.w    $4EBA,$000C                                 ; jsr $021A28(pc)
+    jsr (InitRouteFieldA2,PC)
     nop
-    dc.w    $4EBA,$0072                                 ; jsr $021A94(pc)
+    jsr (InitRouteFieldB2,PC)
     nop
     rts
 
@@ -2400,14 +2400,14 @@ l_21a3c:
     pea     ($0005).w
     move.w  d2, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$0540                                 ; jsr $021FA6(pc)
+    jsr (CheckEventCondition,PC)
     nop
     lea     $10(a7), a7
     tst.w   d0
     bne.b   l_21a38
     move.w  d2, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$0A34                                 ; jsr $0224AC(pc)
+    jsr (CheckAirRouteAvail,PC)
     nop
     addq.l  #$4, a7
     tst.w   d0
@@ -2446,14 +2446,14 @@ l_21aa8:
     pea     ($0005).w
     move.w  d2, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$04D4                                 ; jsr $021FA6(pc)
+    jsr (CheckEventCondition,PC)
     nop
     lea     $10(a7), a7
     tst.w   d0
     bne.b   l_21aa4
     move.w  d2, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$09C8                                 ; jsr $0224AC(pc)
+    jsr (CheckAirRouteAvail,PC)
     nop
     addq.l  #$4, a7
     tst.w   d0
@@ -2471,9 +2471,9 @@ l_21afc:
 ; 14 bytes | $021B02-$021B0F
 ; ============================================================================
 FinalizeRouteSelection:
-    dc.w    $4EBA,$000C                                 ; jsr $021B10(pc)
+    jsr (InitRouteFieldC2,PC)
     nop
-    dc.w    $4EBA,$02D8                                 ; jsr $021DE2(pc)
+    jsr (ProcessTurnCheckpoint,PC)
     nop
     rts
 
@@ -2518,7 +2518,7 @@ l_21b58:
     move.l  d0, -(a7)
     move.w  d2, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$0026                                 ; jsr $021B9C(pc)
+    jsr (EvaluateTurnAvailability,PC)
     nop
     lea     $c(a7), a7
     add.w   d0, d3
@@ -2563,7 +2563,7 @@ l_21bb8:
     add.w   d0, d7
     move.w  d7, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$00BE                                 ; jsr $021C9C(pc)
+    jsr (CalculateTurnCapacity,PC)
     nop
     addq.l  #$4, a7
     tst.w   d0
@@ -2614,12 +2614,12 @@ l_21c22:
     move.l  d0, -(a7)
     move.w  d6, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$009C                                 ; jsr $021CF0(pc)
+    jsr (CheckCharAvailability,PC)
     nop
     addq.l  #$8, a7
     tst.w   d0
     bne.b   l_21c86
-    dc.w    $4EBA,$012A                                 ; jsr $021D8A(pc)
+    jsr (CheckTurnTiming,PC)
     nop
     tst.w   d0
     beq.b   l_21c6c
@@ -2800,11 +2800,11 @@ ProcessTurnCheckpoint:
     jsr RandRange
     move.w  d0, d2
     move.l  d0, -(a7)
-    dc.w    $4EBA,$05F4                                 ; jsr $0223EA(pc)
+    jsr (AggregateCharAvailability,PC)
     nop
     addq.l  #$4, a7
     move.l  d0, -(a7)
-    dc.w    $4EBA,$001C                                 ; jsr $021E1C(pc)
+    jsr (ValidateTurnDelay,PC)
     nop
     lea     $c(a7), a7
     tst.w   d0
@@ -3029,7 +3029,7 @@ CheckEventCondition:
     jsr RangeLookup
     addq.l  #$4, a7
     move.l  d0, -(a7)
-    dc.w    $4EBA,$000C                                 ; jsr $021FD4(pc)
+    jsr (CheckEventMatch,PC)
     nop
     addq.l  #$8, a7
     movem.l (a7)+, d2-d3
@@ -3361,7 +3361,7 @@ l_22320:
     moveq   #$0,d0
     move.b  $1(a3), d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$022A                                 ; jsr $022554(pc)
+    jsr (CalcEventValue,PC)
     nop
     addq.l  #$4, a7
     move.b  d0, d3
@@ -3467,7 +3467,7 @@ AggregateCharAvailability:
     bra.b   l_2243c
 l_2242a:
     move.l  a2, -(a7)
-    dc.w    $4EBA,$002E                                 ; jsr $02245C(pc)
+    jsr (CalcCharMorale,PC)
     nop
     addq.l  #$4, a7
     add.w   d0, d3
@@ -3716,23 +3716,23 @@ l_2261c:
     dc.w    $0028
     dc.w    $0032
     move.l  a2, -(a7)
-    dc.w    $4EBA,$003E                                 ; jsr $022682(pc)
+    jsr (HandleRouteEventType0,PC)
     nop
     bra.b   l_22670
     move.l  a2, -(a7)
-    dc.w    $4EBA,$02D8                                 ; jsr $022926(pc)
+    jsr (HandleRouteEventType1,PC)
     nop
     bra.b   l_22670
     move.l  a2, -(a7)
-    dc.w    $4EBA,$04FE                                 ; jsr $022B56(pc)
+    jsr (HandleRouteEventType2,PC)
     nop
     bra.b   l_22670
     move.l  a2, -(a7)
-    dc.w    $4EBA,$05E4                                 ; jsr $022C46(pc)
+    jsr (HandleRouteEventType3,PC)
     nop
     bra.b   l_22670
     move.l  a2, -(a7)
-    dc.w    $4EBA,$0410                                 ; jsr $022A7C(pc)
+    jsr (HandleAirlineRouteEvent,PC)
     nop
 l_22670:
     addq.l  #$4, a7
@@ -3782,7 +3782,7 @@ HandleRouteEventType0:
     move.l  a4, -(a7)
     jsr     (a5)
     move.l  a4, -(a7)
-    dc.w    $4EBA,$107C                                 ; jsr $02377C(pc)
+    jsr (DrawLabeledBox,PC)
     nop
     pea     ($0001).w
     pea     ($0003).w
@@ -3835,7 +3835,7 @@ l_227a6:
     move.l  a4, -(a7)
     jsr     (a5)
     move.l  a4, -(a7)
-    dc.w    $4EBA,$0FC4                                 ; jsr $02377C(pc)
+    jsr (DrawLabeledBox,PC)
     nop
     pea     ($0001).w
     pea     ($0003).w
@@ -3872,7 +3872,7 @@ l_22808:
     addq.l  #$4, a7
     move.l  d0, -(a7)
     clr.l   -(a7)
-    dc.w    $4EBA,$0B62                                 ; jsr $023386(pc)
+    jsr (GetCharStatsS2,PC)
     nop
     move.w  d2, d0
     ext.l   d0
@@ -3889,7 +3889,7 @@ l_22808:
     move.b  $3(a3, a0.w), d0
     andi.l  #$ff, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$0C3A                                 ; jsr $023490(pc)
+    jsr (GetCharRelationS2,PC)
     nop
     bra.b   l_228da
 l_2285c:
@@ -3902,7 +3902,7 @@ l_2285c:
     move.l  a4, -(a7)
     jsr     (a5)
     move.l  a4, -(a7)
-    dc.w    $4EBA,$0F00                                 ; jsr $02377C(pc)
+    jsr (DrawLabeledBox,PC)
     nop
     pea     ($0001).w
     pea     ($0003).w
@@ -3922,7 +3922,7 @@ l_2285c:
     move.l  a4, -(a7)
     jsr     (a5)
     move.l  a4, -(a7)
-    dc.w    $4EBA,$0EB8                                 ; jsr $02377C(pc)
+    jsr (DrawLabeledBox,PC)
     nop
     lea     $10(a7), a7
     pea     ($0001).w
@@ -3931,7 +3931,7 @@ l_2285c:
 l_228da:
     addq.l  #$8, a7
 l_228dc:
-    dc.w    $4EBA,$0ECA                                 ; jsr $0237A8(pc)
+    jsr (ClearListArea,PC)
     nop
     jsr ClearInfoPanel
     pea     ($0005).w
@@ -3989,7 +3989,7 @@ HandleRouteEventType1:
     move.l  a4, -(a7)
     jsr sprintf
     move.l  a4, -(a7)
-    dc.w    $4EBA,$0DDA                                 ; jsr $02377C(pc)
+    jsr (DrawLabeledBox,PC)
     nop
     pea     ($0001).w
     pea     ($0003).w
@@ -4011,7 +4011,7 @@ HandleRouteEventType1:
     addq.l  #$4, a7
     move.l  d0, -(a7)
     pea     ($0001).w
-    dc.w    $4EBA,$0990                                 ; jsr $023386(pc)
+    jsr (GetCharStatsS2,PC)
     nop
     lea     $28(a7), a7
     moveq   #$0,d0
@@ -4020,7 +4020,7 @@ HandleRouteEventType1:
     moveq   #$0,d0
     move.b  $3(a2), d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$0A80                                 ; jsr $023490(pc)
+    jsr (GetCharRelationS2,PC)
     nop
     bra.b   l_22a50
 l_22a16:
@@ -4033,14 +4033,14 @@ l_22a16:
     move.l  a4, -(a7)
     jsr sprintf
     move.l  a4, -(a7)
-    dc.w    $4EBA,$0D42                                 ; jsr $02377C(pc)
+    jsr (DrawLabeledBox,PC)
     nop
     lea     $10(a7), a7
     pea     ($0001).w
     pea     ($0003).w
     jsr PollAction
 l_22a50:
-    dc.w    $4EBA,$0D56                                 ; jsr $0237A8(pc)
+    jsr (ClearListArea,PC)
     nop
     jsr ClearInfoPanel
     pea     ($0001).w
@@ -4100,13 +4100,13 @@ l_22af8:
     pea     -$80(a6)
     jsr sprintf
     pea     -$80(a6)
-    dc.w    $4EBA,$0C6E                                 ; jsr $02377C(pc)
+    jsr (DrawLabeledBox,PC)
     nop
     pea     ($0001).w
     pea     ($0003).w
     jsr PollAction
     lea     $2c(a7), a7
-    dc.w    $4EBA,$0C82                                 ; jsr $0237A8(pc)
+    jsr (ClearListArea,PC)
     nop
     jsr ClearInfoPanel
     pea     ($0001).w
@@ -4138,7 +4138,7 @@ HandleRouteEventType2:
     moveq   #$0,d0
     move.b  $1(a3), d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$0C4C                                 ; jsr $0237D0(pc)
+    jsr (ProcessScenarioMenu,PC)
     nop
     pea     ($0004).w
     jsr InitInfoPanel
@@ -4157,13 +4157,13 @@ l_22bb4:
     move.l  a4, -(a7)
     jsr sprintf
     move.l  a4, -(a7)
-    dc.w    $4EBA,$0BB6                                 ; jsr $02377C(pc)
+    jsr (DrawLabeledBox,PC)
     nop
     pea     ($0001).w
     pea     ($0003).w
     jsr PollAction
     lea     $20(a7), a7
-    dc.w    $4EBA,$0BCA                                 ; jsr $0237A8(pc)
+    jsr (ClearListArea,PC)
     nop
     jsr ClearInfoPanel
     moveq   #$0,d3
@@ -4200,7 +4200,7 @@ l_22c1e:
 l_22c32:
     cmp.w   d4, d2
     bcs.b   l_22c1e
-    dc.w    $4EBA,$0BFE                                 ; jsr $023836(pc)
+    jsr (DisplayScenarioMenu,PC)
     nop
     movem.l -$98(a6), d2-d4/a2-a4
     unlk    a6
@@ -4244,12 +4244,12 @@ l_22cb0:
     move.l  a3, -(a7)
     jsr sprintf
     move.l  a3, -(a7)
-    dc.w    $4EBA,$0AC0                                 ; jsr $02377C(pc)
+    jsr (DrawLabeledBox,PC)
     nop
     pea     ($0001).w
     pea     ($0003).w
     jsr PollAction
-    dc.w    $4EBA,$0AD8                                 ; jsr $0237A8(pc)
+    jsr (ClearListArea,PC)
     nop
     jsr ClearInfoPanel
     pea     ($0001).w
@@ -4285,7 +4285,7 @@ RenderGameUI:
     moveq   #$0,d0
     move.b  $1(a2), d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$0576                                 ; jsr $0232B6(pc)
+    jsr (ClassifyEvent,PC)
     nop
     addq.l  #$4, a7
     move.w  d0, d2
@@ -4360,7 +4360,7 @@ l_22dfe:
     move.l  a5, -(a7)
     jsr sprintf
     move.l  a5, -(a7)
-    dc.w    $4EBA,$096C                                 ; jsr $02377C(pc)
+    jsr (DrawLabeledBox,PC)
     nop
     pea     ($0001).w
     pea     ($0003).w
@@ -4390,10 +4390,10 @@ l_22dfe:
     moveq   #$0,d0
     move.b  $1(a2), d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$0610                                 ; jsr $023490(pc)
+    jsr (GetCharRelationS2,PC)
     nop
     lea     $18(a7), a7
-    dc.w    $4EBA,$091E                                 ; jsr $0237A8(pc)
+    jsr (ClearListArea,PC)
     nop
     bra.w   l_22fbe
 l_22e92:
@@ -4402,7 +4402,7 @@ l_22e92:
     moveq   #$0,d0
     move.b  $1(a2), d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$0464                                 ; jsr $023308(pc)
+    jsr (ProcessTradeS2,PC)
     nop
     move.w  d0, d2
     move.l  #$8000, -(a7)
@@ -4482,12 +4482,12 @@ l_22f5e:
     move.l  a5, -(a7)
     jsr sprintf
     move.l  a5, -(a7)
-    dc.w    $4EBA,$07EC                                 ; jsr $02377C(pc)
+    jsr (DrawLabeledBox,PC)
     nop
     pea     ($0001).w
     pea     ($0003).w
     jsr PollAction
-    dc.w    $4EBA,$0804                                 ; jsr $0237A8(pc)
+    jsr (ClearListArea,PC)
     nop
     jsr ClearInfoPanel
     pea     ($0001).w
@@ -4552,7 +4552,7 @@ l_22ff8:
     move.l  a5, -(a7)
     jsr sprintf
     move.l  a5, -(a7)
-    dc.w    $4EBA,$0712                                 ; jsr $02377C(pc)
+    jsr (DrawLabeledBox,PC)
     nop
     lea     $1c(a7), a7
     tst.w   ($00FF000A).l
@@ -4590,20 +4590,20 @@ l_230c2:
     moveq   #$0,d0
     move.b  $1(a2), d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$0502                                 ; jsr $0235D8(pc)
+    jsr (ExecuteTradeOffer,PC)
     nop
     lea     $c(a7), a7
     cmpi.w  #$1, d0
     bne.b   l_23102
     pea     ($00048114).l
-    dc.w    $4EBA,$0690                                 ; jsr $02377C(pc)
+    jsr (DrawLabeledBox,PC)
     nop
     pea     ($0001).w
     pea     ($0003).w
     jsr PollAction
     lea     $c(a7), a7
 l_23102:
-    dc.w    $4EBA,$06A4                                 ; jsr $0237A8(pc)
+    jsr (ClearListArea,PC)
     nop
     jsr ClearInfoPanel
     bra.w   l_2320e
@@ -4649,7 +4649,7 @@ l_23132:
     move.l  a5, -(a7)
     jsr sprintf
     move.l  a5, -(a7)
-    dc.w    $4EBA,$05D6                                 ; jsr $02377C(pc)
+    jsr (DrawLabeledBox,PC)
     nop
     lea     $1c(a7), a7
     tst.w   ($00FF000A).l
@@ -4664,7 +4664,7 @@ l_231c4:
     jsr PollAction
     addq.l  #$8, a7
 l_231d4:
-    dc.w    $4EBA,$05D2                                 ; jsr $0237A8(pc)
+    jsr (ClearListArea,PC)
     nop
     jsr ClearInfoPanel
     moveq   #$0,d0
@@ -4705,7 +4705,7 @@ l_2320e:
     move.l  a5, -(a7)
     jsr sprintf
     move.l  a5, -(a7)
-    dc.w    $4EBA,$051A                                 ; jsr $02377C(pc)
+    jsr (DrawLabeledBox,PC)
     nop
     pea     ($0001).w
     pea     ($0003).w
@@ -4716,12 +4716,12 @@ l_2320e:
     jsr sprintf
     lea     $30(a7), a7
     move.l  a5, -(a7)
-    dc.w    $4EBA,$04EE                                 ; jsr $02377C(pc)
+    jsr (DrawLabeledBox,PC)
     nop
     pea     ($0001).w
     pea     ($0003).w
     jsr PollAction
-    dc.w    $4EBA,$0506                                 ; jsr $0237A8(pc)
+    jsr (ClearListArea,PC)
     nop
     jsr ClearInfoPanel
 l_232ac:
@@ -5009,7 +5009,7 @@ l_234fe:
     move.l  d0, -(a7)
     move.w  d3, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$018A                                 ; jsr $023698(pc)
+    jsr (FinalizeTrade,PC)
     nop
     addq.l  #$8, a7
     movea.l d0, a2
@@ -5057,7 +5057,7 @@ l_23546:
     move.l  a2, -(a7)
     move.w  d3, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$0050                                 ; jsr $0235D8(pc)
+    jsr (ExecuteTradeOffer,PC)
     nop
     lea     $c(a7), a7
     cmpi.w  #$1, d0
@@ -5070,7 +5070,7 @@ l_23546:
     pea     -$88(a6)
     jsr sprintf
     pea     -$88(a6)
-    dc.w    $4EBA,$01C2                                 ; jsr $02377C(pc)
+    jsr (DrawLabeledBox,PC)
     nop
     pea     ($0001).w
     pea     ($0003).w
@@ -6540,7 +6540,7 @@ HandleTextCompression:
     move.w  d7, d0
     ext.l   d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$0220                                 ; jsr $0246DE(pc)
+    jsr (DecompressGraphicsData,PC)
     nop
     jsr ResourceUnload
     clr.l   -(a7)
@@ -6685,7 +6685,7 @@ HandleTextCompression:
     move.w  d7, d0
     ext.l   d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$0086                                 ; jsr $0246DE(pc)
+    jsr (DecompressGraphicsData,PC)
     nop
     lea     $2c(a7), a7
     bra.b   .l246c4
@@ -7763,7 +7763,7 @@ InitMainGameS2:
     move.w  d4, d0
     ext.l   d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$0680                                 ; jsr $025918(pc)
+    jsr (UpdateCharOccupancy,PC)
     nop
     clr.l   -(a7)
     jsr ReadInput
@@ -7874,7 +7874,7 @@ InitMainGameS2:
     move.w  d4, d0
     ext.l   d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$03EA                                 ; jsr $0257FA(pc)
+    jsr (LoadRouteMapDisplay,PC)
     nop
     lea     $14(a7), a7
     move.w  d0, d6
@@ -8004,7 +8004,7 @@ InitMainGameS2:
     move.w  d4, d0
     ext.l   d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$05A6                                 ; jsr $025B62(pc)
+    jsr (HandleRouteSelectionS2,PC)
     nop
     lea     $14(a7), a7
     move.w  d0, d6
@@ -8120,7 +8120,7 @@ InitMainGameS2:
     move.w  d4, d0
     ext.l   d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$00D0                                 ; jsr $0257FA(pc)
+    jsr (LoadRouteMapDisplay,PC)
     nop
     lea     $14(a7), a7
     move.w  d0, d6
@@ -8179,7 +8179,7 @@ InitMainGameS2:
     move.w  d4, d0
     ext.l   d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$014C                                 ; jsr $025918(pc)
+    jsr (UpdateCharOccupancy,PC)
     nop
     lea     $18(a7), a7
     bra.b   .l25770
@@ -9045,13 +9045,13 @@ GameUpdate4:
     pea     ($0010).w
     jsr GameCommand
     lea     $c(a7), a7
-    dc.w    $4EBA,$0066                                 ; jsr $0261A8(pc)
+    jsr (CalculatePlayerWealth,PC)
     nop
-    dc.w    $4EBA,$019C                                 ; jsr $0262E4(pc)
+    jsr (CalcPlayerRankings,PC)
     nop
-    dc.w    $4EBA,$0296                                 ; jsr $0263E4(pc)
+    jsr (UpdatePlayerStatusDisplay,PC)
     nop
-    dc.w    $4EBA,$14A2                                 ; jsr $0275F6(pc)
+    jsr (UpdatePlayerHealthBars,PC)
     nop
     movea.l  #$00FF0018,a2
     clr.w   d2
@@ -9062,7 +9062,7 @@ GameUpdate4:
     jsr SignedMod
     tst.l   d0
     bne.b   .l2617a
-    dc.w    $4EBA,$14C6                                 ; jsr $02763C(pc)
+    jsr (CheckDisplayGameWin,PC)
     nop
 .l2617a:
     cmpi.b  #$60, $22(a2)
@@ -9070,7 +9070,7 @@ GameUpdate4:
     move.w  d2, d0
     ext.l   d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$174E                                 ; jsr $0278D8(pc)
+    jsr (ManagePlayerInvoice,PC)
     nop
     addq.l  #$4, a7
 .l26190:
@@ -9124,7 +9124,7 @@ CalculatePlayerWealth:
     move.w  d3, d0
     ext.l   d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$0040                                 ; jsr $026270(pc)
+    jsr (CalcPlayerWealth,PC)
     nop
     addq.l  #$4, a7
     add.l   $4(a5), d0
@@ -9356,7 +9356,7 @@ l_26466:
     addq.w  #$1, d2
     cmpi.w  #$4, d2
     bcs.b   l_2641a
-    dc.w    $4EBA,$00DE                                 ; jsr $02655A(pc)
+    jsr (InitLeaderboardData,PC)
     nop
     moveq   #$4,d2
     moveq   #$1,d5
@@ -9372,12 +9372,12 @@ l_26486:
     move.w  d5, d0
     ext.l   d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$00FA                                 ; jsr $026598(pc)
+    jsr (RenderQuarterReport,PC)
     nop
     lea     $10(a7), a7
     bra.b   l_264b0
 l_264a8:
-    dc.w    $4EBA,$0D1C                                 ; jsr $0271C6(pc)
+    jsr (ShowGameStatus,PC)
     nop
     moveq   #$1,d7
 l_264b0:
@@ -9720,7 +9720,7 @@ l_2687e:
     dc.w    $011E
     pea     ($0001).w
     move.l  d5, -(a7)
-    dc.w    $4EBA,$0188                                 ; jsr $026A30(pc)
+    jsr (DisplayRouteCargoInfo,PC)
     nop
     move.l  #$8000, -(a7)
     pea     ($0002).w
@@ -9738,7 +9738,7 @@ l_2687e:
     bra.w   l_26a16
     pea     ($0001).w
     move.l  d5, -(a7)
-    dc.w    $4EBA,$026A                                 ; jsr $026B58(pc)
+    jsr (ShowRoutePassengers,PC)
     nop
     move.l  #$8000, -(a7)
     pea     ($0002).w
@@ -9756,7 +9756,7 @@ l_2687e:
     bra.w   l_26a16
     pea     ($0001).w
     move.l  d6, -(a7)
-    dc.w    $4EBA,$02E0                                 ; jsr $026C14(pc)
+    jsr (DisplayRouteFunds,PC)
     nop
     move.l  #$8000, -(a7)
     pea     ($0002).w
@@ -9773,7 +9773,7 @@ l_2687e:
     pea     ($00041512).l
     bra.w   l_26a16
     pea     ($0001).w
-    dc.w    $4EBA,$0360                                 ; jsr $026CD8(pc)
+    jsr (DrawQuarterResultsScreen,PC)
     nop
     move.l  #$8000, -(a7)
     pea     ($0002).w
@@ -9791,18 +9791,18 @@ l_2687e:
     bra.b   l_26a16
     clr.l   -(a7)
     move.l  d5, -(a7)
-    dc.w    $4EBA,$0076                                 ; jsr $026A30(pc)
+    jsr (DisplayRouteCargoInfo,PC)
     nop
     pea     ($0001).w
     move.l  d5, -(a7)
-    dc.w    $4EBA,$0192                                 ; jsr $026B58(pc)
+    jsr (ShowRoutePassengers,PC)
     nop
     clr.l   -(a7)
     move.l  d6, -(a7)
-    dc.w    $4EBA,$0244                                 ; jsr $026C14(pc)
+    jsr (DisplayRouteFunds,PC)
     nop
     clr.l   -(a7)
-    dc.w    $4EBA,$0300                                 ; jsr $026CD8(pc)
+    jsr (DrawQuarterResultsScreen,PC)
     nop
     lea     $1c(a7), a7
     move.l  #$8000, -(a7)
@@ -10174,7 +10174,7 @@ l_26dba:
     moveq   #$0,d0
     move.w  d7, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$03B0                                 ; jsr $027184(pc)
+    jsr (CountRouteFlags,PC)
     nop
     lea     $20(a7), a7
     move.w  d0, d5
@@ -11048,7 +11048,7 @@ l_276b4:
     moveq   #$0,d0
     move.w  d4, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$0042                                 ; jsr $02771C(pc)
+    jsr (DisplayPlayerLeaderboard,PC)
     nop
     lea     $c(a7), a7
 l_276e2:
@@ -11332,7 +11332,7 @@ l_27918:
     lea     $14(a7), a7
     bra.b   l_27a8e
 l_27a4c:
-    dc.w    $4EBA,$0056                                 ; jsr $027AA4(pc)
+    jsr (CountActivePlayers,PC)
     nop
     cmpi.w  #$1, d0
     bls.b   l_27a6c
@@ -11635,7 +11635,7 @@ l_27d48:
     moveq   #$0,d0
     move.w  d4, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$000C                                 ; jsr $027D66(pc)
+    jsr (InitQuarterStart,PC)
     nop
     addq.l  #$4, a7
     movem.l (a7)+, d2-d6/a2-a3
@@ -12034,7 +12034,7 @@ l_281ca:
     move.w  d2, d0
     ext.l   d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$0244                                 ; jsr $028436(pc)
+    jsr (SnapshotGameState,PC)
     nop
     addq.l  #$8, a7
     ext.l   d0
@@ -12078,7 +12078,7 @@ l_281ca:
     move.w  d6, d0
     ext.l   d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$0640                                 ; jsr $0288A4(pc)
+    jsr (ResetGameStateS2,PC)
     nop
     lea     $1c(a7), a7
     move.w  d0, d6
@@ -12503,7 +12503,7 @@ l_286ea:
     move.w  d2, d0
     ext.l   d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$017A                                 ; jsr $0288A4(pc)
+    jsr (ResetGameStateS2,PC)
     nop
     lea     $18(a7), a7
     move.w  d0, d2
@@ -13020,7 +13020,7 @@ l_28ccc:
     pea     -$94(a6)
     move.w  d3, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$00D0                                 ; jsr $028DB0(pc)
+    jsr (PackEventRecord,PC)
     nop
     move.w  d0, d4
     move.l  d0, -(a7)
@@ -13071,12 +13071,12 @@ l_28d78:
     moveq   #$0,d0
     move.w  d3, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$013E                                 ; jsr $028EBE(pc)
+    jsr (WriteEventField,PC)
     nop
     moveq   #$0,d0
     move.w  d3, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$016E                                 ; jsr $028EFA(pc)
+    jsr (UnpackEventRecord,PC)
     nop
     addq.l  #$8, a7
 l_28d92:
@@ -13732,14 +13732,14 @@ l_29462:
 ; 32 bytes | $02947A-$029499
 ; ============================================================================
 GameLogic2:
-    dc.w    $4EBA,$001E                                 ; jsr $02949A(pc)
+    jsr (InitQuarterEvent,PC)
     nop
-    dc.w    $4EBA,$0076                                 ; jsr $0294F8(pc)
+    jsr (MakeAIDecision,PC)
     nop
-    dc.w    $4EBA,$00F8                                 ; jsr $029580(pc)
+    jsr (AnalyzeRouteProfit,PC)
     nop
     jsr UpdateSlotEvents
-    dc.w    $4EBA,$0424                                 ; jsr $0298B8(pc)
+    jsr (OptimizeCosts,PC)
     nop
     rts
 
@@ -15101,7 +15101,7 @@ l_2a3fc:
     move.w  d4, d0
     ext.l   d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$01AA                                 ; jsr $02A5D2(pc)
+    jsr (RenderRouteIndicator,PC)
     nop
     move.l  d5, d0
     lsl.l   #$2, d0
@@ -15190,7 +15190,7 @@ l_2a4d2:
     move.w  d7, d0
     ext.l   d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$00A8                                 ; jsr $02A5D2(pc)
+    jsr (RenderRouteIndicator,PC)
     nop
     lea     $20(a7), a7
     clr.w   d3
@@ -15815,7 +15815,7 @@ UpdateCharStateS2:
     moveq   #$0,d0
     move.w  d3, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$0E7A                                 ; jsr $02BA24(pc)
+    jsr (DisplayStationDetail,PC)
     nop
     lea     $c(a7), a7
 .l2abb2:
@@ -16133,7 +16133,7 @@ ManageTurnDisplay:
     moveq   #$0,d0
     move.w  d2, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$0DB4                                 ; jsr $02BD0E(pc)
+    jsr (ShowFacilityMenu,PC)
     nop
     lea     $20(a7), a7
     move.w  d3, d0
@@ -16590,7 +16590,7 @@ HandleCharSelectionS2:
     moveq   #$0,d0
     move.w  d3, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$00DC                                 ; jsr $02B580(pc)
+    jsr (ValidateCharSlot,PC)
     nop
     lea     $10(a7), a7
     cmpi.w  #$1, d0
@@ -16832,7 +16832,7 @@ ShowCharStatus:
     moveq   #$0,d0
     move.w  d2, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$0020                                 ; jsr $02B766(pc)
+    jsr (RenderStatusScreenS2,PC)
     nop
     addq.l  #$4, a7
     tst.l   $6(a2)
@@ -16938,7 +16938,7 @@ RenderStatusScreenS2:
     moveq   #$0,d0
     move.w  d3, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$000E                                 ; jsr $02B888(pc)
+    jsr (ShowCharDetailS2,PC)
     nop
     lea     $c(a7), a7
     movem.l (a7)+, d2-d3/a2-a5
@@ -18865,7 +18865,7 @@ ClearControllerS2:
     move.l  d0, -(a7)
     pea     ($0007).w
     clr.l   -(a7)
-    dc.w    $4EBA,$024A                                 ; jsr $02CF50(pc)
+    jsr (ShowRoutePanel,PC)
     nop
     lea     $c(a7), a7
     jsr ResourceUnload
@@ -18886,7 +18886,7 @@ ClearControllerS2:
     moveq   #$0,d0
     move.w  d2, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$03D4                                 ; jsr $02D10C(pc)
+    jsr (ShowCharPanelS2,PC)
     nop
     pea     ($0004).w
     pea     ($000E).w
@@ -19058,7 +19058,7 @@ ClearControllerS2:
     moveq   #$0,d0
     move.w  d4, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$1458                                 ; jsr $02E374(pc)
+    jsr (FindAvailableSlot,PC)
     nop
     lea     $c(a7), a7
     cmpi.w  #$10, d0
@@ -19068,7 +19068,7 @@ ClearControllerS2:
     moveq   #$0,d0
     move.w  d4, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$03B6                                 ; jsr $02D2EC(pc)
+    jsr (ProcessCrewSalary,PC)
     nop
     addq.l  #$4, a7
     cmpi.w  #$1, d0
@@ -19350,7 +19350,7 @@ CheckCharGroup:
     moveq   #$0,d0
     move.w  d3, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$00E8                                 ; jsr $02D376(pc)
+    jsr (CheckCharSlotFull,PC)
     nop
     addq.l  #$8, a7
     tst.w   d0
@@ -19364,7 +19364,7 @@ CheckCharGroup:
     moveq   #$0,d0
     move.w  d3, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$0160                                 ; jsr $02D40C(pc)
+    jsr (TransferCharacter,PC)
     nop
     lea     $c(a7), a7
     move.w  d0, d2
@@ -19383,7 +19383,7 @@ CheckCharGroup:
     moveq   #$0,d0
     move.w  d3, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$07C2                                 ; jsr $02DAA0(pc)
+    jsr (ManageCharStatsS2,PC)
     nop
     addq.l  #$8, a7
     bra.b   .l2d280
@@ -19485,7 +19485,7 @@ CheckCharSlotFull:
     moveq   #$0,d0
     move.w  d3, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$1F6C                                 ; jsr $02F34A(pc)
+    jsr (ShowCharInfoPageS2,PC)
     nop
     pea     ($0001).w
     clr.l   -(a7)
@@ -19494,7 +19494,7 @@ CheckCharSlotFull:
     moveq   #$0,d0
     move.w  d3, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$1F52                                 ; jsr $02F34A(pc)
+    jsr (ShowCharInfoPageS2,PC)
     nop
     lea     $28(a7), a7
     bra.b   .l2d404
@@ -19543,7 +19543,7 @@ TransferCharacter:
     moveq   #$0,d0
     move.w  d5, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$047A                                 ; jsr $02D900(pc)
+    jsr (RenderCharTransfer,PC)
     nop
     lea     $10(a7), a7
     jsr ResourceUnload
@@ -19560,7 +19560,7 @@ TransferCharacter:
     moveq   #$0,d0
     move.w  d3, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$1E92                                 ; jsr $02F34A(pc)
+    jsr (ShowCharInfoPageS2,PC)
     nop
     lea     $14(a7), a7
     bra.b   .l2d506
@@ -19585,7 +19585,7 @@ TransferCharacter:
     moveq   #$0,d0
     move.w  d5, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$0402                                 ; jsr $02D900(pc)
+    jsr (RenderCharTransfer,PC)
     nop
     lea     $10(a7), a7
 .l2d506:
@@ -19597,7 +19597,7 @@ TransferCharacter:
     moveq   #$0,d0
     move.w  d3, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$1E32                                 ; jsr $02F34A(pc)
+    jsr (ShowCharInfoPageS2,PC)
     nop
     lea     $14(a7), a7
     clr.w   d2
@@ -19689,7 +19689,7 @@ TransferCharacter:
     moveq   #$0,d0
     move.w  d5, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$02FA                                 ; jsr $02D900(pc)
+    jsr (RenderCharTransfer,PC)
     nop
     lea     $18(a7), a7
 .l2d60e:
@@ -19754,7 +19754,7 @@ TransferCharacter:
     moveq   #$0,d0
     move.w  d5, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$1E66                                 ; jsr $02F548(pc)
+    jsr (FindCharSlotInGroup,PC)
     nop
     addq.l  #$8, a7
     move.w  d0, -$86(a6)
@@ -19791,7 +19791,7 @@ TransferCharacter:
     moveq   #$0,d0
     move.w  d3, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$1BFA                                 ; jsr $02F34A(pc)
+    jsr (ShowCharInfoPageS2,PC)
     nop
     movea.l  #$00FF1278,a0
     move.b  (a0,d4.w), d0
@@ -19835,7 +19835,7 @@ TransferCharacter:
     moveq   #$0,d0
     move.w  d3, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$1B7C                                 ; jsr $02F34A(pc)
+    jsr (ShowCharInfoPageS2,PC)
     nop
     lea     $14(a7), a7
     moveq   #$1,d7
@@ -19850,7 +19850,7 @@ TransferCharacter:
     moveq   #$0,d0
     move.w  d3, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$1B5A                                 ; jsr $02F34A(pc)
+    jsr (ShowCharInfoPageS2,PC)
     nop
     lea     $14(a7), a7
     bra.w   .l2d566
@@ -19858,7 +19858,7 @@ TransferCharacter:
     moveq   #$0,d0
     move.w  d4, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$023E                                 ; jsr $02DA42(pc)
+    jsr (DrawCharStatus,PC)
     nop
     addq.l  #$4, a7
     move.w  d0, -$4(a6)
@@ -19878,7 +19878,7 @@ TransferCharacter:
     moveq   #$0,d0
     move.w  d3, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$1B0A                                 ; jsr $02F34A(pc)
+    jsr (ShowCharInfoPageS2,PC)
     nop
     lea     $14(a7), a7
     move.w  #$ff, d4
@@ -20081,7 +20081,7 @@ DrawCharStatus:
     moveq   #$0,d0
     move.w  d2, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$18BA                                 ; jsr $02F34A(pc)
+    jsr (ShowCharInfoPageS2,PC)
     nop
     lea     $14(a7), a7
     move.w  d0, d2
@@ -20110,7 +20110,7 @@ ManageCharStatsS2:
     moveq   #$0,d0
     move.w  d4, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$1A6C                                 ; jsr $02F548(pc)
+    jsr (FindCharSlotInGroup,PC)
     nop
     move.w  d0, -$86(a6)
     move.w  d4, d0
@@ -20246,13 +20246,13 @@ ManageCharStatsS2:
     moveq   #$0,d0
     move.w  d5, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$1716                                 ; jsr $02F34A(pc)
+    jsr (ShowCharInfoPageS2,PC)
     nop
     pea     ($0050).w
     moveq   #$0,d0
     move.w  d4, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$0226                                 ; jsr $02DE6A(pc)
+    jsr (FinalizeTransfer,PC)
     nop
     clr.l   -(a7)
     jsr ReadInput
@@ -20294,7 +20294,7 @@ ManageCharStatsS2:
     moveq   #$0,d0
     move.w  d4, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$01C6                                 ; jsr $02DE6C(pc)
+    jsr (DrawCharPanelS2,PC)
     nop
     lea     $18(a7), a7
     move.w  d0, -$4(a6)
@@ -20337,7 +20337,7 @@ ManageCharStatsS2:
     moveq   #$0,d0
     move.w  d5, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$1618                                 ; jsr $02F34A(pc)
+    jsr (ShowCharInfoPageS2,PC)
     nop
     lea     $14(a7), a7
     move.w  d0, -$4(a6)
@@ -20383,7 +20383,7 @@ ManageCharStatsS2:
     moveq   #$0,d0
     move.w  d5, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$1588                                 ; jsr $02F34A(pc)
+    jsr (ShowCharInfoPageS2,PC)
     nop
     lea     $24(a7), a7
     bra.w   .l2dc5e
@@ -20408,7 +20408,7 @@ ManageCharStatsS2:
     moveq   #$0,d0
     move.w  d5, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$1538                                 ; jsr $02F34A(pc)
+    jsr (ShowCharInfoPageS2,PC)
     nop
     move.l  #$8000, -(a7)
     pea     ($0007).w
@@ -20506,7 +20506,7 @@ DrawCharPanelS2:
     moveq   #$0,d0
     move.w  d2, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$02B8                                 ; jsr $02E202(pc)
+    jsr (RenderCharDetails,PC)
     nop
     lea     $c(a7), a7
     moveq   #$0,d2
@@ -20857,7 +20857,7 @@ SelectCharSlot:
     moveq   #$0,d0
     move.w  d4, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$0086                                 ; jsr $02E374(pc)
+    jsr (FindAvailableSlot,PC)
     nop
     lea     $c(a7), a7
     move.w  d0, d5
@@ -20873,7 +20873,7 @@ SelectCharSlot:
     moveq   #$0,d0
     move.w  d4, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$0062                                 ; jsr $02E374(pc)
+    jsr (FindAvailableSlot,PC)
     nop
     lea     $c(a7), a7
     move.w  d0, d2
@@ -20888,7 +20888,7 @@ SelectCharSlot:
     moveq   #$0,d0
     move.w  d4, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$0130                                 ; jsr $02E466(pc)
+    jsr (AddCharToTeam,PC)
     nop
     lea     $c(a7), a7
     move.w  d0, d2
@@ -20902,12 +20902,12 @@ SelectCharSlot:
     moveq   #$0,d0
     move.w  d4, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$0580                                 ; jsr $02E8D8(pc)
+    jsr (UpdateCharDisplayS2,PC)
     nop
     addq.l  #$8, a7
     move.w  d0, d2
     beq.b   .l2e2fe
-    dc.w    $4EBA,$0E6E                                 ; jsr $02F1D2(pc)
+    jsr (CheckCharLimit,PC)
     nop
     cmpi.w  #$1, d0
     beq.b   .l2e2fe
@@ -21000,7 +21000,7 @@ FindAvailableSlot:
     clr.l   -(a7)
     move.l  ($000484E2).l, -(a7)
     pea     ($000B).w
-    dc.w    $4EBA,$0F14                                 ; jsr $02F34A(pc)
+    jsr (ShowCharInfoPageS2,PC)
     nop
     lea     $14(a7), a7
     pea     ($0001).w
@@ -21008,7 +21008,7 @@ FindAvailableSlot:
     clr.l   -(a7)
     move.l  ($000484E6).l, -(a7)
     pea     ($000B).w
-    dc.w    $4EBA,$0EF8                                 ; jsr $02F34A(pc)
+    jsr (ShowCharInfoPageS2,PC)
     nop
 .l2e456:
     lea     $14(a7), a7
@@ -21171,7 +21171,7 @@ AddCharToTeam:
     moveq   #$0,d0
     move.w  d6, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$0BC2                                 ; jsr $02F218(pc)
+    jsr (RefreshCharPanel,PC)
     nop
     addq.l  #$8, a7
     clr.w   d3
@@ -21198,7 +21198,7 @@ AddCharToTeam:
     moveq   #$0,d0
     move.w  d2, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$0E4C                                 ; jsr $02F4EE(pc)
+    jsr (CalcCharScore,PC)
     nop
     move.w  d0, d4
     pea     ($0020).w
@@ -21426,7 +21426,7 @@ UpdateCharDisplayS2:
     moveq   #$0,d0
     move.w  d4, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$0BD6                                 ; jsr $02F4EE(pc)
+    jsr (CalcCharScore,PC)
     nop
     move.w  d0, d3
     move.w  d5, d0
@@ -21481,7 +21481,7 @@ UpdateCharDisplayS2:
     clr.l   -(a7)
     move.l  a5, -(a7)
     pea     ($000B).w
-    dc.w    $4EBA,$0974                                 ; jsr $02F34A(pc)
+    jsr (ShowCharInfoPageS2,PC)
     nop
     lea     $20(a7), a7
     moveq   #$0,d0
@@ -21497,7 +21497,7 @@ UpdateCharDisplayS2:
     moveq   #$0,d0
     move.w  d5, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$018A                                 ; jsr $02EB86(pc)
+    jsr (ReadCharInput,PC)
     nop
     lea     $14(a7), a7
     move.w  d0, d2
@@ -21520,7 +21520,7 @@ UpdateCharDisplayS2:
     clr.l   -(a7)
     move.l  a5, -(a7)
     pea     ($000B).w
-    dc.w    $4EBA,$0908                                 ; jsr $02F34A(pc)
+    jsr (ShowCharInfoPageS2,PC)
     nop
     lea     $24(a7), a7
     move.w  d0, d2
@@ -21570,7 +21570,7 @@ UpdateCharDisplayS2:
     moveq   #$0,d0
     move.w  d5, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$071C                                 ; jsr $02F218(pc)
+    jsr (RefreshCharPanel,PC)
     nop
     lea     $30(a7), a7
     moveq   #$0,d0
@@ -21599,7 +21599,7 @@ UpdateCharDisplayS2:
     clr.l   -(a7)
     move.l  a5, -(a7)
     pea     ($000B).w
-    dc.w    $4EBA,$07F0                                 ; jsr $02F34A(pc)
+    jsr (ShowCharInfoPageS2,PC)
     nop
     lea     $28(a7), a7
     bra.b   .l2eb7a
@@ -21757,7 +21757,7 @@ ReadCharInput:
     pea     ($000446F6).l
     jsr     (a3)
     pea     ($0001).w
-    dc.w    $4EBA,$02AA                                 ; jsr $02EFD2(pc)
+    jsr (HandleCharInteraction,PC)
     nop
     pea     ($000E).w
     pea     ($001B).w
@@ -21891,7 +21891,7 @@ ReadCharInput:
     moveq   #$1,d2
 .l2eebe:
     clr.l   -(a7)
-    dc.w    $4EBA,$0110                                 ; jsr $02EFD2(pc)
+    jsr (HandleCharInteraction,PC)
     nop
     move.w  d5, d0
     ext.l   d0
@@ -21939,7 +21939,7 @@ ReadCharInput:
     pea     ($000446E0).l
     jsr     (a3)
     pea     ($0001).w
-    dc.w    $4EBA,$009E                                 ; jsr $02EFD2(pc)
+    jsr (HandleCharInteraction,PC)
     nop
     lea     $14(a7), a7
     move.w  d7, d0
@@ -22218,7 +22218,7 @@ CheckCharLimit:
     clr.l   -(a7)
     move.l  ($000484DA).l, -(a7)
     pea     ($000B).w
-    dc.w    $4EBA,$0162                                 ; jsr $02F34A(pc)
+    jsr (ShowCharInfoPageS2,PC)
     nop
     lea     $14(a7), a7
     move.w  d0, d2
@@ -22229,7 +22229,7 @@ CheckCharLimit:
     clr.l   -(a7)
     move.l  ($000484DE).l, -(a7)
     pea     ($000B).w
-    dc.w    $4EBA,$0140                                 ; jsr $02F34A(pc)
+    jsr (ShowCharInfoPageS2,PC)
     nop
     lea     $14(a7), a7
 .l2f212:
@@ -23040,14 +23040,14 @@ l_2fae8:
     dc.w    $0030
     move.w  d3, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$04BA                                 ; jsr $02FFC4(pc)
+    jsr (GetCurrentGameMode,PC)
     nop
 l_2fb0e:
     addq.l  #$4, a7
     bra.w   l_2fa82
     move.w  d3, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$11EA                                 ; jsr $030D04(pc)
+    jsr (ManageAllianceRoster,PC)
     nop
     bra.b   l_2fb0e
     move.w  d3, d0
@@ -23087,7 +23087,7 @@ FindCharSlotInGroupS2:
     pea     ($0004).w
     move.w  d2, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$0050                                 ; jsr $02FBD6(pc)
+    jsr (ShowText,PC)
     nop
     lea     $2c(a7), a7
     jsr ResourceLoad
@@ -23491,7 +23491,7 @@ GetCurrentGameMode:
     lea     -$1c(a6), a5
     move.w  d5, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$06DE                                 ; jsr $0306B8(pc)
+    jsr (ValidateAllianceSlot,PC)
     nop
     addq.l  #$4, a7
     cmpi.w  #$1, d0

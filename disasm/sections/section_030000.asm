@@ -253,7 +253,7 @@ SearchCharInAlliances:
     move.l  d0, -(a7)
     move.w  d5, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$0048                                 ; jsr $0302C4(pc)
+    jsr (InitAllianceRecords,PC)
     nop
     lea     $c(a7), a7
     move.w  d0, d7
@@ -773,7 +773,7 @@ ProcessAllianceChange:
     movea.l a0, a2
     move.w  d3, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$01E0                                 ; jsr $030A14(pc)
+    jsr (IsAllianceSlotValid,PC)
     nop
     addq.l  #$4, a7
     cmpi.w  #$1, d0
@@ -825,13 +825,13 @@ ProcessAllianceChange:
     move.l  d0, -(a7)
     move.w  d3, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$0284                                 ; jsr $030B48(pc)
+    jsr (GetAllianceScore,PC)
     nop
     move.w  d2, d0
     move.l  d0, -(a7)
     move.w  d3, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$0A48                                 ; jsr $03131A(pc)
+    jsr (RunAIMainLoop,PC)
     nop
     clr.l   -(a7)
     pea     ($0003).w
@@ -883,13 +883,13 @@ ProcessAllianceChange:
     move.l  d0, -(a7)
     move.w  d3, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$01F0                                 ; jsr $030B48(pc)
+    jsr (GetAllianceScore,PC)
     nop
     move.w  (a2), d0
     move.l  d0, -(a7)
     move.w  d3, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$09B4                                 ; jsr $03131A(pc)
+    jsr (RunAIMainLoop,PC)
     nop
     clr.l   -(a7)
     pea     ($0003).w
@@ -930,13 +930,13 @@ ProcessAllianceChange:
     move.l  d0, -(a7)
     move.w  d3, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$0172                                 ; jsr $030B48(pc)
+    jsr (GetAllianceScore,PC)
     nop
     move.w  d2, d0
     move.l  d0, -(a7)
     move.w  d3, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$0936                                 ; jsr $03131A(pc)
+    jsr (RunAIMainLoop,PC)
     nop
     clr.l   -(a7)
     pea     ($0003).w
@@ -1590,7 +1590,7 @@ ManageAllianceRoster:
     move.l  d0, -(a7)
     move.w  d7, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$01C8                                 ; jsr $03131A(pc)
+    jsr (RunAIMainLoop,PC)
     nop
     moveq   #$0,d0
     move.b  $1(a2), d0
@@ -1893,7 +1893,7 @@ RunAIMainLoop:
     move.l  a4, -(a7)
     move.w  d7, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$0A1A                                 ; jsr $031EC4(pc)
+    jsr (PostTurnCleanup,PC)
     nop
     move.l  a4, -(a7)
     jsr GetByteField4
@@ -3227,7 +3227,7 @@ l_323cc:
     moveq   #$0,d0
     move.w  d2, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$016C                                 ; jsr $03259A(pc)
+    jsr (HasPriorityAlliance,PC)
     nop
     addq.l  #$4, a7
     cmpi.w  #$1, d0
@@ -3277,7 +3277,7 @@ l_32480:
     moveq   #$0,d0
     move.w  d3, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$01BC                                 ; jsr $032662(pc)
+    jsr (CountAllianceMembers,PC)
     nop
     addq.l  #$4, a7
     cmp.w   d7, d0
@@ -3296,7 +3296,7 @@ l_32480:
     bne.b   l_324d0
     addi.w  #$190, (a2)
 l_324d0:
-    dc.w    $4EBA,$3D08                                 ; jsr $0361DA(pc)
+    jsr (GetCharTypeID,PC)
     nop
     cmpi.w  #$14, d0
     bcc.b   l_324ec
@@ -3330,7 +3330,7 @@ l_32514:
     moveq   #$0,d0
     move.w  d3, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$00D6                                 ; jsr $0325F8(pc)
+    jsr (CheckDuplicateAlliance,PC)
     nop
     addq.l  #$8, a7
     cmpi.w  #$1, d0
@@ -3682,7 +3682,7 @@ l_32844:
     moveq   #$0,d0
     move.w  d3, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$0080                                 ; jsr $0328FE(pc)
+    jsr (EvaluateNegotiation,PC)
     nop
     bra.b   l_328d8
 l_32884:
@@ -3692,7 +3692,7 @@ l_32884:
     moveq   #$0,d0
     move.w  d3, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$075A                                 ; jsr $032FEC(pc)
+    jsr (DegradeSkillLinked,PC)
     nop
     bra.b   l_328d8
 l_32898:
@@ -3714,7 +3714,7 @@ l_32898:
     moveq   #$0,d0
     move.w  d3, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$0CCA                                 ; jsr $03359E(pc)
+    jsr (ClearSubstituteFlag,PC)
     nop
 l_328d8:
     addq.l  #$8, a7
@@ -3786,7 +3786,7 @@ EvaluateNegotiation:
     moveq   #$0,d0
     move.w  d3, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$008E                                 ; jsr $032A28(pc)
+    jsr (NegotiateContract,PC)
     nop
     addq.l  #$8, a7
     cmpi.w  #$1, d0
@@ -3799,7 +3799,7 @@ l_329a6:
     moveq   #$0,d0
     move.w  d3, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$0816                                 ; jsr $0331CC(pc)
+    jsr (CalcRecruitmentCost,PC)
     nop
     lea     $c(a7), a7
     cmpi.w  #$1, d0
@@ -4026,7 +4026,7 @@ l_32bbc:
     moveq   #$0,d0
     move.w  d4, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$248A                                 ; jsr $035060(pc)
+    jsr (ApplyCharGrowth,PC)
     nop
     addq.l  #$8, a7
     tst.w   d0
@@ -4038,7 +4038,7 @@ l_32bbc:
     moveq   #$0,d0
     move.w  d4, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$2532                                 ; jsr $035122(pc)
+    jsr (ProcessLevelUp,PC)
     nop
     addq.l  #$8, a7
 l_32bf6:
@@ -4051,7 +4051,7 @@ l_32bf6:
     moveq   #$0,d0
     move.w  d4, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$2454                                 ; jsr $035060(pc)
+    jsr (ApplyCharGrowth,PC)
     nop
     addq.l  #$8, a7
     tst.w   d0
@@ -4063,7 +4063,7 @@ l_32bf6:
     moveq   #$0,d0
     move.w  d4, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$24FA                                 ; jsr $035122(pc)
+    jsr (ProcessLevelUp,PC)
     nop
     addq.l  #$8, a7
 l_32c2e:
@@ -4105,7 +4105,7 @@ l_32c82:
     moveq   #$0,d0
     move.w  d4, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$2958                                 ; jsr $0355E8(pc)
+    jsr (TrainCharSkill,PC)
     nop
 l_32c94:
     move.w  d2, d0
@@ -4179,7 +4179,7 @@ l_32d24:
     moveq   #$0,d0
     move.w  d3, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$0042                                 ; jsr $032D7A(pc)
+    jsr (CalcRelationScore,PC)
     nop
     lea     $14(a7), a7
     cmp.w   $6(a2), d0
@@ -4407,7 +4407,8 @@ CalcRelationScore:                                                  ; $032D7A
     move.w  d0,d2
     movem.l (sp)+,d2-d6/a2-a5
     rts
-    dc.w    $4E56,$0000; $032FEC
+DegradeSkillLinked:                                          ; $032FEC
+    dc.w    $4E56,$0000                                      ; link a6,#0 [falls through to DegradeCharSkill]
 ; === Translated block $032FF0-$0332DE ===
 ; 2 functions, 750 bytes
 
@@ -4484,7 +4485,7 @@ l_33080:
     ext.l   d0
     move.l  d0, -(a7)
     move.l  a2, -(a7)
-    dc.w    $4EBA,$0D70                                 ; jsr $033E3E(pc)
+    jsr (GetCharTypeBonus,PC)
     nop
     addq.l  #$8, a7
     move.w  d0, d5
@@ -4565,7 +4566,7 @@ l_33186:
     moveq   #$0,d0
     move.w  d3, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$0034                                 ; jsr $0331CC(pc)
+    jsr (CalcRecruitmentCost,PC)
     nop
     lea     $c(a7), a7
     bra.b   l_331c2
@@ -4583,7 +4584,7 @@ l_331b0:
     moveq   #$0,d0
     move.w  d3, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$0416                                 ; jsr $0335D4(pc)
+    jsr (SetSubstituteFlag,PC)
     nop
 l_331c2:
     movem.l -$1c(a6), d2-d5/a2-a4
@@ -4610,7 +4611,7 @@ CalcRecruitmentCost:
     moveq   #$0,d0
     move.w  d3, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$00E8                                 ; jsr $0332DE(pc)
+    jsr (FindBestCharForSlot,PC)
     nop
     lea     $c(a7), a7
     move.w  d0, d2
@@ -4671,7 +4672,7 @@ l_33294:
     moveq   #$0,d0
     move.w  d3, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$01B6                                 ; jsr $03345E(pc)
+    jsr (TransferCharSlot,PC)
     nop
     lea     $c(a7), a7
     move.w  d0, d7
@@ -4688,7 +4689,7 @@ l_332c0:
     moveq   #$0,d0
     move.w  d3, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$231A                                 ; jsr $0355E8(pc)
+    jsr (TrainCharSkill,PC)
     nop
 l_332d2:
     move.w  d7, d0
@@ -5034,7 +5035,7 @@ l_3363e:
     moveq   #$0,d0
     move.w  d4, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$007A                                 ; jsr $0336E0(pc)
+    jsr (EvaluateMatchLineup,PC)
     nop
     addq.l  #$8, a7
     move.w  d0, d3
@@ -5052,7 +5053,7 @@ l_3363e:
     moveq   #$0,d0
     move.w  d4, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$034A                                 ; jsr $0339DC(pc)
+    jsr (UpdateCharMetrics,PC)
     nop
     lea     $10(a7), a7
     move.w  d0, d3
@@ -5075,7 +5076,7 @@ l_336c2:
     moveq   #$0,d0
     move.w  d4, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$088E                                 ; jsr $033F62(pc)
+    jsr (ApplyCompatPenalty,PC)
     nop
     addq.l  #$4, a7
     movem.l (a7)+, d2-d4/a2-a3
@@ -5176,7 +5177,7 @@ l_337c4:
     moveq   #$0,d0
     move.w  d3, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$0032                                 ; jsr $033812(pc)
+    jsr (FindOpenCharSlot2,PC)
     nop
     lea     $c(a7), a7
     move.w  d0, d3
@@ -5263,7 +5264,7 @@ l_3389c:
     moveq   #$0,d0
     move.w  d5, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$002C                                 ; jsr $0338E6(pc)
+    jsr (ScanCharRoster,PC)
     nop
     bra.b   l_338d8
 l_338c0:
@@ -5276,7 +5277,7 @@ l_338c0:
     moveq   #$0,d0
     move.w  d5, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$00E2                                 ; jsr $0339B6(pc)
+    jsr (GetActiveCharCount,PC)
     nop
 l_338d8:
     move.w  d0, d6
@@ -5459,7 +5460,7 @@ l_33a58:
     moveq   #$0,d0
     move.w  d3, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$0258                                 ; jsr $033CE2(pc)
+    jsr (ApplyRelationBonus,PC)
     nop
     move.b  #$4, $a(a3)
     move.l  a3, -(a7)
@@ -5751,7 +5752,7 @@ l_33d9e:
     move.w  d3, d0
     move.l  d0, -(a7)
     move.l  a2, -(a7)
-    dc.w    $4EBA,$0094                                 ; jsr $033E3E(pc)
+    jsr (GetCharTypeBonus,PC)
     nop
     move.w  d0, d2
     moveq   #$0,d0
@@ -5811,7 +5812,7 @@ l_33e22:
 l_33e24:
     move.b  d0, $3(a2)
     move.l  a2, -(a7)
-    dc.w    $4EBA,$0068                                 ; jsr $033E94(pc)
+    jsr (CalcCharCompat,PC)
     nop
     move.w  d0, $4(a2)
     movem.l -$18(a6), d2-d4/a2-a4
@@ -6036,7 +6037,7 @@ l_3406a:
     moveq   #$0,d0
     move.w  d3, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$08FE                                 ; jsr $034978(pc)
+    jsr (ApplyMatchDamage,PC)
     nop
     lea     $c(a7), a7
     cmpi.w  #$ff, d0
@@ -6073,7 +6074,7 @@ l_340ca:
     moveq   #$0,d0
     move.w  d3, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$009A                                 ; jsr $034172(pc)
+    jsr (GetCharQuality,PC)
     nop
     addq.l  #$8, a7
     cmp.w   d5, d0
@@ -6084,7 +6085,7 @@ l_340ca:
     moveq   #$0,d0
     move.w  d3, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$0416                                 ; jsr $034506(pc)
+    jsr (CalcCharValueAI,PC)
     nop
     addq.l  #$8, a7
     move.w  d0, d6
@@ -6097,7 +6098,7 @@ l_340f8:
     moveq   #$0,d0
     move.w  d3, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$05B6                                 ; jsr $0346C0(pc)
+    jsr (SortCharsByValue,PC)
     nop
     addq.l  #$8, a7
     cmp.w   d7, d2
@@ -6118,7 +6119,7 @@ l_340f8:
     moveq   #$0,d0
     move.w  d3, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$0586                                 ; jsr $0346C0(pc)
+    jsr (SortCharsByValue,PC)
     nop
     addq.l  #$8, a7
     bra.b   l_34150
@@ -6126,7 +6127,7 @@ l_34142:
     moveq   #$0,d0
     move.w  d3, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$0078                                 ; jsr $0341C2(pc)
+    jsr (EvaluateCharPool,PC)
     nop
     addq.l  #$4, a7
 l_34150:
@@ -6262,7 +6263,7 @@ l_34282:
     moveq   #$0,d0
     move.w  d6, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$0390                                 ; jsr $034628(pc)
+    jsr (GetCharProfitAI,PC)
     nop
     lea     $c(a7), a7
     tst.w   d0
@@ -6280,7 +6281,7 @@ l_342b6:
     moveq   #$0,d0
     move.w  $2(a2), d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$0172                                 ; jsr $03443A(pc)
+    jsr (CheckCharAvailable,PC)
     nop
     addq.l  #$4, a7
     tst.w   d0
@@ -6290,7 +6291,7 @@ l_342d6:
     moveq   #$0,d0
     move.w  $2(a2), d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$0508                                 ; jsr $0347E8(pc)
+    jsr (StartMatchSequence,PC)
     nop
     addq.l  #$4, a7
     tst.w   d0
@@ -6369,7 +6370,7 @@ l_34358:
     moveq   #$0,d0
     move.w  d6, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$1774                                 ; jsr $035B10(pc)
+    jsr (OfferCharContract,PC)
     nop
     lea     $14(a7), a7
     move.w  d0, d2
@@ -6386,7 +6387,7 @@ l_34358:
     moveq   #$0,d0
     move.w  d6, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$045A                                 ; jsr $034820(pc)
+    jsr (RunMatchTurn,PC)
     nop
     lea     $c(a7), a7
     move.w  d0, d5
@@ -6401,7 +6402,7 @@ l_34358:
     moveq   #$0,d0
     move.w  d6, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$058E                                 ; jsr $034978(pc)
+    jsr (ApplyMatchDamage,PC)
     nop
     lea     $c(a7), a7
     move.w  d0, d7
@@ -6422,7 +6423,7 @@ l_34358:
     moveq   #$0,d0
     move.w  d6, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$05D6                                 ; jsr $0349F2(pc)
+    jsr (CalcMatchScore,PC)
     nop
     lea     $14(a7), a7
     bra.b   l_34430
@@ -6575,7 +6576,7 @@ l_34540:
     moveq   #$0,d0
     move.w  d3, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$009A                                 ; jsr $034628(pc)
+    jsr (GetCharProfitAI,PC)
     nop
     lea     $c(a7), a7
     tst.w   d0
@@ -6589,7 +6590,7 @@ l_34540:
     moveq   #$0,d0
     move.w  d3, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$0272                                 ; jsr $034820(pc)
+    jsr (RunMatchTurn,PC)
     nop
     lea     $c(a7), a7
     move.w  d0, (a2)
@@ -6604,7 +6605,7 @@ l_34540:
     moveq   #$0,d0
     move.w  d3, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$03A6                                 ; jsr $034978(pc)
+    jsr (ApplyMatchDamage,PC)
     nop
     lea     $c(a7), a7
     move.w  d0, d2
@@ -6625,7 +6626,7 @@ l_34540:
     moveq   #$0,d0
     move.w  d3, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$03EE                                 ; jsr $0349F2(pc)
+    jsr (CalcMatchScore,PC)
     nop
     lea     $14(a7), a7
     move.w  #$1, (a3)
@@ -6732,7 +6733,7 @@ SortCharsByValue:
     moveq   #$0,d0
     move.w  d2, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$00E4                                 ; jsr $0347E8(pc)
+    jsr (StartMatchSequence,PC)
     nop
     cmpi.w  #$1, d0
     bls.b   l_34712
@@ -6767,7 +6768,7 @@ l_3474c:
     moveq   #$0,d0
     move.w  d3, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$15E6                                 ; jsr $035D46(pc)
+    jsr (ProcessCharJoin,PC)
     nop
     lea     $10(a7), a7
     move.w  d0, d2
@@ -6782,7 +6783,7 @@ l_3474c:
     moveq   #$0,d0
     move.w  d3, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$009C                                 ; jsr $034820(pc)
+    jsr (RunMatchTurn,PC)
     nop
     lea     $c(a7), a7
     move.w  d0, d4
@@ -6797,7 +6798,7 @@ l_3474c:
     moveq   #$0,d0
     move.w  d3, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$01D0                                 ; jsr $034978(pc)
+    jsr (ApplyMatchDamage,PC)
     nop
     lea     $c(a7), a7
     move.w  d0, d6
@@ -6818,7 +6819,7 @@ l_3474c:
     moveq   #$0,d0
     move.w  d3, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$0218                                 ; jsr $0349F2(pc)
+    jsr (CalcMatchScore,PC)
     nop
     lea     $14(a7), a7
 l_347e2:
@@ -7222,7 +7223,7 @@ l_34b8e:
     moveq   #$0,d0
     move.w  d4, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$003E                                 ; jsr $034BEE(pc)
+    jsr (UpdatePlayerRating,PC)
     nop
     addq.l  #$8, a7
     move.w  d0, d2
@@ -7235,7 +7236,7 @@ l_34b8e:
     moveq   #$0,d0
     move.w  d4, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$00F4                                 ; jsr $034CC4(pc)
+    jsr (RemoveCharRelation,PC)
     nop
     moveq   #$0,d0
     move.w  d7, d0
@@ -7589,7 +7590,7 @@ l_34faa:
     moveq   #$0,d0
     move.w  d2, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$0098                                 ; jsr $035060(pc)
+    jsr (ApplyCharGrowth,PC)
     nop
     addq.l  #$8, a7
     cmpi.w  #$1, d0
@@ -7603,7 +7604,7 @@ l_34fdc:
     moveq   #$0,d0
     move.w  d2, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$0138                                 ; jsr $035122(pc)
+    jsr (ProcessLevelUp,PC)
     nop
     addq.l  #$8, a7
     cmpi.w  #$1, d0
@@ -7618,7 +7619,7 @@ l_34ffc:
     moveq   #$0,d0
     move.w  d2, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$004C                                 ; jsr $035060(pc)
+    jsr (ApplyCharGrowth,PC)
     nop
     addq.l  #$8, a7
     cmpi.w  #$1, d0
@@ -7632,7 +7633,7 @@ l_35028:
     moveq   #$0,d0
     move.w  d2, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$00EA                                 ; jsr $035122(pc)
+    jsr (ProcessLevelUp,PC)
     nop
     addq.l  #$8, a7
     cmpi.w  #$1, d0
@@ -7798,7 +7799,7 @@ l_351b8:
     moveq   #$0,d0
     move.w  d5, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$0FB4                                 ; jsr $03617A(pc)
+    jsr (GetCharDescription,PC)
     nop
     lea     $10(a7), a7
     move.w  d0, d2
@@ -7872,7 +7873,7 @@ l_35284:
     moveq   #$0,d0
     move.w  d4, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$0094                                 ; jsr $035334(pc)
+    jsr (GetCharLevel,PC)
     nop
     addq.l  #$8, a7
     tst.w   d0
@@ -7906,7 +7907,7 @@ l_352e4:
     moveq   #$0,d0
     move.w  d4, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$0042                                 ; jsr $035334(pc)
+    jsr (GetCharLevel,PC)
     nop
     addq.l  #$8, a7
     tst.w   d0
@@ -8031,7 +8032,7 @@ l_353f6:
     moveq   #$0,d0
     move.w  d3, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$0D72                                 ; jsr $03617A(pc)
+    jsr (GetCharDescription,PC)
     nop
     addq.l  #$8, a7
     move.w  d0, d6
@@ -8068,7 +8069,7 @@ l_3543e:
     moveq   #$0,d0
     move.w  d3, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$00D8                                 ; jsr $035540(pc)
+    jsr (HasSkill,PC)
     nop
     addq.l  #$8, a7
     tst.w   d0
@@ -8208,7 +8209,7 @@ l_355a2:
     moveq   #$0,d0
     move.w  d4, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$0028                                 ; jsr $0355E8(pc)
+    jsr (TrainCharSkill,PC)
     nop
     addq.l  #$8, a7
     move.w  d0, d3
@@ -8414,7 +8415,7 @@ l_357d6:
     moveq   #$0,d0
     move.w  d3, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$0018                                 ; jsr $0357FE(pc)
+    jsr (ApplyCharBonus,PC)
     nop
     lea     $c(a7), a7
 l_357ee:
@@ -8506,7 +8507,7 @@ IncrementAffinity:
     moveq   #$0,d0
     move.w  d2, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$0104                                 ; jsr $0359C4(pc)
+    jsr (CheckAffinityThreshold,PC)
     nop
     lea     $c(a7), a7
 l_358c8:
@@ -8516,7 +8517,7 @@ l_358c8:
     moveq   #$0,d0
     move.w  d2, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$0DF4                                 ; jsr $0366D0(pc)
+    jsr (CollectCharRevenue,PC)
     nop
     addq.l  #$8, a7
 l_358e2:
@@ -8526,12 +8527,12 @@ l_358e2:
     moveq   #$0,d0
     move.w  d2, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$00CE                                 ; jsr $0359C4(pc)
+    jsr (CheckAffinityThreshold,PC)
     nop
     moveq   #$0,d0
     move.w  d2, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$000E                                 ; jsr $035910(pc)
+    jsr (DecrementAffinity,PC)
     nop
     lea     $c(a7), a7
 l_3590a:
@@ -8720,7 +8721,7 @@ OfferCharContract:
     moveq   #$0,d0
     move.w  $a(a6), d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$01A2                                 ; jsr $035CCC(pc)
+    jsr (FindBestCharValue,PC)
     nop
     move.w  d0, -$6(a6)
     move.w  #$ff, d0
@@ -8988,7 +8989,7 @@ l_35dba:
     moveq   #$0,d0
     move.w  $a(a6), d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$0314                                 ; jsr $0360F2(pc)
+    jsr (GetCharPortraitIdx,PC)
     nop
     lea     $c(a7), a7
     tst.w   d0
@@ -9005,7 +9006,7 @@ l_35dba:
     moveq   #$0,d0
     move.w  d4, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$02B4                                 ; jsr $0360C2(pc)
+    jsr (GetCharNamePtr,PC)
     nop
     move.w  d0, d2
     moveq   #$0,d0
@@ -9040,7 +9041,7 @@ l_35e42:
     moveq   #$0,d0
     move.w  d5, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$01FC                                 ; jsr $036050(pc)
+    jsr (GetCharStatPtr,PC)
     nop
     lea     $14(a7), a7
     andi.l  #$ffff, d0
@@ -9126,7 +9127,7 @@ l_35f10:
     moveq   #$0,d0
     move.w  $a(a6), d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$01C2                                 ; jsr $0360F2(pc)
+    jsr (GetCharPortraitIdx,PC)
     nop
     lea     $c(a7), a7
     tst.w   d0
@@ -9143,7 +9144,7 @@ l_35f10:
     moveq   #$0,d0
     move.w  d4, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$0162                                 ; jsr $0360C2(pc)
+    jsr (GetCharNamePtr,PC)
     nop
     move.w  d0, d2
     moveq   #$0,d0
@@ -9178,7 +9179,7 @@ l_35f94:
     moveq   #$0,d0
     move.w  d5, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$00AA                                 ; jsr $036050(pc)
+    jsr (GetCharStatPtr,PC)
     nop
     lea     $14(a7), a7
     andi.l  #$ffff, d0
@@ -9490,7 +9491,7 @@ l_361fa:
     moveq   #$0,d0
     move.w  d2, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$00BC                                 ; jsr $036310(pc)
+    jsr (GetCharBackground,PC)
     nop
     addq.l  #$8, a7
     move.w  d0, d3
@@ -9503,7 +9504,7 @@ l_361fa:
     moveq   #$0,d0
     move.w  d2, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$0198                                 ; jsr $03640A(pc)
+    jsr (LookupCharRecord,PC)
     nop
     lea     $c(a7), a7
     move.w  d0, d5
@@ -9518,7 +9519,7 @@ l_361fa:
     moveq   #$0,d0
     move.w  d2, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$02B8                                 ; jsr $03654E(pc)
+    jsr (CalcCharStatFull,PC)
     nop
     lea     $c(a7), a7
     cmpi.w  #$1, d0
@@ -9541,7 +9542,7 @@ l_362a4:
     moveq   #$0,d0
     move.w  d2, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$013C                                 ; jsr $03640A(pc)
+    jsr (LookupCharRecord,PC)
     nop
     lea     $c(a7), a7
     move.w  d0, d5
@@ -9556,7 +9557,7 @@ l_362a4:
     moveq   #$0,d0
     move.w  d2, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$025C                                 ; jsr $03654E(pc)
+    jsr (CalcCharStatFull,PC)
     nop
     lea     $c(a7), a7
     cmpi.w  #$1, d0
@@ -10071,7 +10072,7 @@ l_3689e:
     moveq   #$0,d0
     move.w  d3, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$0066                                 ; jsr $036922(pc)
+    jsr (ApplyStatBonus,PC)
     nop
     addq.l  #$4, a7
     cmpi.w  #$1, d0
@@ -10088,7 +10089,7 @@ l_3689e:
     moveq   #$0,d0
     move.w  d3, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$00D6                                 ; jsr $0369C0(pc)
+    jsr (RecalcAllCharStats,PC)
     nop
     addq.l  #$8, a7
     move.w  d0, d5
@@ -10103,7 +10104,7 @@ l_3689e:
     moveq   #$0,d0
     move.w  d3, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$0324                                 ; jsr $036C30(pc)
+    jsr (CheckRecruitEligible,PC)
     nop
     lea     $c(a7), a7
 l_36914:
@@ -10427,7 +10428,7 @@ CheckRecruitEligible:
     moveq   #$0,d0
     move.w  d2, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$00BC                                 ; jsr $036D24(pc)
+    jsr (IsCharSlotEmpty,PC)
     nop
     lea     $c(a7), a7
     tst.w   d0
@@ -10441,7 +10442,7 @@ CheckRecruitEligible:
     moveq   #$0,d0
     move.w  d2, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$00EC                                 ; jsr $036D76(pc)
+    jsr (ValidateCharPool,PC)
     nop
     lea     $c(a7), a7
     move.w  d0, d3
@@ -11219,7 +11220,7 @@ l_37480:
     move.w  d5, d0
     ext.l   d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$2926                                 ; jsr $039E52(pc)
+    jsr (FinalizeGameTurn,PC)
     nop
     lea     $c(a7), a7
     tst.w   d0
@@ -11246,7 +11247,7 @@ l_37480:
     lea     $c(a7), a7
     bra.w   l_377bc
 l_37576:
-    dc.w    $4EBA,$0250                                 ; jsr $0377C8(pc)
+    jsr (ClearCharSprites,PC)
     nop
     clr.l   -(a7)
     clr.l   -(a7)
@@ -11269,7 +11270,7 @@ l_37576:
     clr.l   -(a7)
     bra.b   l_37622
 l_375c2:
-    dc.w    $4EBA,$0204                                 ; jsr $0377C8(pc)
+    jsr (ClearCharSprites,PC)
     nop
     pea     ($0001).w
     clr.l   -(a7)
@@ -11277,7 +11278,7 @@ l_375c2:
     pea     ($00044EDC).l
     bra.b   l_37626
 l_375d8:
-    dc.w    $4EBA,$01EE                                 ; jsr $0377C8(pc)
+    jsr (ClearCharSprites,PC)
     nop
     pea     ($0001).w
     clr.l   -(a7)
@@ -11285,7 +11286,7 @@ l_375d8:
     move.l  ($00048636).l, -(a7)
     bra.b   l_37626
 l_375f0:
-    dc.w    $4EBA,$01D6                                 ; jsr $0377C8(pc)
+    jsr (ClearCharSprites,PC)
     nop
     move.w  d3, d0
     lsl.w   #$2, d0
@@ -11695,7 +11696,7 @@ l_37aa4:
     move.w  d3, d0
     ext.l   d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$0540                                 ; jsr $037FFE(pc)
+    jsr (RenderMatchResults,PC)
     nop
     lea     $14(a7), a7
     move.w  d0, d2
@@ -11807,7 +11808,7 @@ l_37b4e:
     addq.l  #$4, a7
     andi.l  #$ffff, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$2960                                 ; jsr $03A5A8(pc)
+    jsr (ShowCharPortrait,PC)
     nop
     lea     $18(a7), a7
 l_37c50:
@@ -11872,7 +11873,7 @@ l_37c50:
     move.w  d3, d0
     ext.l   d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$085A                                 ; jsr $03857E(pc)
+    jsr (RenderPlayerInterface,PC)
     nop
 l_37d28:
     addq.l  #$8, a7
@@ -11885,7 +11886,7 @@ l_37d30:
     move.w  d3, d0
     ext.l   d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$1154                                 ; jsr $038E94(pc)
+    jsr (HandlePlayerMenuInput,PC)
     nop
     bra.b   l_37d28
 l_37d46:
@@ -11895,7 +11896,7 @@ l_37d46:
     move.w  d3, d0
     ext.l   d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$1932                                 ; jsr $039688(pc)
+    jsr (RenderGameDialogs,PC)
     nop
     bra.b   l_37d28
 l_37d5c:
@@ -12116,7 +12117,7 @@ l_37f1e:
     move.w  d3, d0
     ext.l   d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$1EDC                                 ; jsr $039EAA(pc)
+    jsr (GraphicsCleanup,PC)
     nop
     move.w  ($00FF9A1C).l, d0
     ext.l   d0
@@ -12230,7 +12231,7 @@ l_380e4:
     move.w  d5, d0
     ext.l   d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$0440                                 ; jsr $038544(pc)
+    jsr (CheckMatchSlots,PC)
     nop
     lea     $18(a7), a7
     cmpi.w  #$1, d0
@@ -12406,7 +12407,7 @@ l_38320:
     pea     ($000A).w
     pea     ($001D).w
     clr.l   -(a7)
-    dc.w    $4EBA,$1B5C                                 ; jsr $039EA8(pc)
+    jsr (GameLoopExit,PC)
     nop
     lea     $10(a7), a7
 l_38354:
@@ -12519,7 +12520,7 @@ l_38482:
     move.w  d5, d0
     ext.l   d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$00B8                                 ; jsr $038544(pc)
+    jsr (CheckMatchSlots,PC)
     nop
     addq.l  #$4, a7
     cmpi.w  #$1, d0
@@ -15648,11 +15649,11 @@ SetTextWindow:
     move.w  d0,($FFBD48).l                                 ; $03A98A | win_bottom
     move.w  d2,d0                                          ; $03A990
     move.l  d0,-(sp)                                       ; $03A992
-    dc.w    $4EBA,$0168                                    ; $03A994 | jsr SetCursorX(pc)
+    jsr (SetCursorX,PC)
     nop                                                    ; $03A998
     move.w  d4,d0                                          ; $03A99A
     move.l  d0,-(sp)                                       ; $03A99C
-    dc.w    $4EBA,$0154                                    ; $03A99E | jsr SetCursorY(pc)
+    jsr (SetCursorY,PC)
     nop                                                    ; $03A9A2
     addq.l  #8,sp                                          ; $03A9A4 | clean 2 pushed params
     movem.l (sp)+,d2-d5                                    ; $03A9A6
@@ -18876,7 +18877,7 @@ InitStatusScreenGfx:
     jsr SetScrollQuadrant
     clr.l   -(a7)
     clr.l   -(a7)
-    dc.w    $4EBA,$0492                                 ; jsr $03D0C0(pc)
+    jsr (SetVRAMWriteAddr,PC)
     nop
     lea     $20(a7), a7
     clr.l   -(a7)
@@ -19075,7 +19076,7 @@ l_3ce98:
     move.l  d0, -(a7)
     move.w  d2, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$021E                                 ; jsr $03D0C0(pc)
+    jsr (SetVRAMWriteAddr,PC)
     nop
     pea     ($0004).w
     pea     ($000E).w
@@ -19943,7 +19944,7 @@ l_3d8de:
     jsr ResourceLoad
     move.w  $a(a6), d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$0068                                 ; jsr $03D964(pc)
+    jsr (ShowPlayerDetailScreen,PC)
     nop
     pea     ($00C8).w
     pea     ($000E).w

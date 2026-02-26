@@ -214,12 +214,19 @@ All verified byte-identical before applying. JSR abs.l kept as dc.w, BSR.W as dc
 **Approach:** Built Python script to: (1) extract all label→address mappings from section files (882 labels, two parsing methods: inline `; $XXXXXX` comments and function header `| $XXXXXX-$YYYYYY` ranges), (2) match `dc.w $4EB9,$HHHH,$LLLL` patterns, compute target addresses, and replace with `jsr LabelName`. Safety-tested first: verified `-no-opt` flag preserves abs.l encoding (6 bytes) even for small addresses like $0D64 (GameCommand). 237 unique targets, 236 had labels. Only 1 skip: `jsr $FFF000` (RAM address, no label).
 **Acceptance:** `make verify` passes (MD5: 1269f44e846a88a2de945de082428b39). 2,869 of 2,870 calls symbolized. MainLoop reads `jsr GameUpdate1`, `jsr GameLogic1`, etc.
 
+### B-050: Symbolize jsr (d16,PC) call references
+**Status:** DONE (2026-02-26)
+**Why:** 490 PC-relative JSR calls (`dc.w $4EBA,$XXXX`) remained as raw hex. Completing B-049's work.
+**Approach:** Built `/tmp/symbolize_bsr.py`. Target address extracted from comment annotations (3 formats: `($ADDR)`, `[$ADDR]`, `jsr $ADDR(pc)`; plus `; $INSTR_ADDR |` format where address is the instruction's own address — compute target as `instr_addr + 2 + sign_extend(displacement)`). Safety tested: `jsr (Label,PC)` syntax verified byte-identical with vasm `-no-opt`. Added 5 new labels for unlabeled entry points: `VDPWriteColorsPath`, `VDPWriteZ80Path`, `CmdTestVRAM_WithA3` (alt-entry points within functions), `PrepareRelationPush` ($01C28E thunk), `DegradeSkillLinked` ($032FEC LINK prefix). All 490 calls symbolized; 0 `dc.w $4EBA` remaining.
+**Acceptance:** `make verify` passes (MD5: 1269f44e846a88a2de945de082428b39). Boot sequence reads `jsr (VDP_Init1,PC)`, `jsr (VDP_Init2,PC)`, etc.
+
 ---
 
 ## Done
 
 | ID | Description | Commit | Date |
 |----|-------------|--------|------|
+| B-050 | Symbolize 490 jsr (d16,PC) calls to `jsr (FunctionName,PC)` + 5 new alt-entry labels | -- | 2026-02-26 |
 | B-049 | Symbolize 2,869 jsr abs.l calls from raw dc.w to `jsr FunctionName` (236 unique targets) | -- | 2026-02-26 |
 | B-048 | Document game phase flow: initialization, main loop, turns, quarters, win/loss conditions | -- | 2026-02-26 |
 | B-047 | Name all 593 functions: 31 pre-named + 42 GameCommand handlers + 525 via code analysis (0 unnamed remaining) | -- | 2026-02-25 |

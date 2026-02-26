@@ -48,7 +48,7 @@ EntryPoint:
     move.b  d0,$0BD4(a5)                                    ; clear V-INT sub1 flag
     move.w  d0,$0C70(a5)                                    ; clear word
 ; --- Hardware init subroutine ---
-    dc.w    $4EBA,$03CE                                     ; jsr HardwareInit(pc) ($00070A)
+    jsr (HardwareInit,PC)
     nop
 ; --- Test expansion controller ---
     btst    #6,IO_CTRL3                                     ; expansion controller present?
@@ -68,18 +68,18 @@ EntryPoint:
     rts                                                     ; $00036A
 ; --- Init subroutine calls ---
 .init_subs:                                                 ; $00036C
-    dc.w    $4EBA,$0CC8                                     ; jsr VDP_Init1(pc) ($001036)
+    jsr (VDP_Init1,PC)
     nop
-    dc.w    $4EBA,$0CA8                                     ; jsr VDP_Init2(pc) ($00101C)
+    jsr (VDP_Init2,PC)
     nop
-    dc.w    $4EBA,$0D00                                     ; jsr VDP_Init3(pc) ($00107A)
+    jsr (VDP_Init3,PC)
     nop
-    dc.w    $4EBA,$0D7E                                     ; jsr VDP_Init4(pc) ($0010FE)
+    jsr (VDP_Init4,PC)
     nop
     jsr Z80_SoundInit
-    dc.w    $4EBA,$0D4E                                     ; jsr Init5(pc) ($0010DA)
+    jsr (Init5,PC)
     nop
-    dc.w    $4EBA,$0CFE                                     ; jsr Init6(pc) ($001090)
+    jsr (Init6,PC)
     nop
 ; --- Enable interrupts and enter main game ---
     move    #$2000,sr                                       ; enable interrupts (supervisor mode)
@@ -185,7 +185,7 @@ CmdGetVDPStatus:
 ; 8 bytes | $000474-$00047B
 ; ============================================================================
 CmdRunSubroutine:
-    dc.w    $4EBA,$182A                                 ; jsr $001CA0(pc)
+    jsr (InitAnimTable,PC)
     nop
     rts
 
@@ -247,7 +247,7 @@ CmdTransferPlane:
     move.l  d0, $20(a5)
     move.l  $1a(a6), d0
     move.l  d0, $24(a5)
-    dc.w    $4EBA,$0C0E                                 ; jsr $001126(pc)
+    jsr (DispatchVDPWrite,PC)
     nop
     move.w  (a7)+, sr
     rts
@@ -267,7 +267,7 @@ CmdLoadTiles:
     move.l  d0, $24(a5)
     move.l  $1a(a6), d0
     move.w  d0, $28(a5)
-    dc.w    $4EBA,$0BF0                                 ; jsr $001138(pc)
+    jsr (VDPWriteColorsPath,PC)
     nop
     move.w  (a7)+, sr
     rts
@@ -509,11 +509,11 @@ l_00776:
     addq.w  #$4, d0
 l_0078a:
     dbra    d1, $776
-    dc.w    $4EBA,$0852                                 ; jsr $000FE2(pc)
+    jsr (InitSpriteLinks,PC)
     nop
     move.w  sr, -(a7)
     ori.w   #$700, sr
-    dc.w    $4EBA,$0E3A                                 ; jsr $0015D6(pc)
+    jsr (InitDisplayLayout,PC)
     nop
     move.w  (a7)+, sr
     rts
@@ -534,11 +534,11 @@ l_007b8:
     addq.w  #$8, d0
 l_007be:
     dbra    d1, $7B8
-    dc.w    $4EBA,$081E                                 ; jsr $000FE2(pc)
+    jsr (InitSpriteLinks,PC)
     nop
     move.w  sr, -(a7)
     ori.w   #$700, sr
-    dc.w    $4EBA,$0E06                                 ; jsr $0015D6(pc)
+    jsr (InitDisplayLayout,PC)
     nop
     move.w  (a7)+, sr
     rts
@@ -549,6 +549,7 @@ l_007be:
 ; ============================================================================
 CmdTestVRAM:
     movea.l $e(a6), a3
+CmdTestVRAM_WithA3:                                          ; $0007DC
     move.w  sr, -(a7)
     ori.w   #$700, sr
     dc.w    $6100,$0966                                 ; bsr.w $00114A
@@ -567,7 +568,7 @@ l_007f2:
 l_00800:
     lsr.b   #$1, d1
     bne.b   l_007f2
-    dc.w    $4EBA,$0958                                 ; jsr $00115E(pc)
+    jsr (ReleaseZ80BusDirect,PC)
     nop
     move.w  (a7)+, sr
     rts
@@ -627,7 +628,7 @@ l_00862:
 ; 206 bytes | $000876-$000943
 ; ============================================================================
 CmdDMABatchWrite:
-    dc.w    $4EBA,$FF9E                                 ; jsr $000816(pc)
+    jsr (ComputeMapCoordOffset,PC)
     move.w  sr, -(a7)
     ori.w   #$700, sr
     move.l  a7, d3
@@ -698,7 +699,7 @@ l_00908:
 ; 178 bytes | $000944-$0009F5
 ; ============================================================================
 CmdDMARowWrite:
-    dc.w    $4EBA,$FED0                                 ; jsr $000816(pc)
+    jsr (ComputeMapCoordOffset,PC)
     move.w  sr, -(a7)
     ori.w   #$700, sr
     move.l  $1a(a6), d1
@@ -756,7 +757,7 @@ l_009bc:
 ; 90 bytes | $0009F6-$000A4F
 ; ============================================================================
 CmdWaitDMA:
-    dc.w    $4EBA,$FE1E                                 ; jsr $000816(pc)
+    jsr (ComputeMapCoordOffset,PC)
     move.l  d0, d1
     lsl.l   #$2, d0
     andi.l  #$30000, d0
@@ -1293,9 +1294,9 @@ CmdSaveBuffer:
     bra.b   l_00f78
 l_00f64:
     move.l  #$0, $7a(a5)
-    dc.w    $4EBA,$0074                                 ; jsr $000FE2(pc)
+    jsr (InitSpriteLinks,PC)
     nop
-    dc.w    $4EBA,$0662                                 ; jsr $0015D6(pc)
+    jsr (InitDisplayLayout,PC)
     nop
 l_00f78:
     rts
@@ -1407,7 +1408,7 @@ l_01028:
     move.l  d0, (a6)+
     move.l  d0, (a6)+
     dbra    d1, $1028
-    dc.w    $4EBA,$FFB0                                 ; jsr $000FE2(pc)
+    jsr (InitSpriteLinks,PC)
     rts
 
 ; ============================================================================
@@ -1502,7 +1503,7 @@ l_01114:
 ; 8 bytes | $00111E-$001125
 ; ============================================================================
 TriggerVDPDMA:
-    dc.w    $4EBA,$0078                                 ; jsr $001198(pc)
+    jsr (ConfigVDPDMA,PC)
     nop
     rts
 
@@ -1511,20 +1512,22 @@ TriggerVDPDMA:
 ; 56 bytes | $001126-$00115D
 ; ============================================================================
 DispatchVDPWrite:
-    dc.w    $4EBA,$012E                                 ; jsr $001256(pc)
+    jsr (ConfigVDPScroll,PC)
     nop
 l_0112c:
     move.w  (a4), d1
     btst    #$1, d1
     bne.b   l_0112c
     bra.w   l_0116a
-    dc.w    $4EBA,$01A0                                 ; jsr $0012DA(pc)
+VDPWriteColorsPath:                                          ; $001138
+    jsr (ConfigVDPColors,PC)
     nop
 l_0113e:
     move.w  (a4), d1
     btst    #$1, d1
     bne.b   l_0113e
     bra.w   l_0116a
+VDPWriteZ80Path:                                             ; $00114A
     movea.l  #$00A11100,a2
     move.w  #$100, (a2)
 l_01154:
@@ -1579,9 +1582,9 @@ ConfigVDPDMA:
     ori.w   #$700, sr
     move.w  $c70(a5), d0
     bne.b   l_011a8
-    dc.w    $4EBA,$FFA4                                 ; jsr $00114A(pc)
+    jsr (VDPWriteZ80Path,PC)
 l_011a8:
-    dc.w    $4EBA,$FFD0                                 ; jsr $00117A(pc)
+    jsr (WaitVDPAndWrite,PC)
     move.w  #$8100, d0
     move.b  $1(a5), d0
     bclr    #$5, d0
@@ -1652,7 +1655,7 @@ ConfigVDPScroll:
     bclr    #$5, d0
     bset    #$4, d0
     move.w  d0, (a4)
-    dc.w    $4EBA,$FF0A                                 ; jsr $00117A(pc)
+    jsr (WaitVDPAndWrite,PC)
     moveq   #$0,d0
     move.w  $1e(a5), d0
     move.l  d0, d2
@@ -1701,7 +1704,7 @@ ConfigVDPColors:
     bclr    #$5, d0
     bset    #$4, d0
     move.w  d0, (a4)
-    dc.w    $4EBA,$FE86                                 ; jsr $00117A(pc)
+    jsr (WaitVDPAndWrite,PC)
     moveq   #$0,d0
     move.w  $1e(a5), d0
     move.l  d0, d2
@@ -1976,13 +1979,13 @@ VBlankInt:                                                  ; $0014E6
 .poll:                                                      ; $001582
     dc.w    $43F9,$00FF,$FBFC                               ; lea $00FFFBFC,a1
     dc.w    $6100,$03A4                                     ; bsr.w ControllerPoll ($00192E)
-    dc.w    $4EBA,$0146                                     ; jsr SubsysUpdate1(pc) ($0016D4)
+    jsr (SubsysUpdate1,PC)
     nop
-    dc.w    $4EBA,$01C8                                     ; jsr SubsysUpdate2(pc) ($00175C)
+    jsr (SubsysUpdate2,PC)
     nop
-    dc.w    $4EBA,$02CA                                     ; jsr SubsysUpdate3(pc) ($001864)
+    jsr (SubsysUpdate3,PC)
     nop
-    dc.w    $4EBA,$0330                                     ; jsr SubsysUpdate4(pc) ($0018D0)
+    jsr (SubsysUpdate4,PC)
     nop
     move.b  #0,$0036(a5)                                    ; clear V-INT processed flag
     movem.l (sp)+,d0-d7/a0-a7                              ; restore ALL registers
@@ -2096,7 +2099,7 @@ l_016a8:
     dbra    d2, $16A8
     move.b  #$1, $b2d(a5)
 l_016ba:
-    dc.w    $4EBA,$F926                                 ; jsr $000FE2(pc)
+    jsr (InitSpriteLinks,PC)
     dc.w    $6100,$FF16                                 ; bsr.w $0015D6
     move.w  $b26(a5), d0
 l_016c6:
@@ -2281,7 +2284,7 @@ SubsysUpdate3:
     move.w  (a1), d0
     add.w   $c5c(a5), d0
     move.w  d0, (a0)
-    dc.w    $4EBA,$F756                                 ; jsr $000FE2(pc)
+    jsr (InitSpriteLinks,PC)
     movea.l  #$00C00000,a0
     movea.l  #$00C00004,a1
     move.w  #$8f02, (a1)
@@ -2345,7 +2348,7 @@ InitInputArrays:
     move.l  $42(a7), d0
 l_0192c:
     bra.b   l_0192c
-    dc.w    $4EBA,$F81A                                 ; jsr $00114A(pc)
+    jsr (VDPWriteZ80Path,PC)
     lea     $a(a1), a2
     moveq   #$7,d0
 l_01938:
@@ -2358,7 +2361,7 @@ l_01938:
     moveq   #$1,d0
     dc.w    $6100,$000C                                 ; bsr.w $00195C
     move.b  d0, $1(a1)
-    dc.w    $4EBA,$F806                                 ; jsr $00115E(pc)
+    jsr (ReleaseZ80BusDirect,PC)
     rts
 
 ; ============================================================================
@@ -2795,7 +2798,7 @@ l_01cd0:
     move.b  $36(a5), d0
     bne.b   l_01cd0
     movea.l  #$00A10003,a3
-    dc.w    $4EBA,$EAFE                                 ; jsr $0007DC(pc)
+    jsr (CmdTestVRAM_WithA3,PC)
     cmpi.b  #$f, d0
     beq.b   l_01d08
     movea.l  #$00FFFC06,a0
@@ -2976,7 +2979,7 @@ l_01d86:
 CmdSendZ80Param:
     move.w  sr, -(a7)
     ori.w   #$700, sr
-    dc.w    $4EBA,$01A2                                 ; jsr $002662(pc)
+    jsr (Z80_RequestBus,PC)
     nop
     movea.l  #$00A00007,a1
     moveq   #$2,d1
@@ -2991,7 +2994,7 @@ l_024d2:
 CmdSendZ80Byte:                                                 ; $0024DE
     move.w  sr, -(a7)
     ori.w   #$700, sr
-    dc.w    $4EBA,$017C                                 ; jsr $002662(pc)
+    jsr (Z80_RequestBus,PC)
     nop
     movea.l  #$00A00008,a1
     move.l  $e(a6), d0
@@ -3001,14 +3004,14 @@ CmdSendZ80Byte:                                                 ; $0024DE
 CmdTriggerZ80:                                                  ; $0024FA
     move.w  sr, -(a7)
     ori.w   #$700, sr
-    dc.w    $4EBA,$0160                                 ; jsr $002662(pc)
+    jsr (Z80_RequestBus,PC)
     nop
     bra.w   l_025c2
 ; -- GameCommand 22: load data tables to Z80 RAM --
 CmdLoadZ80Tables:                                               ; $00250A
     move.w  sr, -(a7)
     ori.w   #$700, sr
-    dc.w    $4EBA,$0150                                 ; jsr $002662(pc)
+    jsr (Z80_RequestBus,PC)
     nop
     move.l  a6, -(a7)
     adda.l  #$e, a6
@@ -3041,7 +3044,7 @@ l_02560:
 CmdLoadZ80Encoded:                                              ; $002568
     move.w  sr, -(a7)
     ori.w   #$700, sr
-    dc.w    $4EBA,$00F2                                 ; jsr $002662(pc)
+    jsr (Z80_RequestBus,PC)
     nop
     movea.l  #$00A000B0,a1
     movea.l $e(a6), a0
@@ -3080,17 +3083,17 @@ l_025c2:
     move.b  d1, (a1)
     move.b  #$2, $6(a1)
 l_025da:
-    dc.w    $4EBA,$009C                                 ; jsr $002678(pc)
+    jsr (Z80_ReleaseBus,PC)
     nop
-    dc.w    $4EBA,$00A6                                 ; jsr $002688(pc)
+    jsr (Z80_Delay,PC)
     nop
-    dc.w    $4EBA,$007A                                 ; jsr $002662(pc)
+    jsr (Z80_RequestBus,PC)
     nop
     move.b  $6(a1), d1
     cmpi.b  #$0, d1
     bne.b   l_025da
     move.b  $7(a1), d0
-    dc.w    $4EBA,$007C                                 ; jsr $002678(pc)
+    jsr (Z80_ReleaseBus,PC)
     nop
     andi.l  #$ff, d0
     move.w  (a7)+, sr
@@ -3120,7 +3123,7 @@ Z80_SoundInit:                                               ; $00260A
     suba.l  a1,a0                                            ; A0 = driver size (end - start)
     move.l  a0,d0                                            ; D0 = byte count for copy loop
     movea.l #Z80_RAM,a0                                      ; A0 -> Z80 RAM destination ($A00000)
-    dc.w    $4EBA,$0024                                      ; jsr Z80_RequestBus(pc) [$2662]
+    jsr (Z80_RequestBus,PC)
     nop
 .copy_loop:                                                  ; $002642
     move.b  (a1)+,(a0)+                                      ; Copy driver byte to Z80 RAM
@@ -8525,7 +8528,7 @@ CharCodeCompare:                                             ; $006F42
     move.w  d2,d0
     move.l  d0,-(sp)
     pea     ($0020).w
-    dc.w    $4EBA,$025E                                  ; jsr (d16,pc) → CharPairIndex ($0071DE)
+    jsr (CharPairIndex,PC)
     nop
     lea     $000C(sp),sp                                 ; clean 3 args
     move.w  d0,d2                                        ; D2 = pair index result
@@ -13749,30 +13752,30 @@ LoadScenarioState:
     jsr ResourceUnload
     clr.w   d2
 .l0a408:
-    dc.w    $4EBA,$01DA                                 ; jsr $00A5E4(pc)
+    jsr (HandleScenarioTurns,PC)
     nop
     tst.w   d0
     bne.b   .l0a418
     clr.w   d2
     bra.w   .l0a51e
 .l0a418:
-    dc.w    $4EBA,$2270                                 ; jsr $00C68A(pc)
+    jsr (BuildAircraftAttrTable,PC)
     nop
     move.w  ($00FF0002).l, d0
     mulu.w  #$3c, d0
     addq.w  #$1, d0
     move.w  d0, ($00FF0006).l
-    dc.w    $4EBA,$2DDC                                 ; jsr $00D20E(pc)
+    jsr (UpdateEventSchedule,PC)
     nop
-    dc.w    $4EBA,$08CA                                 ; jsr $00AD02(pc)
-    nop
-    tst.w   d0
-    beq.w   .l0a37a
-    dc.w    $4EBA,$05D8                                 ; jsr $00AA1C(pc)
+    jsr (DisplayModelStats,PC)
     nop
     tst.w   d0
     beq.w   .l0a37a
-    dc.w    $4EBA,$0BF2                                 ; jsr $00B042(pc)
+    jsr (RunPortfolioManagement,PC)
+    nop
+    tst.w   d0
+    beq.w   .l0a37a
+    jsr (ProcessPlayerSelectInput,PC)
     nop
     tst.w   d0
     bne.b   .l0a45e
@@ -13817,7 +13820,7 @@ LoadScenarioState:
     pea     ($0001).w
     jsr VRAMBulkLoad
     lea     $14(a7), a7
-    dc.w    $4EBA,$1CD4                                 ; jsr $00C1AC(pc)
+    jsr (RunAircraftStatsDisplay,PC)
     nop
     move.w  d0, d2
     cmpi.w  #$1, d0
@@ -13834,10 +13837,10 @@ LoadScenarioState:
     move.w  d3, d0
     addi.w  #$50, d0
     move.w  d0, ($00FFA6B2).l
-    dc.w    $4EBA,$1570                                 ; jsr $00BA7E(pc)
+    jsr (RunAircraftPurchase,PC)
     nop
     jsr CalcPlayerRankings
-    dc.w    $4EBA,$1E9A                                 ; jsr $00C3B4(pc)
+    jsr (RunAircraftParamShuffle,PC)
     nop
 .l0a51e:
     move.w  d2, d0
@@ -13947,7 +13950,7 @@ HandleScenarioTurns:
     clr.l   -(a7)
     move.l  ($000475DC).l, -(a7)
     clr.l   -(a7)
-    dc.w    $4EBA,$1F74                                 ; jsr $00C61E(pc)
+    jsr (DisplayMessageWithParams,PC)
     nop
     clr.l   -(a7)
     jsr ReadInput
@@ -14109,7 +14112,7 @@ HandleScenarioTurns:
     clr.l   -(a7)
     pea     -$80(a6)
     clr.l   -(a7)
-    dc.w    $4EBA,$1D52                                 ; jsr $00C61E(pc)
+    jsr (DisplayMessageWithParams,PC)
     nop
     lea     $14(a7), a7
     tst.w   d0
@@ -14175,7 +14178,7 @@ HandleScenarioTurns:
     clr.l   -(a7)
     move.l  ($000475DC).l, -(a7)
     clr.l   -(a7)
-    dc.w    $4EBA,$1C8E                                 ; jsr $00C61E(pc)
+    jsr (DisplayMessageWithParams,PC)
     nop
     lea     $14(a7), a7
     bra.w   .l0a6d4
@@ -14289,7 +14292,7 @@ RunPortfolioManagement:
     clr.l   -(a7)
     pea     ($0003E578).l
     clr.l   -(a7)
-    dc.w    $4EBA,$1B44                                 ; jsr $00C61E(pc)
+    jsr (DisplayMessageWithParams,PC)
     nop
     clr.l   -(a7)
     jsr ReadInput
@@ -14548,7 +14551,7 @@ DisplayModelStats:
     clr.l   -(a7)
     move.l  ($000475E4).l, -(a7)
     clr.l   -(a7)
-    dc.w    $4EBA,$185E                                 ; jsr $00C61E(pc)
+    jsr (DisplayMessageWithParams,PC)
     nop
     clr.l   -(a7)
     jsr ReadInput
@@ -14823,7 +14826,7 @@ ProcessPlayerSelectInput:
     move.w  d3, d0
     ext.l   d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$0354                                 ; jsr $00B3F4(pc)
+    jsr (RunModelSelectUI,PC)
     nop
     move.w  d0, d2
     pea     ($0040).w
@@ -14879,7 +14882,7 @@ ProcessPlayerSelectInput:
     move.w  d3, d0
     ext.l   d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$009E                                 ; jsr $00B1E6(pc)
+    jsr (WaitForKeyPress,PC)
     nop
     addq.l  #$4, a7
     move.b  d0, $1(a2)
@@ -14947,7 +14950,7 @@ WaitForKeyPress:
     moveq   #$0,d0
     move.w  d5, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$00F4                                 ; jsr $00B2FA(pc)
+    jsr (GetPlayerModelSelect,PC)
     nop
     addq.l  #$4, a7
     move.w  d0, d2
@@ -15197,10 +15200,10 @@ RunModelSelectUI:
     clr.l   -(a7)
     move.l  a4, -(a7)
     clr.l   -(a7)
-    dc.w    $4EBA,$1180                                 ; jsr $00C61E(pc)
+    jsr (DisplayMessageWithParams,PC)
     nop
 .l0b4a2:
-    dc.w    $4EBA,$140E                                 ; jsr $00C8B2(pc)
+    jsr (RunDestSelectLoop,PC)
     nop
     move.w  d0, -$2(a6)
     cmpi.w  #$ff, d0
@@ -15243,7 +15246,7 @@ RunModelSelectUI:
     clr.l   -(a7)
     move.l  a4, -(a7)
     clr.l   -(a7)
-    dc.w    $4EBA,$10F0                                 ; jsr $00C61E(pc)
+    jsr (DisplayMessageWithParams,PC)
     nop
     clr.l   -(a7)
     pea     ($0006).w
@@ -15287,7 +15290,7 @@ RunModelSelectUI:
     clr.l   -(a7)
     move.l  a4, -(a7)
     clr.l   -(a7)
-    dc.w    $4EBA,$1068                                 ; jsr $00C61E(pc)
+    jsr (DisplayMessageWithParams,PC)
     nop
     lea     $20(a7), a7
     cmpi.w  #$1, d0
@@ -15328,7 +15331,7 @@ RunModelSelectUI:
     clr.l   -(a7)
     move.l  a4, -(a7)
     clr.l   -(a7)
-    dc.w    $4EBA,$0FDA                                 ; jsr $00C61E(pc)
+    jsr (DisplayMessageWithParams,PC)
     nop
     lea     $28(a7), a7
     clr.l   -(a7)
@@ -15362,7 +15365,7 @@ RunModelSelectUI:
     clr.l   -(a7)
     move.l  a4, -(a7)
     clr.l   -(a7)
-    dc.w    $4EBA,$0F6A                                 ; jsr $00C61E(pc)
+    jsr (DisplayMessageWithParams,PC)
     nop
     lea     $28(a7), a7
     move.w  #$ff, d2
@@ -15805,15 +15808,15 @@ RunAircraftPurchase:
     move.w  d3, d0
     ext.l   d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$0464                                 ; jsr $00C06E(pc)
+    jsr (ComputeAircraftSpeedDisp,PC)
     nop
     addq.l  #$4, a7
     addq.w  #$1, d3
     cmpi.w  #$4, d3
     blt.w   .l0baa4
-    dc.w    $4EBA,$0924                                 ; jsr $00C540(pc)
+    jsr (SortAircraftByMetric,PC)
     nop
-    dc.w    $4EBA,$0062                                 ; jsr $00BC84(pc)
+    jsr (ComputeMonthlyAircraftCosts,PC)
     nop
     movea.l  #$00FF0018,a2
     clr.w   d3
@@ -16488,13 +16491,13 @@ RunAircraftStatsDisplay:
     jsr     (a3)
     lea     $2c(a7), a7
     jsr ResourceUnload
-    dc.w    $4EBA,$0074                                 ; jsr $00C392(pc)
+    jsr (PollSingleButtonPress,PC)
     nop
     move.w  d0, d2
     cmpi.w  #$1, d2
     bne.b   .l0c33c
     pea     ($0001).w
-    dc.w    $4EBA,$0F1C                                 ; jsr $00D24C(pc)
+    jsr (WaitForEventInput,PC)
     nop
     addq.l  #$4, a7
     cmpi.w  #$1, d0
@@ -16508,7 +16511,7 @@ RunAircraftStatsDisplay:
     clr.l   -(a7)
     move.l  ($000475F8).l, -(a7)
     clr.l   -(a7)
-    dc.w    $4EBA,$02CA                                 ; jsr $00C61E(pc)
+    jsr (DisplayMessageWithParams,PC)
     nop
     move.w  d0, d2
     jsr ResourceLoad
@@ -16537,7 +16540,7 @@ PollSingleButtonPress:
     clr.l   -(a7)
     pea     ($0003E5F6).l
     clr.l   -(a7)
-    dc.w    $4EBA,$0278                                 ; jsr $00C61E(pc)
+    jsr (DisplayMessageWithParams,PC)
     nop
     lea     $14(a7), a7
     move.w  d0, d2
@@ -16895,7 +16898,7 @@ BuildAircraftAttrTable:
     move.b  $1(a4), d0
     ext.l   d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$0098                                 ; jsr $00C860(pc)
+    jsr (ScaleAircraftAttrValue,PC)
     nop
     move.b  d0, $1(a2)
     moveq   #$0,d0
@@ -16906,7 +16909,7 @@ BuildAircraftAttrTable:
     move.b  $2(a4), d0
     ext.l   d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$007A                                 ; jsr $00C860(pc)
+    jsr (ScaleAircraftAttrValue,PC)
     nop
     move.b  d0, $2(a2)
     moveq   #$0,d0
@@ -16917,7 +16920,7 @@ BuildAircraftAttrTable:
     move.b  $3(a4), d0
     ext.l   d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$005C                                 ; jsr $00C860(pc)
+    jsr (ScaleAircraftAttrValue,PC)
     nop
     move.b  d0, $3(a2)
     movea.l -$8(a6), a0
@@ -16930,7 +16933,7 @@ BuildAircraftAttrTable:
     andi.l  #$ff, d0
     ext.l   d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$0032                                 ; jsr $00C860(pc)
+    jsr (ScaleAircraftAttrValue,PC)
     nop
     lea     $20(a7), a7
     move.b  d0, (a5)
@@ -17494,7 +17497,7 @@ LoadAllGameData:
     move.l  a3, -(a7)
     move.l  #$200003, -(a7)
     jsr     (a4)
-    dc.w    $4EBA,$002E                                 ; jsr $00CEEA(pc)
+    jsr (InitPlayerAircraftState,PC)
     nop
     move.w  ($00FF000C).l, d0
     ext.l   d0
@@ -17835,7 +17838,7 @@ WaitForEventInput:
     move.w  d2, d0
     ext.l   d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$0030                                 ; jsr $00D28C(pc)
+    jsr (DisplayEventChoice,PC)
     nop
     addq.l  #$4, a7
     move.w  d0, d3
@@ -18146,7 +18149,7 @@ GameEntry:                                                   ; $00D5B6
     jsr DisplaySetup
     lea     $10(sp),sp                                       ; Clean 16 bytes of stack args
     jsr RunScreenLoop
-    dc.w    $4EBA,$000C                                      ; jsr GameLoopSetup(pc) [$D602]
+    jsr (GameLoopSetup,PC)
     nop
     clr.w   $00FF0006                                        ; Clear per-frame update flag
     rts
@@ -18402,7 +18405,7 @@ l_0d85e:
     move.w  d4, d0
     ext.l   d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$0816                                 ; jsr $00E08E(pc)
+    jsr (CalcCharValue,PC)
     nop
     lea     $c(a7), a7
     move.l  d0, -$4(a6)
@@ -18514,7 +18517,7 @@ l_0d9d2:
     move.w  d4, d0
     ext.l   d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$0180                                 ; jsr $00DB72(pc)
+    jsr (DisplayRouteDestChoice,PC)
     nop
     lea     $14(a7), a7
     move.w  d0, d3
@@ -18553,7 +18556,7 @@ l_0da52:
     move.l  d0, -(a7)
     move.w  d4, d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$0026                                 ; jsr $00DA8C(pc)
+    jsr (SelectRouteDestination,PC)
     nop
     lea     $c(a7), a7
     move.w  d0, d2
@@ -18816,7 +18819,7 @@ l_0dc8a:
     move.w  $a(a6), d0
     ext.l   d0
     move.l  d0, -(a7)
-    dc.w    $4EBA,$0304                                 ; jsr $00E08E(pc)
+    jsr (CalcCharValue,PC)
     nop
     lea     $1c(a7), a7
     move.l  d0, d4

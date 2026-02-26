@@ -1978,7 +1978,7 @@ VBlankInt:                                                  ; $0014E6
 ; --- Controller poll + 4 subsystem updates (always run) ---
 .poll:                                                      ; $001582
     dc.w    $43F9,$00FF,$FBFC                               ; lea $00FFFBFC,a1
-    dc.w    $6100,$03A4                                     ; bsr.w ControllerPoll ($00192E)
+    bsr.w ControllerPoll
     jsr (SubsysUpdate1,PC)
     nop
     jsr (SubsysUpdate2,PC)
@@ -2348,6 +2348,7 @@ InitInputArrays:
     move.l  $42(a7), d0
 l_0192c:
     bra.b   l_0192c
+ControllerPoll:                                             ; $00192E
     jsr (VDPWriteZ80Path,PC)
     lea     $a(a1), a2
     moveq   #$7,d0
@@ -3565,7 +3566,7 @@ l_03c6a:
     move.b  #$8, d1
     lea     $3d2e(pc), a0
     move.b  (a0)+, d0
-    dc.w    $6100,$005C                                 ; bsr.w $003CE0
+    bsr.w WriteVDPTileRow
     lea     ($01F0).w, a1
 l_03c8a:
     cmpi.b  #$20, (a1)
@@ -3584,13 +3585,13 @@ l_03c94:
     lea     $3d4b(pc), a0
     move.b  (a0)+, d0
     addq.w  #$1, d1
-    dc.w    $6100,$0028                                 ; bsr.w $003CE0
+    bsr.w WriteVDPTileRow
 l_03cba:
     lea     $3d16(pc), a0
     adda.l  (a2)+, a0
     move.b  (a0)+, d0
     addq.w  #$1, d1
-    dc.w    $6100,$001A                                 ; bsr.w $003CE0
+    bsr.w WriteVDPTileRow
     bra.b   l_03cce
 l_03cca:
     addq.l  #$4, a2
@@ -3602,9 +3603,10 @@ l_03cd2:
     lea     $3d4e(pc), a0
     move.b  (a0)+, d0
     addq.w  #$1, d1
-    dc.w    $6100,$0004                                 ; bsr.w $003CE0
+    bsr.w WriteVDPTileRow
 l_03cde:
     bra.b   l_03cde
+WriteVDPTileRow:                                        ; $003CE0
     move.b  d1, d2
     andi.l  #$ff, d2
     swap    d2

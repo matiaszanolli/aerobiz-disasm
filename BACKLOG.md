@@ -226,12 +226,22 @@ All verified byte-identical before applying. JSR abs.l kept as dc.w, BSR.W as dc
 **Approach:** Built `/tmp/symbolize_bsr_w.py`. Same label-map approach as B-049/B-050. Comment formats: `($ADDR)`, `[$ADDR]`, `bsr.w $ADDR`, `$INSTR_ADDR | bsr.w FuncName` (compute from instruction addr + displacement), and `bsr.w FuncName` (no address — reverse label lookup by name). Safety test: confirmed `bsr.w Label` is byte-identical — NO +2 bug. KNOWN_ISSUES.md updated to reflect this. Added 2 more alt-entry labels: `PollInputStatus_Main` ($001C72), `CalcCharDisplayIndex_Prelude` ($010CAC). 5 remaining dc.w: 1 mid-function call ($00192E, possibly mislabeled as ControllerPoll), 4 calls into EarlyInit at $003CE0 (deep alt-entry, not worth labeling).
 **Acceptance:** `make verify` passes (MD5: 1269f44e846a88a2de945de082428b39). 332 of 337 BSR.W calls symbolized.
 
+### B-053: Resolve last 5 raw dc.w bsr.w calls
+**Status:** DONE (2026-02-26)
+**Why:** B-051 left 5 `dc.w $6100,$XXXX` instructions unresolved because the target addresses had no labels in the source. Completing these gives 100% symbolic call coverage in the 4 code sections.
+**Approach:** Two missing labels:
+- `$00192E`: Mid-function entry of `InitInputArrays` used by V-INT handler as `ControllerPoll`. Label was documented in FUNCTION_REFERENCE.md but never placed in source. Added `ControllerPoll:` at line 2351 in section_000200.asm.
+- `$003CE0`: Local BSR.W sub-subroutine of `EarlyInit` that writes a tile data block to VDP VRAM (called 4× from within EarlyInit with different D0/D1 arguments). Added `WriteVDPTileRow:` label. The 5 `dc.w $6100,$XXXX` lines replaced with `bsr.w ControllerPoll` / `bsr.w WriteVDPTileRow`.
+**Acceptance:** `make verify` passes (MD5: 1269f44e846a88a2de945de082428b39). Zero raw `dc.w $6100` in code sections (section_000200/010000/020000/030000).
+
 ---
 
 ## Done
 
 | ID | Description | Commit | Date |
 |----|-------------|--------|------|
+| B-053 | Resolve last 5 dc.w bsr.w calls: add ControllerPoll ($00192E) and WriteVDPTileRow ($003CE0) labels | -- | 2026-02-26 |
+| B-052 | Update README + FUNCTION_REFERENCE docs to reflect completed phases (593 named, 860 translated, 3691 calls symbolized) | a8250c8 | 2026-02-26 |
 | B-051 | Symbolize 332/337 bsr.w calls; disprove vasm BSR.W +2 bug; 7 new alt-entry labels total | -- | 2026-02-26 |
 | B-050 | Symbolize 490 jsr (d16,PC) calls to `jsr (FunctionName,PC)` + 5 new alt-entry labels | -- | 2026-02-26 |
 | B-049 | Symbolize 2,869 jsr abs.l calls from raw dc.w to `jsr FunctionName` (236 unique targets) | -- | 2026-02-26 |

@@ -7,7 +7,7 @@ Index of all identified functions. Updated as disassembly progresses.
 - **Total RTS (function endpoints):** 854
 - **Total RTE (interrupt returns):** 6
 - **Unique call targets:** 2,896
-- **Functions named:** 593 (all functions named — B-047 complete)
+- **Functions named:** 595 (593 from B-047 + 2 new alt-entry labels from B-053)
 - **Functions translated to mnemonics:** 860 (all translatable code — B-046 complete)
 - **Call instructions symbolized:** 2,869 jsr abs.l (B-049) + 490 jsr (d16,PC) (B-050) + 332 bsr.w (B-051) = 3,691 total
 
@@ -54,8 +54,10 @@ These are the most frequently called subroutines -- high-priority translation ta
 | $001090 | Init6 | Init subroutine |
 | $0010DA | Init5 | Init subroutine |
 | $0010FE | VDP_Init4 | Init subroutine |
+| $00192E | ControllerPoll | Read I/O ports via Z80, store in ctrl_io ($FFFBFC); alt-entry of InitInputArrays |
 | $00260A | Z80_SoundInit | Load Z80 sound driver to Z80 RAM |
-| $003BE8 | EarlyInit | Early init (RAM/VDP setup) |
+| $003BE8 | EarlyInit | Early init (TMSS check, VDP tile pattern write) |
+| $003CE0 | WriteVDPTileRow | Write tile data block to VDP VRAM (local sub-subroutine of EarlyInit) |
 
 ### Main Game
 

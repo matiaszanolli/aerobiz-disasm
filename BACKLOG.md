@@ -74,6 +74,12 @@ Pick the highest-priority unclaimed task. Mark it `IN PROGRESS` with your sessio
 
 ## Phase 4 -- Data Analysis
 
+### B-048: Document game phase flow
+**Status:** DONE (2026-02-26)
+**Why:** All 593 functions are named and all code translated, but the gameplay logic (what happens during turns, quarters, win conditions) was undocumented. Understanding the game flow is needed for further data analysis and modding.
+**Approach:** Traced call chains from GameEntry through MainLoop, GameLogic1/2, HandleScenarioTurns, InitQuarterStart, FinalizeQuarterEnd, and CheckDisplayGameWin. Verified all function addresses and RAM references against actual assembly source.
+**Acceptance:** `analysis/GAME_PHASE_FLOW.md` created documenting: initialization pipeline, main loop architecture (7 per-frame functions), turn sequence (human + AI), quarterly processing cycle, month advancement, win/loss conditions (achievement leaderboard at $FFBE00), and key RAM state variables.
+
 ### B-041: Build RAM variable map
 **Status:** DONE (2026-02-25)
 **Why:** All translated functions reference RAM variables. A central map is needed to understand what the code reads/writes and to resolve struct layouts.
@@ -208,6 +214,7 @@ All verified byte-identical before applying. JSR abs.l kept as dc.w, BSR.W as dc
 
 | ID | Description | Commit | Date |
 |----|-------------|--------|------|
+| B-048 | Document game phase flow: initialization, main loop, turns, quarters, win/loss conditions | -- | 2026-02-26 |
 | B-047 | Name all 593 functions: 31 pre-named + 42 GameCommand handlers + 525 via code analysis (0 unnamed remaining) | -- | 2026-02-25 |
 | B-045 | Resolve char_stat_array / char_stat_tab overlap (89 = stat_type/city count, not char_index; 4 records × 57B = 228B, no overlap) | -- | 2026-02-25 |
 | B-044 | Document game data structures (player record 12 fields, route slot 13 fields, char stat 12 fields, 3 auxiliary tables) | -- | 2026-02-25 |

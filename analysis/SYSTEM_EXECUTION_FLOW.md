@@ -87,30 +87,32 @@ $00D602: jsr $01E398     -- PreLoopInit (one-time pre-loop initialization)
 MainLoop ($00D608):
   $00D608: jsr $02F5A6   -- game update 1
   $00D60E: jsr $01B49A   -- game update 2
-  $00D614: clr.b $FF17C4 -- clear turn flag
-  $00D61A: jsr $0213B6   -- game logic (quarterly turn processing?)
-  $00D620: jsr $02947A   -- game logic (events/AI?)
+  $00D614: clr.w $FF17C4 -- clear per-frame work flag
+  $00D61A: jsr $0213B6   -- GameLogic1 (turn/route processing)
+  $00D620: jsr $02947A   -- GameLogic2 (events/AI decisions)
   $00D626: pea $0001
   $00D62A: jsr $01819C   -- InitAllCharRecords
   $00D630: subq.l #4,a7  -- stack cleanup
   $00D632: jsr $01E402   -- game update 3
   $00D638: jsr $026128   -- game update 4
-  $00D63E: subq.w #1,$FF0006  -- decrement counter (turn/quarter?)
+  $00D63E: addq.w #1,$FF0006  -- increment frame counter
   $00D644: bra MainLoop  -- LOOP FOREVER
 ```
 
-### Main Loop Key Subroutines (to be analyzed)
+### Main Loop Key Subroutines
 
-| Address | Probable Role | Notes |
-|---------|--------------|-------|
-| $01E398 | PreLoopInit | Called once before loop starts |
-| $02F5A6 | Game update 1 | First call each iteration |
-| $01B49A | Game update 2 | |
-| $0213B6 | Game logic | Main turn processing? |
-| $02947A | Game logic | Events/AI? |
-| $01819C | InitAllCharRecords | Init all char records 0-$58, optional pre-init call |
-| $01E402 | Game update 3 | |
-| $026128 | Game update 4 | Last update before loop |
+See [GAME_PHASE_FLOW.md](GAME_PHASE_FLOW.md) for detailed call chains and game phase documentation.
+
+| Address | Name | Role |
+|---------|------|------|
+| $01E398 | PreLoopInit | Called once before loop starts; sets display mode and backgrounds |
+| $02F5A6 | GameUpdate1 | Display and sprite rendering |
+| $01B49A | GameUpdate2 | Controller input and menu processing |
+| $0213B6 | GameLogic1 | Turn/route processing: InitRouteFields, route config, quarterly dispatch |
+| $02947A | GameLogic2 | Events (InitQuarterEvent), AI decisions (MakeAIDecision), cost optimization |
+| $01819C | InitAllCharRecords | Conditional character record refresh (init all char records 0-$58) |
+| $01E402 | GameUpdate3 | Post-logic display updates |
+| $026128 | GameUpdate4 | Final frame updates before loop |
 
 ## V-INT Handler ($0014E6-$0015AE)
 

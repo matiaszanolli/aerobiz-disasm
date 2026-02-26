@@ -31,6 +31,7 @@ All documentation available for the Aerobiz Supersonic disassembly project.
 |----------|-------------|
 | [../analysis/ROM_MAP.md](../analysis/ROM_MAP.md) | ROM section layout (code/data/padding) |
 | [../analysis/SYSTEM_EXECUTION_FLOW.md](../analysis/SYSTEM_EXECUTION_FLOW.md) | Boot sequence, main loop, V-INT handler |
+| [../analysis/GAME_PHASE_FLOW.md](../analysis/GAME_PHASE_FLOW.md) | Gameplay flow: initialization, turns, quarters, win conditions |
 | [../analysis/FUNCTION_REFERENCE.md](../analysis/FUNCTION_REFERENCE.md) | All identified functions (auto-generated) |
 
 ## Adding New Documentation

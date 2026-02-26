@@ -1241,7 +1241,7 @@ CalcCharDisplayIndex:
     movea.l  #$00FF03B8,a0
     move.w  (a0,d0.w), d1
     move.l  d1, -(a7)
-    dc.w    $4EB9,$0000,$5F00                           ; jsr $005F00
+    jsr LoadTileGraphics
     lea     $1c(a7), a7
     movem.l (a7)+, d2-d5
     rts
@@ -1260,10 +1260,10 @@ RenderRouteSlotScreen:
     pea     ($000E).w
     clr.l   -(a7)
     pea     -$e(a6)
-    dc.w    $4EB9,$0001,$D520                           ; jsr $01D520
-    dc.w    $4EB9,$0001,$D71C                           ; jsr $01D71C
+    jsr MemFillByte
+    jsr ResourceLoad
     clr.l   -(a7)
-    dc.w    $4EB9,$0000,$538E                           ; jsr $00538E
+    jsr CmdSetBackground
     pea     ($0040).w
     clr.l   -(a7)
     pea     ($0010).w
@@ -1271,7 +1271,7 @@ RenderRouteSlotScreen:
     pea     ($0010).w
     pea     ($0030).w
     pea     ($0004A5BA).l
-    dc.w    $4EB9,$0000,$5092                           ; jsr $005092
+    jsr DisplaySetup
     lea     $28(a7), a7
     pea     ($0004A5DA).l
     pea     ($0006).w
@@ -1283,14 +1283,14 @@ RenderRouteSlotScreen:
     jsr     (a4)
     pea     ($0004A63A).l
     move.l  a5, -(a7)
-    dc.w    $4EB9,$0000,$3FEC                           ; jsr $003FEC
+    jsr LZ_Decompress
     lea     $24(a7), a7
     clr.l   -(a7)
     clr.l   -(a7)
     move.l  a5, -(a7)
     pea     ($0025).w
     pea     ($0330).w
-    dc.w    $4EB9,$0001,$D568                           ; jsr $01D568
+    jsr VRAMBulkLoad
     lea     $14(a7), a7
     cmpi.w  #$3, d7
     bge.b   l_10e10
@@ -1303,11 +1303,11 @@ RenderRouteSlotScreen:
     movea.l  #$000A1B14,a0
     move.l  (a0,d0.l), -(a7)
     move.l  a5, -(a7)
-    dc.w    $4EB9,$0000,$3FEC                           ; jsr $003FEC
+    jsr LZ_Decompress
     pea     ($0014).w
     pea     ($03CD).w
     move.l  a5, -(a7)
-    dc.w    $4EB9,$0000,$4668                           ; jsr $004668
+    jsr CmdPlaceTile
     pea     ($00071F98).l
     pea     ($0004).w
     pea     ($0005).w
@@ -1364,7 +1364,7 @@ l_10e22:
     addi.l  #$3b, d0
     move.l  d0, -(a7)
     pea     ($0544).w
-    dc.w    $4EB9,$0001,$E044                           ; jsr $01E044
+    jsr TilePlacement
     pea     ($0001).w
     pea     ($000E).w
     jsr     (a4)
@@ -1382,7 +1382,7 @@ l_10ebc:
     moveq   #$0,d0
     move.b  (a2), d0
     move.l  d0, -(a7)
-    dc.w    $4EB9,$0000,$D648                           ; jsr $00D648
+    jsr RangeLookup
     addq.l  #$4, a7
     move.w  d0, d2
 l_10ecc:
@@ -1412,7 +1412,7 @@ l_10ecc:
     addi.l  #$3b, d0
     move.l  d0, -(a7)
     pea     ($0544).w
-    dc.w    $4EB9,$0001,$E044                           ; jsr $01E044
+    jsr TilePlacement
     pea     ($0001).w
     pea     ($000E).w
     jsr     (a4)
@@ -1430,7 +1430,7 @@ l_10ecc:
     lea     $2c(a7), a7
     ext.l   d0
     moveq   #$3,d1
-    dc.w    $4EB9,$0003,$E08A                           ; jsr $03E08A
+    jsr SignedDiv
     move.w  d0, d2
     cmpi.w  #$5, d2
     bge.b   l_10f62
@@ -1456,7 +1456,7 @@ l_10f64:
     ext.l   d0
     move.l  d0, -(a7)
     pea     ($0001).w
-    dc.w    $4EB9,$0000,$6760                           ; jsr $006760
+    jsr FillTileRect
     lea     $20(a7), a7
     move.w  d2, d0
     ext.l   d0
@@ -1483,7 +1483,7 @@ l_10f64:
     add.l   d1, d0
     move.l  d0, -(a7)
     pea     ($0001).w
-    dc.w    $4EB9,$0000,$6760                           ; jsr $006760
+    jsr FillTileRect
     lea     $20(a7), a7
 l_10fde:
     addq.l  #$8, a2
@@ -1499,7 +1499,7 @@ l_10fde:
     move.l  d0, -(a7)
     dc.w    $6100,$FCAA                                 ; bsr.w $010CAC
 l_11004:
-    dc.w    $4EB9,$0001,$D748                           ; jsr $01D748
+    jsr ResourceUnload
     movem.l -$38(a6), d2-d7/a2-a5
     unlk    a6
     rts
@@ -1523,7 +1523,7 @@ ShowRouteDetailsDialog:
     pea     ($0004).w
     clr.l   -(a7)
     pea     ($001A).w
-    dc.w    $4EB9,$0000,$0D64                           ; jsr $000D64
+    jsr GameCommand
     lea     $1c(a7), a7
     pea     ($075C).w
     pea     ($0002).w
@@ -1533,7 +1533,7 @@ ShowRouteDetailsDialog:
     pea     ($0009).w
     pea     ($0001).w
     pea     ($0001).w
-    dc.w    $4EB9,$0000,$6760                           ; jsr $006760
+    jsr FillTileRect
     lea     $20(a7), a7
     pea     ($075D).w
     pea     ($000A).w
@@ -1543,7 +1543,7 @@ ShowRouteDetailsDialog:
     pea     ($000D).w
     pea     ($0001).w
     pea     ($0001).w
-    dc.w    $4EB9,$0000,$6760                           ; jsr $006760
+    jsr FillTileRect
     lea     $20(a7), a7
     pea     ($075E).w
     pea     ($000B).w
@@ -1553,15 +1553,15 @@ ShowRouteDetailsDialog:
     pea     ($000F).w
     pea     ($0001).w
     pea     ($0001).w
-    dc.w    $4EB9,$0000,$6760                           ; jsr $006760
+    jsr FillTileRect
     move.l  ($000A1B2C).l, -(a7)
     pea     ($00FF1804).l
-    dc.w    $4EB9,$0000,$3FEC                           ; jsr $003FEC
+    jsr LZ_Decompress
     lea     $28(a7), a7
     pea     ($0012).w
     pea     ($03E1).w
     pea     ($00FF1804).l
-    dc.w    $4EB9,$0000,$4668                           ; jsr $004668
+    jsr CmdPlaceTile
     pea     ($00072658).l
     pea     ($0002).w
     pea     ($0003).w
@@ -1569,7 +1569,7 @@ ShowRouteDetailsDialog:
     pea     ($0001).w
     clr.l   -(a7)
     pea     ($001B).w
-    dc.w    $4EB9,$0000,$0D64                           ; jsr $000D64
+    jsr GameCommand
     lea     $28(a7), a7
     pea     ($00072664).l
     pea     ($0002).w
@@ -1578,7 +1578,7 @@ ShowRouteDetailsDialog:
     pea     ($0001).w
     clr.l   -(a7)
     pea     ($001B).w
-    dc.w    $4EB9,$0000,$0D64                           ; jsr $000D64
+    jsr GameCommand
     lea     $1c(a7), a7
     pea     ($00072670).l
     pea     ($0002).w
@@ -1587,7 +1587,7 @@ ShowRouteDetailsDialog:
     pea     ($0001).w
     clr.l   -(a7)
     pea     ($001B).w
-    dc.w    $4EB9,$0000,$0D64                           ; jsr $000D64
+    jsr GameCommand
     pea     ($0002).w
     pea     ($0037).w
     jsr     (a5)
@@ -1608,7 +1608,7 @@ ShowRouteDetailsDialog:
     pea     ($0009).w
     pea     ($000B).w
     pea     ($0004).w
-    dc.w    $4EB9,$0003,$A942                           ; jsr $03A942
+    jsr SetTextWindow
     pea     ($0002).w
     pea     ($0037).w
     jsr     (a5)
@@ -1624,7 +1624,7 @@ ShowRouteDetailsDialog:
     move.b  (a2), d0
     ext.l   d0
     move.l  d0, -(a7)
-    dc.w    $4EB9,$0000,$883A                           ; jsr $00883A
+    jsr PlaceCharSprite
     pea     ($0009).w
     pea     ($0004).w
     jsr     (a4)
@@ -1634,7 +1634,7 @@ ShowRouteDetailsDialog:
     lsl.w   #$2, d0
     movea.l  #$00047818,a0
     move.l  (a0,d0.w), -(a7)
-    dc.w    $4EB9,$0003,$B270                           ; jsr $03B270
+    jsr PrintfWide
 l_1120c:
     addq.l  #$4, a7
     bra.b   l_11274
@@ -1644,7 +1644,7 @@ l_11210:
     moveq   #$0,d0
     move.b  (a2), d0
     move.l  d0, -(a7)
-    dc.w    $4EB9,$0000,$D648                           ; jsr $00D648
+    jsr RangeLookup
     addq.l  #$4, a7
     move.w  d0, d2
     bra.b   l_1122e
@@ -1673,7 +1673,7 @@ l_11258:
     movea.l  #$0005EC84,a0
     move.l  (a0,d0.w), -(a7)
     pea     ($0003F106).l
-    dc.w    $4EB9,$0003,$B270                           ; jsr $03B270
+    jsr PrintfWide
     addq.l  #$8, a7
 l_11274:
     moveq   #$0,d2
@@ -2190,16 +2190,16 @@ ShowTextDialog:                                              ; $01183A
     pea     ($0020).w                                        ; height = 32
     clr.l   -(sp)                                            ; left = 0
     clr.l   -(sp)                                            ; top = 0
-    dc.w    $4EB9,$0003,$A942                                ; jsr SetTextWindow
+    jsr SetTextWindow
     pea     ($0019).w                                        ; x = 25
     pea     ($0013).w                                        ; y = 19
-    dc.w    $4EB9,$0003,$AB2C                                ; jsr SetTextCursor
+    jsr SetTextCursor
     move.w  d2,d0
     mulu.w  #$0024,d0                                        ; index * 36 (record size)
     movea.l #$00FF001E,a0                                    ; record table base
     move.l  (a0,d0.w),-(sp)                                  ; push record field
     pea     ($0003F1B2).l                                    ; format string
-    dc.w    $4EB9,$0003,$B270                                ; jsr PrintfWide
+    jsr PrintfWide
     lea     $20(sp),sp                                       ; clean 32 bytes
     move.l  $000C(a6),-(sp)                                  ; push data arg
     pea     ($0001).w
@@ -2218,13 +2218,13 @@ ShowTextDialog:                                              ; $01183A
     movea.l #$00FF03B8,a0                                    ; lookup table base
     move.w  (a0,d0.w),d1                                     ; table[index*10+col*2]
     move.l  d1,-(sp)
-    dc.w    $4EB9,$0000,$643C                                ; jsr $643C (display fn)
+    jsr DrawCharInfoPanel
     lea     $20(sp),sp                                       ; clean 32 bytes
     cmpi.w  #$0001,$001A(a6)                                 ; flag1 == 1?
     bne.s   .check_f2                                        ; no, check flag2
     pea     ($001A).w
     pea     ($0006).w
-    dc.w    $4EB9,$0000,$7784                                ; jsr $7784 (input fn)
+    jsr SelectPreviewPage
     addq.l  #8,sp                                            ; clean args
     move.w  d0,d3                                            ; d3 = result
     bra.s   .epilogue
@@ -2233,7 +2233,7 @@ ShowTextDialog:                                              ; $01183A
     bne.s   .epilogue                                        ; no, skip
     pea     ($0001).w
     pea     ($0003).w
-    dc.w    $4EB9,$0001,$D62C                                ; jsr PollAction
+    jsr PollAction
 .epilogue:                                                   ; $0118FA
     move.w  d3,d0                                            ; return value
     movem.l -$08(a6),d2-d3
@@ -2827,7 +2827,7 @@ ClearRouteSlotBit:
     move.w  d2, d0
     ext.l   d0
     move.l  #$320, d1
-    dc.w    $4EB9,$0003,$E05C                           ; jsr $03E05C
+    jsr Multiply32
     move.l  d0, d5
     movea.l  #$00FF9A20,a0
     lea     (a0,d0.w), a0
@@ -2939,7 +2939,7 @@ UpdateRouteRevenue:
     move.b  (a2), d0
     ext.l   d0
     move.l  d0, -(a7)
-    dc.w    $4EB9,$0000,$D648                           ; jsr $00D648
+    jsr RangeLookup
     addq.l  #$4, a7
     cmpi.b  #$20, (a2)
     bcc.w   .l12064
@@ -2975,7 +2975,7 @@ UpdateRouteRevenue:
     move.w  d2, d0
     ext.l   d0
     move.l  d0, -(a7)
-    dc.w    $4EB9,$0000,$6EEA                           ; jsr $006EEA
+    jsr BitFieldSearch
     addq.l  #$8, a7
     cmpi.w  #$ff, d0
     beq.b   .l12060
@@ -3032,7 +3032,7 @@ CalcRouteProfit:
     movea.l  #$00FFBD6C,a0
     pea     (a0, d0.w)
     clr.l   -(a7)
-    dc.w    $4EB9,$0001,$D538                           ; jsr $01D538
+    jsr MemCopy
     lea     $14(a7), a7
     move.w  d4, d0
     mulu.w  #$24, d0
@@ -3109,7 +3109,7 @@ CalcRouteProfit:
     moveq   #$0,d0
     move.b  (a2), d0
     move.l  d0, -(a7)
-    dc.w    $4EB9,$0001,$A506                           ; jsr $01A506
+    jsr CalcRelationValue
     lsr.l   #$1, d0
     add.l   d0, $6(a3)
     moveq   #$0,d3
@@ -3130,7 +3130,7 @@ CalcRouteProfit:
     pea     ($0014).w
     clr.l   -(a7)
     move.l  a2, -(a7)
-    dc.w    $4EB9,$0001,$D520                           ; jsr $01D520
+    jsr MemFillByte
     lea     $18(a7), a7
     move.b  #$ff, (a2)
     move.b  #$ff, $1(a2)
@@ -3153,11 +3153,11 @@ CalcRouteProfit:
     add.l   d1, d0
     move.l  d0, -(a7)
     clr.l   -(a7)
-    dc.w    $4EB9,$0001,$D538                           ; jsr $01D538
+    jsr MemCopy
     pea     ($0014).w
     clr.l   -(a7)
     move.l  a5, -(a7)
-    dc.w    $4EB9,$0001,$D520                           ; jsr $01D520
+    jsr MemFillByte
     lea     $20(a7), a7
     move.b  #$ff, (a5)
     move.b  #$ff, $1(a5)
@@ -3188,14 +3188,14 @@ CalcRouteProfit:
     mulu.w  #$7, d0
     movea.l  #$00FFA7BC,a0
     pea     (a0, d0.w)
-    dc.w    $4EB9,$0001,$D520                           ; jsr $01D520
+    jsr MemFillByte
     pea     ($000E).w
     clr.l   -(a7)
     move.w  d4, d0
     mulu.w  #$e, d0
     movea.l  #$00FFBD6C,a0
     pea     (a0, d0.w)
-    dc.w    $4EB9,$0001,$D520                           ; jsr $01D520
+    jsr MemFillByte
     lea     $18(a7), a7
     move.w  d4, d0
     mulu.w  #$320, d0
@@ -3220,13 +3220,13 @@ CalcRouteProfit:
     move.b  (a2), d0
     ext.l   d0
     move.l  d0, -(a7)
-    dc.w    $4EB9,$0000,$D648                           ; jsr $00D648
+    jsr RangeLookup
     move.w  d0, d3
     moveq   #$0,d0
     move.b  $1(a2), d0
     ext.l   d0
     move.l  d0, -(a7)
-    dc.w    $4EB9,$0000,$D648                           ; jsr $00D648
+    jsr RangeLookup
     addq.l  #$8, a7
     move.w  d0, d5
     move.w  d3, d0
@@ -3433,12 +3433,12 @@ ShowRouteInfoDlg:
     pea     ($0050).w
     clr.l   -(a7)
     pea     -$a0(a6)
-    dc.w    $4EB9,$0001,$D520                           ; jsr $01D520
-    dc.w    $4EB9,$0001,$D71C                           ; jsr $01D71C
-    dc.w    $4EB9,$0001,$E398                           ; jsr $01E398
+    jsr MemFillByte
+    jsr ResourceLoad
+    jsr PreLoopInit
     move.l  ($00095118).l, -(a7)
     pea     ($00FF1804).l
-    dc.w    $4EB9,$0000,$3FEC                           ; jsr $003FEC
+    jsr LZ_Decompress
     lea     $14(a7), a7
     move.w  $a(a6), d0
     mulu.w  #$320, d0
@@ -3498,7 +3498,7 @@ ShowRouteInfoDlg:
     move.l  d0, -(a7)
     move.w  d3, d0
     move.l  d0, -(a7)
-    dc.w    $4EB9,$0001,$DC26                           ; jsr $01DC26
+    jsr DrawTilemapLine
     lea     $18(a7), a7
     addq.w  #$1, d4
 .l12600:
@@ -3536,10 +3536,10 @@ ShowRouteInfoDlg:
     addq.l  #$7, d0
     move.l  d0, -(a7)
     pea     ($0761).w
-    dc.w    $4EB9,$0001,$E044                           ; jsr $01E044
+    jsr TilePlacement
     pea     ($0001).w
     pea     ($000E).w
-    dc.w    $4EB9,$0000,$0D64                           ; jsr $000D64
+    jsr GameCommand
     lea     $24(a7), a7
     addq.w  #$1, d3
 .l1266c:
@@ -3551,7 +3551,7 @@ ShowRouteInfoDlg:
     pea     ($02C0).w
     pea     ($0001).w
     pea     ($00FF1804).l
-    dc.w    $4EB9,$0000,$45E6                           ; jsr $0045E6
+    jsr CmdPlaceTile2
     pea     ($00070198).l
     pea     ($0014).w
     pea     ($0020).w
@@ -3559,12 +3559,12 @@ ShowRouteInfoDlg:
     clr.l   -(a7)
     pea     ($0001).w
     pea     ($001B).w
-    dc.w    $4EB9,$0000,$0D64                           ; jsr $000D64
+    jsr GameCommand
     lea     $28(a7), a7
     pea     ($0010).w
     pea     ($0010).w
     pea     ($0007677E).l
-    dc.w    $4EB9,$0000,$5092                           ; jsr $005092
+    jsr DisplaySetup
     lea     $c(a7), a7
     cmpi.w  #$1, d3
     bne.b   .l126dc
@@ -3625,7 +3625,7 @@ ShowRouteInfoDlg:
     move.l  ($000479A6).l, -(a7)
     pea     -$a0(a6)
     jsr     (a5)
-    dc.w    $4EB9,$0001,$D748                           ; jsr $01D748
+    jsr ResourceUnload
     pea     ($0001).w
     clr.l   -(a7)
     clr.l   -(a7)
@@ -3633,7 +3633,7 @@ ShowRouteInfoDlg:
     move.w  $a(a6), d0
     ext.l   d0
     move.l  d0, -(a7)
-    dc.w    $4EB9,$0000,$7912                           ; jsr $007912
+    jsr ShowDialog
     lea     $20(a7), a7
     tst.w   d4
     ble.b   .l127ae
@@ -3654,7 +3654,7 @@ ShowRouteInfoDlg:
     move.w  $a(a6), d0
     ext.l   d0
     move.l  d0, -(a7)
-    dc.w    $4EB9,$0000,$7912                           ; jsr $007912
+    jsr ShowDialog
     move.w  d0, d2
     movem.l -$1b8(a6), d2-d7/a2-a5
     unlk    a6
@@ -3669,19 +3669,19 @@ FormatRouteDetails:
     movem.l d2-d7/a2-a5, -(a7)
     move.l  $c(a6), d4
     move.l  $8(a6), d7
-    dc.w    $4EB9,$0001,$D71C                           ; jsr $01D71C
+    jsr ResourceLoad
     pea     ($0050).w
     clr.l   -(a7)
     pea     -$50(a6)
-    dc.w    $4EB9,$0001,$D520                           ; jsr $01D520
-    dc.w    $4EB9,$0000,$814A                           ; jsr $00814A
+    jsr MemFillByte
+    jsr ClearBothPlanes
     moveq   #$0,d0
     move.w  d4, d0
     lsl.l   #$2, d0
     movea.l  #$0009511C,a0
     move.l  (a0,d0.l), -(a7)
     pea     ($00FF1804).l
-    dc.w    $4EB9,$0000,$3FEC                           ; jsr $003FEC
+    jsr LZ_Decompress
     lea     $14(a7), a7
     moveq   #$7,d5
     move.w  d7, d0
@@ -3706,7 +3706,7 @@ FormatRouteDetails:
     move.b  (a2), d0
     andi.l  #$ffff, d0
     move.l  d0, -(a7)
-    dc.w    $4EB9,$0000,$D648                           ; jsr $00D648
+    jsr RangeLookup
     addq.l  #$4, a7
     ext.l   d0
     moveq   #$0,d1
@@ -3743,7 +3743,7 @@ FormatRouteDetails:
     pea     ($0004).w
     move.l  a3, -(a7)
     move.l  a4, -(a7)
-    dc.w    $4EB9,$0000,$9994                           ; jsr $009994
+    jsr DrawRoutePair
     clr.l   -(a7)
     pea     ($0001).w
     pea     ($0001).w
@@ -3766,14 +3766,14 @@ FormatRouteDetails:
     moveq   #$0,d0
     move.w  d7, d0
     move.l  d0, -(a7)
-    dc.w    $4EB9,$0001,$8EBA                           ; jsr $018EBA
+    jsr GetCharRelation
     lea     $c(a7), a7
     move.l  d0, -(a7)
-    dc.w    $4EB9,$0001,$E044                           ; jsr $01E044
+    jsr TilePlacement
     lea     $2c(a7), a7
     pea     ($0001).w
     pea     ($000E).w
-    dc.w    $4EB9,$0000,$0D64                           ; jsr $000D64
+    jsr GameCommand
     addq.l  #$8, a7
     addq.w  #$1, d5
     addq.w  #$1, d6
@@ -3789,11 +3789,11 @@ FormatRouteDetails:
     pea     ($02E0).w
     pea     ($0001).w
     pea     ($00FF1804).l
-    dc.w    $4EB9,$0000,$45E6                           ; jsr $0045E6
+    jsr CmdPlaceTile2
     pea     ($0010).w
     pea     ($0010).w
     pea     ($0007677E).l
-    dc.w    $4EB9,$0000,$5092                           ; jsr $005092
+    jsr DisplaySetup
     lea     $18(a7), a7
     clr.w   d3
     move.w  d4, d0
@@ -3834,10 +3834,10 @@ FormatRouteDetails:
     move.w  d5, d0
     move.l  d0, -(a7)
     pea     ($0761).w
-    dc.w    $4EB9,$0001,$E044                           ; jsr $01E044
+    jsr TilePlacement
     pea     ($0001).w
     pea     ($000E).w
-    dc.w    $4EB9,$0000,$0D64                           ; jsr $000D64
+    jsr GameCommand
     lea     $24(a7), a7
     addq.w  #$1, d3
 .l129f6:
@@ -3848,13 +3848,13 @@ FormatRouteDetails:
     clr.l   -(a7)
     pea     ($0001).w
     pea     ($001B).w
-    dc.w    $4EB9,$0000,$0D64                           ; jsr $000D64
+    jsr GameCommand
     lea     $1c(a7), a7
     cmpi.w  #$1, d3
     bne.b   .l12a34
     pea     ($0003F258).l
     pea     -$a0(a6)
-    dc.w    $4EB9,$0003,$B22C                           ; jsr $03B22C
+    jsr sprintf
     addq.l  #$8, a7
     bra.b   .l12a4e
 .l12a34:
@@ -3863,14 +3863,14 @@ FormatRouteDetails:
     move.l  d0, -(a7)
     move.l  ($0004799A).l, -(a7)
     pea     -$a0(a6)
-    dc.w    $4EB9,$0003,$B22C                           ; jsr $03B22C
+    jsr sprintf
     lea     $c(a7), a7
 .l12a4e:
     cmpi.w  #$1, d6
     bne.b   .l12a68
     pea     ($0003F250).l
     pea     -$f0(a6)
-    dc.w    $4EB9,$0003,$B22C                           ; jsr $03B22C
+    jsr sprintf
     addq.l  #$8, a7
     bra.b   .l12a82
 .l12a68:
@@ -3879,7 +3879,7 @@ FormatRouteDetails:
     move.l  d0, -(a7)
     move.l  ($0004799E).l, -(a7)
     pea     -$f0(a6)
-    dc.w    $4EB9,$0003,$B22C                           ; jsr $03B22C
+    jsr sprintf
     lea     $c(a7), a7
 .l12a82:
     tst.w   d6
@@ -3888,7 +3888,7 @@ FormatRouteDetails:
     pea     ($0003F24C).l
 .l12a90:
     pea     -$140(a6)
-    dc.w    $4EB9,$0003,$B22C                           ; jsr $03B22C
+    jsr sprintf
     lea     $c(a7), a7
     bra.b   .l12acc
 .l12aa0:
@@ -3902,14 +3902,14 @@ FormatRouteDetails:
     pea     -$a0(a6)
     move.l  ($000479A2).l, -(a7)
     pea     -$140(a6)
-    dc.w    $4EB9,$0003,$B22C                           ; jsr $03B22C
+    jsr sprintf
     lea     $10(a7), a7
 .l12acc:
     pea     -$140(a6)
     move.l  ($000479A6).l, -(a7)
     pea     -$50(a6)
-    dc.w    $4EB9,$0003,$B22C                           ; jsr $03B22C
-    dc.w    $4EB9,$0001,$D748                           ; jsr $01D748
+    jsr sprintf
+    jsr ResourceUnload
     pea     ($0001).w
     clr.l   -(a7)
     clr.l   -(a7)
@@ -3917,7 +3917,7 @@ FormatRouteDetails:
     moveq   #$0,d0
     move.w  d7, d0
     move.l  d0, -(a7)
-    dc.w    $4EB9,$0000,$7912                           ; jsr $007912
+    jsr ShowDialog
     lea     $20(a7), a7
     tst.w   d6
     beq.b   .l12b1a
@@ -3938,7 +3938,7 @@ FormatRouteDetails:
     moveq   #$0,d0
     move.w  d7, d0
     move.l  d0, -(a7)
-    dc.w    $4EB9,$0000,$7912                           ; jsr $007912
+    jsr ShowDialog
     movem.l -$168(a6), d2-d7/a2-a5
     unlk    a6
     rts
@@ -3954,14 +3954,14 @@ GetCharStatField:
     movea.l  #$00000D64,a5
     clr.w   d4
     moveq   #$1,d7
-    dc.w    $4EB9,$0001,$E398                           ; jsr $01E398
+    jsr PreLoopInit
     move.w  d5, d0
     mulu.w  #$320, d0
     movea.l  #$00FF9A20,a0
     lea     (a0,d0.w), a0
     movea.l a0, a2
     clr.l   -(a7)
-    dc.w    $4EB9,$0001,$E1EC                           ; jsr $01E1EC
+    jsr ReadInput
     addq.l  #$4, a7
     tst.w   d0
     beq.b   .l12b7e
@@ -3974,7 +3974,7 @@ GetCharStatField:
     clr.w   d6
     clr.w   ($00FF13FC).l
     clr.w   ($00FFA7D8).l
-    dc.w    $4EB9,$0001,$D71C                           ; jsr $01D71C
+    jsr ResourceLoad
     moveq   #$0,d0
     movea.l d0, a4
     clr.w   d2
@@ -4045,13 +4045,13 @@ GetCharStatField:
     ext.l   d0
     move.l  d0, -(a7)
     move.l  a2, -(a7)
-    dc.w    $4EB9,$0001,$9244                           ; jsr $019244
+    jsr FormatRelationDisplay
     lea     $14(a7), a7
     movea.l a2, a4
 .l12c66:
     cmpi.w  #$1, d7
     bne.b   .l12c90
-    dc.w    $4EB9,$0001,$D748                           ; jsr $01D748
+    jsr ResourceUnload
     clr.l   -(a7)
     clr.l   -(a7)
     clr.l   -(a7)
@@ -4059,14 +4059,14 @@ GetCharStatField:
     move.w  d5, d0
     ext.l   d0
     move.l  d0, -(a7)
-    dc.w    $4EB9,$0000,$7912                           ; jsr $007912
+    jsr ShowDialog
     lea     $14(a7), a7
     clr.w   d7
 .l12c90:
     tst.w   -$2(a6)
     beq.b   .l12ca6
     clr.l   -(a7)
-    dc.w    $4EB9,$0001,$E1EC                           ; jsr $01E1EC
+    jsr ReadInput
     addq.l  #$4, a7
     tst.w   d0
     bne.w   .l12ba0
@@ -4077,7 +4077,7 @@ GetCharStatField:
 .l12cb2:
     pea     ($0001).w
     pea     ($0003).w
-    dc.w    $4EB9,$0001,$D62C                           ; jsr $01D62C
+    jsr PollAction
     addq.l  #$8, a7
     andi.l  #$30, d0
     beq.b   .l12cb2
@@ -4095,7 +4095,7 @@ GetCharStatField:
     pea     ($0078).w
     pea     ($0039).w
     pea     ($0770).w
-    dc.w    $4EB9,$0001,$E044                           ; jsr $01E044
+    jsr TilePlacement
     pea     ($0001).w
     pea     ($000E).w
     jsr     (a5)
@@ -4107,7 +4107,7 @@ GetCharStatField:
     pea     ($0078).w
     pea     ($003A).w
     pea     ($0771).w
-    dc.w    $4EB9,$0001,$E044                           ; jsr $01E044
+    jsr TilePlacement
     lea     $1c(a7), a7
 .l12d38:
     pea     ($0001).w
@@ -4120,7 +4120,7 @@ GetCharStatField:
     bne.b   .l12d5e
     pea     ($0002).w
     pea     ($0039).w
-    dc.w    $4EB9,$0001,$E0B8                           ; jsr $01E0B8
+    jsr GameCmd16
     addq.l  #$8, a7
     bra.b   .l12d38
 .l12d5e:
@@ -4131,7 +4131,7 @@ GetCharStatField:
     move.w  d6, d0
     move.l  d0, -(a7)
     pea     ($000A).w
-    dc.w    $4EB9,$0001,$E290                           ; jsr $01E290
+    jsr ProcessInputLoop
     addq.l  #$8, a7
     andi.w  #$33, d0
     move.w  d0, d6
@@ -4228,7 +4228,7 @@ CalcRouteValue:
     move.w  d3, d0
     ext.l   d0
     move.l  d0, -(a7)
-    dc.w    $4EB9,$0000,$9D92                           ; jsr $009D92
+    jsr GetCharStat
     addq.l  #$8, a7
     move.w  d0, d2
     moveq   #$0,d0
@@ -4242,7 +4242,7 @@ CalcRouteValue:
     move.w  d2, d1
     ext.l   d1
     addq.l  #$1, d1
-    dc.w    $4EB9,$0003,$E05C                           ; jsr $03E05C
+    jsr Multiply32
     tst.l   d0
     bge.b   .l12e88
     addq.l  #$3, d0
@@ -4612,8 +4612,8 @@ RunRouteManagementUI:
     movea.l  #$00FF13FC,a3
     movea.l  #$000479AE,a4
     lea     -$b6(a6), a5
-    dc.w    $4EB9,$0001,$D71C                           ; jsr $01D71C
-    dc.w    $4EB9,$0003,$A9AC                           ; jsr $03A9AC
+    jsr ResourceLoad
+    jsr ClearTileArea
     move.w  d6, d0
     ext.l   d0
     move.l  d0, -(a7)
@@ -4622,7 +4622,7 @@ RunRouteManagementUI:
     move.l  d0, -(a7)
     dc.w    $4EBA,$025C                                 ; jsr $0134F6(pc)
     nop
-    dc.w    $4EB9,$0001,$D748                           ; jsr $01D748
+    jsr ResourceUnload
     moveq   #$1,d5
     move.w  #$ff, d2
     move.l  a2, -(a7)
@@ -4647,12 +4647,12 @@ RunRouteManagementUI:
     clr.l   -(a7)
     pea     ($0002).w
     pea     ($0544).w
-    dc.w    $4EB9,$0001,$E044                           ; jsr $01E044
+    jsr TilePlacement
     pea     ($0001).w
     pea     ($000E).w
-    dc.w    $4EB9,$0000,$0D64                           ; jsr $000D64
+    jsr GameCommand
     clr.l   -(a7)
-    dc.w    $4EB9,$0001,$E1EC                           ; jsr $01E1EC
+    jsr ReadInput
     lea     $28(a7), a7
     tst.w   d0
     beq.b   l_1330e
@@ -4679,14 +4679,14 @@ l_13320:
     move.w  d3, d0
     ext.l   d0
     move.l  d0, -(a7)
-    dc.w    $4EB9,$0001,$183A                           ; jsr $01183A
+    jsr ShowTextDialog
     lea     $18(a7), a7
     clr.w   d5
 l_13348:
     tst.w   -$2(a6)
     beq.b   l_1335c
     clr.l   -(a7)
-    dc.w    $4EB9,$0001,$E1EC                           ; jsr $01E1EC
+    jsr ReadInput
     addq.l  #$4, a7
     tst.w   d0
     bne.b   l_13320
@@ -4695,7 +4695,7 @@ l_1335c:
     move.w  d7, d0
     move.l  d0, -(a7)
     pea     ($000A).w
-    dc.w    $4EB9,$0001,$E290                           ; jsr $01E290
+    jsr ProcessInputLoop
     addq.l  #$8, a7
     andi.w  #$33, d0
     move.w  d0, d7
@@ -4738,7 +4738,7 @@ l_1339a:
 l_133d2:
     pea     ($0001).w
     pea     ($0002).w
-    dc.w    $4EB9,$0001,$E0B8                           ; jsr $01E0B8
+    jsr GameCmd16
     addq.l  #$8, a7
     move.w  d2, d0
     bra.w   l_134ec
@@ -4751,7 +4751,7 @@ l_133e8:
     move.l  $4(a4), -(a7)
 l_133f8:
     move.l  a5, -(a7)
-    dc.w    $4EB9,$0003,$B22C                           ; jsr $03B22C
+    jsr sprintf
     pea     ($0001).w
     clr.l   -(a7)
     pea     ($0002).w
@@ -4762,7 +4762,7 @@ l_133f8:
     move.w  d3, d0
     ext.l   d0
     move.l  d0, -(a7)
-    dc.w    $4EB9,$0001,$183A                           ; jsr $01183A
+    jsr ShowTextDialog
     lea     $24(a7), a7
     moveq   #$1,d5
     bra.w   l_134d8
@@ -4786,7 +4786,7 @@ l_1344a:
     addq.l  #$2, d0
 l_13454:
     moveq   #$3,d1
-    dc.w    $4EB9,$0003,$E146                           ; jsr $03E146
+    jsr SignedMod
     move.w  d0, d2
     cmpi.w  #$1, d2
     bne.b   l_13468
@@ -4806,10 +4806,10 @@ l_1346a:
     clr.l   -(a7)
     pea     ($0002).w
     pea     ($0544).w
-    dc.w    $4EB9,$0001,$E044                           ; jsr $01E044
+    jsr TilePlacement
     pea     ($0001).w
     pea     ($000E).w
-    dc.w    $4EB9,$0000,$0D64                           ; jsr $000D64
+    jsr GameCommand
     lea     $24(a7), a7
     move.l  a2, -(a7)
     move.w  d4, d0
@@ -4837,7 +4837,7 @@ l_134d0:
 l_134d8:
     pea     ($0003).w
     pea     ($000E).w
-    dc.w    $4EB9,$0000,$0D64                           ; jsr $000D64
+    jsr GameCommand
     addq.l  #$8, a7
     bra.w   l_13320
 l_134ec:
@@ -4867,7 +4867,7 @@ SelectCharRelation:
     pea     ($001F).w
     pea     ($0001).w
     pea     ($0001).w
-    dc.w    $4EB9,$0003,$A942                           ; jsr $03A942
+    jsr SetTextWindow
     pea     ($0002).w
     pea     ($0001).w
     jsr     (a4)
@@ -5075,7 +5075,7 @@ SearchCharInSlots:
     move.w  d2, d0
     ext.l   d0
     move.l  d0, -(a7)
-    dc.w    $4EB9,$0000,$6EEA                           ; jsr $006EEA
+    jsr BitFieldSearch
     addq.l  #$8, a7
     move.w  d0, d4
     moveq   #$0,d0
@@ -5172,30 +5172,30 @@ l_137fa:
     lsl.l   #$2, d0
     move.l  d0, -$4(a6)
     clr.l   -(a7)
-    dc.w    $4EB9,$0000,$538E                           ; jsr $00538E
+    jsr CmdSetBackground
     pea     ($0020).w
     pea     ($0020).w
     clr.l   -(a7)
     clr.l   -(a7)
-    dc.w    $4EB9,$0003,$A942                           ; jsr $03A942
+    jsr SetTextWindow
     clr.w   d2
     moveq   #$4,d3
     pea     ($0020).w
     pea     ($0020).w
     clr.l   -(a7)
     clr.l   -(a7)
-    dc.w    $4EB9,$0003,$A942                           ; jsr $03A942
+    jsr SetTextWindow
     lea     $28(a7), a7
     pea     ($0011).w
     pea     ($001E).w
     pea     ($0001).w
     pea     ($0001).w
-    dc.w    $4EB9,$0000,$5A04                           ; jsr $005A04
+    jsr DrawBox
     pea     ($0020).w
     pea     ($0020).w
     clr.l   -(a7)
     clr.l   -(a7)
-    dc.w    $4EB9,$0003,$A942                           ; jsr $03A942
+    jsr SetTextWindow
     move.w  d3, d0
     ext.l   d0
     move.l  d0, -(a7)
@@ -5203,7 +5203,7 @@ l_137fa:
     ext.l   d0
     addq.l  #$2, d0
     move.l  d0, -(a7)
-    dc.w    $4EB9,$0003,$AB2C                           ; jsr $03AB2C
+    jsr SetTextCursor
     moveq   #$0,d0
     move.w  $6(a2), d0
     lsl.l   #$2, d0
@@ -5219,7 +5219,7 @@ l_137fa:
     ext.l   d0
     addq.l  #$2, d0
     move.l  d0, -(a7)
-    dc.w    $4EB9,$0003,$AB2C                           ; jsr $03AB2C
+    jsr SetTextCursor
     pea     ($0003F662).l
     jsr     (a5)
     move.w  d3, d0
@@ -5230,7 +5230,7 @@ l_137fa:
     ext.l   d0
     addi.l  #$14, d0
     move.l  d0, -(a7)
-    dc.w    $4EB9,$0003,$AB2C                           ; jsr $03AB2C
+    jsr SetTextCursor
     move.l  -$c(a6), -(a7)
     pea     ($0003F65C).l
     jsr     (a5)
@@ -5242,7 +5242,7 @@ l_137fa:
     ext.l   d0
     addq.l  #$2, d0
     move.l  d0, -(a7)
-    dc.w    $4EB9,$0003,$AB2C                           ; jsr $03AB2C
+    jsr SetTextCursor
     pea     ($0003F64A).l
     jsr     (a5)
     move.w  d3, d0
@@ -5253,7 +5253,7 @@ l_137fa:
     ext.l   d0
     addq.l  #$2, d0
     move.l  d0, -(a7)
-    dc.w    $4EB9,$0003,$AB2C                           ; jsr $03AB2C
+    jsr SetTextCursor
     lea     $30(a7), a7
     pea     ($0003F636).l
     jsr     (a5)
@@ -5267,16 +5267,16 @@ l_137fa:
     move.w  d7, d0
     ext.l   d0
     move.l  d0, -(a7)
-    dc.w    $4EB9,$0001,$183A                           ; jsr $01183A
+    jsr ShowTextDialog
     pea     ($0020).w
     pea     ($0020).w
     clr.l   -(a7)
     clr.l   -(a7)
-    dc.w    $4EB9,$0003,$A942                           ; jsr $03A942
+    jsr SetTextWindow
     lea     $2c(a7), a7
 l_1395a:
     clr.l   -(a7)
-    dc.w    $4EB9,$0001,$E1EC                           ; jsr $01E1EC
+    jsr ReadInput
     addq.l  #$4, a7
     andi.w  #$fff, d0
     bne.b   l_1395a
@@ -5295,17 +5295,17 @@ l_13982:
     pea     ($0020).w
     clr.l   -(a7)
     clr.l   -(a7)
-    dc.w    $4EB9,$0003,$A942                           ; jsr $03A942
+    jsr SetTextWindow
     pea     ($0011).w
     pea     ($001E).w
     pea     ($0001).w
     pea     ($0001).w
-    dc.w    $4EB9,$0000,$5A04                           ; jsr $005A04
+    jsr DrawBox
     pea     ($0020).w
     pea     ($0020).w
     clr.l   -(a7)
     clr.l   -(a7)
-    dc.w    $4EB9,$0003,$A942                           ; jsr $03A942
+    jsr SetTextWindow
     lea     $30(a7), a7
     move.w  d3, d0
     ext.l   d0
@@ -5314,7 +5314,7 @@ l_13982:
     ext.l   d0
     addq.l  #$2, d0
     move.l  d0, -(a7)
-    dc.w    $4EB9,$0003,$AB2C                           ; jsr $03AB2C
+    jsr SetTextCursor
     moveq   #$0,d0
     move.w  $6(a2), d0
     lsl.l   #$2, d0
@@ -5329,7 +5329,7 @@ l_13982:
     ext.l   d0
     addq.l  #$2, d0
     move.l  d0, -(a7)
-    dc.w    $4EB9,$0003,$AB2C                           ; jsr $03AB2C
+    jsr SetTextCursor
     pea     ($0003F624).l
     jsr     (a5)
     move.w  d3, d0
@@ -5340,7 +5340,7 @@ l_13982:
     ext.l   d0
     addi.l  #$14, d0
     move.l  d0, -(a7)
-    dc.w    $4EB9,$0003,$AB2C                           ; jsr $03AB2C
+    jsr SetTextCursor
     move.l  -$c(a6), -(a7)
     pea     ($0003F61E).l
     jsr     (a5)
@@ -5352,7 +5352,7 @@ l_13982:
     ext.l   d0
     addq.l  #$2, d0
     move.l  d0, -(a7)
-    dc.w    $4EB9,$0003,$AB2C                           ; jsr $03AB2C
+    jsr SetTextCursor
     lea     $30(a7), a7
     pea     ($0003F60C).l
     jsr     (a5)
@@ -5364,7 +5364,7 @@ l_13982:
     ext.l   d0
     addq.l  #$2, d0
     move.l  d0, -(a7)
-    dc.w    $4EB9,$0003,$AB2C                           ; jsr $03AB2C
+    jsr SetTextCursor
     pea     ($0003F5F8).l
     jsr     (a5)
     clr.l   -(a7)
@@ -5377,13 +5377,13 @@ l_13982:
     move.w  d7, d0
     ext.l   d0
     move.l  d0, -(a7)
-    dc.w    $4EB9,$0001,$183A                           ; jsr $01183A
+    jsr ShowTextDialog
     lea     $28(a7), a7
     pea     ($0020).w
     pea     ($0020).w
     clr.l   -(a7)
     clr.l   -(a7)
-    dc.w    $4EB9,$0003,$A942                           ; jsr $03A942
+    jsr SetTextWindow
     lea     $10(a7), a7
     clr.w   d5
     bra.b   l_13ac8
@@ -5398,7 +5398,7 @@ l_13ac8:
     ext.l   d0
     addi.l  #$14, d0
     move.l  d0, -(a7)
-    dc.w    $4EB9,$0003,$AB2C                           ; jsr $03AB2C
+    jsr SetTextCursor
     move.w  d4, d0
     lsl.w   #$2, d0
     move.l  -$14(a6, d0.w), -(a7)
@@ -5417,7 +5417,7 @@ l_13ac8:
     move.l  d0, -(a7)
     clr.l   -(a7)
     pea     ($001A).w
-    dc.w    $4EB9,$0000,$0D64                           ; jsr $000D64
+    jsr GameCommand
     lea     $2c(a7), a7
     move.w  d3, d0
     ext.l   d0
@@ -5427,7 +5427,7 @@ l_13ac8:
     ext.l   d0
     addi.l  #$15, d0
     move.l  d0, -(a7)
-    dc.w    $4EB9,$0003,$AB2C                           ; jsr $03AB2C
+    jsr SetTextCursor
     move.w  d4, d0
     lsl.w   #$2, d0
     movea.l  #$000479E2,a0
@@ -5452,7 +5452,7 @@ l_13ac8:
     lsl.w   #$3, d0
     addi.w  #$c0, d0
     move.l  d0, -(a7)
-    dc.w    $4EB9,$0001,$AEB8                           ; jsr $01AEB8
+    jsr ShowPlayerCompare
     lea     $24(a7), a7
     move.w  d0, d6
     ext.l   d0
@@ -5513,7 +5513,7 @@ l_13c12:
     clr.l   -(a7)
     clr.l   -(a7)
     pea     ($001A).w
-    dc.w    $4EB9,$0000,$0D64                           ; jsr $000D64
+    jsr GameCommand
     lea     $1c(a7), a7
     pea     ($0001).w
     clr.l   -(a7)
@@ -5525,7 +5525,7 @@ l_13c12:
     move.w  d7, d0
     ext.l   d0
     move.l  d0, -(a7)
-    dc.w    $4EB9,$0001,$183A                           ; jsr $01183A
+    jsr ShowTextDialog
     lea     $18(a7), a7
     moveq   #$1,d5
     bra.b   l_13ca2
@@ -5565,7 +5565,7 @@ l_13ca0:
 l_13ca2:
     pea     ($0006).w
     pea     ($000E).w
-    dc.w    $4EB9,$0000,$0D64                           ; jsr $000D64
+    jsr GameCommand
     addq.l  #$8, a7
     bra.w   l_13982
 l_13cb6:
@@ -5625,17 +5625,17 @@ UpdateSpritePos:
     pea     ($0003).w
     clr.l   -(a7)
     pea     ($001A).w
-    dc.w    $4EB9,$0000,$0D64                           ; jsr $000D64
+    jsr GameCommand
     pea     ($0020).w
     pea     ($0020).w
     clr.l   -(a7)
     clr.l   -(a7)
-    dc.w    $4EB9,$0003,$A942                           ; jsr $03A942
+    jsr SetTextWindow
     lea     $2c(a7), a7
     pea     ($0010).w
     pea     ($0030).w
     pea     ($000767DE).l
-    dc.w    $4EB9,$0000,$5092                           ; jsr $005092
+    jsr DisplaySetup
     lea     $c(a7), a7
     move.w  #$640, d4
     moveq   #$3,d5
@@ -5661,13 +5661,13 @@ l_13d9c:
     movea.l  #$0009C840,a0
     move.l  (a0,d0.l), -(a7)
     pea     ($00FF1804).l
-    dc.w    $4EB9,$0000,$3FEC                           ; jsr $003FEC
+    jsr LZ_Decompress
     pea     ($001E).w
     move.w  d4, d0
     ext.l   d0
     move.l  d0, -(a7)
     pea     ($00FF1804).l
-    dc.w    $4EB9,$0000,$4668                           ; jsr $004668
+    jsr CmdPlaceTile
     lea     -$3c(a6), a2
     clr.w   d2
 l_13dd4:
@@ -5689,7 +5689,7 @@ l_13dd4:
     move.l  d0, -(a7)
     clr.l   -(a7)
     pea     ($001B).w
-    dc.w    $4EB9,$0000,$0D64                           ; jsr $000D64
+    jsr GameCommand
     lea     $30(a7), a7
     move.w  d7, d0
     ext.l   d0
@@ -5699,12 +5699,12 @@ l_13dd4:
     ext.l   d0
     addq.l  #$4, d0
     move.l  d0, -(a7)
-    dc.w    $4EB9,$0003,$AB2C                           ; jsr $03AB2C
+    jsr SetTextCursor
     move.w  (a3), d0
     ext.l   d0
     move.l  d0, -(a7)
     pea     ($0003F674).l
-    dc.w    $4EB9,$0003,$B246                           ; jsr $03B246
+    jsr PrintfNarrow
     lea     $10(a7), a7
     add.w   (a3), d6
     addi.w  #$1e, d4
@@ -5734,7 +5734,7 @@ InitRouteBuffer:
     pea     ($000C).w
     clr.l   -(a7)
     pea     ($00FF9A10).l
-    dc.w    $4EB9,$0001,$D520                           ; jsr $01D520
+    jsr MemFillByte
     lea     $c(a7), a7
     movea.l  #$00FF9A10,a3
     clr.w   d3
@@ -5876,7 +5876,7 @@ l_13fc8:
     move.w  d5, d0
     ext.l   d0
     move.l  d0, -(a7)
-    dc.w    $4EB9,$0001,$8EBA                           ; jsr $018EBA
+    jsr GetCharRelation
     lea     $c(a7), a7
     addq.w  #$1, d7
     addq.l  #$2, a5
@@ -5958,7 +5958,7 @@ l_140a4:
     move.w  d5, d0
     ext.l   d0
     move.l  d0, -(a7)
-    dc.w    $4EB9,$0001,$8EBA                           ; jsr $018EBA
+    jsr GetCharRelation
     lea     $c(a7), a7
     addq.l  #$2, a5
     addq.w  #$1, d7
@@ -6514,12 +6514,12 @@ ProcessCharacterAction:
     adda.l  d1, a0
     move.b  $1(a0), d6
     andi.l  #$ff, d6
-    dc.w    $4EB9,$0001,$E398                           ; jsr $01E398
+    jsr PreLoopInit
     move.l  a2, -(a7)
-    dc.w    $4EB9,$0000,$74E0                           ; jsr $0074E0
+    jsr GetByteField4
     move.w  d0, ($00FFBD5C).l
     move.l  a2, -(a7)
-    dc.w    $4EB9,$0000,$7402                           ; jsr $007402
+    jsr GetLowNibble
     move.w  d0, (a5)
     move.w  d3, d0
     ext.l   d0
@@ -6531,7 +6531,7 @@ ProcessCharacterAction:
     move.b  $1(a5), d1
     movea.l  #$00FFB9E9,a0
     add.b   d1, (a0,d0.w)
-    dc.w    $4EB9,$0001,$D71C                           ; jsr $01D71C
+    jsr ResourceLoad
     move.l  a2, -(a7)
     dc.w    $4EBA,$0240                                 ; jsr $014972(pc)
     nop
@@ -6546,7 +6546,7 @@ ProcessCharacterAction:
     ext.l   d0
     move.l  d0, -(a7)
     move.l  a2, -(a7)
-    dc.w    $4EB9,$0001,$9244                           ; jsr $019244
+    jsr FormatRelationDisplay
     lea     $20(a7), a7
     bra.w   .l1483c
 .l1475e:
@@ -6585,7 +6585,7 @@ ProcessCharacterAction:
     clr.l   -(a7)
     pea     ($001B).w
 .l147cc:
-    dc.w    $4EB9,$0000,$0D64                           ; jsr $000D64
+    jsr GameCommand
     lea     $1c(a7), a7
     bra.b   .l14836
 .l147d8:
@@ -6636,7 +6636,7 @@ ProcessCharacterAction:
     jsr     (a3)
     addq.l  #$4, a7
 .l1483c:
-    dc.w    $4EB9,$0001,$D748                           ; jsr $01D748
+    jsr ResourceUnload
     cmpi.w  #$ff, d2
     beq.b   .l14850
     cmpi.w  #$6, d2
@@ -6681,13 +6681,13 @@ ValidateCharacterState:
     moveq   #-$1,d3
     pea     ($0004E28A).l
     pea     ($00FF1804).l
-    dc.w    $4EB9,$0000,$3FEC                           ; jsr $003FEC
+    jsr LZ_Decompress
     clr.l   -(a7)
     clr.l   -(a7)
     pea     ($00FF1804).l
     pea     ($0018).w
     pea     ($037B).w
-    dc.w    $4EB9,$0001,$D568                           ; jsr $01D568
+    jsr VRAMBulkLoad
     lea     $1c(a7), a7
     move.b  $a(a2), d0
     btst    #$2, d0
@@ -6740,7 +6740,7 @@ ValidateCharacterState:
     clr.l   -(a7)
     pea     ($001A).w
 .l14962:
-    dc.w    $4EB9,$0000,$0D64                           ; jsr $000D64
+    jsr GameCommand
     movem.l -$1c(a6), d2-d3/a2
     unlk    a6
     rts
@@ -6755,27 +6755,27 @@ CalcCharacterBonus:
     movea.l  #$0003B270,a3
     movea.l  #$0003AB2C,a4
     move.l  a2, -(a7)
-    dc.w    $4EB9,$0000,$74E0                           ; jsr $0074E0
+    jsr GetByteField4
     move.w  d0, d3
     move.l  a2, -(a7)
-    dc.w    $4EB9,$0000,$7402                           ; jsr $007402
+    jsr GetLowNibble
     move.w  d0, d2
     pea     ($0040).w
     clr.l   -(a7)
     pea     ($0010).w
-    dc.w    $4EB9,$0000,$0D64                           ; jsr $000D64
+    jsr GameCommand
     pea     ($0010).w
     pea     ($0020).w
     pea     ($00076A1E).l
-    dc.w    $4EB9,$0000,$5092                           ; jsr $005092
+    jsr DisplaySetup
     move.l  ($000A1B00).l, -(a7)
     pea     ($00FF899C).l
-    dc.w    $4EB9,$0000,$3FEC                           ; jsr $003FEC
+    jsr LZ_Decompress
     lea     $28(a7), a7
     pea     ($0080).w
     pea     ($006A).w
     pea     ($00FF899C).l
-    dc.w    $4EB9,$0000,$4668                           ; jsr $004668
+    jsr CmdPlaceTile
     pea     ($0007184C).l
     pea     ($0004).w
     pea     ($001E).w
@@ -6783,13 +6783,13 @@ CalcCharacterBonus:
     pea     ($0001).w
     pea     ($0001).w
     pea     ($001B).w
-    dc.w    $4EB9,$0000,$0D64                           ; jsr $000D64
+    jsr GameCommand
     lea     $28(a7), a7
     pea     ($0020).w
     pea     ($0020).w
     clr.l   -(a7)
     clr.l   -(a7)
-    dc.w    $4EB9,$0003,$A942                           ; jsr $03A942
+    jsr SetTextWindow
     pea     ($0003).w
     pea     ($0009).w
     jsr     (a4)
@@ -6846,7 +6846,7 @@ ApplyCharacterEffect:
     move.w  d4, d0
     ext.l   d0
     move.l  d0, -(a7)
-    dc.w    $4EB9,$0003,$8544                           ; jsr $038544
+    jsr CheckMatchSlots
     addq.l  #$4, a7
     tst.w   d0
     beq.b   .l14b1a
@@ -6854,14 +6854,14 @@ ApplyCharacterEffect:
     pea     ($001C).w
     pea     ($0014).w
     pea     ($0001).w
-    dc.w    $4EB9,$0000,$5A04                           ; jsr $005A04
+    jsr DrawBox
     pea     ($0003F7D8).l
-    dc.w    $4EB9,$0003,$B246                           ; jsr $03B246
+    jsr PrintfNarrow
     pea     ($0020).w
     pea     ($0020).w
     clr.l   -(a7)
     clr.l   -(a7)
-    dc.w    $4EB9,$0003,$A942                           ; jsr $03A942
+    jsr SetTextWindow
     lea     $24(a7), a7
 .l14b1a:
     move.w  #$88a, -$2(a6)
@@ -6876,7 +6876,7 @@ ApplyCharacterEffect:
     lea     $c(a7), a7
 .l14b40:
     clr.l   -(a7)
-    dc.w    $4EB9,$0001,$E1EC                           ; jsr $01E1EC
+    jsr ReadInput
     addq.l  #$4, a7
     andi.w  #$fff, d0
     bne.b   .l14b40
@@ -6896,7 +6896,7 @@ ApplyCharacterEffect:
     move.w  d3, d0
     move.l  d0, -(a7)
     pea     ($0014).w
-    dc.w    $4EB9,$0001,$E290                           ; jsr $01E290
+    jsr ProcessInputLoop
     addq.l  #$8, a7
     move.w  d0, d3
     andi.l  #$bc, d0
@@ -7014,7 +7014,7 @@ ApplyCharacterEffect:
     move.w  d4, d0
     ext.l   d0
     move.l  d0, -(a7)
-    dc.w    $4EB9,$0001,$A2CE                           ; jsr $01A2CE
+    jsr BrowsePartners
     lea     $28(a7), a7
     move.l  #$8000, -(a7)
     pea     ($000A).w
@@ -7028,11 +7028,11 @@ ApplyCharacterEffect:
     pea     ($0020).w
     clr.l   -(a7)
     clr.l   -(a7)
-    dc.w    $4EB9,$0003,$A942                           ; jsr $03A942
+    jsr SetTextWindow
     move.w  d4, d0
     ext.l   d0
     move.l  d0, -(a7)
-    dc.w    $4EB9,$0003,$8544                           ; jsr $038544
+    jsr CheckMatchSlots
     lea     $30(a7), a7
     tst.w   d0
     beq.b   .l14d3a
@@ -7040,18 +7040,18 @@ ApplyCharacterEffect:
     pea     ($001C).w
     pea     ($0014).w
     pea     ($0001).w
-    dc.w    $4EB9,$0000,$5A04                           ; jsr $005A04
+    jsr DrawBox
     pea     ($0003F7B4).l
-    dc.w    $4EB9,$0003,$B246                           ; jsr $03B246
+    jsr PrintfNarrow
     pea     ($0020).w
     pea     ($0020).w
     clr.l   -(a7)
     clr.l   -(a7)
-    dc.w    $4EB9,$0003,$A942                           ; jsr $03A942
+    jsr SetTextWindow
     lea     $24(a7), a7
 .l14d3a:
     clr.l   -(a7)
-    dc.w    $4EB9,$0001,$E1EC                           ; jsr $01E1EC
+    jsr ReadInput
     addq.l  #$4, a7
     andi.w  #$fff, d0
     bne.b   .l14d3a
@@ -7074,20 +7074,20 @@ WaitStableInput:
     movem.l d2-d4, -(a7)
     move.l  $10(a7), d2
     clr.l   -(a7)
-    dc.w    $4EB9,$0001,$E1EC                           ; jsr $01E1EC
+    jsr ReadInput
     addq.l  #$4, a7
     move.w  d0, d4
     bra.b   .l14d9c
 .l14d7a:
     clr.l   -(a7)
-    dc.w    $4EB9,$0001,$E1EC                           ; jsr $01E1EC
+    jsr ReadInput
     addq.l  #$4, a7
     move.w  d0, d3
     cmp.w   d3, d4
     bne.b   .l14da0
     pea     ($0001).w
     pea     ($000E).w
-    dc.w    $4EB9,$0000,$0D64                           ; jsr $000D64
+    jsr GameCommand
     addq.l  #$8, a7
     subq.w  #$1, d2
 .l14d9c:
@@ -7122,7 +7122,7 @@ RankCharCandidatesFull:
     clr.l   -(a7)
     clr.l   -(a7)
     pea     ($001A).w
-    dc.w    $4EB9,$0000,$0D64                           ; jsr $000D64
+    jsr GameCommand
     lea     $1c(a7), a7
     pea     ($077D).w
     pea     ($000A).w
@@ -7131,7 +7131,7 @@ RankCharCandidatesFull:
     clr.l   -(a7)
     pea     ($0001).w
     pea     ($001A).w
-    dc.w    $4EB9,$0000,$0D64                           ; jsr $000D64
+    jsr GameCommand
     lea     $1c(a7), a7
     move.w  d6, d0
     mulu.w  #$320, d0
@@ -7181,7 +7181,7 @@ RankCharCandidatesFull:
     movea.l  #$00FF9A20,a0
     lea     (a0,d0.w), a0
     movea.l a0, a2
-    dc.w    $4EB9,$0003,$A9AC                           ; jsr $03A9AC
+    jsr ClearTileArea
     pea     ($0001).w
     pea     ($0001).w
     pea     ($0013).w
@@ -7190,10 +7190,10 @@ RankCharCandidatesFull:
     ext.l   d0
     move.l  d0, -(a7)
     move.l  a2, -(a7)
-    dc.w    $4EB9,$0001,$9660                           ; jsr $019660
+    jsr FormatRelationStats
     clr.w   -$54(a6)
     clr.l   -(a7)
-    dc.w    $4EB9,$0001,$E1EC                           ; jsr $01E1EC
+    jsr ReadInput
     lea     $1c(a7), a7
     tst.w   d0
     beq.b   .l14ed0
@@ -7219,7 +7219,7 @@ RankCharCandidatesFull:
     movea.l  #$00FF9A20,a0
     lea     (a0,d0.w), a0
     movea.l a0, a2
-    dc.w    $4EB9,$0003,$A9AC                           ; jsr $03A9AC
+    jsr ClearTileArea
     pea     ($0001).w
     move.w  -$54(a6), d0
     ext.l   d0
@@ -7230,7 +7230,7 @@ RankCharCandidatesFull:
     ext.l   d0
     move.l  d0, -(a7)
     move.l  a2, -(a7)
-    dc.w    $4EB9,$0001,$9660                           ; jsr $019660
+    jsr FormatRelationStats
     pea     ($0020).w
     dc.w    $6100,$FE38                                 ; bsr.w $014D64
     lea     $1c(a7), a7
@@ -7246,20 +7246,20 @@ RankCharCandidatesFull:
     move.b  (a2), d0
     ext.l   d0
     move.l  d0, -(a7)
-    dc.w    $4EB9,$0000,$7158                           ; jsr $007158
+    jsr RangeMatch
     addq.l  #$8, a7
     cmpi.w  #$1, d0
     tst.w   d5
     beq.b   .l14f7e
     clr.l   -(a7)
-    dc.w    $4EB9,$0001,$E1EC                           ; jsr $01E1EC
+    jsr ReadInput
     addq.l  #$4, a7
     tst.w   d0
     beq.b   .l14f7e
     pea     ($0002).w
 .l14f6e:
     pea     ($000E).w
-    dc.w    $4EB9,$0000,$0D64                           ; jsr $000D64
+    jsr GameCommand
     addq.l  #$8, a7
     bra.w   .l14edc
 .l14f7e:
@@ -7267,7 +7267,7 @@ RankCharCandidatesFull:
     move.w  -$52(a6), d0
     move.l  d0, -(a7)
     pea     ($000A).w
-    dc.w    $4EB9,$0001,$E290                           ; jsr $01E290
+    jsr ProcessInputLoop
     addq.l  #$8, a7
     andi.w  #$33, d0
     move.w  d0, -$52(a6)
@@ -7338,7 +7338,7 @@ RankCharCandidatesFull:
     move.w  d6, d0
     ext.l   d0
     move.l  d0, -(a7)
-    dc.w    $4EB9,$0000,$7912                           ; jsr $007912
+    jsr ShowDialog
 .l15032:
     move.w  #$ff, d0
 .l15036:
@@ -7358,7 +7358,7 @@ RenderTilePattern:
     lea     -$20(a6), a4
     movea.l  #$00000D64,a5
     move.l  a2, -(a7)
-    dc.w    $4EB9,$0000,$7402                           ; jsr $007402
+    jsr GetLowNibble
     move.w  d0, -$28(a6)
     move.l  #$8000, -(a7)
     pea     ($0002).w
@@ -7390,7 +7390,7 @@ RenderTilePattern:
     move.w  d2, d0
     ext.l   d0
     move.l  d0, -(a7)
-    dc.w    $4EB9,$0000,$818A                           ; jsr $00818A
+    jsr CheckCharCompat
     lea     $c(a7), a7
     moveq   #$1,d1
     cmp.l   d0, d1
@@ -7401,7 +7401,7 @@ RenderTilePattern:
     movea.l d0, a0
     move.w  d2, (a4,a0.l)
     move.l  a2, -(a7)
-    dc.w    $4EB9,$0000,$74E0                           ; jsr $0074E0
+    jsr GetByteField4
     addq.l  #$4, a7
     andi.l  #$ffff, d0
     move.w  d2, d1
@@ -7440,7 +7440,7 @@ RenderTilePattern:
     movea.l  #$00FFB9E9,a0
     sub.b   d1, (a0,d0.w)
     clr.l   -(a7)
-    dc.w    $4EB9,$0001,$E1EC                           ; jsr $01E1EC
+    jsr ReadInput
     addq.l  #$4, a7
     tst.w   d0
     beq.b   .l1514c
@@ -7465,7 +7465,7 @@ RenderTilePattern:
     pea     ($0008).w
     pea     ($0039).w
     pea     ($0772).w
-    dc.w    $4EB9,$0001,$E044                           ; jsr $01E044
+    jsr TilePlacement
     pea     ($0001).w
     pea     ($000E).w
     jsr     (a5)
@@ -7477,7 +7477,7 @@ RenderTilePattern:
     pea     ($0080).w
     pea     ($003A).w
     pea     ($0773).w
-    dc.w    $4EB9,$0001,$E044                           ; jsr $01E044
+    jsr TilePlacement
     lea     $1c(a7), a7
 .l151c4:
     pea     ($0001).w
@@ -7490,7 +7490,7 @@ RenderTilePattern:
     bne.b   .l151ea
     pea     ($0002).w
     pea     ($0039).w
-    dc.w    $4EB9,$0001,$E0B8                           ; jsr $01E0B8
+    jsr GameCmd16
     addq.l  #$8, a7
     bra.b   .l151c4
 .l151ea:
@@ -7515,7 +7515,7 @@ RenderTilePattern:
     move.w  d5, d0
     ext.l   d0
     move.l  d0, -(a7)
-    dc.w    $4EB9,$0000,$7D92                           ; jsr $007D92
+    jsr ShowCharDetail
     lea     $1c(a7), a7
     move.w  d5, d0
     ext.l   d0
@@ -7531,14 +7531,14 @@ RenderTilePattern:
     move.w  (a4,a0.l), d0
     ext.l   d0
     move.l  d0, -(a7)
-    dc.w    $4EB9,$0003,$A5A8                           ; jsr $03A5A8
+    jsr ShowCharPortrait
     lea     $18(a7), a7
     clr.w   d6
 .l1525a:
     tst.w   d2
     beq.b   .l1527c
     clr.l   -(a7)
-    dc.w    $4EB9,$0001,$E1EC                           ; jsr $01E1EC
+    jsr ReadInput
     addq.l  #$4, a7
     tst.w   d0
     beq.b   .l1527c
@@ -7553,7 +7553,7 @@ RenderTilePattern:
     move.w  -$22(a6), d0
     move.l  d0, -(a7)
     pea     ($000A).w
-    dc.w    $4EB9,$0001,$E290                           ; jsr $01E290
+    jsr ProcessInputLoop
     addq.l  #$8, a7
     andi.w  #$bc, d0
     move.w  d0, -$22(a6)
@@ -7594,7 +7594,7 @@ RenderTilePattern:
     pea     ($0020).w
     clr.l   -(a7)
     clr.l   -(a7)
-    dc.w    $4EB9,$0003,$A942                           ; jsr $03A942
+    jsr SetTextWindow
     move.w  d3, d0
     ext.l   d0
     add.l   d0, d0
@@ -7603,7 +7603,7 @@ RenderTilePattern:
     ext.l   d0
     move.l  d0, -(a7)
     move.l  a2, -(a7)
-    dc.w    $4EB9,$0000,$7390                           ; jsr $007390
+    jsr SetHighNibble
     move.w  d5, d0
     lsl.w   #$5, d0
     move.w  d3, d1
@@ -7617,14 +7617,14 @@ RenderTilePattern:
     move.b  (a0,d0.w), d2
     andi.l  #$ff, d2
     move.l  a2, -(a7)
-    dc.w    $4EB9,$0000,$7402                           ; jsr $007402
+    jsr GetLowNibble
     lea     $1c(a7), a7
     move.w  d2, d1
     ext.l   d1
     cmp.l   d1, d0
     bge.b   .l15366
     move.l  a2, -(a7)
-    dc.w    $4EB9,$0000,$7402                           ; jsr $007402
+    jsr GetLowNibble
     addq.l  #$4, a7
     bra.b   .l1536a
 .l15366:
@@ -7635,28 +7635,28 @@ RenderTilePattern:
     ext.l   d0
     move.l  d0, -(a7)
     move.l  a2, -(a7)
-    dc.w    $4EB9,$0000,$73A6                           ; jsr $0073A6
+    jsr UpdateCharField
     pea     ($0010).w
     pea     ($000E).w
-    dc.w    $4EB9,$0003,$AB2C                           ; jsr $03AB2C
+    jsr SetTextCursor
     move.w  d2, d0
     ext.l   d0
     move.l  d0, -(a7)
     pea     ($0003F838).l
-    dc.w    $4EB9,$0003,$B246                           ; jsr $03B246
+    jsr PrintfNarrow
     clr.l   -(a7)
     pea     ($0002).w
     pea     ($0009).w
     pea     ($0010).w
     move.l  a2, -(a7)
-    dc.w    $4EB9,$0001,$99FA                           ; jsr $0199FA
+    jsr ShowRelationAction
     lea     $2c(a7), a7
     clr.l   -(a7)
     pea     ($0002).w
     pea     ($000D).w
     pea     ($0010).w
     move.l  a2, -(a7)
-    dc.w    $4EB9,$0001,$9DE6                           ; jsr $019DE6
+    jsr ShowRelationResult
     pea     ($064C).w
     pea     ($0008).w
     pea     ($000E).w
@@ -7689,7 +7689,7 @@ RenderTilePattern:
     move.w  (a4,a0.l), d0
     ext.l   d0
     move.l  d0, -(a7)
-    dc.w    $4EB9,$0003,$A5A8                           ; jsr $03A5A8
+    jsr ShowCharPortrait
     lea     $18(a7), a7
     bra.b   .l1547a
 .l15432:
@@ -7719,7 +7719,7 @@ RenderTilePattern:
 .l1547a:
     pea     ($0002).w
     pea     ($0039).w
-    dc.w    $4EB9,$0001,$E0B8                           ; jsr $01E0B8
+    jsr GameCmd16
     move.l  #$8000, -(a7)
     pea     ($000D).w
     pea     ($0020).w
@@ -7749,7 +7749,7 @@ RenderTilePattern:
     move.b  -$27(a6), d1
     movea.l  #$00FFB9E9,a0
     add.b   d1, (a0,d0.w)
-    dc.w    $4EB9,$0001,$DE92                           ; jsr $01DE92
+    jsr LoadMapTiles
     movem.l -$50(a6), d2-d7/a2-a5
     unlk    a6
     rts
@@ -7791,7 +7791,7 @@ DrawScreenElement:
     sub.w   d1, d0
     move.w  d0, -$34(a6)
     move.l  a2, -(a7)
-    dc.w    $4EB9,$0000,$74E0                           ; jsr $0074E0
+    jsr GetByteField4
     andi.l  #$ffff, d0
     add.l   d0, d0
     move.w  $a(a6), d1
@@ -7815,14 +7815,14 @@ DrawScreenElement:
 .l155a2:
     move.w  d0, (a5)
     move.l  a2, -(a7)
-    dc.w    $4EB9,$0000,$7402                           ; jsr $007402
+    jsr GetLowNibble
     move.w  d0, d3
     move.w  d0, -$2(a6)
     pea     ($0020).w
     pea     ($0020).w
     clr.l   -(a7)
     clr.l   -(a7)
-    dc.w    $4EB9,$0003,$A942                           ; jsr $03A942
+    jsr SetTextWindow
     moveq   #$12,d7
     clr.w   d2
 .l155c8:
@@ -7837,15 +7837,15 @@ DrawScreenElement:
     pea     ($0010).w
     pea     ($0010).w
     pea     ($00076A3E).l
-    dc.w    $4EB9,$0000,$5092                           ; jsr $005092
+    jsr DisplaySetup
     move.l  ($000A1B04).l, -(a7)
     pea     ($00FF1804).l
-    dc.w    $4EB9,$0000,$3FEC                           ; jsr $003FEC
+    jsr LZ_Decompress
     lea     $2c(a7), a7
     pea     ($0059).w
     pea     ($0011).w
     pea     ($00FF1804).l
-    dc.w    $4EB9,$0000,$4668                           ; jsr $004668
+    jsr CmdPlaceTile
     lea     $c(a7), a7
     move.w  (a5), d0
     ext.l   d0
@@ -7885,7 +7885,7 @@ DrawScreenElement:
     addq.l  #$2, d0
     move.l  d0, -(a7)
     pea     ($0004).w
-    dc.w    $4EB9,$0003,$AB2C                           ; jsr $03AB2C
+    jsr SetTextCursor
     moveq   #$0,d0
     move.b  $1(a3), d0
     ext.l   d0
@@ -7894,9 +7894,9 @@ DrawScreenElement:
     sub.l   d1, d0
     move.l  d0, -(a7)
     pea     ($0003F854).l
-    dc.w    $4EB9,$0003,$B270                           ; jsr $03B270
+    jsr PrintfWide
     clr.l   -(a7)
-    dc.w    $4EB9,$0001,$E1EC                           ; jsr $01E1EC
+    jsr ReadInput
     lea     $14(a7), a7
     tst.w   d0
     beq.b   .l156c6
@@ -7914,17 +7914,17 @@ DrawScreenElement:
 .l156e2:
     pea     ($0010).w
     pea     ($000E).w
-    dc.w    $4EB9,$0003,$AB2C                           ; jsr $03AB2C
+    jsr SetTextCursor
     move.w  d3, d0
     ext.l   d0
     move.l  d0, -(a7)
     pea     ($0003F850).l
-    dc.w    $4EB9,$0003,$B246                           ; jsr $03B246
+    jsr PrintfNarrow
     lea     $10(a7), a7
     tst.w   d2
     beq.b   .l1571a
     clr.l   -(a7)
-    dc.w    $4EB9,$0001,$E1EC                           ; jsr $01E1EC
+    jsr ReadInput
     addq.l  #$4, a7
     tst.w   d0
     bne.w   .l15bb4
@@ -7944,7 +7944,7 @@ DrawScreenElement:
     pea     ($0008).w
     pea     ($0039).w
     pea     ($0772).w
-    dc.w    $4EB9,$0001,$E044                           ; jsr $01E044
+    jsr TilePlacement
     pea     ($0001).w
     pea     ($000E).w
     jsr     (a4)
@@ -7960,7 +7960,7 @@ DrawScreenElement:
     pea     ($0050).w
     pea     ($003A).w
     pea     ($0773).w
-    dc.w    $4EB9,$0001,$E044                           ; jsr $01E044
+    jsr TilePlacement
     lea     $1c(a7), a7
 .l15796:
     pea     ($0001).w
@@ -7973,7 +7973,7 @@ DrawScreenElement:
     bne.b   .l157be
     pea     ($0002).w
     pea     ($0039).w
-    dc.w    $4EB9,$0001,$E0B8                           ; jsr $01E0B8
+    jsr GameCmd16
     addq.l  #$8, a7
     bra.b   .l15796
 .l157be:
@@ -7984,7 +7984,7 @@ DrawScreenElement:
     move.w  -$2c(a6), d0
     move.l  d0, -(a7)
     pea     ($000A).w
-    dc.w    $4EB9,$0001,$E290                           ; jsr $01E290
+    jsr ProcessInputLoop
     addq.l  #$8, a7
     andi.w  #$3c, d0
     move.w  d0, -$2c(a6)
@@ -8011,7 +8011,7 @@ DrawScreenElement:
     ext.l   d0
     move.l  d0, -(a7)
     move.l  a2, -(a7)
-    dc.w    $4EB9,$0000,$73A6                           ; jsr $0073A6
+    jsr UpdateCharField
     moveq   #$0,d0
     move.b  $3(a2), d0
     move.w  d6, d1
@@ -8052,7 +8052,7 @@ DrawScreenElement:
     move.b  d0, (a0,d1.w)
     pea     ($0008).w
     pea     ($0005).w
-    dc.w    $4EB9,$0003,$AB2C                           ; jsr $03AB2C
+    jsr SetTextCursor
     move.w  -$32(a6), d0
     ext.l   d0
     moveq   #$0,d1
@@ -8061,10 +8061,10 @@ DrawScreenElement:
     add.l   d1, d0
     move.l  d0, -(a7)
     pea     ($0003F84C).l
-    dc.w    $4EB9,$0003,$B246                           ; jsr $03B246
+    jsr PrintfNarrow
     pea     ($0008).w
     pea     ($0015).w
-    dc.w    $4EB9,$0003,$AB2C                           ; jsr $03AB2C
+    jsr SetTextCursor
     lea     $20(a7), a7
     move.w  -$34(a6), d0
     ext.l   d0
@@ -8075,7 +8075,7 @@ DrawScreenElement:
     move.l  d0, -(a7)
     pea     ($0003F848).l
 .l158e8:
-    dc.w    $4EB9,$0003,$B246                           ; jsr $03B246
+    jsr PrintfNarrow
     addq.l  #$8, a7
     bra.w   .l15bc8
 .l158f4:
@@ -8083,10 +8083,10 @@ DrawScreenElement:
     clr.w   ($00FFA7D8).l
     pea     ($0010).w
     pea     ($000E).w
-    dc.w    $4EB9,$0003,$AB2C                           ; jsr $03AB2C
+    jsr SetTextCursor
     addq.l  #$8, a7
     move.l  a2, -(a7)
-    dc.w    $4EB9,$0000,$7402                           ; jsr $007402
+    jsr GetLowNibble
     addq.l  #$4, a7
     move.l  d0, -(a7)
     pea     ($0003F844).l
@@ -8125,7 +8125,7 @@ DrawScreenElement:
     subq.l  #$3, d0
     move.l  d0, -(a7)
     pea     ($000E).w
-    dc.w    $4EB9,$0001,$ACBA                           ; jsr $01ACBA
+    jsr DiagonalWipe
     lea     $c(a7), a7
 .l1598e:
     cmpi.w  #$1, d3
@@ -8142,7 +8142,7 @@ DrawScreenElement:
     addq.l  #$2, d0
     move.l  d0, -(a7)
     pea     ($0004).w
-    dc.w    $4EB9,$0003,$AB2C                           ; jsr $03AB2C
+    jsr SetTextCursor
     moveq   #$0,d0
     move.b  $1(a3), d0
     ext.l   d0
@@ -8151,16 +8151,16 @@ DrawScreenElement:
     sub.l   d1, d0
     move.l  d0, -(a7)
     pea     ($0003F840).l
-    dc.w    $4EB9,$0003,$B270                           ; jsr $03B270
+    jsr PrintfWide
     move.l  a2, -(a7)
-    dc.w    $4EB9,$0000,$7412                           ; jsr $007412
+    jsr CalcCompatScore
     lea     $14(a7), a7
     ext.l   d0
     move.w  d3, d1
     ext.l   d1
-    dc.w    $4EB9,$0003,$E05C                           ; jsr $03E05C
+    jsr Multiply32
     moveq   #$14,d1
-    dc.w    $4EB9,$0003,$E08A                           ; jsr $03E08A
+    jsr SignedDiv
     move.w  d0, d6
     move.w  d6, d5
     ext.l   d5
@@ -8230,7 +8230,7 @@ DrawScreenElement:
     ext.l   d0
     move.l  d0, -(a7)
     pea     ($0001).w
-    dc.w    $4EB9,$0001,$ACBA                           ; jsr $01ACBA
+    jsr DiagonalWipe
     lea     $c(a7), a7
 .l15aa6:
     cmp.w   (a5), d3
@@ -8247,7 +8247,7 @@ DrawScreenElement:
     addq.l  #$2, d0
     move.l  d0, -(a7)
     pea     ($0004).w
-    dc.w    $4EB9,$0003,$AB2C                           ; jsr $03AB2C
+    jsr SetTextCursor
     moveq   #$0,d0
     move.b  $1(a3), d0
     ext.l   d0
@@ -8256,7 +8256,7 @@ DrawScreenElement:
     sub.l   d1, d0
     move.l  d0, -(a7)
     pea     ($0003F83C).l
-    dc.w    $4EB9,$0003,$B270                           ; jsr $03B270
+    jsr PrintfWide
     lea     $10(a7), a7
     move.w  (a5), d0
     ext.l   d0
@@ -8280,13 +8280,13 @@ DrawScreenElement:
     clr.w   -$30(a6)
 .l15b24:
     move.l  a2, -(a7)
-    dc.w    $4EB9,$0000,$7412                           ; jsr $007412
+    jsr CalcCompatScore
     ext.l   d0
     move.w  d3, d1
     ext.l   d1
-    dc.w    $4EB9,$0003,$E05C                           ; jsr $03E05C
+    jsr Multiply32
     moveq   #$14,d1
-    dc.w    $4EB9,$0003,$E08A                           ; jsr $03E08A
+    jsr SignedDiv
     move.w  d0, d6
     cmpi.w  #$7, d6
     bge.b   .l15b4e
@@ -8344,19 +8344,19 @@ DrawScreenElement:
 .l15bc8:
     pea     ($0002).w
     pea     ($0039).w
-    dc.w    $4EB9,$0001,$E0B8                           ; jsr $01E0B8
+    jsr GameCmd16
     clr.l   -(a7)
     pea     ($0001).w
     pea     ($0009).w
     pea     ($0010).w
     move.l  a2, -(a7)
-    dc.w    $4EB9,$0001,$99FA                           ; jsr $0199FA
+    jsr ShowRelationAction
     clr.l   -(a7)
     pea     ($0001).w
     pea     ($000D).w
     pea     ($0010).w
     move.l  a2, -(a7)
-    dc.w    $4EB9,$0001,$9DE6                           ; jsr $019DE6
+    jsr ShowRelationResult
     lea     $30(a7), a7
     move.l  #$8000, -(a7)
     pea     ($000D).w
@@ -8495,7 +8495,7 @@ UpdateScreenLayout:
     pea     ($0014).w
     pea     ($0001).w
     pea     ($001A).w
-    dc.w    $4EB9,$0000,$0D64                           ; jsr $000D64
+    jsr GameCommand
     lea     $1c(a7), a7
     move.w  d3, d0
     addi.w  #$fff9, d0
@@ -8511,7 +8511,7 @@ UpdateScreenLayout:
     pea     ($0014).w
     pea     ($0001).w
     pea     ($001A).w
-    dc.w    $4EB9,$0000,$0D64                           ; jsr $000D64
+    jsr GameCommand
     lea     $1c(a7), a7
 .l15dac:
     clr.w   d2
@@ -8554,12 +8554,12 @@ UpdateScreenLayout:
     move.l  d0, -(a7)
     move.w  d6, d0
     move.l  d0, -(a7)
-    dc.w    $4EB9,$0000,$5A04                           ; jsr $005A04
+    jsr DrawBox
     pea     ($0020).w
     pea     ($0020).w
     clr.l   -(a7)
     clr.l   -(a7)
-    dc.w    $4EB9,$0003,$A942                           ; jsr $03A942
+    jsr SetTextWindow
     move.w  d5, d0
     ext.l   d0
     addq.l  #$1, d0
@@ -8568,7 +8568,7 @@ UpdateScreenLayout:
     ext.l   d0
     addi.l  #$12, d0
     move.l  d0, -(a7)
-    dc.w    $4EB9,$0003,$AB2C                           ; jsr $03AB2C
+    jsr SetTextCursor
     lea     $28(a7), a7
     move.w  d5, d0
     addq.w  #$1, d0
@@ -8578,7 +8578,7 @@ UpdateScreenLayout:
     move.l  d0, -(a7)
     pea     ($0002).w
     pea     ($0003).w
-    dc.w    $4EB9,$0000,$595E                           ; jsr $00595E
+    jsr PlaceIconTiles
     moveq   #$0,d0
     move.b  (a4), d0
     lsl.w   #$3, d0
@@ -8601,7 +8601,7 @@ UpdateScreenLayout:
     andi.l  #$ff, d7
     sub.w   d3, d7
     clr.l   -(a7)
-    dc.w    $4EB9,$0001,$E1EC                           ; jsr $01E1EC
+    jsr ReadInput
     lea     $14(a7), a7
     tst.w   d0
     beq.b   .l15eb4
@@ -8619,7 +8619,7 @@ UpdateScreenLayout:
 .l15ed2:
     pea     ($0008).w
     pea     ($0005).w
-    dc.w    $4EB9,$0003,$AB2C                           ; jsr $03AB2C
+    jsr SetTextCursor
     move.w  -$7a(a6), d0
     ext.l   d0
     move.w  d3, d1
@@ -8627,10 +8627,10 @@ UpdateScreenLayout:
     add.l   d1, d0
     move.l  d0, -(a7)
     pea     ($0003F870).l
-    dc.w    $4EB9,$0003,$B246                           ; jsr $03B246
+    jsr PrintfNarrow
     pea     ($0008).w
     pea     ($0015).w
-    dc.w    $4EB9,$0003,$AB2C                           ; jsr $03AB2C
+    jsr SetTextCursor
     move.w  d7, d0
     ext.l   d0
     move.w  d3, d1
@@ -8638,15 +8638,15 @@ UpdateScreenLayout:
     add.l   d1, d0
     move.l  d0, -(a7)
     pea     ($0003F86C).l
-    dc.w    $4EB9,$0003,$B246                           ; jsr $03B246
+    jsr PrintfNarrow
     pea     ($000F).w
     pea     ($001B).w
-    dc.w    $4EB9,$0003,$AB2C                           ; jsr $03AB2C
+    jsr SetTextCursor
     move.w  d3, d0
     ext.l   d0
     move.l  d0, -(a7)
     pea     ($0003F868).l
-    dc.w    $4EB9,$0003,$B270                           ; jsr $03B270
+    jsr PrintfWide
     lea     $30(a7), a7
     move.w  d5, d0
     ext.l   d0
@@ -8656,12 +8656,12 @@ UpdateScreenLayout:
     ext.l   d0
     addi.l  #$10, d0
     move.l  d0, -(a7)
-    dc.w    $4EB9,$0003,$AB2C                           ; jsr $03AB2C
+    jsr SetTextCursor
     move.w  d3, d0
     ext.l   d0
     move.l  d0, -(a7)
     pea     ($0003F864).l
-    dc.w    $4EB9,$0003,$B270                           ; jsr $03B270
+    jsr PrintfWide
     pea     -$40(a6)
     pea     ($0001).w
     move.w  d4, d0
@@ -8677,7 +8677,7 @@ UpdateScreenLayout:
     move.l  d0, -(a7)
     clr.l   -(a7)
     pea     ($001B).w
-    dc.w    $4EB9,$0000,$0D64                           ; jsr $000D64
+    jsr GameCommand
     lea     $2c(a7), a7
     pea     -$78(a6)
     pea     ($0001).w
@@ -8694,19 +8694,19 @@ UpdateScreenLayout:
     move.l  d0, -(a7)
     clr.l   -(a7)
     pea     ($001B).w
-    dc.w    $4EB9,$0000,$0D64                           ; jsr $000D64
+    jsr GameCommand
     lea     $1c(a7), a7
     tst.w   d2
     beq.b   .l15ff2
     clr.l   -(a7)
-    dc.w    $4EB9,$0001,$E1EC                           ; jsr $01E1EC
+    jsr ReadInput
     addq.l  #$4, a7
     tst.w   d0
     beq.b   .l15ff2
 .l15fde:
     pea     ($0003).w
     pea     ($000E).w
-    dc.w    $4EB9,$0000,$0D64                           ; jsr $000D64
+    jsr GameCommand
     addq.l  #$8, a7
     bra.w   .l15ed2
 .l15ff2:
@@ -8721,10 +8721,10 @@ UpdateScreenLayout:
     pea     ($0098).w
     pea     ($0039).w
     pea     ($0772).w
-    dc.w    $4EB9,$0001,$E044                           ; jsr $01E044
+    jsr TilePlacement
     pea     ($0001).w
     pea     ($000E).w
-    dc.w    $4EB9,$0000,$0D64                           ; jsr $000D64
+    jsr GameCommand
     lea     $24(a7), a7
     move.l  #$8000, -(a7)
     pea     ($0001).w
@@ -8733,12 +8733,12 @@ UpdateScreenLayout:
     pea     ($00F0).w
     pea     ($003A).w
     pea     ($0773).w
-    dc.w    $4EB9,$0001,$E044                           ; jsr $01E044
+    jsr TilePlacement
     lea     $1c(a7), a7
 .l1605e:
     pea     ($0001).w
     pea     ($000E).w
-    dc.w    $4EB9,$0000,$0D64                           ; jsr $000D64
+    jsr GameCommand
     addq.l  #$8, a7
     bra.b   .l16096
 .l16070:
@@ -8746,7 +8746,7 @@ UpdateScreenLayout:
     bne.b   .l1608a
     pea     ($0002).w
     pea     ($0039).w
-    dc.w    $4EB9,$0001,$E0B8                           ; jsr $01E0B8
+    jsr GameCmd16
     addq.l  #$8, a7
     bra.b   .l1605e
 .l1608a:
@@ -8757,7 +8757,7 @@ UpdateScreenLayout:
     move.w  -$2(a6), d0
     move.l  d0, -(a7)
     pea     ($000A).w
-    dc.w    $4EB9,$0001,$E290                           ; jsr $01E290
+    jsr ProcessInputLoop
     addq.l  #$8, a7
     andi.w  #$3c, d0
     move.w  d0, -$2(a6)
@@ -8818,10 +8818,10 @@ UpdateScreenLayout:
     pea     ($000D).w
     pea     ($0010).w
     move.l  a4, -(a7)
-    dc.w    $4EB9,$0001,$9DE6                           ; jsr $019DE6
+    jsr ShowRelationResult
     pea     ($0008).w
     pea     ($0005).w
-    dc.w    $4EB9,$0003,$AB2C                           ; jsr $03AB2C
+    jsr SetTextCursor
     move.w  -$7a(a6), d0
     ext.l   d0
     move.w  d3, d1
@@ -8829,10 +8829,10 @@ UpdateScreenLayout:
     add.l   d1, d0
     move.l  d0, -(a7)
     pea     ($0003F860).l
-    dc.w    $4EB9,$0003,$B246                           ; jsr $03B246
+    jsr PrintfNarrow
     pea     ($0008).w
     pea     ($0015).w
-    dc.w    $4EB9,$0003,$AB2C                           ; jsr $03AB2C
+    jsr SetTextCursor
     lea     $2c(a7), a7
     move.w  d7, d0
     ext.l   d0
@@ -8841,15 +8841,15 @@ UpdateScreenLayout:
     add.l   d1, d0
     move.l  d0, -(a7)
     pea     ($0003F85C).l
-    dc.w    $4EB9,$0003,$B246                           ; jsr $03B246
+    jsr PrintfNarrow
     pea     ($000F).w
     pea     ($001B).w
-    dc.w    $4EB9,$0003,$AB2C                           ; jsr $03AB2C
+    jsr SetTextCursor
     move.w  d3, d0
     ext.l   d0
     move.l  d0, -(a7)
     pea     ($0003F858).l
-    dc.w    $4EB9,$0003,$B270                           ; jsr $03B270
+    jsr PrintfWide
     lea     $18(a7), a7
     bra.w   .l1638c
 .l161d6:
@@ -8885,7 +8885,7 @@ UpdateScreenLayout:
     pea     ($0014).w
     pea     ($0001).w
     pea     ($001A).w
-    dc.w    $4EB9,$0000,$0D64                           ; jsr $000D64
+    jsr GameCommand
     lea     $1c(a7), a7
 .l1623a:
     cmpi.w  #$7, d3
@@ -8909,7 +8909,7 @@ UpdateScreenLayout:
     move.l  d0, -(a7)
     pea     ($0001).w
     pea     ($001A).w
-    dc.w    $4EB9,$0000,$0D64                           ; jsr $000D64
+    jsr GameCommand
     lea     $1c(a7), a7
 .l16280:
     cmpi.w  #$7, d3
@@ -8953,7 +8953,7 @@ UpdateScreenLayout:
 .l162dc:
     pea     ($0001).w
     pea     ($001A).w
-    dc.w    $4EB9,$0000,$0D64                           ; jsr $000D64
+    jsr GameCommand
     lea     $1c(a7), a7
     bra.w   .l15fde
 .l162f2:
@@ -8991,7 +8991,7 @@ UpdateScreenLayout:
     pea     ($0014).w
     pea     ($0001).w
     pea     ($001A).w
-    dc.w    $4EB9,$0000,$0D64                           ; jsr $000D64
+    jsr GameCommand
     lea     $1c(a7), a7
     move.w  d3, d0
     addi.w  #$fff9, d0
@@ -9013,7 +9013,7 @@ UpdateScreenLayout:
 .l1638c:
     pea     ($0002).w
     pea     ($0039).w
-    dc.w    $4EB9,$0001,$E0B8                           ; jsr $01E0B8
+    jsr GameCmd16
     clr.l   -(a7)
     pea     ($000D).w
     pea     ($0020).w
@@ -9021,7 +9021,7 @@ UpdateScreenLayout:
     clr.l   -(a7)
     clr.l   -(a7)
     pea     ($001A).w
-    dc.w    $4EB9,$0000,$0D64                           ; jsr $000D64
+    jsr GameCommand
     lea     $24(a7), a7
     clr.l   -(a7)
     pea     ($000D).w
@@ -9030,7 +9030,7 @@ UpdateScreenLayout:
     clr.l   -(a7)
     pea     ($0001).w
     pea     ($001A).w
-    dc.w    $4EB9,$0000,$0D64                           ; jsr $000D64
+    jsr GameCommand
     movem.l -$a4(a6), d2-d7/a2-a5
     unlk    a6
     rts
@@ -9054,13 +9054,13 @@ RefreshDisplayArea:
     move.b  (a2), d0
     ext.l   d0
     move.l  d0, -(a7)
-    dc.w    $4EB9,$0000,$70DC                           ; jsr $0070DC
+    jsr CharCodeScore
     move.w  d0, d4
     pea     ($0064).w
     pea     ($0096).w
     move.w  d4, d0
     move.l  d0, -(a7)
-    dc.w    $4EB9,$0001,$E11C                           ; jsr $01E11C
+    jsr MulDiv
     move.w  d0, -$4(a6)
     moveq   #$0,d0
     move.w  $4(a2), d0
@@ -9068,15 +9068,15 @@ RefreshDisplayArea:
     ext.l   d1
     sub.l   d1, d0
     moveq   #$64,d1
-    dc.w    $4EB9,$0003,$E05C                           ; jsr $03E05C
+    jsr Multiply32
     move.w  d4, d1
     ext.l   d1
-    dc.w    $4EB9,$0003,$E08A                           ; jsr $03E08A
+    jsr SignedDiv
     addi.l  #$32, d0
     move.l  d0, d2
     ext.l   d0
     moveq   #$5,d1
-    dc.w    $4EB9,$0003,$E146                           ; jsr $03E146
+    jsr SignedMod
     move.w  d0, d3
     beq.b   .l16474
     cmpi.w  #$3, d3
@@ -9092,15 +9092,15 @@ RefreshDisplayArea:
     pea     ($001E).w
     pea     ($0012).w
     pea     ($0001).w
-    dc.w    $4EB9,$0000,$5A04                           ; jsr $005A04
+    jsr DrawBox
     lea     $24(a7), a7
     pea     ($0020).w
     pea     ($0020).w
     clr.l   -(a7)
     clr.l   -(a7)
-    dc.w    $4EB9,$0003,$A942                           ; jsr $03A942
+    jsr SetTextWindow
     clr.l   -(a7)
-    dc.w    $4EB9,$0001,$E1EC                           ; jsr $01E1EC
+    jsr ReadInput
     lea     $14(a7), a7
     tst.w   d0
     beq.b   .l164b4
@@ -9167,7 +9167,7 @@ RefreshDisplayArea:
     move.l  d0, -(a7)
     pea     ($0003F8AE).l
 .l1654e:
-    dc.w    $4EB9,$0003,$B270                           ; jsr $03B270
+    jsr PrintfWide
     addq.l  #$8, a7
     bra.b   .l1657a
 .l16558:
@@ -9179,7 +9179,7 @@ RefreshDisplayArea:
     bra.b   .l1654e
 .l1656c:
     pea     ($0003F88C).l
-    dc.w    $4EB9,$0003,$B270                           ; jsr $03B270
+    jsr PrintfWide
     addq.l  #$4, a7
 .l1657a:
     pea     ($000D).w
@@ -9189,7 +9189,7 @@ RefreshDisplayArea:
     ext.l   d0
     move.l  d0, -(a7)
     pea     ($0003F886).l
-    dc.w    $4EB9,$0003,$B246                           ; jsr $03B246
+    jsr PrintfNarrow
     pea     ($000E).w
     pea     ($0019).w
     jsr     (a5)
@@ -9198,23 +9198,23 @@ RefreshDisplayArea:
     subi.l  #$32, d0
     move.l  d0, -(a7)
     pea     ($0003F880).l
-    dc.w    $4EB9,$0003,$B246                           ; jsr $03B246
+    jsr PrintfNarrow
     move.w  d2, d0
     ext.l   d0
     moveq   #$A,d1
-    dc.w    $4EB9,$0003,$E08A                           ; jsr $03E08A
+    jsr SignedDiv
     move.w  d0, d7
     move.w  d2, d0
     ext.l   d0
     moveq   #$A,d1
-    dc.w    $4EB9,$0003,$E146                           ; jsr $03E146
+    jsr SignedMod
     moveq   #$1,d1
     cmp.l   d0, d1
     ble.b   .l165e6
     move.w  d2, d0
     ext.l   d0
     moveq   #$A,d1
-    dc.w    $4EB9,$0003,$E146                           ; jsr $03E146
+    jsr SignedMod
     bra.b   .l165e8
 .l165e6:
     moveq   #$1,d0
@@ -9233,7 +9233,7 @@ RefreshDisplayArea:
     tst.w   -$2(a6)
     beq.b   .l16616
     clr.l   -(a7)
-    dc.w    $4EB9,$0001,$E1EC                           ; jsr $01E1EC
+    jsr ReadInput
     addq.l  #$4, a7
     tst.w   d0
     bne.w   .l164f2
@@ -9242,7 +9242,7 @@ RefreshDisplayArea:
     move.w  d6, d0
     move.l  d0, -(a7)
     pea     ($000A).w
-    dc.w    $4EB9,$0001,$E290                           ; jsr $01E290
+    jsr ProcessInputLoop
     addq.l  #$8, a7
     andi.w  #$3c, d0
     move.w  d0, d6
@@ -9275,15 +9275,15 @@ RefreshDisplayArea:
     ext.l   d1
     sub.l   d1, d0
     moveq   #$64,d1
-    dc.w    $4EB9,$0003,$E05C                           ; jsr $03E05C
+    jsr Multiply32
     move.w  d4, d1
     ext.l   d1
-    dc.w    $4EB9,$0003,$E08A                           ; jsr $03E08A
+    jsr SignedDiv
     addi.l  #$32, d0
     move.l  d0, d2
     ext.l   d0
     moveq   #$5,d1
-    dc.w    $4EB9,$0003,$E146                           ; jsr $03E146
+    jsr SignedMod
     move.w  d0, d3
     beq.b   .l166b0
     cmpi.w  #$3, d3
@@ -9298,19 +9298,19 @@ RefreshDisplayArea:
     move.w  d2, d0
     ext.l   d0
     moveq   #$A,d1
-    dc.w    $4EB9,$0003,$E08A                           ; jsr $03E08A
+    jsr SignedDiv
     move.w  d0, d7
     move.w  d2, d0
     ext.l   d0
     moveq   #$A,d1
-    dc.w    $4EB9,$0003,$E146                           ; jsr $03E146
+    jsr SignedMod
     moveq   #$1,d1
     cmp.l   d0, d1
     ble.b   .l166de
     move.w  d2, d0
     ext.l   d0
     moveq   #$A,d1
-    dc.w    $4EB9,$0003,$E146                           ; jsr $03E146
+    jsr SignedMod
     bra.b   .l166e0
 .l166de:
     moveq   #$1,d0
@@ -9330,7 +9330,7 @@ RefreshDisplayArea:
     move.w  $4(a2), d0
     move.l  d0, -(a7)
     pea     ($0003F87A).l
-    dc.w    $4EB9,$0003,$B246                           ; jsr $03B246
+    jsr PrintfNarrow
     pea     ($000E).w
     pea     ($0019).w
     jsr     (a5)
@@ -9339,7 +9339,7 @@ RefreshDisplayArea:
     subi.l  #$32, d0
     move.l  d0, -(a7)
     pea     ($0003F874).l
-    dc.w    $4EB9,$0003,$B246                           ; jsr $03B246
+    jsr PrintfNarrow
     lea     $28(a7), a7
     bra.w   .l167d2
 .l1673a:
@@ -9350,9 +9350,9 @@ RefreshDisplayArea:
     move.w  d2, d1
     ext.l   d1
     subi.l  #$32, d1
-    dc.w    $4EB9,$0003,$E05C                           ; jsr $03E05C
+    jsr Multiply32
     moveq   #$64,d1
-    dc.w    $4EB9,$0003,$E08A                           ; jsr $03E08A
+    jsr SignedDiv
     add.w   d4, d0
     move.w  d0, d3
     move.w  d4, d0
@@ -9388,9 +9388,9 @@ RefreshDisplayArea:
     move.w  d2, d1
     ext.l   d1
     subi.l  #$32, d1
-    dc.w    $4EB9,$0003,$E05C                           ; jsr $03E05C
+    jsr Multiply32
     moveq   #$64,d1
-    dc.w    $4EB9,$0003,$E08A                           ; jsr $03E08A
+    jsr SignedDiv
     add.w   d4, d0
     move.w  d0, d3
     cmp.w   -$4(a6), d3
@@ -10367,7 +10367,7 @@ RunGameMenu:                                                  ; $016F9E
 CalcCityMetrics:
     movem.l d2-d4, -(a7)
     clr.l   -(a7)
-    dc.w    $4EB9,$0000,$538E                           ; jsr $00538E
+    jsr CmdSetBackground
     pea     ($0001).w
     dc.w    $4EBA,$0094                                 ; jsr $01725A(pc)
     nop
@@ -10382,7 +10382,7 @@ l_171d0:
     move.w  ($00FFA792).l, d0
     ext.l   d0
     move.l  d0, -(a7)
-    dc.w    $4EB9,$0000,$7912                           ; jsr $007912
+    jsr ShowDialog
     pea     ($0002).w
     move.w  d3, d0
     ext.l   d0
@@ -10544,9 +10544,9 @@ ScanCitySlots:
     pea     ($0020).w
     clr.l   -(a7)
     clr.l   -(a7)
-    dc.w    $4EB9,$0003,$A942                           ; jsr $03A942
+    jsr SetTextWindow
     clr.l   -(a7)
-    dc.w    $4EB9,$0001,$E1EC                           ; jsr $01E1EC
+    jsr ReadInput
     lea     $14(a7), a7
     tst.w   d0
     beq.b   l_173a4
@@ -10569,7 +10569,7 @@ l_173b0:
     pea     ($0038).w
     clr.l   -(a7)
     pea     ($0544).w
-    dc.w    $4EB9,$0001,$E044                           ; jsr $01E044
+    jsr TilePlacement
     pea     ($0001).w
     pea     ($000E).w
     jsr     (a2)
@@ -10577,7 +10577,7 @@ l_173b0:
     tst.w   d3
     beq.b   l_17404
     clr.l   -(a7)
-    dc.w    $4EB9,$0001,$E1EC                           ; jsr $01E1EC
+    jsr ReadInput
     addq.l  #$4, a7
     tst.w   d0
     beq.b   l_17404
@@ -10592,7 +10592,7 @@ l_17404:
     move.w  d4, d0
     move.l  d0, -(a7)
     pea     ($000A).w
-    dc.w    $4EB9,$0001,$E290                           ; jsr $01E290
+    jsr ProcessInputLoop
     addq.l  #$8, a7
     andi.w  #$33, d0
     move.w  d0, d4
@@ -10665,14 +10665,14 @@ ProcessCharSelectInput:
     movem.l d2/a2, -(a7)
     movea.l  #$00000D64,a2
     clr.l   -(a7)
-    dc.w    $4EB9,$0000,$538E                           ; jsr $00538E
+    jsr CmdSetBackground
     dc.w    $4EBA,$030E                                 ; jsr $0177C4(pc)
     nop
     pea     ($0020).w
     pea     ($0020).w
     clr.l   -(a7)
     clr.l   -(a7)
-    dc.w    $4EB9,$0003,$A942                           ; jsr $03A942
+    jsr SetTextWindow
     pea     ($0001).w
     dc.w    $4EBA,$0094                                 ; jsr $017566(pc)
     nop
@@ -10685,7 +10685,7 @@ ProcessCharSelectInput:
     move.w  d2, d0
     ext.l   d0
     move.l  d0, -(a7)
-    dc.w    $4EB9,$0000,$EB28                           ; jsr $00EB28
+    jsr PackSaveState
     move.w  d2, d0
     move.l  d0, -(a7)
     dc.w    $4EBA,$0312                                 ; jsr $017808(pc)
@@ -10703,16 +10703,16 @@ ProcessCharSelectInput:
     pea     ($001E).w
     pea     ($0018).w
     pea     ($0002).w
-    dc.w    $4EB9,$0003,$A942                           ; jsr $03A942
+    jsr SetTextWindow
     pea     ($0003F950).l
-    dc.w    $4EB9,$0003,$B270                           ; jsr $03B270
+    jsr PrintfWide
     pea     ($003C).w
     pea     ($000E).w
     jsr     (a2)
     lea     $1c(a7), a7
 l_17548:
     clr.l   -(a7)
-    dc.w    $4EB9,$0000,$538E                           ; jsr $00538E
+    jsr CmdSetBackground
     pea     ($0040).w
     clr.l   -(a7)
     pea     ($0010).w
@@ -10955,7 +10955,7 @@ SignExtendAndCall:
     move.w  d1, d0
     ext.l   d0
     move.l  d0, -(a7)
-    dc.w    $4EB9,$0000,$F104                           ; jsr $00F104
+    jsr ShowRouteInfo
     addq.l  #$4, a7
     rts
 
@@ -10970,12 +10970,12 @@ ToggleDisplayMode:
     pea     ($0004).w
     pea     ($0006).w
     pea     ($0014).w
-    dc.w    $4EB9,$0003,$A942                           ; jsr $03A942
+    jsr SetTextWindow
     move.w  ($00FF000A).l, d0
     lsl.w   #$2, d0
     movea.l  #$00047A78,a0
     move.l  (a0,d0.w), -(a7)
-    dc.w    $4EB9,$0003,$B270                           ; jsr $03B270
+    jsr PrintfWide
     lea     $14(a7), a7
     rts
 
@@ -10996,20 +10996,20 @@ NavigateCharList:
     pea     ($0004).w
     pea     ($0004).w
     pea     ($0014).w
-    dc.w    $4EB9,$0003,$A942                           ; jsr $03A942
+    jsr SetTextWindow
     move.w  (a2), d0
     lsl.w   #$2, d0
     movea.l  #$00047A78,a0
     move.l  (a0,d0.w), -(a7)
-    dc.w    $4EB9,$0003,$B270                           ; jsr $03B270
+    jsr PrintfWide
     move.w  (a2), d0
     move.l  d0, -(a7)
-    dc.w    $4EB9,$0001,$D340                           ; jsr $01D340
+    jsr SetDisplayMode
     pea     ($0001).w
     move.w  ($00FF9A1C).l, d0
     addq.w  #$2, d0
     move.l  d0, -(a7)
-    dc.w    $4EB9,$0001,$D3AC                           ; jsr $01D3AC
+    jsr MenuSelectEntry
     lea     $20(a7), a7
     bra.b   l_17900
 l_178c4:
@@ -11019,15 +11019,15 @@ l_178c4:
     pea     ($0004).w
     pea     ($0006).w
     pea     ($0014).w
-    dc.w    $4EB9,$0003,$A942                           ; jsr $03A942
+    jsr SetTextWindow
     move.w  (a3), d0
     lsl.w   #$2, d0
     movea.l  #$00047A78,a0
     move.l  (a0,d0.w), -(a7)
-    dc.w    $4EB9,$0003,$B270                           ; jsr $03B270
+    jsr PrintfWide
     move.w  (a3), d0
     move.l  d0, -(a7)
-    dc.w    $4EB9,$0001,$D37A                           ; jsr $01D37A
+    jsr SetDisplayPage
     lea     $18(a7), a7
 l_17900:
     movem.l (a7)+, d2/a2-a3
@@ -11044,7 +11044,7 @@ HandleCharListAction:
     movea.l  #$00FF13FC,a3
     movea.l  #$00FF0008,a4
     clr.l   -(a7)
-    dc.w    $4EB9,$0000,$538E                           ; jsr $00538E
+    jsr CmdSetBackground
     pea     ($008F).w
     pea     ($0008).w
     pea     ($000C).w
@@ -11060,7 +11060,7 @@ HandleCharListAction:
     move.l  (a0,d0.w), -(a7)
     pea     ($0003F960).l
     pea     -$80(a6)
-    dc.w    $4EB9,$0003,$B22C                           ; jsr $03B22C
+    jsr sprintf
     lea     $24(a7), a7
     clr.l   -(a7)
     clr.l   -(a7)
@@ -11069,7 +11069,7 @@ HandleCharListAction:
     move.w  ($00FFA792).l, d0
     ext.l   d0
     move.l  d0, -(a7)
-    dc.w    $4EB9,$0000,$7912                           ; jsr $007912
+    jsr ShowDialog
     move.w  (a4), d2
     add.w   d2, d2
     addq.w  #$5, d2
@@ -11083,7 +11083,7 @@ HandleCharListAction:
     pea     ($0050).w
     clr.l   -(a7)
     pea     ($0544).w
-    dc.w    $4EB9,$0001,$E044                           ; jsr $01E044
+    jsr TilePlacement
     lea     $30(a7), a7
     pea     ($0001).w
     pea     ($000E).w
@@ -11092,9 +11092,9 @@ HandleCharListAction:
     pea     ($0020).w
     clr.l   -(a7)
     clr.l   -(a7)
-    dc.w    $4EB9,$0003,$A942                           ; jsr $03A942
+    jsr SetTextWindow
     clr.l   -(a7)
-    dc.w    $4EB9,$0001,$E1EC                           ; jsr $01E1EC
+    jsr ReadInput
     lea     $1c(a7), a7
     tst.w   d0
     beq.b   l_179e4
@@ -11126,7 +11126,7 @@ l_179f0:
     pea     ($0050).w
     clr.l   -(a7)
     pea     ($0544).w
-    dc.w    $4EB9,$0001,$E044                           ; jsr $01E044
+    jsr TilePlacement
     pea     ($0001).w
     pea     ($000E).w
     jsr     (a2)
@@ -11134,7 +11134,7 @@ l_179f0:
     tst.w   d3
     beq.b   l_17a62
     clr.l   -(a7)
-    dc.w    $4EB9,$0001,$E1EC                           ; jsr $01E1EC
+    jsr ReadInput
     addq.l  #$4, a7
     tst.w   d0
     beq.b   l_17a62
@@ -11149,7 +11149,7 @@ l_17a62:
     move.w  d4, d0
     move.l  d0, -(a7)
     pea     ($000A).w
-    dc.w    $4EB9,$0001,$E290                           ; jsr $01E290
+    jsr ProcessInputLoop
     addq.l  #$8, a7
     andi.w  #$33, d0
     move.w  d0, d4
@@ -11205,7 +11205,7 @@ l_17aec:
     pea     ($0010).w
     jsr     (a2)
     clr.l   -(a7)
-    dc.w    $4EB9,$0000,$538E                           ; jsr $00538E
+    jsr CmdSetBackground
     movem.l -$98(a6), d2-d4/a2-a4
     unlk    a6
     rts
@@ -11220,7 +11220,7 @@ ProcessEventSequence:
     pea     ($000A).w
     pea     ($0005).w
     pea     ($000B).w
-    dc.w    $4EB9,$0003,$A942                           ; jsr $03A942
+    jsr SetTextWindow
     lea     $10(a7), a7
     clr.w   d2
 l_17b2a:
@@ -11230,13 +11230,13 @@ l_17b2a:
     addq.l  #$5, d3
     move.l  d3, -(a7)
     pea     ($000C).w
-    dc.w    $4EB9,$0003,$AB2C                           ; jsr $03AB2C
+    jsr SetTextCursor
     move.w  d2, d0
     lsl.w   #$2, d0
     movea.l  #$00047A88,a0
     move.l  (a0,d0.w), -(a7)
     pea     ($0003F9B0).l
-    dc.w    $4EB9,$0003,$B270                           ; jsr $03B270
+    jsr PrintfWide
     lea     $10(a7), a7
     addq.w  #$1, d2
     cmpi.w  #$3, d2
@@ -11260,7 +11260,7 @@ EvaluateEventCond:
     move.w  (a3), d0
     ext.l   d0
     move.l  d0, -(a7)
-    dc.w    $4EB9,$0000,$7912                           ; jsr $007912
+    jsr ShowDialog
     lea     $14(a7), a7
     move.w  d0, d5
     cmpi.w  #$1, d0
@@ -11304,7 +11304,7 @@ l_17bd4:
     move.w  (a3), d0
     ext.l   d0
     move.l  d0, -(a7)
-    dc.w    $4EB9,$0000,$7912                           ; jsr $007912
+    jsr ShowDialog
     lea     $30(a7), a7
     tst.w   d0
     bne.b   l_17c44
@@ -11312,7 +11312,7 @@ l_17bd4:
     pea     ($0013).w
     jsr     (a4)
     clr.l   -(a7)
-    dc.w    $4EB9,$0003,$B428                           ; jsr $03B428
+    jsr GameSetup1
     lea     $c(a7), a7
     bra.b   l_17c60
 l_17c2a:
@@ -11361,7 +11361,7 @@ GenerateEventResult:
     move.w  (a0), d0
     addi.w  #$ffff, d0
     move.l  d0, -(a7)
-    dc.w    $4EB9,$0000,$5A04                           ; jsr $005A04
+    jsr DrawBox
     unlk    a6
     rts
 
@@ -11392,7 +11392,7 @@ RecordEventOutcome:
     move.l  d0, -(a7)
     clr.l   -(a7)
     pea     ($001A).w
-    dc.w    $4EB9,$0000,$0D64                           ; jsr $000D64
+    jsr GameCommand
     lea     $1c(a7), a7
     movem.l (a7)+, d2-d4
     rts
@@ -11503,7 +11503,7 @@ l_17dca:
     pea     ($001E).w
     pea     ($0011).w
     pea     ($0001).w
-    dc.w    $4EB9,$0000,$5A04                           ; jsr $005A04
+    jsr DrawBox
     moveq   #$0,d0
     move.w  d4, d0
     move.l  d0, -(a7)
@@ -11512,10 +11512,10 @@ l_17dca:
     movea.l  #$0005E680,a0
     move.l  (a0,d0.w), -(a7)
     pea     ($00041038).l
-    dc.w    $4EB9,$0003,$B270                           ; jsr $03B270
+    jsr PrintfWide
     pea     ($0001).w
     pea     ($0003).w
-    dc.w    $4EB9,$0001,$D62C                           ; jsr $01D62C
+    jsr PollAction
     lea     $24(a7), a7
     move.l  #$8000, -(a7)
     pea     ($000A).w
@@ -11524,7 +11524,7 @@ l_17dca:
     pea     ($0001).w
     clr.l   -(a7)
     pea     ($001A).w
-    dc.w    $4EB9,$0000,$0D64                           ; jsr $000D64
+    jsr GameCommand
 l_17e38:
     movem.l -$14(a6), d2-d4/a2-a3
     unlk    a6
@@ -12874,7 +12874,7 @@ ComputeQuarterResults:
     pea     ($0001).w
     move.w  d3, d0
     move.l  d0, -(a7)
-    dc.w    $4EB9,$0000,$FFF8                           ; jsr $00FFF8
+    jsr CountCharPerformance
     addq.l  #$8, a7
     move.w  d0, d2
     tst.w   d2
@@ -12882,7 +12882,7 @@ ComputeQuarterResults:
     move.l  ($00047B78).l, -(a7)
     move.l  ($00047C9C).l, -(a7)
     move.l  a2, -(a7)
-    dc.w    $4EB9,$0003,$B22C                           ; jsr $03B22C
+    jsr sprintf
     lea     $c(a7), a7
     bra.b   l_18cec
 l_18cc0:
@@ -12898,19 +12898,19 @@ l_18cd4:
     move.l  d0, -(a7)
     move.l  ($00047CA0).l, -(a7)
     move.l  a2, -(a7)
-    dc.w    $4EB9,$0003,$B22C                           ; jsr $03B22C
+    jsr sprintf
     lea     $10(a7), a7
 l_18cec:
     clr.l   -(a7)
     move.l  a2, -(a7)
     pea     ($0003).w
     clr.l   -(a7)
-    dc.w    $4EB9,$0001,$D6A4                           ; jsr $01D6A4
+    jsr RandRange
     addq.l  #$8, a7
     move.l  d0, -(a7)
     move.w  d3, d0
     move.l  d0, -(a7)
-    dc.w    $4EB9,$0002,$FBD6                           ; jsr $02FBD6
+    jsr ShowText
     movem.l -$ac(a6), d2-d3/a2
     unlk    a6
     rts
@@ -12934,7 +12934,7 @@ UpdatePlayerAssets:
     pea     -$4(a6)
     move.w  d3, d0
     move.l  d0, -(a7)
-    dc.w    $4EB9,$0001,$03B0                           ; jsr $0103B0
+    jsr CalcPlayerFinances
     lea     $10(a7), a7
     move.w  d3, d0
     ext.l   d0
@@ -12962,7 +12962,7 @@ UpdatePlayerAssets:
     move.l  ($00047B78).l, -(a7)
     move.l  ($00047CB0).l, -(a7)
     move.l  a5, -(a7)
-    dc.w    $4EB9,$0003,$B22C                           ; jsr $03B22C
+    jsr sprintf
     lea     $10(a7), a7
     clr.l   -(a7)
     move.l  a5, -(a7)
@@ -12971,9 +12971,9 @@ UpdatePlayerAssets:
 l_18dc0:
     move.l  d2, d0
     moveq   #$64,d1
-    dc.w    $4EB9,$0003,$E05C                           ; jsr $03E05C
+    jsr Multiply32
     move.l  -$c(a6), d1
-    dc.w    $4EB9,$0003,$E08A                           ; jsr $03E08A
+    jsr SignedDiv
     move.w  d0, d4
     tst.w   d4
     ble.b   l_18e12
@@ -12986,7 +12986,7 @@ l_18dc0:
     move.l  ($00047B78).l, -(a7)
     move.l  ($00047CAC).l, -(a7)
     move.l  a5, -(a7)
-    dc.w    $4EB9,$0003,$B22C                           ; jsr $03B22C
+    jsr sprintf
     lea     $14(a7), a7
     cmpi.w  #$1e, d4
     blt.b   l_18e0a
@@ -13002,7 +13002,7 @@ l_18e12:
     move.l  ($00047B78).l, -(a7)
     move.l  ($00047CB0).l, -(a7)
     move.l  a5, -(a7)
-    dc.w    $4EB9,$0003,$B22C                           ; jsr $03B22C
+    jsr sprintf
     lea     $10(a7), a7
     bra.b   l_18e9e
 l_18e2e:
@@ -13022,13 +13022,13 @@ l_18e4e:
     move.l  ($00047B78).l, -(a7)
     move.l  ($00047CB4).l, -(a7)
     move.l  a5, -(a7)
-    dc.w    $4EB9,$0003,$B22C                           ; jsr $03B22C
+    jsr sprintf
     pea     ($0002).w
     move.l  a5, -(a7)
     pea     ($0002).w
     move.w  d3, d0
     move.l  d0, -(a7)
-    dc.w    $4EB9,$0002,$FBD6                           ; jsr $02FBD6
+    jsr ShowText
     lea     $20(a7), a7
     tst.l   $6(a4)
     bge.b   l_18eb0
@@ -13036,7 +13036,7 @@ l_18e4e:
     move.l  ($00047CB8).l, -(a7)
 l_18e92:
     move.l  a5, -(a7)
-    dc.w    $4EB9,$0003,$B22C                           ; jsr $03B22C
+    jsr sprintf
     lea     $c(a7), a7
 l_18e9e:
     clr.l   -(a7)
@@ -13046,7 +13046,7 @@ l_18ea0:
 l_18ea6:
     move.w  d3, d0
     move.l  d0, -(a7)
-    dc.w    $4EB9,$0002,$FBD6                           ; jsr $02FBD6
+    jsr ShowText
 l_18eb0:
     movem.l -$c8(a6), d2-d4/a2-a5
     unlk    a6
@@ -15424,7 +15424,7 @@ InitTurnState:
     move.w  d4, d0
     ext.l   d0
     move.l  d0, -(a7)
-    dc.w    $4EB9,$0000,$6EEA                           ; jsr $006EEA
+    jsr BitFieldSearch
     addq.l  #$8, a7
     move.w  d0, d7
     cmpi.w  #$ff, d7
@@ -15435,7 +15435,7 @@ InitTurnState:
     move.w  d4, d0
     ext.l   d0
     move.l  d0, -(a7)
-    dc.w    $4EB9,$0000,$9DC4                           ; jsr $009DC4
+    jsr FindBitInField
     addq.l  #$8, a7
     move.w  d0, d7
 l_1a806:
@@ -15465,7 +15465,7 @@ l_1a80e:
     move.w  d4, d0
     ext.l   d0
     move.l  d0, -(a7)
-    dc.w    $4EB9,$0000,$6EEA                           ; jsr $006EEA
+    jsr BitFieldSearch
     addq.l  #$8, a7
     move.w  d0, d2
     cmpi.w  #$ff, d0
@@ -15476,7 +15476,7 @@ l_1a80e:
     move.w  d4, d0
     ext.l   d0
     move.l  d0, -(a7)
-    dc.w    $4EB9,$0000,$9DC4                           ; jsr $009DC4
+    jsr FindBitInField
     addq.l  #$8, a7
     move.w  d0, d2
 l_1a870:
@@ -15558,7 +15558,7 @@ l_1a940:
     move.w  d4, d0
     ext.l   d0
     move.l  d0, -(a7)
-    dc.w    $4EB9,$0000,$6EEA                           ; jsr $006EEA
+    jsr BitFieldSearch
     addq.l  #$8, a7
     move.w  d0, d7
     cmpi.w  #$ff, d0
@@ -15693,7 +15693,7 @@ l_1aa8c:
     pea     ($0012).w
     clr.l   -(a7)
     move.l  a3, -(a7)
-    dc.w    $4EB9,$0001,$D520                           ; jsr $01D520
+    jsr MemFillByte
     lea     $c(a7), a7
     bra.w   l_1aba6
 l_1aaa2:
@@ -16674,20 +16674,20 @@ GameUpdate2:
     move.w  #$80, ($00FFBD66).l
     tst.w   ($00FF17C4).l
     bne.b   l_1b4c8
-    dc.w    $4EB9,$0002,$8B46                           ; jsr $028B46
+    jsr RunEventSequence
 l_1b4c8:
     tst.w   ($00FF17C4).l
     bne.b   l_1b52e
     move.w  #$fffe, ($00FF0A32).l
-    dc.w    $4EB9,$0002,$C2FA                           ; jsr $02C2FA
-    dc.w    $4EB9,$0001,$D748                           ; jsr $01D748
+    jsr RunScenarioMenu
+    jsr ResourceUnload
     clr.w   d2
     clr.w   d3
     bra.b   l_1b524
 l_1b4ea:
     pea     ($0003).w
     clr.l   -(a7)
-    dc.w    $4EB9,$0001,$D6A4                           ; jsr $01D6A4
+    jsr RandRange
     addq.l  #$8, a7
     move.b  d0, (a5)
     moveq   #$0,d0
@@ -16740,8 +16740,8 @@ l_1b556:
     movea.l a0, a3
     cmpi.w  #$7, ($00FF9A1C).l
     beq.w   l_1b62a
-    dc.w    $4EB9,$0001,$D71C                           ; jsr $01D71C
-    dc.w    $4EB9,$0001,$E398                           ; jsr $01E398
+    jsr ResourceLoad
+    jsr PreLoopInit
     moveq   #$0,d0
     move.b  (a5), d0
     add.w   d0, d0
@@ -16750,24 +16750,24 @@ l_1b556:
     pea     ($0001).w
     pea     ($000F).w
     move.l  a4, -(a7)
-    dc.w    $4EB9,$0000,$5092                           ; jsr $005092
+    jsr DisplaySetup
     pea     ($0007).w
-    dc.w    $4EB9,$0000,$9F4A                           ; jsr $009F4A
+    jsr SelectMenuItem
     pea     ($0001).w
-    dc.w    $4EB9,$0000,$538E                           ; jsr $00538E
+    jsr CmdSetBackground
     pea     ($0040).w
     clr.l   -(a7)
     pea     ($0010).w
-    dc.w    $4EB9,$0000,$0D64                           ; jsr $000D64
+    jsr GameCommand
     clr.l   -(a7)
-    dc.w    $4EB9,$0000,$538E                           ; jsr $00538E
+    jsr CmdSetBackground
     pea     ($0001).w
     clr.l   -(a7)
     moveq   #$0,d0
     move.b  (a5), d0
     ext.l   d0
     move.l  d0, -(a7)
-    dc.w    $4EB9,$0000,$68CA                           ; jsr $0068CA
+    jsr LoadScreenGfx
     lea     $30(a7), a7
     pea     ($0002).w
     pea     ($0007).w
@@ -16775,7 +16775,7 @@ l_1b556:
     move.b  (a5), d0
     ext.l   d0
     move.l  d0, -(a7)
-    dc.w    $4EB9,$0000,$6B78                           ; jsr $006B78
+    jsr ShowRelPanel
     moveq   #$0,d0
     move.b  (a5), d0
     ext.l   d0
@@ -16784,11 +16784,11 @@ l_1b556:
     nop
     lea     $10(a7), a7
     move.w  #$7, ($00FF9A1C).l
-    dc.w    $4EB9,$0001,$D748                           ; jsr $01D748
+    jsr ResourceUnload
     bra.w   l_1b7a6
 l_1b62a:
-    dc.w    $4EB9,$0001,$D71C                           ; jsr $01D71C
-    dc.w    $4EB9,$0001,$E398                           ; jsr $01E398
+    jsr ResourceLoad
+    jsr PreLoopInit
     moveq   #$0,d0
     move.b  (a5), d0
     add.w   d0, d0
@@ -16797,20 +16797,20 @@ l_1b62a:
     pea     ($0001).w
     pea     ($000F).w
     move.l  a4, -(a7)
-    dc.w    $4EB9,$0000,$5092                           ; jsr $005092
+    jsr DisplaySetup
     pea     ($0040).w
     clr.l   -(a7)
     pea     ($0010).w
-    dc.w    $4EB9,$0000,$0D64                           ; jsr $000D64
+    jsr GameCommand
     clr.l   -(a7)
-    dc.w    $4EB9,$0000,$538E                           ; jsr $00538E
+    jsr CmdSetBackground
     pea     ($0001).w
     clr.l   -(a7)
     moveq   #$0,d0
     move.b  (a5), d0
     ext.l   d0
     move.l  d0, -(a7)
-    dc.w    $4EB9,$0000,$68CA                           ; jsr $0068CA
+    jsr LoadScreenGfx
     lea     $28(a7), a7
     pea     ($0002).w
     pea     ($0007).w
@@ -16818,7 +16818,7 @@ l_1b62a:
     move.b  (a5), d0
     ext.l   d0
     move.l  d0, -(a7)
-    dc.w    $4EB9,$0000,$6B78                           ; jsr $006B78
+    jsr ShowRelPanel
     moveq   #$0,d0
     move.b  (a5), d0
     ext.l   d0
@@ -16826,7 +16826,7 @@ l_1b62a:
     dc.w    $4EBA,$0D96                                 ; jsr $01C43C(pc)
     nop
     lea     $10(a7), a7
-    dc.w    $4EB9,$0001,$D748                           ; jsr $01D748
+    jsr ResourceUnload
     cmpi.b  #$1, (a3)
     bne.w   l_1b7a6
     moveq   #$0,d0
@@ -16850,17 +16850,17 @@ l_1b6d2:
     move.l  d0, -(a7)
     pea     ($0001).w
     pea     ($0766).w
-    dc.w    $4EB9,$0001,$E044                           ; jsr $01E044
+    jsr TilePlacement
     pea     ($0001).w
     pea     ($000E).w
-    dc.w    $4EB9,$0000,$0D64                           ; jsr $000D64
+    jsr GameCommand
     pea     ($0001).w
     pea     ($0001).w
-    dc.w    $4EB9,$0001,$E0B8                           ; jsr $01E0B8
+    jsr GameCmd16
     lea     $2c(a7), a7
     pea     ($0001).w
     pea     ($000E).w
-    dc.w    $4EB9,$0000,$0D64                           ; jsr $000D64
+    jsr GameCommand
     addq.l  #$8, a7
     addq.w  #$1, d3
     cmpi.w  #$5, d3
@@ -16878,43 +16878,43 @@ l_1b6d2:
     move.l  d0, -(a7)
     pea     ($0001).w
     pea     ($0766).w
-    dc.w    $4EB9,$0001,$E044                           ; jsr $01E044
+    jsr TilePlacement
     pea     ($0001).w
     pea     ($000E).w
-    dc.w    $4EB9,$0000,$0D64                           ; jsr $000D64
+    jsr GameCommand
     pea     ($0001).w
     pea     ($0003).w
-    dc.w    $4EB9,$0001,$D62C                           ; jsr $01D62C
+    jsr PollAction
     lea     $2c(a7), a7
     pea     ($0001).w
     pea     ($0001).w
-    dc.w    $4EB9,$0001,$E0B8                           ; jsr $01E0B8
+    jsr GameCmd16
     pea     ($0001).w
     pea     ($000E).w
-    dc.w    $4EB9,$0000,$0D64                           ; jsr $000D64
+    jsr GameCommand
     lea     $10(a7), a7
 l_1b7a6:
     tst.w   ($00FF17C4).l
     bne.b   l_1b7c6
-    dc.w    $4EB9,$0002,$A738                           ; jsr $02A738
+    jsr RunAITurn
     cmpi.w  #$ffff, ($00FF0A32).l
     beq.b   l_1b7cc
-    dc.w    $4EB9,$0002,$C2FA                           ; jsr $02C2FA
+    jsr RunScenarioMenu
     bra.b   l_1b7cc
 l_1b7c6:
-    dc.w    $4EB9,$0001,$E398                           ; jsr $01E398
+    jsr PreLoopInit
 l_1b7cc:
     cmpi.b  #$1, (a3)
     bne.w   l_1b864
-    dc.w    $4EB9,$0001,$D71C                           ; jsr $01D71C
+    jsr ResourceLoad
     moveq   #$0,d0
     move.b  $1(a3), d0
     move.l  d0, -(a7)
-    dc.w    $4EB9,$0000,$D648                           ; jsr $00D648
+    jsr RangeLookup
     move.w  d0, ($00FF9A1C).l
     ext.l   d0
     move.l  d0, -(a7)
-    dc.w    $4EB9,$0000,$9F4A                           ; jsr $009F4A
+    jsr SelectMenuItem
     pea     ($0001).w
     move.w  ($00FF9A1C).l, d0
     ext.l   d0
@@ -16923,7 +16923,7 @@ l_1b7cc:
     move.b  (a5), d0
     ext.l   d0
     move.l  d0, -(a7)
-    dc.w    $4EB9,$0000,$6A2E                           ; jsr $006A2E
+    jsr LoadScreen
     pea     ($0002).w
     move.w  ($00FF9A1C).l, d0
     ext.l   d0
@@ -16932,14 +16932,14 @@ l_1b7cc:
     move.b  (a5), d0
     ext.l   d0
     move.l  d0, -(a7)
-    dc.w    $4EB9,$0000,$6B78                           ; jsr $006B78
+    jsr ShowRelPanel
     moveq   #$0,d0
     move.b  (a5), d0
     ext.l   d0
     move.l  d0, -(a7)
     dc.w    $4EBA,$00E0                                 ; jsr $01B91A(pc)
     nop
-    dc.w    $4EB9,$0001,$D748                           ; jsr $01D748
+    jsr ResourceUnload
     move.w  ($00FF9A1C).l, d0
     ext.l   d0
     move.l  d0, -(a7)
@@ -16956,10 +16956,10 @@ l_1b864:
     pea     ($0040).w
     clr.l   -(a7)
     pea     ($0010).w
-    dc.w    $4EB9,$0000,$0D64                           ; jsr $000D64
-    dc.w    $4EB9,$0003,$204A                           ; jsr $03204A
+    jsr GameCommand
+    jsr RunAIStrategy
     pea     ($003C).w
-    dc.w    $4EB9,$0001,$E2F4                           ; jsr $01E2F4
+    jsr PollInputChange
     lea     $10(a7), a7
     clr.w   d5
 l_1b88a:
@@ -16971,33 +16971,33 @@ l_1b892:
     move.w  d4, -$2(a6)
     cmpi.w  #$1, d5
     bne.b   l_1b900
-    dc.w    $4EB9,$0001,$D71C                           ; jsr $01D71C
+    jsr ResourceLoad
     pea     ($0020).w
     pea     ($0020).w
     clr.l   -(a7)
     clr.l   -(a7)
-    dc.w    $4EB9,$0003,$A942                           ; jsr $03A942
+    jsr SetTextWindow
     pea     ($0007).w
-    dc.w    $4EB9,$0000,$9F4A                           ; jsr $009F4A
-    dc.w    $4EB9,$0001,$E398                           ; jsr $01E398
+    jsr SelectMenuItem
+    jsr PreLoopInit
     pea     ($0040).w
     clr.l   -(a7)
     pea     ($0010).w
-    dc.w    $4EB9,$0000,$0D64                           ; jsr $000D64
+    jsr GameCommand
     clr.l   -(a7)
-    dc.w    $4EB9,$0000,$538E                           ; jsr $00538E
+    jsr CmdSetBackground
     pea     ($0001).w
     clr.l   -(a7)
     pea     ($0004).w
-    dc.w    $4EB9,$0000,$68CA                           ; jsr $0068CA
+    jsr LoadScreenGfx
     lea     $30(a7), a7
-    dc.w    $4EB9,$0001,$D748                           ; jsr $01D748
+    jsr ResourceUnload
     bra.b   l_1b910
 l_1b900:
     pea     ($0040).w
     clr.l   -(a7)
     pea     ($0010).w
-    dc.w    $4EB9,$0000,$0D64                           ; jsr $000D64
+    jsr GameCommand
 l_1b910:
     movem.l -$40(a6), d2-d5/a2-a5
     unlk    a6
@@ -17013,7 +17013,7 @@ RunMainMenu:
     move.l  $8(a6), d2
     move.w  ($00FF9A1C).l, d3
     clr.l   -(a7)
-    dc.w    $4EB9,$0000,$538E                           ; jsr $00538E
+    jsr CmdSetBackground
     pea     ($077F).w
     pea     ($0001).w
     pea     ($0020).w
@@ -17021,7 +17021,7 @@ RunMainMenu:
     clr.l   -(a7)
     pea     ($0001).w
     pea     ($001A).w
-    dc.w    $4EB9,$0000,$0D64                           ; jsr $000D64
+    jsr GameCommand
     lea     $20(a7), a7
     pea     ($077D).w
     pea     ($0008).w
@@ -17030,7 +17030,7 @@ RunMainMenu:
     clr.l   -(a7)
     pea     ($0001).w
     pea     ($001A).w
-    dc.w    $4EB9,$0000,$0D64                           ; jsr $000D64
+    jsr GameCommand
     move.w  d3, d0
     ext.l   d0
     move.l  d0, -(a7)
@@ -17064,7 +17064,7 @@ HandleMenuSelection:
     lsl.l   #$6, d0
     add.l   ($000A1B58).l, d0
     move.l  d0, -(a7)
-    dc.w    $4EB9,$0000,$4668                           ; jsr $004668
+    jsr CmdPlaceTile
     move.w  $12(a6), d0
     ext.l   d0
     lsl.l   #$3, d0
@@ -17079,14 +17079,14 @@ HandleMenuSelection:
     pea     ($0001).w
     pea     ($0039).w
     pea     ($000F).w
-    dc.w    $4EB9,$0000,$0D64                           ; jsr $000D64
+    jsr GameCommand
     pea     ($000A).w
     pea     ($000E).w
-    dc.w    $4EB9,$0000,$0D64                           ; jsr $000D64
+    jsr GameCommand
     lea     $2c(a7), a7
     pea     ($0001).w
     pea     ($0039).w
-    dc.w    $4EB9,$0001,$E0B8                           ; jsr $01E0B8
+    jsr GameCmd16
     unlk    a6
     rts
 
@@ -17109,7 +17109,7 @@ DisplayMenuOption:
     move.w  d2, d0
     ext.l   d0
     move.l  d0, -(a7)
-    dc.w    $4EB9,$0000,$D648                           ; jsr $00D648
+    jsr RangeLookup
     addq.l  #$4, a7
     cmp.w   $e(a6), d0
     bne.w   l_1bafa
@@ -17272,7 +17272,7 @@ ExecMenuCommand:
     move.b  $1(a3), d0
     ext.l   d0
     move.l  d0, -(a7)
-    dc.w    $4EB9,$0000,$D648                           ; jsr $00D648
+    jsr RangeLookup
     cmp.w   d5, d0
     bne.b   l_1bc44
     moveq   #$0,d0
@@ -17296,7 +17296,7 @@ l_1bc44:
     move.w  d0, -$2(a6)
     pea     ($0004).w
     pea     ($003B).w
-    dc.w    $4EB9,$0001,$E0B8                           ; jsr $01E0B8
+    jsr GameCmd16
     clr.l   -(a7)
     pea     ($000A).w
     pea     ($0020).w
@@ -17335,7 +17335,7 @@ l_1bc44:
     move.l  d0, -(a7)
     clr.l   -(a7)
     pea     ($0740).w
-    dc.w    $4EB9,$0001,$E044                           ; jsr $01E044
+    jsr TilePlacement
     pea     ($0001).w
     pea     ($000E).w
     jsr     (a5)
@@ -17359,31 +17359,31 @@ l_1bc44:
     jsr     (a5)
     pea     ($0004DFB8).l
     pea     ($00FF1804).l
-    dc.w    $4EB9,$0000,$3FEC                           ; jsr $003FEC
+    jsr LZ_Decompress
     lea     $24(a7), a7
     clr.l   -(a7)
     clr.l   -(a7)
     pea     ($00FF1804).l
     pea     ($000F).w
     pea     ($02E1).w
-    dc.w    $4EB9,$0001,$D568                           ; jsr $01D568
+    jsr VRAMBulkLoad
     lea     $14(a7), a7
 l_1bd64:
     clr.l   -(a7)
     pea     ($0003).w
-    dc.w    $4EB9,$0001,$D62C                           ; jsr $01D62C
+    jsr PollAction
     addq.l  #$8, a7
     andi.w  #$c0, d0
     bne.b   l_1bd64
     movea.l  #$0004DFB8,a3
     movea.l  #$0004DD9C,a4
 l_1bd84:
-    dc.w    $4EB9,$0001,$D748                           ; jsr $01D748
+    jsr ResourceUnload
     move.w  d5, d0
     ext.l   d0
     move.l  d0, -(a7)
     move.l  a2, -(a7)
-    dc.w    $4EB9,$0000,$7B1E                           ; jsr $007B1E
+    jsr HitTestMapTile
     addq.l  #$8, a7
     move.w  d0, d2
     cmp.w   -$2(a6), d2
@@ -17399,7 +17399,7 @@ l_1bd84:
     move.w  d2, d0
     ext.l   d0
     move.l  d0, -(a7)
-    dc.w    $4EB9,$0000,$88EA                           ; jsr $0088EA
+    jsr DrawStatDisplay
     lea     $14(a7), a7
     bra.b   l_1bdfa
 l_1bdce:
@@ -17413,7 +17413,7 @@ l_1bdce:
     jsr     (a5)
     pea     ($0002).w
     pea     ($0037).w
-    dc.w    $4EB9,$0001,$E0B8                           ; jsr $01E0B8
+    jsr GameCmd16
     lea     $24(a7), a7
 l_1bdfa:
     move.w  d2, -$2(a6)
@@ -17431,7 +17431,7 @@ l_1bdfe:
     move.w  d2, d0
     ext.l   d0
     move.l  d0, -(a7)
-    dc.w    $4EB9,$0000,$88EA                           ; jsr $0088EA
+    jsr DrawStatDisplay
     move.w  d2, d0
     ext.l   d0
     move.l  d0, -(a7)
@@ -17476,7 +17476,7 @@ l_1be66:
     jsr     (a5)
     pea     ($0002).w
     pea     ($0039).w
-    dc.w    $4EB9,$0001,$E0B8                           ; jsr $01E0B8
+    jsr GameCmd16
     lea     $24(a7), a7
 l_1beb8:
     move.w  d2, d7
@@ -17492,7 +17492,7 @@ l_1beba:
     move.l  d0, -(a7)
     clr.l   -(a7)
     pea     ($0740).w
-    dc.w    $4EB9,$0001,$E044                           ; jsr $01E044
+    jsr TilePlacement
     pea     ($0001).w
     pea     ($000E).w
     jsr     (a5)
@@ -17500,7 +17500,7 @@ l_1beba:
 l_1bef0:
     clr.l   -(a7)
     pea     ($0003).w
-    dc.w    $4EB9,$0001,$D62C                           ; jsr $01D62C
+    jsr PollAction
     addq.l  #$8, a7
     move.w  d0, d4
     andi.l  #$ff, d0
@@ -17512,7 +17512,7 @@ l_1bef0:
     ext.l   d0
     move.l  d0, -(a7)
     move.l  a2, -(a7)
-    dc.w    $4EB9,$0000,$7A74                           ; jsr $007A74
+    jsr AdjustScrollPos
     pea     ($0001).w
     pea     ($000E).w
     jsr     (a5)
@@ -17520,7 +17520,7 @@ l_1bef0:
     ext.l   d0
     move.l  d0, -(a7)
     move.l  a2, -(a7)
-    dc.w    $4EB9,$0000,$7A74                           ; jsr $007A74
+    jsr AdjustScrollPos
     pea     ($0001).w
     pea     ($000E).w
     jsr     (a5)
@@ -17567,7 +17567,7 @@ l_1bf80:
     move.w  d6, d0
     ext.l   d0
     move.l  d0, -(a7)
-    dc.w    $4EB9,$0000,$8A4A                           ; jsr $008A4A
+    jsr CharacterBrowser
     lea     $24(a7), a7
     move.w  d0, d2
     pea     ($077E).w
@@ -17589,14 +17589,14 @@ l_1bf80:
     jsr     (a5)
     move.l  a3, -(a7)
     pea     ($00FF1804).l
-    dc.w    $4EB9,$0000,$3FEC                           ; jsr $003FEC
+    jsr LZ_Decompress
     lea     $24(a7), a7
     clr.l   -(a7)
     clr.l   -(a7)
     pea     ($00FF1804).l
     pea     ($000F).w
     pea     ($02E1).w
-    dc.w    $4EB9,$0001,$D568                           ; jsr $01D568
+    jsr VRAMBulkLoad
     lea     $14(a7), a7
     cmpi.w  #$ff, d2
     beq.b   l_1c052
@@ -17610,7 +17610,7 @@ l_1bf80:
     move.w  d3, d0
     ext.l   d0
     move.l  d0, -(a7)
-    dc.w    $4EB9,$0000,$88EA                           ; jsr $0088EA
+    jsr DrawStatDisplay
     lea     $14(a7), a7
 l_1c052:
     move.w  #$ff, d7
@@ -17630,7 +17630,7 @@ l_1c05a:
     move.w  (a2), d0
     ext.l   d0
     move.l  d0, -(a7)
-    dc.w    $4EB9,$0000,$9CEC                           ; jsr $009CEC
+    jsr PlaceCursor
     pea     ($0001).w
     move.w  d2, d0
     ext.l   d0
@@ -17647,7 +17647,7 @@ l_1c05a:
 l_1c0aa:
     clr.l   -(a7)
     pea     ($0003).w
-    dc.w    $4EB9,$0001,$D62C                           ; jsr $01D62C
+    jsr PollAction
     addq.l  #$8, a7
     andi.w  #$20, d0
     bne.b   l_1c0aa
@@ -17662,7 +17662,7 @@ l_1c0c2:
     move.w  (a2), d0
     ext.l   d0
     move.l  d0, -(a7)
-    dc.w    $4EB9,$0000,$9CEC                           ; jsr $009CEC
+    jsr PlaceCursor
     move.w  d2, d0
     ext.l   d0
     move.l  d0, -(a7)
@@ -17676,7 +17676,7 @@ l_1c0c2:
     nop
     pea     ($0004).w
     pea     ($003B).w
-    dc.w    $4EB9,$0001,$E0B8                           ; jsr $01E0B8
+    jsr GameCmd16
     lea     $20(a7), a7
     pea     ($077E).w
     pea     ($0006).w
@@ -17697,14 +17697,14 @@ l_1c0c2:
     jsr     (a5)
     move.l  a3, -(a7)
     pea     ($00FF1804).l
-    dc.w    $4EB9,$0000,$3FEC                           ; jsr $003FEC
+    jsr LZ_Decompress
     lea     $24(a7), a7
     clr.l   -(a7)
     clr.l   -(a7)
     pea     ($00FF1804).l
     pea     ($000F).w
     pea     ($02E1).w
-    dc.w    $4EB9,$0001,$D568                           ; jsr $01D568
+    jsr VRAMBulkLoad
     pea     ($0037).w
     pea     ($0013).w
     clr.l   -(a7)
@@ -17712,7 +17712,7 @@ l_1c0c2:
     move.w  d2, d0
     ext.l   d0
     move.l  d0, -(a7)
-    dc.w    $4EB9,$0000,$88EA                           ; jsr $0088EA
+    jsr DrawStatDisplay
     lea     $28(a7), a7
     pea     ($0001).w
     move.w  d2, d0
@@ -17735,7 +17735,7 @@ l_1c1ae:
     beq.w   l_1c262
     pea     ($0002).w
     pea     ($0039).w
-    dc.w    $4EB9,$0001,$E0B8                           ; jsr $01E0B8
+    jsr GameCmd16
     clr.l   -(a7)
     move.w  d3, d0
     ext.l   d0
@@ -17764,7 +17764,7 @@ l_1c1ae:
 l_1c212:
     pea     ($0002).w
     pea     ($0037).w
-    dc.w    $4EB9,$0001,$E0B8                           ; jsr $01E0B8
+    jsr GameCmd16
     clr.l   -(a7)
     pea     ($0006).w
     pea     ($001C).w
@@ -17781,7 +17781,7 @@ l_1c246:
 l_1c24a:
     clr.l   -(a7)
     pea     ($0003).w
-    dc.w    $4EB9,$0001,$D62C                           ; jsr $01D62C
+    jsr PollAction
     addq.l  #$8, a7
     andi.w  #$10, d0
     bne.b   l_1c24a
@@ -17796,7 +17796,7 @@ l_1c26c:
     clr.l   -(a7)
     pea     ($001A).w
     jsr     (a5)
-    dc.w    $4EB9,$0003,$77C8                           ; jsr $0377C8
+    jsr ClearCharSprites
     move.w  d5, d0
     movem.l -$2c(a6), d2-d7/a2-a5
     unlk    a6
@@ -17817,7 +17817,7 @@ CalcRelationship:
     pea     ($0020).w
     clr.l   -(a7)
     clr.l   -(a7)
-    dc.w    $4EB9,$0003,$A942                           ; jsr $03A942
+    jsr SetTextWindow
     lea     $10(a7), a7
     move.w  d2, d0
     ext.l   d0
@@ -17838,28 +17838,28 @@ CalcRelationship:
     dc.w    $0036
     dc.w    $0066
     dc.w    $006E
-    dc.w    $4EB9,$0003,$6F12                           ; jsr $036F12
+    jsr RecruitCharacter
     bra.b   l_1c33c
-    dc.w    $4EB9,$0001,$4202                           ; jsr $014202
+    jsr ProcessCharActions
     bra.b   l_1c33c
-    dc.w    $4EB9,$0000,$F5AA                           ; jsr $00F5AA
+    jsr ProcessRouteAction
     bra.b   l_1c33c
-    dc.w    $4EB9,$0002,$C9C8                           ; jsr $02C9C8
+    jsr RunPurchaseMenu
     bra.b   l_1c33c
-    dc.w    $4EB9,$0002,$F712                           ; jsr $02F712
+    jsr ShowQuarterReport
     move.w  #$1, ($00FF14B8).l
     bra.b   l_1c33c
-    dc.w    $4EB9,$0002,$7F18                           ; jsr $027F18
+    jsr BuildRouteLoop
     bra.b   l_1c33c
-    dc.w    $4EB9,$0002,$9ABC                           ; jsr $029ABC
+    jsr RunTurnSequence
     bra.b   l_1c33c
-    dc.w    $4EB9,$0001,$2E92                           ; jsr $012E92
+    jsr ShowQuarterSummary
     bra.b   l_1c33c
-    dc.w    $4EB9,$0000,$D6BE                           ; jsr $00D6BE
+    jsr RunPlayerTurn
     bra.b   l_1c33c
-    dc.w    $4EB9,$0002,$3EA8                           ; jsr $023EA8
+    jsr RunQuarterScreen
     bra.b   l_1c33c
-    dc.w    $4EB9,$0001,$6F9E                           ; jsr $016F9E
+    jsr RunGameMenu
     cmpi.w  #$1, d0
     bne.b   l_1c33c
     moveq   #$B,d2
@@ -17880,8 +17880,8 @@ UpdateCharRelation:
     move.w  d2, d0
     ori.w   #$8000, d0
     move.w  d0, ($00FFA6B0).l
-    dc.w    $4EB9,$0002,$0A64                           ; jsr $020A64
-    dc.w    $4EB9,$0001,$D748                           ; jsr $01D748
+    jsr ShowGameScreen
+    jsr ResourceUnload
     cmpi.w  #$20, d2
     bge.b   l_1c374
     moveq   #$6,d6
@@ -17915,26 +17915,26 @@ l_1c3a0:
     blt.b   l_1c384
     pea     ($0001).w
     pea     ($000E).w
-    dc.w    $4EB9,$0000,$0D64                           ; jsr $000D64
+    jsr GameCommand
     addq.l  #$8, a7
     moveq   #$2,d0
     eor.w   d0, d5
 l_1c3b8:
     clr.l   -(a7)
     pea     ($0003).w
-    dc.w    $4EB9,$0001,$D62C                           ; jsr $01D62C
+    jsr PollAction
     addq.l  #$8, a7
     andi.l  #$10, d0
     beq.b   l_1c37c
 l_1c3ce:
     pea     ($0001).w
     pea     ($0003).w
-    dc.w    $4EB9,$0001,$D62C                           ; jsr $01D62C
+    jsr PollAction
     addq.l  #$8, a7
     andi.l  #$10, d0
     beq.b   l_1c3ce
-    dc.w    $4EB9,$0001,$D71C                           ; jsr $01D71C
-    dc.w    $4EB9,$0001,$E398                           ; jsr $01E398
+    jsr ResourceLoad
+    jsr PreLoopInit
     pea     ($0001).w
     move.w  $e(a6), d0
     ext.l   d0
@@ -17942,7 +17942,7 @@ l_1c3ce:
     move.w  d7, d0
     ext.l   d0
     move.l  d0, -(a7)
-    dc.w    $4EB9,$0000,$6A2E                           ; jsr $006A2E
+    jsr LoadScreen
     pea     ($0002).w
     move.w  $e(a6), d0
     ext.l   d0
@@ -17950,12 +17950,12 @@ l_1c3ce:
     move.w  d7, d0
     ext.l   d0
     move.l  d0, -(a7)
-    dc.w    $4EB9,$0000,$6B78                           ; jsr $006B78
+    jsr ShowRelPanel
     move.w  d7, d0
     ext.l   d0
     move.l  d0, -(a7)
     dc.w    $6100,$F4F0                                 ; bsr.w $01B91A
-    dc.w    $4EB9,$0001,$D748                           ; jsr $01D748
+    jsr ResourceUnload
     movem.l -$1c(a6), d2-d7
     unlk    a6
     rts
@@ -18042,12 +18042,12 @@ ShowPlayerInfo:                                                  ; $01C43C
 EvalCharMatch:
     movem.l d2/a2-a3, -(a7)
     movea.l  #$00FF0018,a3
-    dc.w    $4EB9,$0001,$D748                           ; jsr $01D748
+    jsr ResourceUnload
     pea     ($0003).w
     pea     ($001D).w
     pea     ($0012).w
     pea     ($0002).w
-    dc.w    $4EB9,$0000,$5A04                           ; jsr $005A04
+    jsr DrawBox
     lea     $10(a7), a7
 l_1c578:
     movea.l a3, a2
@@ -18061,7 +18061,7 @@ l_1c57c:
     sub.l   d1, d0
     addq.l  #$3, d0
     move.l  d0, -(a7)
-    dc.w    $4EB9,$0003,$AB2C                           ; jsr $03AB2C
+    jsr SetTextCursor
     cmpi.b  #$1, (a2)
     bne.b   l_1c5aa
     move.w  d2, d0
@@ -18077,7 +18077,7 @@ l_1c5aa:
     move.l  d0, -(a7)
     pea     ($0004115C).l
 l_1c5b8:
-    dc.w    $4EB9,$0003,$B246                           ; jsr $03B246
+    jsr PrintfNarrow
     lea     $10(a7), a7
     addq.w  #$1, d2
     moveq   #$24,d0
@@ -18087,7 +18087,7 @@ l_1c5b8:
 l_1c5ce:
     pea     ($0001).w
     pea     ($0003).w
-    dc.w    $4EB9,$0001,$D62C                           ; jsr $01D62C
+    jsr PollAction
     addq.l  #$8, a7
     move.w  d0, d2
     andi.l  #$d0, d0
@@ -18128,7 +18128,7 @@ l_1c61a:
 l_1c62c:
     pea     ($0002).w
     pea     ($000E).w
-    dc.w    $4EB9,$0000,$0D64                           ; jsr $000D64
+    jsr GameCommand
     addq.l  #$8, a7
     bra.w   l_1c578
     movem.l (a7)+, d2/a2-a3
@@ -18149,24 +18149,24 @@ ProcessCharTrade:
     moveq   #$0,d0
     move.w  d7, d0
     moveq   #$6,d1
-    dc.w    $4EB9,$0003,$E146                           ; jsr $03E146
+    jsr SignedMod
     move.l  d0, d6
     mulu.w  #$3, d6
     addi.w  #$e, d6
     moveq   #$0,d0
     move.w  d7, d0
     moveq   #$6,d1
-    dc.w    $4EB9,$0003,$E08A                           ; jsr $03E08A
+    jsr SignedDiv
     move.l  d0, d5
     add.w   d5, d5
     addi.w  #$16, d5
     move.l  ($000A1B54).l, -(a7)
     pea     ($00FF1804).l
-    dc.w    $4EB9,$0000,$3FEC                           ; jsr $003FEC
+    jsr LZ_Decompress
     pea     ($0047).w
     pea     ($02E1).w
     pea     ($00FF1804).l
-    dc.w    $4EB9,$0000,$4668                           ; jsr $004668
+    jsr CmdPlaceTile
     pea     ($00072DCC).l
     pea     ($0004).w
     pea     ($0012).w
@@ -18189,19 +18189,19 @@ ProcessCharTrade:
     move.l  d0, -(a7)
     clr.l   -(a7)
     pea     ($0740).w
-    dc.w    $4EB9,$0001,$E044                           ; jsr $01E044
+    jsr TilePlacement
     pea     ($0001).w
     pea     ($000E).w
     jsr     (a4)
-    dc.w    $4EB9,$0001,$D748                           ; jsr $01D748
-    dc.w    $4EB9,$0001,$A60E                           ; jsr $01A60E
+    jsr ResourceUnload
+    jsr InitFlightDisplay
     pea     ($0001).w
     move.w  (a2), d0
     ext.l   d0
     move.l  d0, -(a7)
-    dc.w    $4EB9,$0001,$A672                           ; jsr $01A672
+    jsr UpdateFlightSlots
     clr.l   -(a7)
-    dc.w    $4EB9,$0001,$E1EC                           ; jsr $01E1EC
+    jsr ReadInput
     lea     $30(a7), a7
     tst.w   d0
     beq.b   l_1c73e
@@ -18217,14 +18217,14 @@ l_1c746:
     tst.w   d4
     beq.b   l_1c774
     clr.l   -(a7)
-    dc.w    $4EB9,$0001,$E1EC                           ; jsr $01E1EC
+    jsr ReadInput
     addq.l  #$4, a7
     tst.w   d0
     beq.b   l_1c774
     move.w  (a2), d0
     ext.l   d0
     move.l  d0, -(a7)
-    dc.w    $4EB9,$0001,$ABB0                           ; jsr $01ABB0
+    jsr AnimateFlightPaths
     pea     ($0001).w
     pea     ($000E).w
     jsr     (a4)
@@ -18240,7 +18240,7 @@ l_1c774:
     bra.b   l_1c7b6
 l_1c784:
     clr.l   -(a7)
-    dc.w    $4EB9,$0001,$E1EC                           ; jsr $01E1EC
+    jsr ReadInput
     addq.l  #$4, a7
     andi.l  #$ffff, d0
     move.w  d3, d1
@@ -18250,7 +18250,7 @@ l_1c784:
     move.w  (a2), d0
     ext.l   d0
     move.l  d0, -(a7)
-    dc.w    $4EB9,$0001,$ABB0                           ; jsr $01ABB0
+    jsr AnimateFlightPaths
     pea     ($0001).w
     pea     ($000E).w
     jsr     (a4)
@@ -18266,7 +18266,7 @@ l_1c7be:
     move.w  #$1, (a5)
 l_1c7c8:
     clr.l   -(a7)
-    dc.w    $4EB9,$0001,$E1EC                           ; jsr $01E1EC
+    jsr ReadInput
     addq.l  #$4, a7
     move.w  d0, d3
     ext.l   d0
@@ -18375,7 +18375,7 @@ l_1c89e:
     ext.l   d0
     subi.l  #$e, d0
     moveq   #$3,d1
-    dc.w    $4EB9,$0003,$E08A                           ; jsr $03E08A
+    jsr SignedDiv
     add.l   (a7)+, d0
     move.w  d0, d7
     move.w  d5, d0
@@ -18387,7 +18387,7 @@ l_1c89e:
     dc.w    $6100,$F0D4                                 ; bsr.w $01B9A0
     lea     $c(a7), a7
 l_1c8d2:
-    dc.w    $4EB9,$0001,$A64C                           ; jsr $01A64C
+    jsr ClearFlightSlots
     move.w  d7, d0
     bra.w   l_1cb78
 l_1c8de:
@@ -18398,7 +18398,7 @@ l_1c8de:
 l_1c8e8:
     clr.w   (a3)
     clr.w   (a5)
-    dc.w    $4EB9,$0001,$A64C                           ; jsr $01A64C
+    jsr ClearFlightSlots
     clr.l   -(a7)
     pea     ($0006).w
     pea     ($0008).w
@@ -18413,7 +18413,7 @@ l_1c8e8:
     move.w  $a(a6), d0
     ext.l   d0
     move.l  d0, -(a7)
-    dc.w    $4EB9,$0000,$8A4A                           ; jsr $008A4A
+    jsr CharacterBrowser
     move.w  d0, d2
     cmpi.w  #$ff, d2
     beq.b   l_1c92e
@@ -18427,12 +18427,12 @@ l_1c92e:
     dc.w    $6100,$EFE2                                 ; bsr.w $01B91A
     move.l  ($000A1B54).l, -(a7)
     pea     ($00FF1804).l
-    dc.w    $4EB9,$0000,$3FEC                           ; jsr $003FEC
+    jsr LZ_Decompress
     lea     $30(a7), a7
     pea     ($0047).w
     pea     ($02E1).w
     pea     ($00FF1804).l
-    dc.w    $4EB9,$0000,$4668                           ; jsr $004668
+    jsr CmdPlaceTile
     pea     ($00072DCC).l
     pea     ($0004).w
     pea     ($0012).w
@@ -18455,7 +18455,7 @@ l_1c92e:
     move.l  d0, -(a7)
     clr.l   -(a7)
     pea     ($0740).w
-    dc.w    $4EB9,$0001,$E044                           ; jsr $01E044
+    jsr TilePlacement
     pea     ($0001).w
     pea     ($000E).w
     jsr     (a4)
@@ -18463,15 +18463,15 @@ l_1c92e:
     move.w  (a2), d0
     ext.l   d0
     move.l  d0, -(a7)
-    dc.w    $4EB9,$0001,$A672                           ; jsr $01A672
+    jsr UpdateFlightSlots
     lea     $2c(a7), a7
-    dc.w    $4EB9,$0001,$D748                           ; jsr $01D748
+    jsr ResourceUnload
     bra.w   l_1cb18
 l_1c9d8:
     clr.w   (a3)
     clr.w   (a5)
-    dc.w    $4EB9,$0001,$A64C                           ; jsr $01A64C
-    dc.w    $4EB9,$0001,$D71C                           ; jsr $01D71C
+    jsr ClearFlightSlots
+    jsr ResourceLoad
     move.w  #$7, ($00FF9A1C).l
     pea     ($0040).w
     clr.l   -(a7)
@@ -18479,35 +18479,35 @@ l_1c9d8:
     jsr     (a4)
     pea     ($0040).w
     clr.l   -(a7)
-    dc.w    $4EB9,$0000,$538E                           ; jsr $00538E
+    jsr CmdSetBackground
     pea     ($0001).w
     clr.l   -(a7)
     move.w  $a(a6), d0
     ext.l   d0
     move.l  d0, -(a7)
-    dc.w    $4EB9,$0000,$68CA                           ; jsr $0068CA
+    jsr LoadScreenGfx
     pea     ($0002).w
     pea     ($0007).w
     move.w  $a(a6), d0
     ext.l   d0
     move.l  d0, -(a7)
-    dc.w    $4EB9,$0000,$6B78                           ; jsr $006B78
+    jsr ShowRelPanel
     move.w  $a(a6), d0
     ext.l   d0
     move.l  d0, -(a7)
     dc.w    $6100,$FA00                                 ; bsr.w $01C43C
     lea     $30(a7), a7
-    dc.w    $4EB9,$0001,$D748                           ; jsr $01D748
+    jsr ResourceUnload
     clr.w   d3
 l_1ca4a:
     move.w  d3, d0
     move.l  d0, -(a7)
     pea     ($000A).w
-    dc.w    $4EB9,$0001,$E290                           ; jsr $01E290
+    jsr ProcessInputLoop
     addq.l  #$8, a7
     andi.l  #$90, d0
     beq.b   l_1ca4a
-    dc.w    $4EB9,$0001,$D71C                           ; jsr $01D71C
+    jsr ResourceLoad
     move.w  (a2), ($00FF9A1C).l
     pea     ($0001).w
     move.w  ($00FF9A1C).l, d0
@@ -18516,7 +18516,7 @@ l_1ca4a:
     move.w  $a(a6), d0
     ext.l   d0
     move.l  d0, -(a7)
-    dc.w    $4EB9,$0000,$6A2E                           ; jsr $006A2E
+    jsr LoadScreen
     pea     ($0002).w
     move.w  ($00FF9A1C).l, d0
     ext.l   d0
@@ -18524,18 +18524,18 @@ l_1ca4a:
     move.w  $a(a6), d0
     ext.l   d0
     move.l  d0, -(a7)
-    dc.w    $4EB9,$0000,$6B78                           ; jsr $006B78
+    jsr ShowRelPanel
     move.w  $a(a6), d0
     ext.l   d0
     move.l  d0, -(a7)
     dc.w    $6100,$EE6A                                 ; bsr.w $01B91A
     move.l  ($000A1B54).l, -(a7)
     pea     ($00FF1804).l
-    dc.w    $4EB9,$0000,$3FEC                           ; jsr $003FEC
+    jsr LZ_Decompress
     pea     ($0047).w
     pea     ($02E1).w
     pea     ($00FF1804).l
-    dc.w    $4EB9,$0000,$4668                           ; jsr $004668
+    jsr CmdPlaceTile
     lea     $30(a7), a7
     pea     ($00072DCC).l
     pea     ($0004).w
@@ -18549,9 +18549,9 @@ l_1ca4a:
     move.w  (a2), d0
     ext.l   d0
     move.l  d0, -(a7)
-    dc.w    $4EB9,$0001,$A672                           ; jsr $01A672
+    jsr UpdateFlightSlots
     lea     $24(a7), a7
-    dc.w    $4EB9,$0001,$D748                           ; jsr $01D748
+    jsr ResourceUnload
 l_1cb14:
     clr.w   (a3)
     clr.w   (a5)
@@ -18569,7 +18569,7 @@ l_1cb18:
     move.l  d0, -(a7)
     clr.l   -(a7)
     pea     ($0740).w
-    dc.w    $4EB9,$0001,$E044                           ; jsr $01E044
+    jsr TilePlacement
     pea     ($0001).w
     pea     ($000E).w
     jsr     (a4)
@@ -18579,7 +18579,7 @@ l_1cb52:
     move.w  (a2), d0
     ext.l   d0
     move.l  d0, -(a7)
-    dc.w    $4EB9,$0001,$ABB0                           ; jsr $01ABB0
+    jsr AnimateFlightPaths
     pea     ($0001).w
     pea     ($000E).w
     jsr     (a4)
@@ -18612,7 +18612,7 @@ RenderDisplayBuffer:
     add.l   d1, d0
     move.l  d0, -(a7)
     clr.l   -(a7)
-    dc.w    $4EB9,$0001,$D538                           ; jsr $01D538
+    jsr MemCopy
     clr.w   d2
 l_1cbb8:
     move.w  d5, d0
@@ -18640,19 +18640,19 @@ l_1cbec:
     move.l  a4, d0
     addq.l  #$2, d0
     move.l  d0, -(a7)
-    dc.w    $4EB9,$0000,$5092                           ; jsr $005092
+    jsr DisplaySetup
     move.l  a4, d0
     addi.l  #$82, d0
     move.l  d0, -(a7)
     pea     ($00FF1804).l
-    dc.w    $4EB9,$0000,$3FEC                           ; jsr $003FEC
+    jsr LZ_Decompress
     lea     $28(a7), a7
     clr.l   -(a7)
     clr.l   -(a7)
     pea     ($00FF1804).l
     pea     ($0025).w
     pea     ($0330).w
-    dc.w    $4EB9,$0001,$D568                           ; jsr $01D568
+    jsr VRAMBulkLoad
     move.l  a4, d0
     moveq   #$22,d1
     add.l   d1, d0
@@ -18663,16 +18663,16 @@ l_1cbec:
     pea     ($0001).w
     clr.l   -(a7)
     pea     ($001B).w
-    dc.w    $4EB9,$0000,$0D64                           ; jsr $000D64
+    jsr GameCommand
     lea     $30(a7), a7
     pea     ($0008).w
     pea     ($0038).w
     pea     -$10(a6)
-    dc.w    $4EB9,$0000,$5092                           ; jsr $005092
+    jsr DisplaySetup
     pea     ($000E).w
     clr.l   -(a7)
     move.l  a5, -(a7)
-    dc.w    $4EB9,$0001,$D520                           ; jsr $01D520
+    jsr MemFillByte
     move.w  d5, d0
     add.w   d0, d0
     movea.l  #$00FF0118,a0
@@ -18680,7 +18680,7 @@ l_1cbec:
     pea     ($0001).w
     pea     ($000F).w
     pea     -$20(a6)
-    dc.w    $4EB9,$0000,$5092                           ; jsr $005092
+    jsr DisplaySetup
     lea     $24(a7), a7
     move.w  d5, d0
     lsl.w   #$5, d0
@@ -18707,10 +18707,10 @@ l_1ccc0:
     addi.l  #$3b, d0
     move.l  d0, -(a7)
     pea     ($0544).w
-    dc.w    $4EB9,$0001,$E044                           ; jsr $01E044
+    jsr TilePlacement
     pea     ($0001).w
     pea     ($000E).w
-    dc.w    $4EB9,$0000,$0D64                           ; jsr $000D64
+    jsr GameCommand
     lea     $24(a7), a7
     addq.w  #$1, d4
     bra.w   l_1cdbe
@@ -18722,7 +18722,7 @@ l_1cd10:
     move.w  d2, d0
     ext.l   d0
     move.l  d0, -(a7)
-    dc.w    $4EB9,$0000,$D648                           ; jsr $00D648
+    jsr RangeLookup
     addq.l  #$4, a7
     move.w  d0, d2
     bra.b   l_1cd46
@@ -18735,7 +18735,7 @@ l_1cd2e:
     move.w  d5, d0
     ext.l   d0
     move.l  d0, -(a7)
-    dc.w    $4EB9,$0000,$9DC4                           ; jsr $009DC4
+    jsr FindBitInField
     addq.l  #$8, a7
 l_1cd46:
     cmp.w   d6, d2
@@ -18768,10 +18768,10 @@ l_1cd46:
     addi.l  #$3b, d0
     move.l  d0, -(a7)
     pea     ($0544).w
-    dc.w    $4EB9,$0001,$E044                           ; jsr $01E044
+    jsr TilePlacement
     pea     ($0001).w
     pea     ($000E).w
-    dc.w    $4EB9,$0000,$0D64                           ; jsr $000D64
+    jsr GameCommand
     lea     $24(a7), a7
     move.w  d2, d0
     ext.l   d0
@@ -18787,7 +18787,7 @@ l_1cdc2:
     move.w  ($00FF0006).l, d0
     ext.l   d0
     moveq   #$4,d1
-    dc.w    $4EB9,$0003,$E146                           ; jsr $03E146
+    jsr SignedMod
     move.l  d0, d2
     mulu.w  #$3, d2
     move.w  ($00FF0006).l, d0
@@ -18802,10 +18802,10 @@ l_1cdec:
     pea     ($0020).w
     clr.l   -(a7)
     clr.l   -(a7)
-    dc.w    $4EB9,$0003,$A942                           ; jsr $03A942
+    jsr SetTextWindow
     pea     ($0015).w
     pea     ($0001).w
-    dc.w    $4EB9,$0003,$AB2C                           ; jsr $03AB2C
+    jsr SetTextCursor
     move.w  d3, d0
     ext.l   d0
     move.l  d0, -(a7)
@@ -18814,7 +18814,7 @@ l_1cdec:
     movea.l  #$0005F096,a0
     move.l  (a0,d0.w), -(a7)
     pea     ($0004116C).l
-    dc.w    $4EB9,$0003,$B246                           ; jsr $03B246
+    jsr PrintfNarrow
     movem.l -$64(a6), d2-d6/a2-a5
     unlk    a6
     rts
@@ -18838,7 +18838,7 @@ l_1ce56:
     ext.l   d0
     addq.l  #$1, d0
     moveq   #$4,d1
-    dc.w    $4EB9,$0003,$E146                           ; jsr $03E146
+    jsr SignedMod
     move.w  d0, d2
     pea     ($0001).w
     move.w  d3, d0
@@ -18847,7 +18847,7 @@ l_1ce56:
     move.w  d2, d0
     ext.l   d0
     move.l  d0, -(a7)
-    dc.w    $4EB9,$0000,$6A2E                           ; jsr $006A2E
+    jsr LoadScreen
     pea     ($0002).w
     move.w  d3, d0
     ext.l   d0
@@ -18855,7 +18855,7 @@ l_1ce56:
     move.w  d2, d0
     ext.l   d0
     move.l  d0, -(a7)
-    dc.w    $4EB9,$0000,$6B78                           ; jsr $006B78
+    jsr ShowRelPanel
     move.w  d2, d0
     ext.l   d0
     move.l  d0, -(a7)
@@ -18873,10 +18873,10 @@ l_1ce56:
     pea     ($0020).w
     clr.l   -(a7)
     clr.l   -(a7)
-    dc.w    $4EB9,$0003,$A942                           ; jsr $03A942
+    jsr SetTextWindow
     pea     ($0015).w
     pea     ($000E).w
-    dc.w    $4EB9,$0003,$AB2C                           ; jsr $03AB2C
+    jsr SetTextCursor
     move.w  d2, d0
     lsl.w   #$3, d0
     add.w   d3, d0
@@ -18886,7 +18886,7 @@ l_1ce56:
     ext.l   d0
     move.l  d0, -(a7)
     pea     ($00041180).l
-    dc.w    $4EB9,$0003,$B270                           ; jsr $03B270
+    jsr PrintfWide
     lea     $20(a7), a7
 l_1cf0a:
     pea     ($0004).w
@@ -18896,7 +18896,7 @@ l_1cf0a:
 l_1cf16:
     clr.l   -(a7)
     pea     ($0003).w
-    dc.w    $4EB9,$0001,$D62C                           ; jsr $01D62C
+    jsr PollAction
     addq.l  #$8, a7
     move.w  d0, d4
     andi.l  #$90, d0
@@ -18924,7 +18924,7 @@ l_1cf16:
     move.w  d2, d0
     ext.l   d0
     move.l  d0, -(a7)
-    dc.w    $4EB9,$0000,$8A4A                           ; jsr $008A4A
+    jsr CharacterBrowser
     lea     $24(a7), a7
     move.w  d0, d5
     clr.l   -(a7)
@@ -18947,7 +18947,7 @@ l_1cf98:
     move.w  d2, d0
     ext.l   d0
     move.l  d0, -(a7)
-    dc.w    $4EB9,$0000,$9F48                           ; jsr $009F48
+    jsr NopStub
     lea     $c(a7), a7
     move.w  d0, d5
 l_1cfb6:
@@ -18968,10 +18968,10 @@ l_1cfb6:
     pea     ($0020).w
     clr.l   -(a7)
     clr.l   -(a7)
-    dc.w    $4EB9,$0003,$A942                           ; jsr $03A942
+    jsr SetTextWindow
     pea     ($0015).w
     pea     ($000E).w
-    dc.w    $4EB9,$0003,$AB2C                           ; jsr $03AB2C
+    jsr SetTextCursor
     move.w  d2, d0
     lsl.w   #$3, d0
     add.w   d3, d0
@@ -18981,7 +18981,7 @@ l_1cfb6:
     ext.l   d0
     move.l  d0, -(a7)
     pea     ($00041172).l
-    dc.w    $4EB9,$0003,$B270                           ; jsr $03B270
+    jsr PrintfWide
     lea     $20(a7), a7
     bra.b   l_1d046
 l_1d028:
@@ -19014,7 +19014,7 @@ l_1d05c:
     move.w  d6, d0
     ext.l   d0
     move.l  d0, -(a7)
-    dc.w    $4EB9,$0000,$6A2E                           ; jsr $006A2E
+    jsr LoadScreen
     pea     ($0002).w
     move.w  d3, d0
     ext.l   d0
@@ -19022,7 +19022,7 @@ l_1d05c:
     move.w  d6, d0
     ext.l   d0
     move.l  d0, -(a7)
-    dc.w    $4EB9,$0000,$6B78                           ; jsr $006B78
+    jsr ShowRelPanel
     move.w  d6, d0
     ext.l   d0
     move.l  d0, -(a7)
@@ -19061,20 +19061,20 @@ AllocGraphicsMemory:
     move.w  d2, d0
     ext.l   d0
     move.l  d0, -(a7)
-    dc.w    $4EB9,$0000,$D648                           ; jsr $00D648
+    jsr RangeLookup
     move.w  d0, d6
     pea     ($0020).w
     pea     ($0020).w
     clr.l   -(a7)
     clr.l   -(a7)
-    dc.w    $4EB9,$0003,$A942                           ; jsr $03A942
+    jsr SetTextWindow
     move.w  d2, d0
     ext.l   d0
     move.l  d0, -(a7)
     move.w  d3, d0
     ext.l   d0
     move.l  d0, -(a7)
-    dc.w    $4EB9,$0000,$6F42                           ; jsr $006F42
+    jsr CharCodeCompare
     lea     $1c(a7), a7
     move.l  d0, d4
     andi.l  #$ffff, d4
@@ -19101,7 +19101,7 @@ AllocGraphicsMemory:
     move.l  d0, -(a7)
     move.w  d3, d0
     move.l  d0, -(a7)
-    dc.w    $4EB9,$0001,$A506                           ; jsr $01A506
+    jsr CalcRelationValue
     lea     $c(a7), a7
     move.l  d0, -(a7)
     pea     ($0004118E).l
@@ -19109,7 +19109,7 @@ AllocGraphicsMemory:
     lea     $2c(a7), a7
     pea     ($0001).w
     pea     ($0003).w
-    dc.w    $4EB9,$0001,$D62C                           ; jsr $01D62C
+    jsr PollAction
     addq.l  #$8, a7
     move.w  d0, d4
     andi.w  #$20, d0
@@ -19121,7 +19121,7 @@ AllocGraphicsMemory:
     move.w  ($00FFBD64).l, d0
     ext.l   d0
     move.l  d0, -(a7)
-    dc.w    $4EB9,$0000,$9CEC                           ; jsr $009CEC
+    jsr PlaceCursor
     move.w  d2, d0
     ext.l   d0
     move.l  d0, -(a7)
@@ -19131,7 +19131,7 @@ AllocGraphicsMemory:
     move.w  d5, d0
     ext.l   d0
     move.l  d0, -(a7)
-    dc.w    $4EB9,$0001,$8F8E                           ; jsr $018F8E
+    jsr BrowseRelations
     lea     $18(a7), a7
     moveq   #$1,d1
     cmp.l   d0, d1
@@ -19155,14 +19155,14 @@ AllocGraphicsMemory:
     jsr     (a2)
     pea     ($0004DFB8).l
     pea     ($00FF1804).l
-    dc.w    $4EB9,$0000,$3FEC                           ; jsr $003FEC
+    jsr LZ_Decompress
     lea     $24(a7), a7
     clr.l   -(a7)
     clr.l   -(a7)
     pea     ($00FF1804).l
     pea     ($000F).w
     pea     ($02E1).w
-    dc.w    $4EB9,$0001,$D568                           ; jsr $01D568
+    jsr VRAMBulkLoad
     pea     ($0037).w
     pea     ($0013).w
     clr.l   -(a7)
@@ -19170,7 +19170,7 @@ AllocGraphicsMemory:
     move.w  d3, d0
     ext.l   d0
     move.l  d0, -(a7)
-    dc.w    $4EB9,$0000,$88EA                           ; jsr $0088EA
+    jsr DrawStatDisplay
     lea     $28(a7), a7
     pea     ($0001).w
     move.w  d3, d0
@@ -19190,12 +19190,12 @@ AllocGraphicsMemory:
     move.w  d2, d0
     ext.l   d0
     move.l  d0, -(a7)
-    dc.w    $4EB9,$0000,$88EA                           ; jsr $0088EA
+    jsr DrawStatDisplay
     lea     $24(a7), a7
 l_1d2b2:
     clr.l   -(a7)
     pea     ($0003).w
-    dc.w    $4EB9,$0001,$D62C                           ; jsr $01D62C
+    jsr PollAction
     addq.l  #$8, a7
     andi.w  #$10, d0
     bne.b   l_1d2b2
@@ -19549,7 +19549,7 @@ VRAMBulkLoad:                                                ; $01D568
     move.w  d2,d0
     ext.l   d0
     moveq   #$64,d1                                          ; divisor = 100
-    dc.w    $4EB9,$0003,$E08A                                ; jsr SignedDiv
+    jsr SignedDiv
     move.l  d0,-(sp)                                         ; push count/100
 .tail:                                                       ; $01D61C
     pea     ($000E).w                                        ; cmd: wait/sync
@@ -19576,7 +19576,7 @@ PollAction:                                                      ; $01D62C
 .retryA:                                                         ; $01D64A
     pea     ($0001).w                                            ; sub-arg: 1
     pea     ($000E).w                                            ; GameCommand #14
-    dc.w    $4EB9,$0000,$0D64                                    ; jsr GameCommand
+    jsr GameCommand
     addq.l  #8,sp                                                ; clean 2 pea args
 ; -- Flush: poll until result is zero (release detection) --
 .pollA:                                                          ; $01D65A
@@ -19590,7 +19590,7 @@ PollAction:                                                      ; $01D62C
 .retryB:                                                         ; $01D666
     pea     ($0001).w                                            ; sub-arg: 1
     pea     ($000E).w                                            ; GameCommand #14
-    dc.w    $4EB9,$0000,$0D64                                    ; jsr GameCommand
+    jsr GameCommand
     addq.l  #8,sp                                                ; clean 2 pea args
 ; -- Wait: poll until result is non-zero (press detection) --
 .pollB:                                                          ; $01D676
@@ -19632,12 +19632,12 @@ RandRange:                                                       ; $01D6A4
     movea.l #$00FFA7E0,a2                                        ; A2 = RNG state pointer
     move.w  $2(a2),d2                                            ; D2 = accumulator word
     pea     ($0003).w                                            ; GameCommand #3
-    dc.w    $4EB9,$0000,$0D64                                    ; jsr GameCommand
+    jsr GameCommand
     addq.l  #4,sp                                                ; clean arg
     add.w   d0,d2                                                ; accumulate return value
     move.l  (a2),d0                                              ; D0 = RNG state
     move.l  #$41C64E6D,d1                                        ; D1 = LCG multiplier (1103515245)
-    dc.w    $4EB9,$0003,$E05C                                    ; jsr Multiply32 (D0 * D1)
+    jsr Multiply32
     addi.l  #$00003039,d0                                        ; D0 += 12345 (LCG increment)
     move.l  d0,(a2)                                              ; store new RNG state
     moveq   #0,d0                                                ; zero-extend
@@ -19648,7 +19648,7 @@ RandRange:                                                       ; $01D6A4
     ext.l   d5                                                   ; sign-extend to long
     sub.l   d5,d1                                                ; D1 = max - min
     addq.l  #1,d1                                                ; D1 = range (max - min + 1)
-    dc.w    $4EB9,$0003,$E146                                    ; jsr Divide32 (D0 / D1, remainder)
+    jsr SignedMod
     add.w   d3,d0                                                ; D0 = (random % range) + min
     movem.l (sp)+,d2-d5/a2                                       ; restore registers
     rts
@@ -19684,7 +19684,7 @@ ResourceLoad:                                                    ; $01D71C
     pea     ($0040).w                                            ; arg: $40
     clr.l   -(sp)                                                ; arg: 0
     pea     ($00FF14BC).l                                        ; arg: work RAM buffer
-    dc.w    $4EB9,$0000,$4CB6                                    ; jsr $00004CB6
+    jsr DrawLayersReverse
     lea     $10(sp),sp                                           ; clean 16 bytes of args
     move.w  #$0001,($00FFA7DC).l                                 ; set loaded flag
 .done:                                                           ; $01D746
@@ -19700,7 +19700,7 @@ ResourceUnload:                                                  ; $01D748
     pea     ($0040).w                                            ; arg: $40
     clr.l   -(sp)                                                ; arg: 0
     pea     ($00FF14BC).l                                        ; arg: work RAM buffer
-    dc.w    $4EB9,$0000,$4D04                                    ; jsr $00004D04
+    jsr DrawLayersForward
     lea     $10(sp),sp                                           ; clean 16 bytes of args
     clr.w   ($00FFA7DC).l                                        ; clear loaded flag
 .done:                                                           ; $01D770
@@ -19826,12 +19826,12 @@ l_1d85e:
     lsl.l   #$5, d0
     move.w  d2, d1
     ext.l   d1
-    dc.w    $4EB9,$0003,$E05C                           ; jsr $03E05C
+    jsr Multiply32
     pea     (a2, d0.l)
     pea     ($0010).w
     pea     ($0002).w
     pea     ($0005).w
-    dc.w    $4EB9,$0000,$0D64                           ; jsr $000D64
+    jsr GameCommand
     lea     $18(a7), a7
     addi.w  #$20, d3
     addq.w  #$1, d2
@@ -19868,7 +19868,7 @@ ProcessTextControl:
     move.l  d0, -(a7)
     pea     ($0002).w
     pea     ($0005).w
-    dc.w    $4EB9,$0000,$0D64                           ; jsr $000D64
+    jsr GameCommand
     lea     $18(a7), a7
     move.l  (a7)+, d2
     rts
@@ -19880,7 +19880,7 @@ ProcessTextControl:
 AlignTextBlock:
     pea     ($0010).w
     pea     ($0013).w
-    dc.w    $4EB9,$0000,$0D64                           ; jsr $000D64
+    jsr GameCommand
     addq.l  #$8, a7
     rts
 
@@ -20479,7 +20479,7 @@ CalcScalar:
     ext.l   d0
     move.l  d0, -(a7)
     pea     ($001A).w
-    dc.w    $4EB9,$0000,$0D64                           ; jsr $000D64
+    jsr GameCommand
     unlk    a6
     rts
 
@@ -20579,12 +20579,12 @@ l_1df54:
     move.w  d0, d2
     ext.l   d0
     moveq   #$A,d1
-    dc.w    $4EB9,$0003,$E08A                           ; jsr $03E08A
+    jsr SignedDiv
     move.w  d0, d3
     move.w  d2, d0
     ext.l   d0
     moveq   #$A,d1
-    dc.w    $4EB9,$0003,$E146                           ; jsr $03E146
+    jsr SignedMod
     move.w  d0, d2
     tst.w   d3
     ble.b   l_1df84
@@ -20706,7 +20706,7 @@ TilePlacement:                                                   ; $01E044
     ext.l   d0                                                   ; sign-extend
     move.l  d0,-(sp)                                             ; push plane
     pea     ($000F).w                                            ; GameCommand #15
-    dc.w    $4EB9,$0000,$0D64                                    ; jsr GameCommand
+    jsr GameCommand
     unlk    a6                                                   ; cleanup (discards args + locals)
     rts
 ; ============================================================================
@@ -20724,7 +20724,7 @@ GameCmd16:                                                       ; $01E0B8
     ext.l   d0                                                   ; sign-extend
     move.l  d0,-(sp)                                             ; push arg1
     pea     ($0010).w                                            ; GameCommand #16
-    dc.w    $4EB9,$0000,$0D64                                    ; jsr GameCommand
+    jsr GameCommand
     lea     $C(sp),sp                                            ; clean 12 bytes (3 args)
     move.l  (sp)+,d2                                             ; restore D2
     rts
@@ -20919,7 +20919,7 @@ ReadInput:                                                       ; $01E1EC
     movea.l #$00FFA790,a2                                        ; A2 = input mask pointer
     clr.l   -(sp)                                                ; push 0 (sub-arg)
     pea     ($000A).w                                            ; GameCommand #10 (read input)
-    dc.w    $4EB9,$0000,$0D64                                    ; jsr GameCommand
+    jsr GameCommand
     addq.l  #8,sp                                                ; clean 2 args
     move.l  d0,d2                                                ; D2 = raw input (longword)
     tst.l   d3                                                   ; check mode
@@ -20964,7 +20964,7 @@ IterateCollection:
 l_1e240:
     pea     ($0001).w
     pea     ($000E).w
-    dc.w    $4EB9,$0000,$0D64                           ; jsr $000D64
+    jsr GameCommand
     addq.l  #$8, a7
 l_1e250:
     clr.l   -(a7)
@@ -20976,7 +20976,7 @@ l_1e250:
 l_1e25e:
     pea     ($0001).w
     pea     ($000E).w
-    dc.w    $4EB9,$0000,$0D64                           ; jsr $000D64
+    jsr GameCommand
     addq.l  #$8, a7
 l_1e26e:
     clr.l   -(a7)
@@ -21014,7 +21014,7 @@ ProcessInputLoop:                                                     ; $01E290
     BNE.S   .pil_after                                                ; if match, continue; else exit
     PEA     ($0001).W
     PEA     ($000E).W                                                 ; command 14
-    dc.w    $4EB9,$0000,$0D64                                         ; jsr GameCommand
+    jsr GameCommand
     ADDQ.L  #8,SP
 .pil_countdown:                                                       ; $01E2CC
     MOVE.L  D2,D0
@@ -21057,7 +21057,7 @@ PollInputChange:                                                      ; $01E2F4
     ADDQ.L  #1,D0                                                     ; frame + 1
     MOVE.L  D0,-(SP)
     PEA     ($000E).W                                                 ; command 14
-    dc.w    $4EB9,$0000,$0D64                                         ; jsr GameCommand
+    jsr GameCommand
     ADDQ.L  #8,SP
     MOVE.W  D2,D4                                                     ; update last input
     SUBQ.W  #1,D3                                                     ; loop counter--
@@ -21175,27 +21175,27 @@ l_1e40c:
     nop
     tst.w   d0
     beq.b   l_1e432
-    dc.w    $4EB9,$0001,$D748                           ; jsr $01D748
+    jsr ResourceUnload
 l_1e432:
     pea     ($0001).w
     pea     ($0012).w
-    dc.w    $4EB9,$0001,$D3AC                           ; jsr $01D3AC
+    jsr MenuSelectEntry
     pea     ($001B).w
     pea     ($0020).w
     clr.l   -(a7)
     clr.l   -(a7)
-    dc.w    $4EB9,$0003,$A942                           ; jsr $03A942
+    jsr SetTextWindow
     lea     $18(a7), a7
     tst.w   ($00FF000A).l
     bne.b   l_1e480
     pea     ($0040).w
     clr.l   -(a7)
     pea     ($0010).w
-    dc.w    $4EB9,$0000,$0D64                           ; jsr $000D64
+    jsr GameCommand
     clr.l   -(a7)
     clr.l   -(a7)
     pea     ($0004).w
-    dc.w    $4EB9,$0000,$68CA                           ; jsr $0068CA
+    jsr LoadScreenGfx
     lea     $18(a7), a7
 l_1e480:
     dc.w    $4EBA,$07BE                                 ; jsr $01EC40(pc)
@@ -21217,7 +21217,7 @@ l_1e488:
     nop
     dc.w    $4EBA,$2572                                 ; jsr $020A1E(pc)
     nop
-    dc.w    $4EB9,$0001,$D71C                           ; jsr $01D71C
+    jsr ResourceLoad
     move.l  (a7)+, d2
     rts
 
@@ -21256,7 +21256,7 @@ ClampValue:
     pea     ($0500).w
     clr.l   -(a7)
     pea     ($00FFB4E4).l
-    dc.w    $4EB9,$0001,$D520                           ; jsr $01D520
+    jsr MemFillByte
     lea     $c(a7), a7
     movea.l  #$00FF0018,a4
     clr.w   d3
@@ -21362,7 +21362,7 @@ l_1e5f4:
     moveq   #$0,d0
     move.w  d3, d0
     move.l  d0, -(a7)
-    dc.w    $4EB9,$0000,$6EEA                           ; jsr $006EEA
+    jsr BitFieldSearch
     addq.l  #$8, a7
     move.w  d0, d2
     cmpi.w  #$20, d2
@@ -21538,14 +21538,14 @@ l_1e7a0:
     move.l  d1, d0
     moveq   #$0,d1
     move.w  d3, d1
-    dc.w    $4EB9,$0003,$E05C                           ; jsr $03E05C
+    jsr Multiply32
     moveq   #$64,d1
-    dc.w    $4EB9,$0003,$E08A                           ; jsr $03E08A
+    jsr SignedDiv
     move.w  d0, d3
     moveq   #$0,d0
     move.w  (a5), d0
     move.l  d0, -(a7)
-    dc.w    $4EB9,$0000,$D648                           ; jsr $00D648
+    jsr RangeLookup
     move.w  d0, d2
     moveq   #$0,d0
     move.w  d2, d0
@@ -21553,7 +21553,7 @@ l_1e7a0:
     moveq   #$0,d0
     move.w  d6, d0
     move.l  d0, -(a7)
-    dc.w    $4EB9,$0000,$6EEA                           ; jsr $006EEA
+    jsr BitFieldSearch
     lea     $c(a7), a7
     ext.l   d0
     moveq   #$0,d1
@@ -21566,7 +21566,7 @@ l_1e7a0:
     moveq   #$0,d0
     move.w  d6, d0
     move.l  d0, -(a7)
-    dc.w    $4EB9,$0000,$74F8                           ; jsr $0074F8
+    jsr CountMatchingChars
     move.w  d0, d2
     beq.b   l_1e81c
     move.w  d3, d0
@@ -21587,9 +21587,9 @@ l_1e81e:
     addi.l  #$f, d0
     moveq   #$0,d1
     move.w  d3, d1
-    dc.w    $4EB9,$0003,$E05C                           ; jsr $03E05C
+    jsr Multiply32
     moveq   #$A,d1
-    dc.w    $4EB9,$0003,$E0C6                           ; jsr $03E0C6
+    jsr UnsignedDivide
     move.w  d0, d3
     movem.l -$28(a6), d2-d7/a2-a5
     unlk    a6
@@ -21624,25 +21624,25 @@ l_1e876:
     moveq   #$0,d0
     move.w  d2, d0
     moveq   #$64,d1
-    dc.w    $4EB9,$0003,$E08A                           ; jsr $03E08A
+    jsr SignedDiv
     move.w  d0, d2
     move.b  d2, (a3)
     move.l  $1c(a4), d0
     moveq   #$C,d1
-    dc.w    $4EB9,$0003,$E08A                           ; jsr $03E08A
+    jsr SignedDiv
     moveq   #$0,d1
     move.w  d2, d1
-    dc.w    $4EB9,$0003,$E05C                           ; jsr $03E05C
+    jsr Multiply32
     move.l  d0, d4
     asr.l   #$8, d4
     cmpi.l  #$ffff, d4
     bge.b   l_1e8ec
     move.l  $1c(a4), d0
     moveq   #$C,d1
-    dc.w    $4EB9,$0003,$E08A                           ; jsr $03E08A
+    jsr SignedDiv
     moveq   #$0,d1
     move.w  d2, d1
-    dc.w    $4EB9,$0003,$E05C                           ; jsr $03E05C
+    jsr Multiply32
     move.l  d0, d4
     asr.l   #$8, d4
     bra.b   l_1e8f2
@@ -21667,20 +21667,20 @@ l_1e900:
 l_1e910:
     move.l  (a2), d0
     moveq   #$C,d1
-    dc.w    $4EB9,$0003,$E08A                           ; jsr $03E08A
+    jsr SignedDiv
     moveq   #$0,d1
     move.w  d2, d1
-    dc.w    $4EB9,$0003,$E05C                           ; jsr $03E05C
+    jsr Multiply32
     move.l  d0, d4
     asr.l   #$8, d4
     cmpi.l  #$ffff, d4
     bge.b   l_1e94a
     move.l  (a2), d0
     moveq   #$C,d1
-    dc.w    $4EB9,$0003,$E08A                           ; jsr $03E08A
+    jsr SignedDiv
     moveq   #$0,d1
     move.w  d2, d1
-    dc.w    $4EB9,$0003,$E05C                           ; jsr $03E05C
+    jsr Multiply32
     move.l  d0, d4
     asr.l   #$8, d4
     bra.b   l_1e950
@@ -22026,11 +22026,11 @@ ProcessInputEvent:
     pea     ($0080).w
     clr.l   -(a7)
     pea     ($00FF01B0).l
-    dc.w    $4EB9,$0001,$D520                           ; jsr $01D520
+    jsr MemFillByte
     pea     ($0070).w
     clr.l   -(a7)
     pea     ($00FF1004).l
-    dc.w    $4EB9,$0001,$D520                           ; jsr $01D520
+    jsr MemFillByte
     lea     $18(a7), a7
     clr.w   d3
     movea.l  #$00FF0018,a5
@@ -22148,7 +22148,7 @@ l_1ed6a:
     move.b  $1(a5), d0
     ext.l   d0
     move.l  d0, -(a7)
-    dc.w    $4EB9,$0000,$D648                           ; jsr $00D648
+    jsr RangeLookup
     addq.l  #$4, a7
     move.w  d0, d3
     move.w  ($00FF0002).l, d0
@@ -22173,7 +22173,7 @@ l_1eda6:
     cmpi.w  #$1, ($00FF000A).l
     bne.b   l_1edde
     pea     ($003C).w
-    dc.w    $4EB9,$0001,$E2F4                           ; jsr $01E2F4
+    jsr PollInputChange
     addq.l  #$4, a7
 l_1edde:
     movea.l  #$0005ECBC,a3
@@ -22188,7 +22188,7 @@ l_1edea:
     moveq   #$0,d0
     move.w  d2, d0
     move.l  d0, -(a7)
-    dc.w    $4EB9,$0000,$6EEA                           ; jsr $006EEA
+    jsr BitFieldSearch
     addq.l  #$8, a7
     move.w  d0, d5
     cmpi.w  #$20, d5
@@ -22199,7 +22199,7 @@ l_1edea:
     moveq   #$0,d0
     move.w  d2, d0
     move.l  d0, -(a7)
-    dc.w    $4EB9,$0000,$759E                           ; jsr $00759E
+    jsr FindCharSlot
     addq.l  #$8, a7
     ext.l   d0
     moveq   #-$1,d1
@@ -22329,7 +22329,7 @@ l_1ef2e:
     cmpi.w  #$1, ($00FF000A).l
     bne.b   l_1ef44
     pea     ($003C).w
-    dc.w    $4EB9,$0001,$E2F4                           ; jsr $01E2F4
+    jsr PollInputChange
     addq.l  #$4, a7
 l_1ef44:
     addq.l  #$4, a3
@@ -22354,13 +22354,13 @@ MapInputToAction:
     bne.w   l_1f0f4
     cmpi.w  #$7, d3
     bcc.b   l_1efc6
-    dc.w    $4EB9,$0001,$D71C                           ; jsr $01D71C
+    jsr ResourceLoad
     clr.l   -(a7)
     moveq   #$0,d0
     move.w  d3, d0
     move.l  d0, -(a7)
     pea     ($0004).w
-    dc.w    $4EB9,$0000,$6A2E                           ; jsr $006A2E
+    jsr LoadScreen
     pea     ($0040).w
     clr.l   -(a7)
     pea     ($0010).w
@@ -22375,7 +22375,7 @@ MapInputToAction:
     nop
     addq.l  #$4, a7
 l_1efbe:
-    dc.w    $4EB9,$0001,$D748                           ; jsr $01D748
+    jsr ResourceUnload
     bra.b   l_1eff8
 l_1efc6:
     pea     ($0040).w
@@ -22383,11 +22383,11 @@ l_1efc6:
     pea     ($0010).w
     jsr     (a3)
     clr.l   -(a7)
-    dc.w    $4EB9,$0000,$538E                           ; jsr $00538E
+    jsr CmdSetBackground
     clr.l   -(a7)
     clr.l   -(a7)
     pea     ($0004).w
-    dc.w    $4EB9,$0000,$68CA                           ; jsr $0068CA
+    jsr LoadScreenGfx
     pea     ($0040).w
     clr.l   -(a7)
     pea     ($0010).w
@@ -22399,12 +22399,12 @@ l_1eff8:
     pea     ($0004).w
     pea     ($0031).w
     pea     ($00FF0118).l
-    dc.w    $4EB9,$0000,$5092                           ; jsr $005092
+    jsr DisplaySetup
     pea     ($001B).w
     pea     ($0020).w
     clr.l   -(a7)
     clr.l   -(a7)
-    dc.w    $4EB9,$0003,$A942                           ; jsr $03A942
+    jsr SetTextWindow
     lea     $1c(a7), a7
     clr.w   d2
 l_1f02c:
@@ -22428,7 +22428,7 @@ l_1f02c:
     move.l  d0, -(a7)
     pea     ($0001).w
     pea     ($0001).w
-    dc.w    $4EB9,$0000,$6760                           ; jsr $006760
+    jsr FillTileRect
     moveq   #$0,d0
     move.w  d2, d0
     move.l  d0, d1
@@ -22437,7 +22437,7 @@ l_1f02c:
     addq.l  #$3, d0
     move.l  d0, -(a7)
     pea     ($0001).w
-    dc.w    $4EB9,$0003,$AB2C                           ; jsr $03AB2C
+    jsr SetTextCursor
     move.w  d2, d0
     lsl.w   #$4, d0
     movea.l  #$00FF00A8,a0
@@ -22453,7 +22453,7 @@ l_1f0a2:
     pea     ($001C).w
     pea     ($0015).w
     pea     ($0002).w
-    dc.w    $4EB9,$0000,$5A04                           ; jsr $005A04
+    jsr DrawBox
     lea     $10(a7), a7
     cmpi.w  #$7, d3
     bcc.b   l_1f0dc
@@ -22537,7 +22537,7 @@ l_1f160:
     moveq   #$0,d0
     move.w  d3, d0
     move.l  d0, -(a7)
-    dc.w    $4EB9,$0000,$6EEA                           ; jsr $006EEA
+    jsr BitFieldSearch
     addq.l  #$8, a7
     move.w  d0, d2
     cmpi.w  #$20, d2
@@ -22618,7 +22618,7 @@ l_1f222:
     add.l   d1, d0
     lsl.l   #$2, d0
     move.l  d2, d1
-    dc.w    $4EB9,$0003,$E05C                           ; jsr $03E05C
+    jsr Multiply32
     move.l  d0, d4
     moveq   #$1,d0
     cmp.l   d4, d0
@@ -22633,7 +22633,7 @@ l_1f244:
     pea     ($0020).w
     clr.l   -(a7)
     clr.l   -(a7)
-    dc.w    $4EB9,$0003,$A942                           ; jsr $03A942
+    jsr SetTextWindow
     lea     $10(a7), a7
     clr.w   d3
     move.w  d3, d0
@@ -22665,7 +22665,7 @@ l_1f292:
     lsl.l   #$2, d0
     lsl.l   #$3, d0
     move.l  d4, d1
-    dc.w    $4EB9,$0003,$E0C6                           ; jsr $03E0C6
+    jsr UnsignedDivide
     move.w  d0, d2
     cmpi.w  #$a0, d2
     bcc.b   l_1f2b4
@@ -22692,23 +22692,23 @@ l_1f2ba:
     addi.l  #$3b, d0
     move.l  d0, -(a7)
     pea     ($0750).w
-    dc.w    $4EB9,$0001,$E044                           ; jsr $01E044
+    jsr TilePlacement
     pea     ($0002).w
     pea     ($000E).w
-    dc.w    $4EB9,$0000,$0D64                           ; jsr $000D64
+    jsr GameCommand
     move.l  d5, -(a7)
     pea     ($0013).w
-    dc.w    $4EB9,$0003,$AB2C                           ; jsr $03AB2C
+    jsr SetTextCursor
     lea     $2c(a7), a7
     move.l  (a2), -(a7)
     pea     ($000411F2).l
-    dc.w    $4EB9,$0003,$B246                           ; jsr $03B246
+    jsr PrintfNarrow
     move.w  d5, d0
     move.l  d0, -(a7)
     pea     ($001D).w
     pea     ($0001).w
     pea     ($0001).w
-    dc.w    $4EB9,$0000,$595E                           ; jsr $00595E
+    jsr PlaceIconTiles
     lea     $18(a7), a7
     moveq   #$28,d0
     add.l   d0, d7
@@ -22762,35 +22762,35 @@ RenderAnimFrame:
     moveq   #$0,d1
     move.b  $3(a3), d1
     ext.l   d1
-    dc.w    $4EB9,$0003,$E05C                           ; jsr $03E05C
+    jsr Multiply32
     move.l  d0, -(a7)
     moveq   #$0,d0
     move.b  $2(a3), d0
     ext.l   d0
     move.w  ($00FFBD4C).l, d1
     ext.l   d1
-    dc.w    $4EB9,$0003,$E05C                           ; jsr $03E05C
+    jsr Multiply32
     add.l   (a7)+, d0
     moveq   #$64,d1
-    dc.w    $4EB9,$0003,$E08A                           ; jsr $03E08A
+    jsr SignedDiv
     move.w  d0, -$c(a6)
     moveq   #$0,d0
     move.b  $3(a2), d0
     andi.l  #$ffff, d0
     moveq   #$5A,d1
-    dc.w    $4EB9,$0003,$E05C                           ; jsr $03E05C
+    jsr Multiply32
     moveq   #$64,d1
-    dc.w    $4EB9,$0003,$E08A                           ; jsr $03E08A
+    jsr SignedDiv
     addi.w  #$a, d0
     move.w  d0, d4
     moveq   #$0,d0
     move.w  (a2), d0
     moveq   #$0,d1
     move.w  -$c(a6), d1
-    dc.w    $4EB9,$0003,$E05C                           ; jsr $03E05C
+    jsr Multiply32
     moveq   #$0,d1
     move.w  d4, d1
-    dc.w    $4EB9,$0003,$E05C                           ; jsr $03E05C
+    jsr Multiply32
     move.l  d0, -$a(a6)
     move.w  ($00FFBD4C).l, d0
     ext.l   d0
@@ -22800,41 +22800,41 @@ RenderAnimFrame:
     moveq   #$0,d1
     move.b  $3(a2), d1
     ext.l   d1
-    dc.w    $4EB9,$0003,$E05C                           ; jsr $03E05C
+    jsr Multiply32
     move.l  d0, -(a7)
     moveq   #$0,d0
     move.b  $2(a2), d0
     ext.l   d0
     move.w  ($00FFBD4C).l, d1
     ext.l   d1
-    dc.w    $4EB9,$0003,$E05C                           ; jsr $03E05C
+    jsr Multiply32
     add.l   (a7)+, d0
     moveq   #$64,d1
-    dc.w    $4EB9,$0003,$E08A                           ; jsr $03E08A
+    jsr SignedDiv
     move.w  d0, d2
     moveq   #$0,d0
     move.b  $3(a3), d0
     andi.l  #$ffff, d0
     moveq   #$5A,d1
-    dc.w    $4EB9,$0003,$E05C                           ; jsr $03E05C
+    jsr Multiply32
     moveq   #$64,d1
-    dc.w    $4EB9,$0003,$E08A                           ; jsr $03E08A
+    jsr SignedDiv
     addi.w  #$a, d0
     move.w  d0, d4
     moveq   #$0,d0
     move.w  (a3), d0
     moveq   #$0,d1
     move.w  d2, d1
-    dc.w    $4EB9,$0003,$E05C                           ; jsr $03E05C
+    jsr Multiply32
     moveq   #$0,d1
     move.w  d4, d1
-    dc.w    $4EB9,$0003,$E05C                           ; jsr $03E05C
+    jsr Multiply32
     move.l  d0, d2
     move.l  -$a(a6), d0
     add.l   d2, d0
     moveq   #$0,d1
     move.w  d6, d1
-    dc.w    $4EB9,$0003,$E0C6                           ; jsr $03E0C6
+    jsr UnsignedDivide
     move.w  d0, -$2(a6)
     clr.w   d2
     bra.b   l_1f4dc
@@ -22930,9 +22930,9 @@ l_1f538:
     movea.l  #$00FFB4EA,a0
     move.w  (a0,d1.w), d1
     andi.l  #$ffff, d1
-    dc.w    $4EB9,$0003,$E05C                           ; jsr $03E05C
+    jsr Multiply32
     moveq   #$64,d1
-    dc.w    $4EB9,$0003,$E0C6                           ; jsr $03E0C6
+    jsr UnsignedDivide
     move.l  d0, (a2)
     add.l   (a2), d6
     addq.w  #$1, d7
@@ -22975,16 +22975,16 @@ l_1f5ec:
     move.l  -$24(a6, d0.w), d0
     moveq   #$0,d1
     move.w  -$2(a6), d1
-    dc.w    $4EB9,$0003,$E05C                           ; jsr $03E05C
+    jsr Multiply32
     move.l  d6, d1
-    dc.w    $4EB9,$0003,$E0C6                           ; jsr $03E0C6
+    jsr UnsignedDivide
     bra.b   l_1f66a
 l_1f65a:
     moveq   #$0,d0
     move.w  -$2(a6), d0
     moveq   #$0,d1
     move.w  d7, d1
-    dc.w    $4EB9,$0003,$E08A                           ; jsr $03E08A
+    jsr SignedDiv
 l_1f66a:
     move.w  d0, d3
     moveq   #$0,d0
@@ -22996,7 +22996,7 @@ l_1f66a:
     move.w  (a4), d1
     ext.l   d1
     addq.l  #$2, d1
-    dc.w    $4EB9,$0003,$E08A                           ; jsr $03E08A
+    jsr SignedDiv
     move.l  d0, -(a7)
     moveq   #$0,d0
     move.w  -$4(a6), d0
@@ -23007,7 +23007,7 @@ l_1f66a:
     move.w  (a4), d1
     ext.l   d1
     addq.l  #$2, d1
-    dc.w    $4EB9,$0003,$E08A                           ; jsr $03E08A
+    jsr SignedDiv
     add.l   (a7)+, d0
     move.l  d0, d5
     tst.l   d5
@@ -23031,7 +23031,7 @@ l_1f6cc:
     move.b  (a2), d0
     ext.l   d0
     move.l  d0, -(a7)
-    dc.w    $4EB9,$0000,$7610                           ; jsr $007610
+    jsr CalcTypeDistance
     addq.l  #$8, a7
     move.w  d0, d5
     cmpi.w  #$3, d5
@@ -23061,7 +23061,7 @@ l_1f710:
     moveq   #$0,d0
     move.w  d3, d0
     moveq   #$5,d1
-    dc.w    $4EB9,$0003,$E08A                           ; jsr $03E08A
+    jsr SignedDiv
     sub.w   d0, d3
     bra.b   l_1f728
 l_1f726:
@@ -23077,9 +23077,9 @@ l_1f728:
     andi.l  #$ffff, d0
     moveq   #$0,d1
     move.w  d3, d1
-    dc.w    $4EB9,$0003,$E05C                           ; jsr $03E05C
+    jsr Multiply32
     moveq   #$64,d1
-    dc.w    $4EB9,$0003,$E0C6                           ; jsr $03E0C6
+    jsr UnsignedDivide
     move.w  d0, d3
     tst.w   (a4)
     bne.b   l_1f76a
@@ -23108,7 +23108,7 @@ l_1f77c:
     moveq   #$0,d0
     move.w  d3, d0
     moveq   #$3,d1
-    dc.w    $4EB9,$0003,$E08A                           ; jsr $03E08A
+    jsr SignedDiv
     sub.w   d0, d3
 l_1f790:
     moveq   #$0,d0
@@ -23192,7 +23192,7 @@ FadeGraphics:
     moveq   #$0,d0
     move.w  $a(a6), d0
     move.l  d0, -(a7)
-    dc.w    $4EB9,$0000,$D648                           ; jsr $00D648
+    jsr RangeLookup
     addq.l  #$4, a7
     move.w  d0, d5
     lsl.w   #$2, d0
@@ -23298,14 +23298,14 @@ l_1f92e:
     moveq   #$0,d0
     move.w  $4(a4), d0
     moveq   #$64,d1
-    dc.w    $4EB9,$0003,$E08A                           ; jsr $03E08A
+    jsr SignedDiv
     moveq   #$1,d1
     cmp.l   d0, d1
     bge.b   l_1f99a
     moveq   #$0,d0
     move.w  $4(a4), d0
     moveq   #$64,d1
-    dc.w    $4EB9,$0003,$E08A                           ; jsr $03E08A
+    jsr SignedDiv
     move.l  d0, -(a7)
     bra.b   l_1f9a0
 l_1f99a:
@@ -23329,11 +23329,11 @@ l_1f9a0:
     movea.l d1, a0
     move.w  $6(a2, a0.l), d1
     andi.l  #$ffff, d1
-    dc.w    $4EB9,$0003,$E05C                           ; jsr $03E05C
+    jsr Multiply32
     move.l  (a7)+, d1
-    dc.w    $4EB9,$0003,$E0C6                           ; jsr $03E0C6
+    jsr UnsignedDivide
     moveq   #$64,d1
-    dc.w    $4EB9,$0003,$E0C6                           ; jsr $03E0C6
+    jsr UnsignedDivide
     move.w  d2, d1
     lsl.w   #$2, d1
     move.l  d0, -$20(a6, d1.w)
@@ -23344,7 +23344,7 @@ l_1f9a0:
     lea     -$20(a6, d0.w), a0
     movea.l d0, a1
     move.l  (a0), d0
-    dc.w    $4EB9,$0003,$E05C                           ; jsr $03E05C
+    jsr Multiply32
     move.l  d0, (a0)
     exg     d0, a1
     move.w  d2, d0
@@ -23353,7 +23353,7 @@ l_1f9a0:
     movea.l d0, a1
     move.l  (a0), d0
     moveq   #$A,d1
-    dc.w    $4EB9,$0003,$E0C6                           ; jsr $03E0C6
+    jsr UnsignedDivide
     move.l  d0, (a0)
     exg     d0, a1
     move.w  d2, d0
@@ -23391,7 +23391,7 @@ l_1fa6c:
     moveq   #$0,d0
     move.w  $a(a6), d0
     move.l  d0, -(a7)
-    dc.w    $4EB9,$0000,$865E                           ; jsr $00865E
+    jsr CalcNegotiationPower
     addq.l  #$8, a7
     move.w  d0, -$22(a6)
     clr.w   d2
@@ -23417,9 +23417,9 @@ l_1fa88:
     move.l  -$20(a6, d0.w), d0
     moveq   #$0,d1
     move.w  -$22(a6), d1
-    dc.w    $4EB9,$0003,$E05C                           ; jsr $03E05C
+    jsr Multiply32
     move.l  d6, d1
-    dc.w    $4EB9,$0003,$E0C6                           ; jsr $03E0C6
+    jsr UnsignedDivide
     move.w  d0, d4
     bra.b   l_1fae6
 l_1fade:
@@ -23438,9 +23438,9 @@ l_1fae6:
     andi.l  #$ffff, d0
     moveq   #$0,d1
     move.w  d4, d1
-    dc.w    $4EB9,$0003,$E05C                           ; jsr $03E05C
+    jsr Multiply32
     moveq   #$64,d1
-    dc.w    $4EB9,$0003,$E0C6                           ; jsr $03E0C6
+    jsr UnsignedDivide
     move.w  d0, d4
     moveq   #$0,d0
     move.w  d3, d0
@@ -23669,14 +23669,14 @@ l_1fd14:
     moveq   #$0,d0
     move.w  $4(a2), d0
     moveq   #$64,d1
-    dc.w    $4EB9,$0003,$E08A                           ; jsr $03E08A
+    jsr SignedDiv
     moveq   #$1,d1
     cmp.l   d0, d1
     bge.b   l_1fd82
     moveq   #$0,d0
     move.w  $4(a2), d0
     moveq   #$64,d1
-    dc.w    $4EB9,$0003,$E08A                           ; jsr $03E08A
+    jsr SignedDiv
     move.l  d0, -(a7)
     bra.b   l_1fd88
 l_1fd82:
@@ -23698,20 +23698,20 @@ l_1fd88:
     adda.l  d3, a0
     move.w  $6(a0), d1
     andi.l  #$ffff, d1
-    dc.w    $4EB9,$0003,$E05C                           ; jsr $03E05C
+    jsr Multiply32
     move.l  (a7)+, d1
-    dc.w    $4EB9,$0003,$E0C6                           ; jsr $03E0C6
+    jsr UnsignedDivide
     moveq   #$64,d1
-    dc.w    $4EB9,$0003,$E0C6                           ; jsr $03E0C6
+    jsr UnsignedDivide
     move.l  d0, (a3)
     movea.l -$20(a6), a0
     move.b  (a0), d1
     andi.l  #$ff, d1
     move.l  (a3), d0
-    dc.w    $4EB9,$0003,$E05C                           ; jsr $03E05C
+    jsr Multiply32
     move.l  d0, (a3)
     moveq   #$A,d1
-    dc.w    $4EB9,$0003,$E0C6                           ; jsr $03E0C6
+    jsr UnsignedDivide
     move.l  d0, (a3)
     moveq   #$1,d0
     cmp.l   (a3), d0
@@ -23757,7 +23757,7 @@ l_1fe22:
     moveq   #$0,d0
     move.b  (a2), d0
     move.l  d0, -(a7)
-    dc.w    $4EB9,$0000,$865E                           ; jsr $00865E
+    jsr CalcNegotiationPower
     addq.l  #$8, a7
     move.w  d0, d4
     cmpi.w  #$1, d5
@@ -23767,9 +23767,9 @@ l_1fe22:
     move.l  -$18(a6, d0.w), d0
     moveq   #$0,d1
     move.w  d4, d1
-    dc.w    $4EB9,$0003,$E05C                           ; jsr $03E05C
+    jsr Multiply32
     move.l  d6, d1
-    dc.w    $4EB9,$0003,$E0C6                           ; jsr $03E0C6
+    jsr UnsignedDivide
     move.w  d0, d4
     bra.b   l_1fe96
 l_1fe94:
@@ -23785,9 +23785,9 @@ l_1fe96:
     andi.l  #$ffff, d0
     moveq   #$0,d1
     move.w  d4, d1
-    dc.w    $4EB9,$0003,$E05C                           ; jsr $03E05C
+    jsr Multiply32
     moveq   #$64,d1
-    dc.w    $4EB9,$0003,$E0C6                           ; jsr $03E0C6
+    jsr UnsignedDivide
     move.w  d0, d4
     moveq   #$0,d0
     move.w  d3, d0

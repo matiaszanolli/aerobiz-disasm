@@ -208,12 +208,19 @@ Tool fixes: BSR.B/BSR.W → dc.w (displacement safety), MOVE.W (PC,Dn) → dc.w 
 All verified byte-identical before applying. JSR abs.l kept as dc.w, BSR.W as dc.w (vasm displacement bug).
 **Acceptance:** `make clean && make all` passes. MD5 1269f44e846a88a2de945de082428b39. All 16 functions translated.
 
+### B-049: Symbolize jsr abs.l call references
+**Status:** DONE (2026-02-26)
+**Why:** 2,870 `jsr` calls remained as raw hex (`dc.w $4EB9,$HHHH,$LLLL`) instead of symbolic `jsr FunctionName`. This was the single biggest remaining readability barrier.
+**Approach:** Built Python script to: (1) extract all label→address mappings from section files (882 labels, two parsing methods: inline `; $XXXXXX` comments and function header `| $XXXXXX-$YYYYYY` ranges), (2) match `dc.w $4EB9,$HHHH,$LLLL` patterns, compute target addresses, and replace with `jsr LabelName`. Safety-tested first: verified `-no-opt` flag preserves abs.l encoding (6 bytes) even for small addresses like $0D64 (GameCommand). 237 unique targets, 236 had labels. Only 1 skip: `jsr $FFF000` (RAM address, no label).
+**Acceptance:** `make verify` passes (MD5: 1269f44e846a88a2de945de082428b39). 2,869 of 2,870 calls symbolized. MainLoop reads `jsr GameUpdate1`, `jsr GameLogic1`, etc.
+
 ---
 
 ## Done
 
 | ID | Description | Commit | Date |
 |----|-------------|--------|------|
+| B-049 | Symbolize 2,869 jsr abs.l calls from raw dc.w to `jsr FunctionName` (236 unique targets) | -- | 2026-02-26 |
 | B-048 | Document game phase flow: initialization, main loop, turns, quarters, win/loss conditions | -- | 2026-02-26 |
 | B-047 | Name all 593 functions: 31 pre-named + 42 GameCommand handlers + 525 via code analysis (0 unnamed remaining) | -- | 2026-02-25 |
 | B-045 | Resolve char_stat_array / char_stat_tab overlap (89 = stat_type/city count, not char_index; 4 records × 57B = 228B, no overlap) | -- | 2026-02-25 |

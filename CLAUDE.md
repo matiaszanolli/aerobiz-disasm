@@ -90,7 +90,7 @@ disasm/aerobiz.asm (entry point)
 
 - **68K modules**: 0 (translating in-place in section files for now)
 - **Functions identified**: 593 named (0 unnamed), 860 translated, 2,896 unique call targets
-- **Translation progress**: ~252,000 bytes translated. All translatable code blocks complete -- only data tables remain as dc.w. All functions named (B-047: 68 from docs/GameCmd, B-047 wave 2-4: 525 from code analysis).
+- **Translation progress**: ~252,000 bytes translated. All translatable code blocks complete -- only data tables remain as dc.w. All functions named (B-047: 68 from docs/GameCmd, B-047 wave 2-4: 525 from code analysis). All 2,869 jsr abs.l calls symbolized (B-049); 1 RAM jump ($FFF000) remains as dc.w.
 - **Phase 4 status**: RAM_MAP.md created (50+ variables, 20+ named regions from PackSaveState). String/text tables labeled (B-042/B-043). DATA_STRUCTURES.md created with field-level layouts for player records (12 fields), route slots (13 fields), char stat records (12 fields), and 3 auxiliary per-player tables. GAME_PHASE_FLOW.md documents complete gameplay flow: initialization, main loop architecture, turn sequence, quarterly processing, and win/loss conditions.
 
 ### ROM Address Mapping

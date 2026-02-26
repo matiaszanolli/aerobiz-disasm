@@ -7,8 +7,9 @@ Index of all identified functions. Updated as disassembly progresses.
 - **Total RTS (function endpoints):** 854
 - **Total RTE (interrupt returns):** 6
 - **Unique call targets:** 2,896
-- **Functions named:** 278
-- **Functions translated to mnemonics:** 266 (all named)
+- **Functions named:** 593 (all functions named — B-047 complete)
+- **Functions translated to mnemonics:** 860 (all translatable code — B-046 complete)
+- **Call instructions symbolized:** 2,869 jsr abs.l (B-049) + 490 jsr (d16,PC) (B-050) + 332 bsr.w (B-051) = 3,691 total
 
 ## Most-Called Functions
 

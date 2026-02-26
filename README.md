@@ -84,33 +84,28 @@ aerobiz-disasm/
 |-------|-------------|--------|
 | 1. Initial dump | ROM as raw `dc.w` data, vector table labeled | Done |
 | 2. Code discovery | Trace execution, map ROM regions, identify functions | Done |
-| 3. Function translation | `dc.w` -> 68K mnemonics, name functions | **In progress** |
-| 4. Data analysis | Identify tables, strings, graphics data | **In progress** |
-| 5. Full understanding | Complete documentation, byte-identical rebuild | Not started |
+| 3. Function translation | `dc.w` -> 68K mnemonics, name functions, symbolize calls | **Done** |
+| 4. Data analysis | Identify tables, strings, graphics data | **Done** |
+| 5. Full understanding | Complete documentation, byte-identical rebuild | **In progress** |
 
 ### Translation Status
 
-~236,000 bytes (~230 KB) of code translated from raw `dc.w` to 68000 mnemonics (all verified byte-identical):
+~252,000 bytes of code translated from raw `dc.w` to 68000 mnemonics (all verified byte-identical). **860 functions translated, 593 named.** Only data tables remain as `dc.w` (system strings/tile patterns at $3D16-$3FEC, ~726 bytes; data tables at $1D20, ~1,896 bytes).
 
-- **System core** -- 944 bytes (5 groups): exception handlers, EXT/H-INT/V-INT interrupts, boot init, Z80 sound interface, GameCommand dispatcher
-- **Main loop & resources** -- 2,816 bytes (25 functions): GameEntry, MainLoop, RangeLookup, ResourceLoad, DiagonalWipe, ShowGameScreen, LoadGameGraphics, and 18 more
-- **Math & memory** -- 1,284 bytes (29 functions): Multiply32, SignedDiv, UnsignedDivide, WeightedAverage, MemCopy, MemMove, StringConcat, and 22 more
-- **Text & compression** -- 2,280 bytes (10 functions): sprintf, PrintfNarrow, SetTextWindow, RenderTextBlock, LZ_Decompress, DecompressVDPTiles, and 4 more
-- **Display & graphics** -- 5,096 bytes (35 functions): DisplaySetup cluster, FillTileRect, LoadScreenGfx, FadePalette, DrawTilemapLine, UnpackPixelData, and 29 more
-- **Input** -- 268 bytes (3 functions): ProcessInputLoop, PollInputChange, PreLoopInit
-- **Game UI** -- 16,380 bytes (55 functions): DrawBox, ShowDialog, LoadScreen, MenuSelectEntry, CharacterBrowser, RunGameMenu, ShowQuarterReport, and 48 more
-- **Character system** -- 14,462 bytes (62 functions): CharCodeCompare, CalcRelationValue, RecruitCharacter, CalcCharScore, FindBestCharacter, and 57 more
-- **Game logic & AI** -- 6,122 bytes (23 functions): RunPlayerTurn, RunAITurn, RunScenarioMenu, AnimateFlightPaths, RunEventSequence, SortWordPairs, and 17 more
-- **Management screens** -- 15,934 bytes (15 functions): PackSaveState, ShowRouteInfo, ShowQuarterSummary, RunQuarterScreen, ShowAnnualReport, RunCharManagement, ShowRelationAction, and 8 more
-- **Bulk translation (B-046)** -- ~252,000 bytes (860 functions): Automated capstone-to-vasm translation of 104 contiguous code blocks across 4 section files. Includes jump-table-aware disassembly, misaligned block boundaries, and cross-section blocks. Functions not yet named.
+**Call symbolization complete (B-049 through B-051):** All raw `dc.w` call instructions replaced with symbolic mnemonics:
+- **2,869 `jsr abs.l`** calls symbolized (B-049): `dc.w $4EB9,$HHHH,$LLLL` → `jsr FunctionName`
+- **490 `jsr (d16,PC)`** calls symbolized (B-050): `dc.w $4EBA,$XXXX` → `jsr (FunctionName,PC)`
+- **332 `bsr.w`** calls symbolized (B-051): `dc.w $6100,$XXXX` → `bsr.w FunctionName`
 
-267 functions named, 860 translated to mnemonics, out of ~860 total. See [BACKLOG.md](BACKLOG.md) for the full task queue.
+Only 7 raw `dc.w` call instructions remain: 1 RAM jump (`$FFF000`), 5 mid-function alt-entry BSR.Ws, 1 mislabeled address.
 
 **Milestone (B-031 through B-040):** All 854 unique JSR call targets from the function reference have been translated. Remaining untranslated code consists of inline routines, branch targets, and data-interleaved sections not reachable via JSR.
 
-**Bulk translation complete (B-046):** All translatable code blocks converted. Only 1 block (~726 bytes) of data/text tables remains as dc.w (system strings and tile patterns at $3D16-$3FEC), plus ~1,896 bytes of data tables in the $1D20 region. Translation tooling: `tools/translate_block.py` (capstone-to-vasm converter), `tools/disasm_jtab.py` (jump-table-aware disassembler), `tools/find_dcw_blocks.py` (block scanner).
+**Bulk translation complete (B-046):** All translatable code blocks converted via automated capstone-to-vasm translation of 104 contiguous code blocks across 4 section files. Includes jump-table-aware disassembly, misaligned block boundaries, and cross-section blocks. Translation tooling: `tools/translate_block.py`, `tools/disasm_jtab.py`, `tools/find_dcw_blocks.py`.
 
-**Phase 4 (B-041 through B-045):** Work RAM map created — 50+ variables and 30+ regions. Data structure field layouts documented for player records (12 fields), route slots (13 fields), and char stat records (12 fields). String/text tables labeled. See [analysis/RAM_MAP.md](analysis/RAM_MAP.md) and [analysis/DATA_STRUCTURES.md](analysis/DATA_STRUCTURES.md).
+**All functions named (B-047):** 593 functions named across all subsystems via docs-based analysis (GameCommand handlers) and code-pattern analysis (B-047 waves 1-4: 68 + 525 functions).
+
+**Phase 4 (B-041 through B-045):** Work RAM map created — 50+ variables and 30+ regions. Data structure field layouts documented for player records (12 fields), route slots (13 fields), and char stat records (12 fields). String/text tables labeled. GAME_PHASE_FLOW.md documents complete gameplay flow. See [analysis/RAM_MAP.md](analysis/RAM_MAP.md), [analysis/DATA_STRUCTURES.md](analysis/DATA_STRUCTURES.md), and [analysis/GAME_PHASE_FLOW.md](analysis/GAME_PHASE_FLOW.md).
 
 ## License
 

@@ -91,7 +91,7 @@ EntryPoint:
 ; 18 functions, 2498 bytes
 
 ; ============================================================================
-; CmdSetVDPReg -- (TODO: name)
+; CmdSetVDPReg -- Write VDP register command word to control port and cache in work RAM shadow
 ; 26 bytes | $0003A2-$0003BB
 ; ============================================================================
 CmdSetVDPReg:
@@ -105,7 +105,7 @@ CmdSetVDPReg:
     rts
 
 ; ============================================================================
-; CmdSetScrollMode -- (TODO: name)
+; CmdSetScrollMode -- Set one of five VDP scroll/plane registers by index, caching value in work RAM
 ; 158 bytes | $0003BC-$000459
 ; ============================================================================
 CmdSetScrollMode:
@@ -162,7 +162,7 @@ l_00458:
     rts
 
 ; ============================================================================
-; CmdGetVDPReg -- (TODO: name)
+; CmdGetVDPReg -- Read cached VDP register value from work RAM shadow by register index
 ; 16 bytes | $00045A-$000469
 ; ============================================================================
 CmdGetVDPReg:
@@ -172,7 +172,7 @@ CmdGetVDPReg:
     rts
 
 ; ============================================================================
-; CmdGetVDPStatus -- (TODO: name)
+; CmdGetVDPStatus -- Read VDP H/V counter port ($C00008) and return value in D0
 ; 10 bytes | $00046A-$000473
 ; ============================================================================
 CmdGetVDPStatus:
@@ -181,7 +181,7 @@ CmdGetVDPStatus:
     rts
 
 ; ============================================================================
-; CmdRunSubroutine -- (TODO: name)
+; CmdRunSubroutine -- Call InitAnimTable subroutine (thin wrapper)
 ; 8 bytes | $000474-$00047B
 ; ============================================================================
 CmdRunSubroutine:
@@ -190,7 +190,7 @@ CmdRunSubroutine:
     rts
 
 ; ============================================================================
-; CmdSetupDMA -- (TODO: name)
+; CmdSetupDMA -- Configure DMA transfer parameters in work RAM and trigger VDP DMA (VRAM/CRAM/VSRAM)
 ; 116 bytes | $00047C-$0004EF
 ; ============================================================================
 CmdSetupDMA:
@@ -233,7 +233,7 @@ l_004ec:
     rts
 
 ; ============================================================================
-; CmdTransferPlane -- (TODO: name)
+; CmdTransferPlane -- Set up DMA params and dispatch VDP write for a nametable plane transfer
 ; 48 bytes | $0004F0-$00051F
 ; ============================================================================
 CmdTransferPlane:
@@ -253,7 +253,7 @@ CmdTransferPlane:
     rts
 
 ; ============================================================================
-; CmdLoadTiles -- (TODO: name)
+; CmdLoadTiles -- Set up DMA source/dest for tile or color data and trigger VDPWriteColorsPath
 ; 48 bytes | $000520-$00054F
 ; ============================================================================
 CmdLoadTiles:
@@ -273,7 +273,7 @@ CmdLoadTiles:
     rts
 
 ; ============================================================================
-; CmdSetupSprite -- (TODO: name)
+; CmdSetupSprite -- Configure VDP DMA command word for sprite table upload, optionally blocking until done
 ; 168 bytes | $000550-$0005F7
 ; ============================================================================
 CmdSetupSprite:
@@ -335,7 +335,7 @@ l_005f6:
     rts
 
 ; ============================================================================
-; CmdCopyMemory -- (TODO: name)
+; CmdCopyMemory -- Copy N bytes from source address to destination address (byte loop)
 ; 20 bytes | $0005F8-$00060B
 ; ============================================================================
 CmdCopyMemory:
@@ -349,7 +349,7 @@ l_00604:
     rts
 
 ; ============================================================================
-; CmdReadInput -- (TODO: name)
+; CmdReadInput -- Read controller buttons (current + previous) for player 1 or 2 from input tables
 ; 76 bytes | $00060C-$000657
 ; ============================================================================
 CmdReadInput:
@@ -378,7 +378,7 @@ l_00652:
     rts
 
 ; ============================================================================
-; CmdSetupObject -- (TODO: name)
+; CmdSetupObject -- Initialize multi-sprite object in work RAM: set positions, tile IDs, and trigger display
 ; 152 bytes | $000658-$0006EF
 ; ============================================================================
 CmdSetupObject:
@@ -436,7 +436,7 @@ l_006ee:
     rts
 
 ; ============================================================================
-; CmdEnableDisplay -- (TODO: name)
+; CmdEnableDisplay -- Enable VDP display output by setting bit 6 in mode register 1 shadow and port
 ; 26 bytes | $0006F0-$000709
 ; ============================================================================
 CmdEnableDisplay:
@@ -449,7 +449,7 @@ CmdEnableDisplay:
     rts
 
 ; ============================================================================
-; HardwareInit -- (TODO: name)
+; HardwareInit -- Initialize VDP display-disable state: clear display bits in mode reg 1 shadow and port
 ; 26 bytes | $00070A-$000723
 ; ============================================================================
 HardwareInit:
@@ -462,7 +462,7 @@ HardwareInit:
     rts
 
 ; ============================================================================
-; CmdWaitFrames -- (TODO: name)
+; CmdWaitFrames -- Busy-wait for N V-blank intervals by polling a V-INT frame counter
 ; 38 bytes | $000724-$000749
 ; ============================================================================
 CmdWaitFrames:
@@ -483,7 +483,7 @@ l_00748:
     rts
 
 ; ============================================================================
-; CmdUpdateSprites -- (TODO: name)
+; CmdUpdateSprites -- Copy sprite data from ROM table into work RAM sprite buffer, applying position offsets
 ; 90 bytes | $00074A-$0007A3
 ; ============================================================================
 CmdUpdateSprites:
@@ -519,7 +519,7 @@ l_0078a:
     rts
 
 ; ============================================================================
-; CmdClearSprites -- (TODO: name)
+; CmdClearSprites -- Zero out N sprite entries in work RAM sprite buffer and refresh display layout
 ; 52 bytes | $0007A4-$0007D7
 ; ============================================================================
 CmdClearSprites:
@@ -544,7 +544,7 @@ l_007be:
     rts
 
 ; ============================================================================
-; CmdTestVRAM -- (TODO: name)
+; CmdTestVRAM -- Write test pattern bytes to a Z80-bus-mapped address and read back to detect errors
 ; 54 bytes | $0007D8-$00080D
 ; ============================================================================
 CmdTestVRAM:
@@ -580,7 +580,7 @@ l_00800:
 ; 16 functions, 1358 bytes
 
 ; ============================================================================
-; ComputeMapCoordOffset -- (TODO: name)
+; ComputeMapCoordOffset -- Compute VRAM word offset for a tile map coordinate from scroll params and plane width
 ; 96 bytes | $000816-$000875
 ; ============================================================================
 ComputeMapCoordOffset:
@@ -624,7 +624,7 @@ l_00862:
     rts
 
 ; ============================================================================
-; CmdDMABatchWrite -- (TODO: name)
+; CmdDMABatchWrite -- DMA-fill multiple nametable rows from a stack-allocated buffer, repeating a fill word
 ; 206 bytes | $000876-$000943
 ; ============================================================================
 CmdDMABatchWrite:
@@ -695,7 +695,7 @@ l_00908:
     rts
 
 ; ============================================================================
-; CmdDMARowWrite -- (TODO: name)
+; CmdDMARowWrite -- DMA-copy sequential nametable rows from source data to VRAM, advancing by plane stride each row
 ; 178 bytes | $000944-$0009F5
 ; ============================================================================
 CmdDMARowWrite:
@@ -753,7 +753,7 @@ l_009bc:
     rts
 
 ; ============================================================================
-; CmdWaitDMA -- (TODO: name)
+; CmdWaitDMA -- Queue a V-INT-driven DMA transfer and busy-wait until V-INT signals completion
 ; 90 bytes | $0009F6-$000A4F
 ; ============================================================================
 CmdWaitDMA:
@@ -787,7 +787,7 @@ l_00a48:
     rts
 
 ; ============================================================================
-; CmdSetWorkFlags -- (TODO: name)
+; CmdSetWorkFlags -- Store two word values into scroll work-RAM shadow registers $38 and $3A
 ; 18 bytes | $000A50-$000A61
 ; ============================================================================
 CmdSetWorkFlags:
@@ -851,7 +851,7 @@ l_00ab2:
     rts
 
 ; ============================================================================
-; CmdClearCharTable -- (TODO: name)
+; CmdClearCharTable -- Zero all character animation table buffers and reset associated control flags
 ; 64 bytes | $000AE8-$000B27
 ; ============================================================================
 CmdClearCharTable:
@@ -876,7 +876,7 @@ l_00b04:
     rts
 
 ; ============================================================================
-; CmdSetCharState -- (TODO: name)
+; CmdSetCharState -- Update character animation state flags and timer registers in work RAM
 ; 26 bytes | $000B28-$000B41
 ; ============================================================================
 CmdSetCharState:
@@ -889,7 +889,7 @@ CmdSetCharState:
     rts
 
 ; ============================================================================
-; ControllerRead -- (TODO: name)
+; ControllerRead -- Animate character sprites via DMA by cycling through frames in the char table
 ; 174 bytes | $000B42-$000BEF
 ; ============================================================================
 ControllerRead:
@@ -952,7 +952,7 @@ l_00bea:
     rts
 
 ; ============================================================================
-; CmdInitAnimation -- (TODO: name)
+; CmdInitAnimation -- Set up character animation parameters (frame count, rate, address) and reset counters
 ; 72 bytes | $000BF0-$000C37
 ; ============================================================================
 CmdInitAnimation:
@@ -980,7 +980,7 @@ l_00c36:
     rts
 
 ; ============================================================================
-; VInt_Sub1 -- (TODO: name)
+; VInt_Sub1 -- V-INT animation tick: DMA next animation frame to CRAM and advance frame/delay counters
 ; 164 bytes | $000C38-$000CDB
 ; ============================================================================
 VInt_Sub1:
@@ -1042,7 +1042,7 @@ l_00cda:
     rts
 
 ; ============================================================================
-; WaitVBlank -- (TODO: name)
+; WaitVBlank -- Read and return VDP status register word from $C00004 (caller checks VBlank bit)
 ; 16 bytes | $000CDC-$000CEB
 ; ============================================================================
 WaitVBlank:
@@ -1052,7 +1052,7 @@ WaitVBlank:
     rts
 
 ; ============================================================================
-; CmdSetAnimState -- (TODO: name)
+; CmdSetAnimState -- Set animation mode and base address in work RAM, resetting current frame index
 ; 24 bytes | $000CEC-$000D03
 ; ============================================================================
 CmdSetAnimState:
@@ -1065,7 +1065,7 @@ CmdSetAnimState:
     rts
 
 ; ============================================================================
-; CmdSetTimer -- (TODO: name)
+; CmdSetTimer -- Initialize countdown timer from two longword args and return current elapsed count
 ; 32 bytes | $000D04-$000D23
 ; ============================================================================
 CmdSetTimer:
@@ -1082,7 +1082,7 @@ l_00d1e:
     rts
 
 ; ============================================================================
-; CmdConditionalWrite -- (TODO: name)
+; CmdConditionalWrite -- Write arg to work RAM word unless arg == 2; always return stored value
 ; 24 bytes | $000D24-$000D3B
 ; ============================================================================
 CmdConditionalWrite:
@@ -1096,7 +1096,7 @@ l_00d34:
     rts
 
 ; ============================================================================
-; CmdInitGameVars -- (TODO: name)
+; CmdInitGameVars -- Clear and initialize three game state variables at $FFC46-$FFC4C from args
 ; 40 bytes | $000D3C-$000D63
 ; ============================================================================
 CmdInitGameVars:
@@ -1161,7 +1161,7 @@ GameCommandTable:                                            ; $000D98
 ; 7 functions, 302 bytes
 
 ; ============================================================================
-; CmdClampCoords -- (TODO: name)
+; CmdClampCoords -- Clamp two input coordinates to stored min/max bounds and save results to work RAM
 ; 62 bytes | $000E54-$000E91
 ; ============================================================================
 CmdClampCoords:
@@ -1190,7 +1190,7 @@ l_00e8c:
     rts
 
 ; ============================================================================
-; CmdGetCoords -- (TODO: name)
+; CmdGetCoords -- Read clamped X and Y coordinate words from work RAM into caller-provided pointer slots
 ; 24 bytes | $000E92-$000EA9
 ; ============================================================================
 CmdGetCoords:
@@ -1204,7 +1204,7 @@ CmdGetCoords:
     rts
 
 ; ============================================================================
-; CmdReadCombinedWord -- (TODO: name)
+; CmdReadCombinedWord -- Pack two adjacent work RAM bytes into a 16-bit value (high byte | low byte)
 ; 16 bytes | $000EAA-$000EB9
 ; ============================================================================
 CmdReadCombinedWord:
@@ -1216,7 +1216,7 @@ CmdReadCombinedWord:
     rts
 
 ; ============================================================================
-; CmdSetBoundsAndClamp -- (TODO: name)
+; CmdSetBoundsAndClamp -- Store four X/Y min/max bounds, then re-clamp current coordinates to the new range
 ; 94 bytes | $000EBA-$000F17
 ; ============================================================================
 CmdSetBoundsAndClamp:
@@ -1253,7 +1253,7 @@ l_00f12:
     rts
 
 ; ============================================================================
-; CmdSetScrollParam -- (TODO: name)
+; CmdSetScrollParam -- Store one word to work RAM scroll parameter register $C5A
 ; 10 bytes | $000F18-$000F21
 ; ============================================================================
 CmdSetScrollParam:
@@ -1262,7 +1262,7 @@ CmdSetScrollParam:
     rts
 
 ; ============================================================================
-; CmdScanStatusArray -- (TODO: name)
+; CmdScanStatusArray -- Scan 8 controller status entries at $FFFC06 and return bitmask of active slots
 ; 32 bytes | $000F22-$000F41
 ; ============================================================================
 CmdScanStatusArray:
@@ -1279,7 +1279,7 @@ l_00f36:
     rts
 
 ; ============================================================================
-; CmdSaveBuffer -- (TODO: name)
+; CmdSaveBuffer -- Save 8 bytes to display buffer or clear display and reset sprite links if arg is zero
 ; 56 bytes | $000F42-$000F79
 ; ============================================================================
 CmdSaveBuffer:
@@ -1368,7 +1368,7 @@ ExceptionHalt:                                              ; $000FE0
 ; 19 functions, 1182 bytes
 
 ; ============================================================================
-; InitSpriteLinks -- (TODO: name)
+; InitSpriteLinks -- Initialize sprite link-chain bytes in sprite table buffer
 ; 58 bytes | $000FE2-$00101B
 ; ============================================================================
 InitSpriteLinks:
@@ -1396,7 +1396,7 @@ l_01002:
     rts
 
 ; ============================================================================
-; VDP_Init2 -- (TODO: name)
+; VDP_Init2 -- Zero sprite table buffer in RAM and reinitialize sprite links
 ; 26 bytes | $00101C-$001035
 ; ============================================================================
 VDP_Init2:
@@ -1412,7 +1412,7 @@ l_01028:
     rts
 
 ; ============================================================================
-; VDP_Init1 -- (TODO: name)
+; VDP_Init1 -- Clear VRAM, CRAM, and VSRAM by bulk-writing zeros via VDP data port
 ; 68 bytes | $001036-$001079
 ; ============================================================================
 VDP_Init1:
@@ -1439,7 +1439,7 @@ l_01072:
     rts
 
 ; ============================================================================
-; VDP_Init3 -- (TODO: name)
+; VDP_Init3 -- Set all three I/O port control registers to output mode ($40)
 ; 22 bytes | $00107A-$00108F
 ; ============================================================================
 VDP_Init3:
@@ -1450,7 +1450,7 @@ VDP_Init3:
     rts
 
 ; ============================================================================
-; Init6 -- (TODO: name)
+; Init6 -- Initialize scroll/viewport bounds and display limit variables in work RAM
 ; 74 bytes | $001090-$0010D9
 ; ============================================================================
 Init6:
@@ -1469,7 +1469,7 @@ Init6:
     rts
 
 ; ============================================================================
-; Init5 -- (TODO: name)
+; Init5 -- Bulk-copy 800 bytes from ROM data table ($1D88) to VRAM via VDP data port
 ; 36 bytes | $0010DA-$0010FD
 ; ============================================================================
 Init5:
@@ -1483,7 +1483,7 @@ l_010f6:
     rts
 
 ; ============================================================================
-; VDP_Init4 -- (TODO: name)
+; VDP_Init4 -- Request Z80 bus and reset Z80, then wait for bus grant with IRQs disabled
 ; 32 bytes | $0010FE-$00111D
 ; ============================================================================
 VDP_Init4:
@@ -1499,7 +1499,7 @@ l_01114:
     rts
 
 ; ============================================================================
-; TriggerVDPDMA -- (TODO: name)
+; TriggerVDPDMA -- Invoke ConfigVDPDMA to program and fire a DMA transfer
 ; 8 bytes | $00111E-$001125
 ; ============================================================================
 TriggerVDPDMA:
@@ -1508,7 +1508,7 @@ TriggerVDPDMA:
     rts
 
 ; ============================================================================
-; DispatchVDPWrite -- (TODO: name)
+; DispatchVDPWrite -- Write scroll data to VDP then wait for FIFO idle before continuing
 ; 56 bytes | $001126-$00115D
 ; ============================================================================
 DispatchVDPWrite:
@@ -1537,7 +1537,7 @@ l_01154:
     rts
 
 ; ============================================================================
-; ReleaseZ80BusDirect -- (TODO: name)
+; ReleaseZ80BusDirect -- Write zero to Z80 bus-request register to release Z80 bus
 ; 12 bytes | $00115E-$001169
 ; ============================================================================
 ReleaseZ80BusDirect:
@@ -1546,7 +1546,7 @@ ReleaseZ80BusDirect:
     rts
 
 ; ============================================================================
-; SetVDPDisplayBit -- (TODO: name)
+; SetVDPDisplayBit -- Write VDP register 1 with display enabled and DMA disabled
 ; 16 bytes | $00116A-$001179
 ; ============================================================================
 SetVDPDisplayBit:
@@ -1558,7 +1558,7 @@ l_0116a:
     rts
 
 ; ============================================================================
-; WaitVDPAndWrite -- (TODO: name)
+; WaitVDPAndWrite -- Poll VDP until not busy, then write auto-increment register from RAM
 ; 30 bytes | $00117A-$001197
 ; ============================================================================
 WaitVDPAndWrite:
@@ -1574,7 +1574,7 @@ l_0117a:
     rts
 
 ; ============================================================================
-; ConfigVDPDMA -- (TODO: name)
+; ConfigVDPDMA -- Program VDP DMA registers from RAM parameters and trigger the transfer
 ; 190 bytes | $001198-$001255
 ; ============================================================================
 ConfigVDPDMA:
@@ -1645,7 +1645,7 @@ l_01252:
     rts
 
 ; ============================================================================
-; ConfigVDPScroll -- (TODO: name)
+; ConfigVDPScroll -- Set VDP DMA registers and VRAM destination for scroll data transfer
 ; 132 bytes | $001256-$0012D9
 ; ============================================================================
 ConfigVDPScroll:
@@ -1694,7 +1694,7 @@ ConfigVDPScroll:
     rts
 
 ; ============================================================================
-; ConfigVDPColors -- (TODO: name)
+; ConfigVDPColors -- Set VDP DMA registers and CRAM destination, then write one color word
 ; 108 bytes | $0012DA-$001345
 ; ============================================================================
 ConfigVDPColors:
@@ -1734,7 +1734,7 @@ ConfigVDPColors:
     rts
 
 ; ============================================================================
-; VInt_Handler1 -- (TODO: name)
+; VInt_Handler1 -- V-INT sub-handler: copy a block of words from RAM buffer to VRAM
 ; 64 bytes | $001346-$001385
 ; ============================================================================
 VInt_Handler1:
@@ -1764,7 +1764,7 @@ l_0137e:
     rts
 
 ; ============================================================================
-; BulkCopyVDP -- (TODO: name)
+; BulkCopyVDP -- Issue VDP command word then loop-write D1 words from A0 to VDP data port
 ; 10 bytes | $001386-$00138F
 ; ============================================================================
 BulkCopyVDP:
@@ -1777,7 +1777,7 @@ l_01388:
     rts
 
 ; ============================================================================
-; VInt_Handler2 -- (TODO: name)
+; VInt_Handler2 -- V-INT sub-handler: fill VRAM rows with repeated tile word over multiple passes
 ; 116 bytes | $001390-$001403
 ; ============================================================================
 VInt_Handler2:
@@ -1824,7 +1824,7 @@ l_01402:
     rts
 
 ; ============================================================================
-; VInt_Handler3 -- (TODO: name)
+; VInt_Handler3 -- V-INT sub-handler: read VRAM rows back into a RAM buffer over multiple passes
 ; 124 bytes | $001404-$00147F
 ; ============================================================================
 VInt_Handler3:
@@ -1994,7 +1994,7 @@ VBlankInt:                                                  ; $0014E6
 ; 29 functions, 4186 bytes
 
 ; ============================================================================
-; SelectVDPInit -- (TODO: name)
+; SelectVDPInit -- Dispatch to DMA, scroll, or color VDP write based on D0 flag bits
 ; 38 bytes | $0015B0-$0015D5
 ; ============================================================================
 SelectVDPInit:
@@ -2015,7 +2015,7 @@ l_015d4:
     rts
 
 ; ============================================================================
-; InitDisplayLayout -- (TODO: name)
+; InitDisplayLayout -- Set up sprite DMA parameters (source, dest, length) and trigger transfer
 ; 104 bytes | $0015D6-$00163D
 ; ============================================================================
 InitDisplayLayout:
@@ -2050,7 +2050,7 @@ l_015fc:
     rts
 
 ; ============================================================================
-; DMA_Transfer -- (TODO: name)
+; DMA_Transfer -- Write 11 words from RAM palette buffer ($FFF06A) to VDP CRAM
 ; 34 bytes | $00163E-$00165F
 ; ============================================================================
 DMA_Transfer:
@@ -2065,7 +2065,7 @@ l_01658:
     rts
 
 ; ============================================================================
-; DisplayUpdate -- (TODO: name)
+; DisplayUpdate -- On timer tick, copy or clear sprite entries then reinitialize display layout
 ; 108 bytes | $001660-$0016CB
 ; ============================================================================
 DisplayUpdate:
@@ -2107,7 +2107,7 @@ l_016c6:
     rts
 
 ; ============================================================================
-; VInt_Sub2 -- (TODO: name)
+; VInt_Sub2 -- Invoke per-frame V-INT callback via function pointer stored in work RAM
 ; 8 bytes | $0016CC-$0016D3
 ; ============================================================================
 VInt_Sub2:
@@ -2116,7 +2116,7 @@ VInt_Sub2:
     rts
 
 ; ============================================================================
-; SubsysUpdate1 -- (TODO: name)
+; SubsysUpdate1 -- Update scroll position from velocity for each active display object, clamped to bounds
 ; 136 bytes | $0016D4-$00175B
 ; ============================================================================
 SubsysUpdate1:
@@ -2167,7 +2167,7 @@ l_01750:
     rts
 
 ; ============================================================================
-; SubsysUpdate2 -- (TODO: name)
+; SubsysUpdate2 -- Process directional input to scroll the display with acceleration and deceleration
 ; 264 bytes | $00175C-$001863
 ; ============================================================================
 SubsysUpdate2:
@@ -2269,7 +2269,7 @@ l_01862:
     rts
 
 ; ============================================================================
-; SubsysUpdate3 -- (TODO: name)
+; SubsysUpdate3 -- Update cursor sprite position by scroll offsets and write to VRAM sprite table
 ; 108 bytes | $001864-$0018CF
 ; ============================================================================
 SubsysUpdate3:
@@ -2308,7 +2308,7 @@ l_018ce:
     rts
 
 ; ============================================================================
-; SubsysUpdate4 -- (TODO: name)
+; SubsysUpdate4 -- Accumulate button state from both controller records into combined input longword
 ; 88 bytes | $0018D0-$001927
 ; ============================================================================
 SubsysUpdate4:
@@ -2341,7 +2341,7 @@ l_01916:
     rts
 
 ; ============================================================================
-; InitInputArrays -- (TODO: name)
+; InitInputArrays -- Dead stub (infinite loop) immediately preceding ControllerPoll entry point
 ; 52 bytes | $001928-$00195B
 ; ============================================================================
 InitInputArrays:
@@ -2366,7 +2366,7 @@ l_01938:
     rts
 
 ; ============================================================================
-; ReadPortByte -- (TODO: name)
+; ReadPortByte -- Read one I/O port and dispatch to handler based on detected controller protocol
 ; 50 bytes | $00195C-$00198D
 ; ============================================================================
 ReadPortByte:
@@ -2388,7 +2388,7 @@ ReadPortByte:
     rts
 
 ; ============================================================================
-; InputCaseDispatch -- (TODO: name)
+; InputCaseDispatch -- PC-relative jump table for controller type dispatch plus 3-button read handler
 ; 60 bytes | $00198E-$0019C9
 ; ============================================================================
 InputCaseDispatch:
@@ -2412,7 +2412,7 @@ InputCaseDispatch:
     rts
 
 ; ============================================================================
-; CountInputBits -- (TODO: name)
+; CountInputBits -- Count how many 2-bit groups in the port byte are non-zero
 ; 26 bytes | $0019CA-$0019E3
 ; ============================================================================
 CountInputBits:
@@ -2431,7 +2431,7 @@ l_019e2:
     rts
 
 ; ============================================================================
-; StubReturn -- (TODO: name)
+; StubReturn -- No-op stub that returns immediately (unhandled controller protocol cases)
 ; 4 bytes | $0019E4-$0019E7
 ; ============================================================================
 StubReturn:
@@ -2440,7 +2440,7 @@ l_019e4:
     rts
 
 ; ============================================================================
-; WritePortToggle -- (TODO: name)
+; WritePortToggle -- Toggle TH line, combine high/low nibbles, and update input state slot
 ; 44 bytes | $0019E8-$001A13
 ; ============================================================================
 WritePortToggle:
@@ -2464,7 +2464,7 @@ l_019f0:
     rts
 
 ; ============================================================================
-; XorAndUpdate -- (TODO: name)
+; XorAndUpdate -- Store new button byte at A1 and write newly-pressed bits (changed AND new)
 ; 12 bytes | $001A14-$001A1F
 ; ============================================================================
 XorAndUpdate:
@@ -2476,7 +2476,7 @@ XorAndUpdate:
     rts
 
 ; ============================================================================
-; ReadMultiNibbles -- (TODO: name)
+; ReadMultiNibbles -- Read up to three nibble pairs from port via TH toggle, detect protocol type
 ; 130 bytes | $001A20-$001AA1
 ; ============================================================================
 ReadMultiNibbles:
@@ -2536,7 +2536,7 @@ l_01a56:
     rts
 
 ; ============================================================================
-; WaitInputReady -- (TODO: name)
+; WaitInputReady -- Wait for port device ready signal then initiate input data parse
 ; 50 bytes | $001AA2-$001AD3
 ; ============================================================================
 WaitInputReady:
@@ -2557,7 +2557,7 @@ l_01ace:
     rts
 
 ; ============================================================================
-; ParseInputData -- (TODO: name)
+; ParseInputData -- Read two nibble pairs from port to assemble a 16-bit input data packet
 ; 78 bytes | $001AD4-$001B21
 ; ============================================================================
 ParseInputData:
@@ -2590,7 +2590,7 @@ l_01ad4:
     rts
 
 ; ============================================================================
-; ParseInputExtended -- (TODO: name)
+; ParseInputExtended -- Decode extended device packet: mark type 2, sign-extend XY movement deltas
 ; 78 bytes | $001B22-$001B6F
 ; ============================================================================
 ParseInputExtended:
@@ -2626,7 +2626,7 @@ l_01b68:
     rts
 
 ; ============================================================================
-; InputStateMachine -- (TODO: name)
+; InputStateMachine -- Drive multi-step read sequence collecting 4 data bytes from extended device
 ; 124 bytes | $001B70-$001BEB
 ; ============================================================================
 InputStateMachine:
@@ -2669,7 +2669,7 @@ l_01be6:
     rts
 
 ; ============================================================================
-; ParseInputDispatch -- (TODO: name)
+; ParseInputDispatch -- Dispatch one input packet parse step via type-code indexed jump table
 ; 36 bytes | $001BEC-$001C0F
 ; ============================================================================
 ParseInputDispatch:
@@ -2688,7 +2688,7 @@ l_01c0a:
     rts
 
 ; ============================================================================
-; ParseInputNibbles -- (TODO: name)
+; ParseInputNibbles -- Read two nibbles, combine into button byte, update current/pressed state
 ; 42 bytes | $001C10-$001C39
 ; ============================================================================
 ParseInputNibbles:
@@ -2708,7 +2708,7 @@ l_01c10:
     rts
 
 ; ============================================================================
-; WriteNibble -- (TODO: name)
+; WriteNibble -- Handle type-0 packet: read combined nibble and update button state slot
 ; 20 bytes | $001C3A-$001C4D
 ; ============================================================================
 WriteNibble:
@@ -2722,7 +2722,7 @@ l_01c3a:
     rts
 
 ; ============================================================================
-; CombineNibbles -- (TODO: name)
+; CombineNibbles -- Poll two nibbles from port and combine into an inverted 8-bit button byte
 ; 30 bytes | $001C4E-$001C6B
 ; ============================================================================
 CombineNibbles:
@@ -2738,7 +2738,7 @@ CombineNibbles:
     rts
 
 ; ============================================================================
-; PollInputStatus -- (TODO: name)
+; PollInputStatus -- Alternating poll: odd calls wait for zero, even calls wait for data bit4 set
 ; 26 bytes | $001C6C-$001C85
 ; ============================================================================
 PollInputStatus:
@@ -2755,7 +2755,7 @@ l_01c76:
     rts
 
 ; ============================================================================
-; WaitInputZero -- (TODO: name)
+; WaitInputZero -- Set port to zero and spin until bit 4 rises; set carry on timeout
 ; 20 bytes | $001C86-$001C99
 ; ============================================================================
 WaitInputZero:
@@ -2770,7 +2770,7 @@ l_01c8a:
     rts
 
 ; ============================================================================
-; ReturnError -- (TODO: name)
+; ReturnError -- Set carry flag and return to signal timeout or error to caller
 ; 6 bytes | $001C9A-$001C9F
 ; ============================================================================
 ReturnError:
@@ -2779,7 +2779,7 @@ l_01c9a:
     rts
 
 ; ============================================================================
-; InitAnimTable -- (TODO: name)
+; InitAnimTable -- Initialize boot animation: copy gradient palette, poll VRAM, cycle until done
 ; 122 bytes | $001CA0-$001D19
 ; ============================================================================
 InitAnimTable:
@@ -2840,7 +2840,7 @@ BlueAnimPalette:                                                ; $001D1A
 ; 1 functions, 48 bytes
 
 ; ============================================================================
-; UpdateAnimTimer -- (TODO: name)
+; UpdateAnimTimer -- Advance boot palette animation: decrement timer, shift gradient index, copy colors
 ; 48 bytes | $001D58-$001D87
 ; ============================================================================
 UpdateAnimTimer:
@@ -3005,7 +3005,7 @@ FadeInPalette:                                                  ; $00249A
 ; 1 functions, 338 bytes
 
 ; ============================================================================
-; CmdSendZ80Param -- (TODO: name)
+; CmdSendZ80Param -- GameCommand Z80 dispatch: send 3-byte param, signal Z80, poll for result
 ; 338 bytes | $0024B8-$002609
 ; ============================================================================
 CmdSendZ80Param:
@@ -3545,7 +3545,7 @@ Z80_Delay:                                                   ; $002688
 ; 1 functions, 302 bytes
 
 ; ============================================================================
-; EarlyInit -- (TODO: name)
+; EarlyInit -- TMSS boot screen: detect region, load font tiles, render license text to VDP
 ; 302 bytes | $003BE8-$003D15
 ; ============================================================================
 EarlyInit:
@@ -4001,7 +4001,7 @@ LZ_Decompress:
 ; 3 functions, 258 bytes
 
 ; ============================================================================
-; WriteColorBitsVRAM -- (TODO: name)
+; WriteColorBitsVRAM -- Bit-pack D2 bits from source word into 16-bit accumulator for VDP tile output
 ; 122 bytes | $004240-$0042B9
 ; ============================================================================
 WriteColorBitsVRAM:
@@ -4052,7 +4052,7 @@ l_04298:
     rts
 
 ; ============================================================================
-; VRAMWriteWithMode -- (TODO: name)
+; VRAMWriteWithMode -- Set VDP VRAM address via control port (A6), read one byte from data port (A5)
 ; 54 bytes | $0042BA-$0042EF
 ; ============================================================================
 VRAMWriteWithMode:
@@ -4078,7 +4078,7 @@ l_042ec:
     rts
 
 ; ============================================================================
-; VRAMWriteExtended -- (TODO: name)
+; VRAMWriteExtended -- Set VDP address via control port, merge D0 byte into existing word and write back
 ; 82 bytes | $0042F0-$004341
 ; ============================================================================
 VRAMWriteExtended:
@@ -4113,7 +4113,7 @@ l_04332:
     rts
 
 ; ============================================================================
-; DecompressVDPTiles -- (TODO: describe)
+; DecompressVDPTiles -- Decompress LZ-encoded 4bpp tile data directly into VDP VRAM via data port
 ; Called: ?? times.
 ; 624 bytes | $004342-$0045B1
 ; ============================================================================
@@ -4394,7 +4394,7 @@ CmdPlaceTile2:                                                        ; $0045E6
 ; 1 functions, 66 bytes
 
 ; ============================================================================
-; TilePlaceWrapper -- (TODO: name)
+; TilePlaceWrapper -- Place tile block via GameCommand(8, 2) with sub-command 1 flag
 ; 66 bytes | $004626-$004667
 ; ============================================================================
 TilePlaceWrapper:
@@ -4452,7 +4452,7 @@ CmdPlaceTile:                                                  ; $004668
 ; 13 functions, 1312 bytes
 
 ; ============================================================================
-; FillTileSequence -- (TODO: name)
+; FillTileSequence -- Fill buffer with sequential BAT cell words encoding palette, flip, and tile index
 ; 76 bytes | $0046A6-$0046F1
 ; ============================================================================
 FillTileSequence:
@@ -4488,7 +4488,7 @@ l_046e4:
     rts
 
 ; ============================================================================
-; AddToTileBuffer -- (TODO: name)
+; AddToTileBuffer -- Add a fixed word offset to each entry in a tile buffer array
 ; 30 bytes | $0046F2-$00470F
 ; ============================================================================
 AddToTileBuffer:
@@ -4508,7 +4508,7 @@ l_04704:
     rts
 
 ; ============================================================================
-; TilePlaceComposite -- (TODO: name)
+; TilePlaceComposite -- Place tile block via cmd 8 then fill sequential tile indices in one call
 ; 74 bytes | $004710-$004759
 ; ============================================================================
 TilePlaceComposite:
@@ -4540,7 +4540,7 @@ TilePlaceComposite:
     rts
 
 ; ============================================================================
-; TilePaletteRotate -- (TODO: name)
+; TilePaletteRotate -- Place tile block via cmd 5 then fill sequential tile indices in one call
 ; 74 bytes | $00475A-$0047A3
 ; ============================================================================
 TilePaletteRotate:
@@ -4572,7 +4572,7 @@ TilePaletteRotate:
     rts
 
 ; ============================================================================
-; LoadPaletteDataTile -- (TODO: name)
+; LoadPaletteDataTile -- Copy tiles from 2D source grid into a local buffer then place via CmdPlaceTile
 ; 132 bytes | $0047A4-$004827
 ; ============================================================================
 LoadPaletteDataTile:
@@ -4629,7 +4629,7 @@ l_04802:
     rts
 
 ; ============================================================================
-; BuildPaletteWord -- (TODO: name)
+; BuildPaletteWord -- Build BAT attribute word from palette and flip args, load tiles, write to output buffer
 ; 96 bytes | $004828-$004887
 ; ============================================================================
 BuildPaletteWord:
@@ -4665,7 +4665,7 @@ BuildPaletteWord:
     rts
 
 ; ============================================================================
-; SetPaletteViaCmd -- (TODO: name)
+; SetPaletteViaCmd -- Write palette data to CRAM via GameCommand(8, 2) with VRAM base offset
 ; 74 bytes | $004888-$0048D1
 ; ============================================================================
 SetPaletteViaCmd:
@@ -4695,7 +4695,7 @@ SetPaletteViaCmd:
     rts
 
 ; ============================================================================
-; ApplyPaletteMask -- (TODO: name)
+; ApplyPaletteMask -- Replace matching 4-bit color nibbles in palette entries using mask table
 ; 118 bytes | $0048D2-$004947
 ; ============================================================================
 ApplyPaletteMask:
@@ -4754,7 +4754,7 @@ l_04932:
     rts
 
 ; ============================================================================
-; ApplyPaletteIndex -- (TODO: name)
+; ApplyPaletteIndex -- Remap 4-bit palette nibbles via index lookup table across multiple palette entries
 ; 150 bytes | $004948-$0049DD
 ; ============================================================================
 ApplyPaletteIndex:
@@ -4822,7 +4822,7 @@ l_049ca:
     rts
 
 ; ============================================================================
-; ProcessPaletteIter -- (TODO: name)
+; ProcessPaletteIter -- Swap matching color nibbles between two palette values across palette entries
 ; 136 bytes | $0049DE-$004A65
 ; ============================================================================
 ProcessPaletteIter:
@@ -4892,7 +4892,7 @@ l_04a50:
     rts
 
 ; ============================================================================
-; ApplyPaletteShifts -- (TODO: name)
+; ApplyPaletteShifts -- Load tiles via GameCommand, apply palette index shift to each entry, then flush
 ; 182 bytes | $004A66-$004B1B
 ; ============================================================================
 ApplyPaletteShifts:
@@ -4968,7 +4968,7 @@ l_04ad0:
     rts
 
 ; ============================================================================
-; BuildSpriteDataRows -- (TODO: name)
+; BuildSpriteDataRows -- Build sprite attribute table rows from source data with Y/link/attr/X layout
 ; 80 bytes | $004B1C-$004B6B
 ; ============================================================================
 BuildSpriteDataRows:
@@ -5008,7 +5008,7 @@ l_04b62:
     rts
 
 ; ============================================================================
-; WriteCharUIDisplay -- (TODO: name)
+; WriteCharUIDisplay -- Upload character sprite data via GameCommand(8, 2) and copy to display buffer
 ; 90 bytes | $004B6C-$004BC5
 ; ============================================================================
 WriteCharUIDisplay:
@@ -5044,7 +5044,7 @@ WriteCharUIDisplay:
     rts
 
 ; ============================================================================
-; FadePalette -- (TODO: describe)
+; FadePalette -- Clamp each RGB channel of palette entries toward a target level and write to output
 ; Called: ?? times.
 ; 240 bytes | $004BC6-$004CB5
 ; ============================================================================
@@ -5157,7 +5157,7 @@ FadePalette:                                                  ; $004BC6
     unlk    a6
     rts
 ; ============================================================================
-; DrawLayersReverse -- (TODO: describe)
+; DrawLayersReverse -- Iterate 8 palette layers in reverse order, calling FadePalette each step
 ; Called: ?? times.
 ; 78 bytes | $004CB6-$004D03
 ; ============================================================================
@@ -5193,7 +5193,7 @@ DrawLayersReverse:                                                  ; $004CB6
     movem.l (sp)+,d2-d5/a2
     rts
 ; ============================================================================
-; DrawLayersForward -- (TODO: describe)
+; DrawLayersForward -- Iterate 8 palette layers in forward order, calling FadePalette each step
 ; Called: ?? times.
 ; 80 bytes | $004D04-$004D53
 ; ============================================================================
@@ -5232,7 +5232,7 @@ DrawLayersForward:                                                  ; $004D04
 ; 3 functions, 780 bytes
 
 ; ============================================================================
-; ComputeDisplayAttrsUpper -- (TODO: name)
+; ComputeDisplayAttrsUpper -- Compute max RGB nibble attributes for 8 tile rows (forward), write to display
 ; 212 bytes | $004D54-$004E27
 ; ============================================================================
 ComputeDisplayAttrsUpper:
@@ -5322,7 +5322,7 @@ l_04e14:
     rts
 
 ; ============================================================================
-; ComputeDisplayAttrsLower -- (TODO: name)
+; ComputeDisplayAttrsLower -- Compute max RGB nibble attributes for 8 tile rows (reverse), write to display
 ; 210 bytes | $004E28-$004EF9
 ; ============================================================================
 ComputeDisplayAttrsLower:
@@ -5412,7 +5412,7 @@ l_04ee8:
     rts
 
 ; ============================================================================
-; NormalizeDisplayAttrs -- (TODO: name)
+; NormalizeDisplayAttrs -- Step RGB display attributes toward a target set over 8 iterations
 ; 358 bytes | $004EFA-$00505F
 ; ============================================================================
 NormalizeDisplayAttrs:
@@ -5564,7 +5564,7 @@ l_05048:
     rts
 
 ; ---------------------------------------------------------------------------
-; InitTileBuffer -- (TODO: describe)
+; InitTileBuffer -- Load tile ROM data into tile buffer at $FF14BC and clear display init flag
 ; 50 bytes | $005060-$005091
 ; ---------------------------------------------------------------------------
 InitTileBuffer:                                                  ; $005060
@@ -5712,7 +5712,7 @@ DisplayTileSetup:                                              ; $005170
 ; 3 functions, 472 bytes
 
 ; ============================================================================
-; CopyWithMultiply -- (TODO: name)
+; CopyWithMultiply -- Copy a row range between two tile buffers using row*width offset arithmetic
 ; 206 bytes | $0051B6-$005283
 ; ============================================================================
 CopyWithMultiply:
@@ -5796,7 +5796,7 @@ l_05276:
     rts
 
 ; ============================================================================
-; CopyBufferPair -- (TODO: name)
+; CopyBufferPair -- Call CopyWithMultiply twice for both layer buffers (source flag 0 and 1)
 ; 110 bytes | $005284-$0052F1
 ; ============================================================================
 CopyBufferPair:
@@ -5843,7 +5843,7 @@ CopyBufferPair:
     rts
 
 ; ============================================================================
-; BuildSpriteBuffer -- (TODO: name)
+; BuildSpriteBuffer -- Build sprite attribute table in 512-byte local buffer, submit via GameCommand #15
 ; 156 bytes | $0052F2-$00538D
 ; ============================================================================
 BuildSpriteBuffer:
@@ -5932,7 +5932,7 @@ CmdSetBackground:                                              ; $00538E
     LEA     $1C(SP),SP                                         ; pop 7 args
     RTS
 ; ============================================================================
-; ClearScreen -- (TODO: describe)
+; ClearScreen -- Clear display mode, fill tile buffer, blank both BG layers via GameCommand sequence
 ; Called: ?? times.
 ; 98 bytes | $0053BA-$00541B
 ; ============================================================================
@@ -5972,7 +5972,7 @@ ClearScreen:                                                  ; $0053BA
 ; 4 functions, 248 bytes
 
 ; ============================================================================
-; SetHorizontalScroll -- (TODO: name)
+; SetHorizontalScroll -- Store H-scroll value, negate and mask to 10 bits, apply via GameCommand #8
 ; 64 bytes | $005420-$00545F
 ; ============================================================================
 SetHorizontalScroll:
@@ -5997,7 +5997,7 @@ SetHorizontalScroll:
     rts
 
 ; ============================================================================
-; SetVerticalScroll -- (TODO: name)
+; SetVerticalScroll -- Store V-scroll value, negate and mask to 10 bits, apply via GameCommand #8
 ; 66 bytes | $005460-$0054A1
 ; ============================================================================
 SetVerticalScroll:
@@ -6022,7 +6022,7 @@ SetVerticalScroll:
     rts
 
 ; ============================================================================
-; SetScrollBothAxes -- (TODO: name)
+; SetScrollBothAxes -- Set both H+V scroll from one value, mask to 10 bits, apply via GameCommand #8
 ; 60 bytes | $0054A2-$0054DD
 ; ============================================================================
 SetScrollBothAxes:
@@ -6044,7 +6044,7 @@ SetScrollBothAxes:
     rts
 
 ; ============================================================================
-; SetScrollAlternate -- (TODO: name)
+; SetScrollAlternate -- Write alternate scroll value to $FFA786, mask to 10 bits, apply via GameCommand #8
 ; 58 bytes | $0054DE-$005517
 ; ============================================================================
 SetScrollAlternate:
@@ -6066,7 +6066,7 @@ SetScrollAlternate:
     rts
 
 ; ============================================================================
-; SetScrollQuadrant -- (TODO: describe)
+; SetScrollQuadrant -- Select scroll quadrant via lookup table, set palette register and scroll offsets
 ; Called: ?? times.
 ; 114 bytes | $005518-$005589
 ; ============================================================================
@@ -6115,7 +6115,7 @@ SetScrollQuadrant:                                                  ; $005518
 ; 13 functions, 876 bytes
 
 ; ============================================================================
-; SelectPaletteMode -- (TODO: name)
+; SelectPaletteMode -- Set VDP register 12 to shadow/highlight mode or normal mode based on D2
 ; 32 bytes | $005590-$0055AF
 ; ============================================================================
 SelectPaletteMode:
@@ -6133,7 +6133,7 @@ l_055a2:
     rts
 
 ; ============================================================================
-; ConfigDmaMode -- (TODO: name)
+; ConfigDmaMode -- Initialize VDP registers 4-23 for DMA mode via a sequence of GameCommand calls
 ; 164 bytes | $0055B0-$005653
 ; ============================================================================
 ConfigDmaMode:
@@ -6188,7 +6188,7 @@ ConfigDmaMode:
     rts
 
 ; ============================================================================
-; InitScrollModes -- (TODO: name)
+; InitScrollModes -- Initialize VDP scroll registers and RAM scroll variables to default layer layout
 ; 226 bytes | $005654-$005735
 ; ============================================================================
 InitScrollModes:
@@ -6256,7 +6256,7 @@ InitScrollModes:
     rts
 
 ; ============================================================================
-; PreGameInit -- (TODO: name)
+; PreGameInit -- Clear display, fill work RAM, load VRAM map, configure DMA, initialize scroll modes
 ; 74 bytes | $005736-$00577F
 ; ============================================================================
 PreGameInit:
@@ -6283,7 +6283,7 @@ PreGameInit:
     rts
 
 ; ============================================================================
-; ResetScrollModes -- (TODO: name)
+; ResetScrollModes -- Clear display then reinitialize DMA config and scroll modes
 ; 32 bytes | $005780-$00579F
 ; ============================================================================
 ResetScrollModes:
@@ -6297,7 +6297,7 @@ ResetScrollModes:
     rts
 
 ; ============================================================================
-; UpdateScrollDisplay -- (TODO: name)
+; UpdateScrollDisplay -- If in full-map quadrant mode, update scroll offsets and apply via GameCommand #29
 ; 82 bytes | $0057A0-$0057F1
 ; ============================================================================
 UpdateScrollDisplay:
@@ -6330,7 +6330,7 @@ l_057ec:
     rts
 
 ; ============================================================================
-; ClearMemoryRange -- (TODO: name)
+; ClearMemoryRange -- Zero a range of bytes in interleaved ROM/RAM region (every-other-byte stride)
 ; 38 bytes | $0057F2-$005817
 ; ============================================================================
 ClearMemoryRange:
@@ -6353,7 +6353,7 @@ l_05810:
     rts
 
 ; ============================================================================
-; CopyMemoryOffset -- (TODO: name)
+; CopyMemoryOffset -- Copy bytes from source to interleaved region, accumulating byte-sum checksum
 ; 60 bytes | $005818-$005853
 ; ============================================================================
 CopyMemoryOffset:
@@ -6384,7 +6384,7 @@ l_05848:
     rts
 
 ; ============================================================================
-; CopyDataWithChecksum -- (TODO: name)
+; CopyDataWithChecksum -- Copy bytes from interleaved region to dest buffer, return byte-sum checksum
 ; 60 bytes | $005854-$00588F
 ; ============================================================================
 CopyDataWithChecksum:
@@ -6415,7 +6415,7 @@ l_05884:
     rts
 
 ; ============================================================================
-; ComputeDataChecksum -- (TODO: name)
+; ComputeDataChecksum -- Sum bytes from interleaved region (arg=start index, count), return total
 ; 52 bytes | $005890-$0058C3
 ; ============================================================================
 ComputeDataChecksum:
@@ -6443,7 +6443,7 @@ l_058b8:
     rts
 
 ; ============================================================================
-; ComputeDataChecksumAlt -- (TODO: name)
+; ComputeDataChecksumAlt -- Sum bytes from a flat contiguous buffer (no interleaving), return total
 ; 40 bytes | $0058C4-$0058EB
 ; ============================================================================
 ComputeDataChecksumAlt:
@@ -6467,14 +6467,14 @@ l_058e0:
     rts
 
 ; ============================================================================
-; EmptyStub -- (TODO: name)
+; EmptyStub -- No-op function body, returns immediately
 ; 2 bytes | $0058EC-$0058ED
 ; ============================================================================
 EmptyStub:
     rts
 
 ; ============================================================================
-; ErrorDisplay -- (TODO: name)
+; ErrorDisplay -- Trigger GameCommand #30 (error/freeze display handler)
 ; 14 bytes | $0058EE-$0058FB
 ; ============================================================================
 ErrorDisplay:
@@ -6484,7 +6484,7 @@ ErrorDisplay:
     rts
 
 ; ============================================================================
-; PlaceIconPair -- (TODO: describe)
+; PlaceIconPair -- Place a pair of icon tiles at given screen position, choosing tile set by flag
 ; Called: 8 times.
 ; 98 bytes | $0058FC-$00595D
 ; ============================================================================
@@ -6837,7 +6837,7 @@ DrawBox:                                                     ; $005A04
     unlk    a6
     rts
 ; ============================================================================
-; DrawTileStrip -- (TODO: describe)
+; DrawTileStrip -- Build a null-terminated strip of fill tiles (with half-tile overhang) and place it
 ; Called: ?? times.
 ; 154 bytes | $005C64-$005CFD
 ; ============================================================================
@@ -6905,7 +6905,7 @@ DrawTileStrip:                                                  ; $005C64
     unlk    a6
     rts
 ; ============================================================================
-; RenderTileStrip -- (TODO: describe)
+; RenderTileStrip -- Render a horizontal tile strip with fill blocks and partial-tile endpoints
 ; Called: ?? times.
 ; 480 bytes | $005CFE-$005EDD
 ; ============================================================================
@@ -7100,7 +7100,7 @@ RenderTileStrip:                                                  ; $005CFE
     unlk    a6
     rts
 ; ============================================================================
-; FillSequentialWords -- (TODO: describe)
+; FillSequentialWords -- Write N incrementing word values starting from initial value into a buffer
 ; Called: ?? times.
 ; 34 bytes | $005EDE-$005EFF
 ; ============================================================================
@@ -7198,7 +7198,7 @@ LoadTileGraphics:                                                  ; $005F00
     unlk    a6
     rts
 ; ============================================================================
-; LoadCompressedGfx -- (TODO: describe)
+; LoadCompressedGfx -- Decompress world-map graphics for screen IDs 18-25 and place tiles on screen
 ; Called: 7 times.
 ; 174 bytes | $005FF6-$0060A3
 ; ============================================================================
@@ -7255,7 +7255,7 @@ LoadCompressedGfx:                                                  ; $005FF6
 ; 6 functions, 500 bytes
 
 ; ============================================================================
-; UpdateScrollBar1 -- (TODO: name)
+; UpdateScrollBar1 -- Tick scroll bar 1 frame counter; when ready, draw next animation frame
 ; 116 bytes | $0060A4-$006117
 ; ============================================================================
 UpdateScrollBar1:
@@ -7299,7 +7299,7 @@ l_06112:
     rts
 
 ; ============================================================================
-; UpdateScrollBar2 -- (TODO: name)
+; UpdateScrollBar2 -- Tick scroll bar 2 frame counter; when ready, draw next animation frame
 ; 116 bytes | $006118-$00618B
 ; ============================================================================
 UpdateScrollBar2:
@@ -7343,7 +7343,7 @@ l_06186:
     rts
 
 ; ============================================================================
-; CalcScrollBarPos -- (TODO: name)
+; CalcScrollBarPos -- Compute modulo-clamped scroll bar positions and apply via GameCommand #5
 ; 106 bytes | $00618C-$0061F5
 ; ============================================================================
 CalcScrollBarPos:
@@ -7378,7 +7378,7 @@ CalcScrollBarPos:
     rts
 
 ; ============================================================================
-; UpdateScrollCounters -- (TODO: name)
+; UpdateScrollCounters -- Tick H/V scroll counters; when period elapsed, advance scroll pos and redraw
 ; 92 bytes | $0061F6-$006251
 ; ============================================================================
 UpdateScrollCounters:
@@ -7414,7 +7414,7 @@ l_0624e:
     rts
 
 ; ============================================================================
-; TickAnimCounter -- (TODO: name)
+; TickAnimCounter -- Increment the animation frame counter at $FFBDE2 by one
 ; 10 bytes | $006252-$00625B
 ; ============================================================================
 TickAnimCounter:
@@ -7423,7 +7423,7 @@ TickAnimCounter:
     rts
 
 ; ============================================================================
-; DispatchScrollUpdates -- (TODO: name)
+; DispatchScrollUpdates -- Check active scroll flags and call UpdateScrollBar1/2, UpdateScrollCounters, TickAnimCounter
 ; 60 bytes | $00625C-$006297
 ; ============================================================================
 DispatchScrollUpdates:
@@ -7453,7 +7453,7 @@ l_06294:
     rts
 
 ; ============================================================================
-; ConfigScrollBar -- (TODO: describe)
+; ConfigScrollBar -- Configure or clear a scroll bar slot: set frame rate, data pointer, and enable flag
 ; Called: ?? times.
 ; 178 bytes | $006298-$006349
 ; ============================================================================
@@ -7520,7 +7520,7 @@ ConfigScrollBar:                                                  ; $006298
     movem.l (sp)+,d2-d7/a2-a5
     rts
 ; ---------------------------------------------------------------------------
-; SetScrollBarMode -- (TODO: describe)
+; SetScrollBarMode -- Switch scroll counter mode: disable, enable with current pos, or toggle
 ; 124 bytes | $00634A-$0063C5
 ; ---------------------------------------------------------------------------
 SetScrollBarMode:                                                  ; $00634A
@@ -7565,7 +7565,7 @@ SetScrollBarMode:                                                  ; $00634A
 ; 1 functions, 118 bytes
 
 ; ============================================================================
-; ToggleScrollBar -- (TODO: name)
+; ToggleScrollBar -- Enable or disable the animation tick scroll bar (flag in $FFBDAC bit 3)
 ; 118 bytes | $0063C6-$00643B
 ; ============================================================================
 ToggleScrollBar:
@@ -7615,7 +7615,7 @@ l_06434:
     rts
 
 ; ============================================================================
-; DrawCharInfoPanel -- (TODO: describe)
+; DrawCharInfoPanel -- Draw a character info panel with tile graphics, stat bar, and scroll bar overlays
 ; Called: ?? times.
 ; 804 bytes | $00643C-$00675F
 ; ============================================================================
@@ -8936,7 +8936,7 @@ CharPairIndex:                                               ; $0071DE
 ; 1 functions, 358 bytes
 
 ; ============================================================================
-; FindCompatChars -- (TODO: name)
+; FindCompatChars -- Scan 7 character slots for bitfield matches and render tile icons for each match
 ; 358 bytes | $00722A-$00738F
 ; ============================================================================
 FindCompatChars:
@@ -9075,7 +9075,7 @@ l_0737e:
 
 
 ; ============================================================================
-; SetHighNibble -- (TODO: describe)
+; SetHighNibble -- Write argument byte shifted left 4 into high nibble of byte[2] of struct pointer
 ; Called: ?? times.
 ; 22 bytes | $007390-$0073A5
 ; ============================================================================
@@ -9087,7 +9087,7 @@ SetHighNibble:                                                  ; $007390
     or.b    d0,$0002(a0)
     rts
 ; ============================================================================
-; UpdateCharField -- (TODO: describe)
+; UpdateCharField -- Write low nibble to struct byte[2], compute compat score, clamp to byte[3] max
 ; Called: 8 times.
 ; 92 bytes | $0073A6-$007401
 ; ============================================================================
@@ -9130,7 +9130,7 @@ GetLowNibble:                                                         ; $007402
     MOVE.W  D1,D0
     RTS
 ; ============================================================================
-; CalcCompatScore -- (TODO: describe)
+; CalcCompatScore -- Score character pair compatibility via CharCodeCompare tier table, apply type bonus, clamp to 30
 ; Called: 8 times.
 ; 206 bytes | $007412-$0074DF
 ; ============================================================================
@@ -9236,7 +9236,7 @@ GetByteField4:                                                 ; $0074E0
     MOVE.W  D1,D0                                              ; return in D0
     RTS
 ; ============================================================================
-; CountMatchingChars -- (TODO: describe)
+; CountMatchingChars -- Count roster entries for player D3 matching char code D4 via BitFieldSearch
 ; Called: ?? times.
 ; 166 bytes | $0074F8-$00759D
 ; ============================================================================
@@ -9311,7 +9311,7 @@ CountMatchingChars:                                                  ; $0074F8
     movem.l (sp)+,d2-d5/a2-a3
     rts
 ; ============================================================================
-; FindCharSlot -- (TODO: describe)
+; FindCharSlot -- Find absolute roster index for char code D4 in player D2 slot; return -1 if not found
 ; Called: ?? times.
 ; 114 bytes | $00759E-$00760F
 ; ============================================================================
@@ -9364,7 +9364,7 @@ FindCharSlot:                                                  ; $00759E
     movem.l (sp)+,d2-d6/a2
     rts
 ; ============================================================================
-; CalcTypeDistance -- (TODO: describe)
+; CalcTypeDistance -- Return absolute category distance between two char types from $FF1298/$FF99A4 tables
 ; Called: 10 times.
 ; 140 bytes | $007610-$00769B
 ; ============================================================================
@@ -9472,7 +9472,7 @@ CalcCharRating:                                                  ; $00769C
     unlk    a6
     rts
 ; ============================================================================
-; FindSlotByChar -- (TODO: describe)
+; FindSlotByChar -- Search low ($FF0420) or high ($FF0460) char code table for given code; return 1 if found
 ; Called: ?? times.
 ; 92 bytes | $007728-$007783
 ; ============================================================================
@@ -9518,7 +9518,7 @@ FindSlotByChar:                                                  ; $007728
     movem.l (sp)+,d2-d4
     rts
 ; ============================================================================
-; SelectPreviewPage -- (TODO: describe)
+; SelectPreviewPage -- Display 6-page character preview table and handle left/right/confirm/cancel input
 ; Called: ?? times.
 ; 398 bytes | $007784-$007911
 ; ============================================================================
@@ -9732,7 +9732,7 @@ ShowDialog:                                                  ; $007912
 ; 1 functions, 124 bytes
 
 ; ============================================================================
-; CheckCharRelation -- (TODO: name)
+; CheckCharRelation -- Test if char code D2 is present in player relation bitfield at $FFA6A0 or $FFBD6C
 ; 124 bytes | $0079A8-$007A23
 ; ============================================================================
 CheckCharRelation:
@@ -9786,7 +9786,7 @@ l_07a1c:
     rts
 
 ; ============================================================================
-; CheckBitField -- (TODO: describe)
+; CheckBitField -- AND player bitfield at $FFA6A0 with $5ECDC relation mask; resolve slot via $D648 if D2=$FF
 ; Called: ?? times.
 ; 80 bytes | $007A24-$007A73
 ; ============================================================================
@@ -9884,7 +9884,7 @@ AdjustScrollPos:                                                  ; $007A74
     movem.l (sp)+,d2/a2
     rts
 ; ============================================================================
-; HitTestMapTile -- (TODO: describe)
+; HitTestMapTile -- Test screen (X,Y) against two hit-rect groups from $5E9FA/$5ECBC tables; return region or $FF
 ; Called: ?? times.
 ; 286 bytes | $007B1E-$007C3B
 ; ============================================================================
@@ -10007,7 +10007,7 @@ HitTestMapTile:                                                  ; $007B1E
     movem.l (sp)+,d2-d4/a2-a3
     rts
 ; ============================================================================
-; ShowCharProfile -- (TODO: describe)
+; ShowCharProfile -- Render character profile panel with text window, tile header, and ShowCharDetail display
 ; Called: ?? times.
 ; 342 bytes | $007C3C-$007D91
 ; ============================================================================
@@ -10143,7 +10143,7 @@ ShowCharProfile:                                                  ; $007C3C
     unlk    a6
     rts
 ; ============================================================================
-; ShowCharDetail -- (TODO: describe)
+; ShowCharDetail -- Render full character detail panel: clear tiles, draw stat bars, format numeric stat fields
 ; Called: ?? times.
 ; 644 bytes | $007D92-$008015
 ; ============================================================================
@@ -10358,7 +10358,7 @@ ShowCharDetail:                                                  ; $007D92
     unlk    a6
     rts
 ; ============================================================================
-; CalcWeightedStat -- (TODO: describe)
+; CalcWeightedStat -- Look up stat via GetCharStat, apply weighted multiplier from table, scale and clamp result
 ; Called: 8 times.
 ; 180 bytes | $008016-$0080C9
 ; ============================================================================
@@ -10436,7 +10436,7 @@ CalcWeightedStat:                                                  ; $008016
 ; 1 functions, 122 bytes
 
 ; ============================================================================
-; CalcAffinityScore -- (TODO: name)
+; CalcAffinityScore -- Iterate event records, accumulate entity affinity scores, return 1 if weighted total reaches 50 percent
 ; 122 bytes | $0080D0-$008149
 ; ============================================================================
 CalcAffinityScore:
@@ -10520,7 +10520,7 @@ ClearBothPlanes:                                                  ; $00814A
     lea     $001c(sp),sp
     rts
 ; ============================================================================
-; CheckCharCompat -- (TODO: describe)
+; CheckCharCompat -- Call FindRelationRecord for two cities, compare returned score against compatibility threshold
 ; Called: ?? times.
 ; 72 bytes | $00818A-$0081D1
 ; ============================================================================
@@ -10551,7 +10551,7 @@ CheckCharCompat:                                                  ; $00818A
     movem.l (sp)+,d2-d5/a2
     rts
 ; ============================================================================
-; FindRelationRecord -- (TODO: describe)
+; FindRelationRecord -- Search player route slots for a bidirectional city-pair match, return slot pointer or 0
 ; Called: ?? times.
 ; 274 bytes | $0081D2-$0082E3
 ; ============================================================================
@@ -10678,7 +10678,7 @@ FindRelationRecord:                                                  ; $0081D2
     movem.l (sp)+,d2-d4/a2-a3
     rts
 ; ============================================================================
-; sub_0082E4 -- (TODO: describe)
+; InsertRelationRecord -- Insert new route entry into sorted player route array, shifting existing entries via memory copy
 ; Called: ?? times.
 ; 372 bytes | $0082E4-$008457
 ; ============================================================================
@@ -10834,7 +10834,7 @@ InsertRelationRecord:                                                  ; $0082E4
     movem.l (sp)+,d2-d3/a2-a5
     rts
 ; ============================================================================
-; CalcCharAdvantage -- (TODO: describe)
+; CalcCharAdvantage -- Compute character advantage score from player ranking, city traffic stats, entity bitfield, and stat descriptors
 ; Called: ?? times.
 ; 518 bytes | $008458-$00865D
 ; ============================================================================
@@ -11069,7 +11069,7 @@ CalcCharAdvantage:                                                  ; $008458
     unlk    a6
     rts
 ; ============================================================================
-; CalcNegotiationPower -- (TODO: describe)
+; CalcNegotiationPower -- Compute negotiation power from two stat descriptors, win_bottom scaling, and route type bonus
 ; Called: ?? times.
 ; 476 bytes | $00865E-$008839
 ; ============================================================================
@@ -11252,7 +11252,7 @@ CalcNegotiationPower:                                                  ; $00865E
     movem.l (sp)+,d2-d7/a2-a5
     rts
 ; ============================================================================
-; PlaceCharSprite -- (TODO: describe)
+; PlaceCharSprite -- Look up character sprite index from stat table, decompress portrait, and place sprite on screen
 ; Called: ?? times.
 ; 176 bytes | $00883A-$0088E9
 ; ============================================================================
@@ -11436,7 +11436,7 @@ DrawStatDisplay:                                                  ; $0088EA
     unlk    a6
     rts
 ; ============================================================================
-; CharacterBrowser -- (TODO: describe)
+; CharacterBrowser -- Full scrollable character browser UI: handles region/category navigation, stat display, and selection confirmation
 ; Called: ?? times.
 ; 962 bytes | $008A4A-$008E0B
 ; ============================================================================
@@ -11745,7 +11745,7 @@ CharacterBrowser:                                                  ; $008A4A
     unlk    a6
     rts
 ; ============================================================================
-; BrowseCharList -- (TODO: describe)
+; BrowseCharList -- Scrollable character list loop with up/down navigation, stat preview on hover, and confirm or cancel
 ; Called: ?? times.
 ; 744 bytes | $008E0C-$0090F3
 ; ============================================================================
@@ -11994,7 +11994,7 @@ BrowseCharList:                                                  ; $008E0C
     unlk    a6
     rts
 ; ============================================================================
-; CalcStatChange -- (TODO: describe)
+; CalcStatChange -- Compute stat point delta for an event type and current value with category-specific scaling limits
 ; Called: ?? times.
 ; 456 bytes | $0090F4-$0092BB
 ; ============================================================================
@@ -12205,7 +12205,7 @@ CalcStatChange:                                                  ; $0090F4
     movem.l (sp)+,d2-d3/a2
     rts
 ; ============================================================================
-; CalcRevenue -- (TODO: describe)
+; CalcRevenue -- Accumulate total route revenue for a player scaled by flight frequency, popularity, and ticket price
 ; Called: ?? times.
 ; 704 bytes | $0092BC-$00957B
 ; ============================================================================
@@ -12450,7 +12450,7 @@ CalcRevenue:                                                  ; $0092BC
     movem.l (sp)+,d2-d5/a2-a4
     rts
 ; ============================================================================
-; sub_00957C -- (TODO: describe)
+; FindRelationIndex -- Find route slot index by city pair in player array, return slot index or  if not found
 ; Called: ?? times.
 ; 286 bytes | $00957C-$009699
 ; ============================================================================
@@ -12582,7 +12582,7 @@ FindRelationIndex:                                                  ; $00957C
     movem.l (sp)+,d2-d4/a2-a3
     rts
 ; ============================================================================
-; CalcCharOutput -- (TODO: describe)
+; CalcCharOutput -- Compute character productivity for a route and time slot using stat descriptors, region params, and scenario scaling
 ; Called: ?? times.
 ; 568 bytes | $00969A-$0098D1
 ; ============================================================================
@@ -12786,7 +12786,7 @@ CalcCharOutput:                                                  ; $00969A
     movem.l (sp)+,d2-d5/a2-a5
     rts
 ; ============================================================================
-; DrawRouteLines -- (TODO: describe)
+; DrawRouteLines -- Draw color-coded route lines between city map positions for all of a player's active routes
 ; Called: ?? times.
 ; 194 bytes | $0098D2-$009993
 ; ============================================================================
@@ -12866,7 +12866,7 @@ DrawRouteLines:                                                  ; $0098D2
     movem.l (sp)+,d2-d7/a2-a4
     rts
 ; ============================================================================
-; DrawRoutePair -- (TODO: describe)
+; DrawRoutePair -- Draw one or two line segments between two city screen positions with profitability color coding
 ; Called: ?? times.
 ; 244 bytes | $009994-$009A87
 ; ============================================================================
@@ -12985,7 +12985,7 @@ DrawRoutePair:                                                  ; $009994
 ; 1 functions, 534 bytes
 
 ; ============================================================================
-; ProcessCharRoster -- (TODO: name)
+; ProcessCharRoster -- Draw route arcs on the world map for all domestic and international routes of a player
 ; 534 bytes | $009A88-$009C9D
 ; ============================================================================
 ProcessCharRoster:
@@ -13192,7 +13192,7 @@ l_09c7c:
     rts
 
 ; ============================================================================
-; UpdateSlotDisplays -- (TODO: describe)
+; UpdateSlotDisplays -- Redraw route map display for all players except one, then redraw the designated player
 ; Called: ?? times.
 ; 78 bytes | $009C9E-$009CEB
 ; ============================================================================
@@ -13229,7 +13229,7 @@ UpdateSlotDisplays:                                                  ; $009C9E
     movem.l (sp)+,d2-d4
     rts
 ; ============================================================================
-; PlaceCursor -- (TODO: describe)
+; PlaceCursor -- Place cursor tile at (x,y), optionally placing a second cursor tile for two-player mode
 ; Called: ?? times.
 ; 166 bytes | $009CEC-$009D91
 ; ============================================================================
@@ -13305,7 +13305,7 @@ GetCharStat:                                                  ; $009D92
     andi.l  #$ff,d0
     rts
 ; ============================================================================
-; FindBitInField -- (TODO: describe)
+; FindBitInField -- Scan bitfield_tab longword for first set bit of a given entity type, return global bit index or 
 ; Called: 7 times.
 ; 88 bytes | $009DC4-$009E1B
 ; ============================================================================
@@ -13347,7 +13347,7 @@ FindBitInField:                                                  ; $009DC4
     movem.l (sp)+,d2-d3
     rts
 ; ============================================================================
-; DrawPlayerRoutes -- (TODO: describe)
+; DrawPlayerRoutes -- Draw up to 4 numbered route assignment markers on the world map for a player
 ; Called: ?? times.
 ; 300 bytes | $009E1C-$009F47
 ; ============================================================================
@@ -13455,7 +13455,7 @@ DrawPlayerRoutes:                                                  ; $009E1C
     unlk    a6
     rts
 ; ============================================================================
-; NopStub -- (TODO: describe)
+; NopStub -- Empty stub function returning immediately (RTS only)
 ; Called: ?? times.
 ; 2 bytes | $009F48-$009F49
 ; ============================================================================
@@ -13528,7 +13528,7 @@ LoadSlotGraphics:                                                  ; $009F88
     movem.l (sp)+,d2-d5
     rts
 ; ============================================================================
-; sub_00A006 -- (TODO: describe)
+; RunScreenLoop -- Main game screen state machine loop: process actions, load graphics packs, dispatch to UI screen handlers
 ; Called: ?? times.
 ; 336 bytes | $00A006-$00A155
 ; ============================================================================
@@ -13636,7 +13636,7 @@ RunScreenLoop:                                                  ; $00A006
 ; 32 functions, 13408 bytes
 
 ; ============================================================================
-; InitGameDatabase -- (TODO: name)
+; InitGameDatabase -- Show new game setup screen, let player choose player count (1 or 2), return selection
 ; 382 bytes | $00A156-$00A2D3
 ; ============================================================================
 InitGameDatabase:
@@ -13757,7 +13757,7 @@ InitGameDatabase:
     rts
 
 ; ============================================================================
-; LoadScenarioState -- (TODO: name)
+; LoadScenarioState -- Orchestrate scenario setup: run selection, model stats, portfolio, player select, aircraft stats, and purchase screens
 ; 594 bytes | $00A2D4-$00A525
 ; ============================================================================
 LoadScenarioState:
@@ -13948,7 +13948,7 @@ LoadScenarioState:
     rts
 
 ; ============================================================================
-; InitDefaultScenario -- (TODO: name)
+; InitDefaultScenario -- Copy default scenario data block from ROM to RAM and set initial game parameters
 ; 190 bytes | $00A526-$00A5E3
 ; ============================================================================
 InitDefaultScenario:
@@ -13985,7 +13985,7 @@ InitDefaultScenario:
     rts
 
 ; ============================================================================
-; HandleScenarioTurns -- (TODO: name)
+; HandleScenarioTurns -- Display scenario selection menu for all 4 players with navigation and confirmation, return chosen scenario index
 ; 1080 bytes | $00A5E4-$00AA1B
 ; ============================================================================
 HandleScenarioTurns:
@@ -14339,7 +14339,7 @@ HandleScenarioTurns:
     rts
 
 ; ============================================================================
-; RunPortfolioManagement -- (TODO: name)
+; RunPortfolioManagement -- Reset player records, display portfolio options menu, handle cursor navigation and player count confirmation
 ; 742 bytes | $00AA1C-$00AD01
 ; ============================================================================
 RunPortfolioManagement:
@@ -14591,7 +14591,7 @@ RunPortfolioManagement:
     rts
 
 ; ============================================================================
-; DisplayModelStats -- (TODO: name)
+; DisplayModelStats -- Show aircraft model names and numbers in a table, handle scrolling selection of aircraft type
 ; 556 bytes | $00AD02-$00AF2D
 ; ============================================================================
 DisplayModelStats:
@@ -14795,7 +14795,7 @@ DisplayModelStats:
     rts
 
 ; ============================================================================
-; PlacePlayerNameLabels -- (TODO: name)
+; PlacePlayerNameLabels -- Place name tile labels for each active player at their hub city position on the map
 ; 276 bytes | $00AF2E-$00B041
 ; ============================================================================
 PlacePlayerNameLabels:
@@ -14895,7 +14895,7 @@ PlacePlayerNameLabels:
     rts
 
 ; ============================================================================
-; ProcessPlayerSelectInput -- (TODO: name)
+; ProcessPlayerSelectInput -- Assign hub cities to all 4 player slots (human via UI, AI via random valid selection), build name strings
 ; 420 bytes | $00B042-$00B1E5
 ; ============================================================================
 ProcessPlayerSelectInput:
@@ -15037,7 +15037,7 @@ ProcessPlayerSelectInput:
     rts
 
 ; ============================================================================
-; WaitForKeyPress -- (TODO: name)
+; WaitForKeyPress -- Loop selecting random aircraft/city indices until finding one valid for player count and region constraints
 ; 276 bytes | $00B1E6-$00B2F9
 ; ============================================================================
 WaitForKeyPress:
@@ -15150,7 +15150,7 @@ WaitForKeyPress:
     rts
 
 ; ============================================================================
-; GetPlayerModelSelect -- (TODO: name)
+; GetPlayerModelSelect -- Determine AI opponent hub city for single-player games based on player count and existing selection
 ; 250 bytes | $00B2FA-$00B3F3
 ; ============================================================================
 GetPlayerModelSelect:
@@ -15252,7 +15252,7 @@ GetPlayerModelSelect:
     rts
 
 ; ============================================================================
-; RunModelSelectUI -- (TODO: name)
+; RunModelSelectUI -- Full player hub city selection screen: show map with labels, select via BrowseCharList, confirm via dialog
 ; 856 bytes | $00B3F4-$00B74B
 ; ============================================================================
 RunModelSelectUI:
@@ -15512,7 +15512,7 @@ RunModelSelectUI:
     rts
 
 ; ============================================================================
-; InitAllGameTables -- (TODO: name)
+; InitAllGameTables -- Zero all major game RAM regions (player records, route slots, char stats, city data) and init route slot sentinels
 ; 754 bytes | $00B74C-$00BA3D
 ; ============================================================================
 InitAllGameTables:
@@ -15748,7 +15748,7 @@ InitAllGameTables:
     rts
 
 ; ============================================================================
-; ComputeDividends -- (TODO: name)
+; ComputeDividends -- Divide 16 dividend table values at  by 10 to compute period payout amounts
 ; 64 bytes | $00BA3E-$00BA7D
 ; ============================================================================
 ComputeDividends:
@@ -15781,7 +15781,7 @@ ComputeDividends:
     rts
 
 ; ============================================================================
-; RunAircraftPurchase -- (TODO: name)
+; RunAircraftPurchase -- Initialize all players financial state: starting cash, accumulators, char stat tables, routes; call aircraft sort and cost routines
 ; 518 bytes | $00BA7E-$00BC83
 ; ============================================================================
 RunAircraftPurchase:
@@ -15954,7 +15954,7 @@ RunAircraftPurchase:
     rts
 
 ; ============================================================================
-; ComputeMonthlyAircraftCosts -- (TODO: name)
+; ComputeMonthlyAircraftCosts -- Compute per-player monthly aircraft operating costs from hub city, aircraft class stats, and scenario multipliers
 ; 1002 bytes | $00BC84-$00C06D
 ; ============================================================================
 ComputeMonthlyAircraftCosts:
@@ -16362,7 +16362,7 @@ ComputeMonthlyAircraftCosts:
     rts
 
 ; ============================================================================
-; ComputeAircraftSpeedDisp -- (TODO: name)
+; ComputeAircraftSpeedDisp -- Fill speed and capacity display values for a player aircraft type into the  scheduling table
 ; 318 bytes | $00C06E-$00C1AB
 ; ============================================================================
 ComputeAircraftSpeedDisp:
@@ -16475,7 +16475,7 @@ ComputeAircraftSpeedDisp:
     rts
 
 ; ============================================================================
-; RunAircraftStatsDisplay -- (TODO: name)
+; RunAircraftStatsDisplay -- Display all 4 players aircraft type and hub city in a formatted stats panel, wait for confirm or back input
 ; 486 bytes | $00C1AC-$00C391
 ; ============================================================================
 RunAircraftStatsDisplay:
@@ -16630,7 +16630,7 @@ RunAircraftStatsDisplay:
     rts
 
 ; ============================================================================
-; PollSingleButtonPress -- (TODO: name)
+; PollSingleButtonPress -- Display a prompt message via DisplayMessageWithParams and return the button press result
 ; 34 bytes | $00C392-$00C3B3
 ; ============================================================================
 PollSingleButtonPress:
@@ -16648,7 +16648,7 @@ PollSingleButtonPress:
     rts
 
 ; ============================================================================
-; RunAircraftParamShuffle -- (TODO: name)
+; RunAircraftParamShuffle -- Randomize character stat entries for each player using region lookup and stat descriptor tables
 ; 396 bytes | $00C3B4-$00C53F
 ; ============================================================================
 RunAircraftParamShuffle:
@@ -16797,7 +16797,7 @@ RunAircraftParamShuffle:
     rts
 
 ; ============================================================================
-; SortAircraftByMetric -- (TODO: name)
+; SortAircraftByMetric -- Sort 16 aircraft entries by region-specific metric and write ranked order to 
 ; 222 bytes | $00C540-$00C61D
 ; ============================================================================
 SortAircraftByMetric:
@@ -16877,7 +16877,7 @@ SortAircraftByMetric:
     rts
 
 ; ============================================================================
-; DisplayMessageWithParams -- (TODO: name)
+; DisplayMessageWithParams -- Draw a character info panel with formatted message, optionally calling SelectPreviewPage or PollAction
 ; 108 bytes | $00C61E-$00C689
 ; ============================================================================
 DisplayMessageWithParams:
@@ -16915,7 +16915,7 @@ DisplayMessageWithParams:
     rts
 
 ; ============================================================================
-; BuildAircraftAttrTable -- (TODO: name)
+; BuildAircraftAttrTable -- Copy aircraft attribute tables from ROM to RAM, interpolating between scenario variants per player count
 ; 470 bytes | $00C68A-$00C85F
 ; ============================================================================
 BuildAircraftAttrTable:
@@ -17053,7 +17053,7 @@ BuildAircraftAttrTable:
     rts
 
 ; ============================================================================
-; ScaleAircraftAttrValue -- (TODO: name)
+; ScaleAircraftAttrValue -- Linearly interpolate one aircraft attribute between two scenario boundary values based on scenario index
 ; 82 bytes | $00C860-$00C8B1
 ; ============================================================================
 ScaleAircraftAttrValue:
@@ -17093,7 +17093,7 @@ ScaleAircraftAttrValue:
     rts
 
 ; ============================================================================
-; RunDestSelectLoop -- (TODO: name)
+; RunDestSelectLoop -- Handle map destination selection input loop: d-pad navigation over region/sub-region grid, confirm or cancel
 ; 396 bytes | $00C8B2-$00CA3D
 ; ============================================================================
 RunDestSelectLoop:
@@ -17243,7 +17243,7 @@ RunDestSelectLoop:
     rts
 
 ; ============================================================================
-; LoadAllGameData -- (TODO: name)
+; LoadAllGameData -- Load game save state from cartridge SRAM, unpack header fields (player count, scenario, frame counter) into work RAM
 ; 1196 bytes | $00CA3E-$00CEE9
 ; ============================================================================
 LoadAllGameData:
@@ -17612,7 +17612,7 @@ LoadAllGameData:
     rts
 
 ; ============================================================================
-; InitPlayerAircraftState -- (TODO: name)
+; InitPlayerAircraftState -- Initialize runtime route slot fields for all players: revenue, passenger count, city traffic, compatibility scores
 ; 804 bytes | $00CEEA-$00D20D
 ; ============================================================================
 InitPlayerAircraftState:
@@ -17900,7 +17900,7 @@ InitPlayerAircraftState:
     rts
 
 ; ============================================================================
-; UpdateEventSchedule -- (TODO: name)
+; UpdateEventSchedule -- Scan 55 scheduled events from ROM table, call WriteEventField for each whose trigger frame has been reached
 ; 62 bytes | $00D20E-$00D24B
 ; ============================================================================
 UpdateEventSchedule:
@@ -17928,7 +17928,7 @@ UpdateEventSchedule:
     rts
 
 ; ============================================================================
-; WaitForEventInput -- (TODO: name)
+; WaitForEventInput -- Loop calling DisplayEventChoice until player confirms; if assignment flag set, also run RunAssignmentUI
 ; 64 bytes | $00D24C-$00D28B
 ; ============================================================================
 WaitForEventInput:
@@ -17962,7 +17962,7 @@ WaitForEventInput:
     rts
 
 ; ============================================================================
-; DisplayEventChoice -- (TODO: name)
+; DisplayEventChoice -- Show event dialog with choice tiles, handle scrolling selection input, return chosen option index
 ; 394 bytes | $00D28C-$00D415
 ; ============================================================================
 DisplayEventChoice:
@@ -18103,7 +18103,7 @@ DisplayEventChoice:
     rts
 
 ; ============================================================================
-; InitGameGraphicsMode -- (TODO: name)
+; InitGameGraphicsMode -- Set VDP display mode, configure scroll planes, build tile table, set input_mask, initialize tile buffer
 ; 234 bytes | $00D416-$00D4FF
 ; ============================================================================
 InitGameGraphicsMode:
@@ -18175,7 +18175,7 @@ InitGameGraphicsMode:
     rts
 
 ; ============================================================================
-; ClearDisplayBuffers -- (TODO: name)
+; ClearDisplayBuffers -- Clear both VDP scroll planes, then reload map tiles and game graphics
 ; 88 bytes | $00D500-$00D557
 ; ============================================================================
 ClearDisplayBuffers:
@@ -18205,7 +18205,7 @@ ClearDisplayBuffers:
     rts
 
 ; ============================================================================
-; InitGameAudioState -- (TODO: name)
+; InitGameAudioState -- Initialize sound flags, RNG seed to 33, scrollbar data, ui_active_flag, and send sound driver enable command
 ; 94 bytes | $00D558-$00D5B5
 ; ============================================================================
 InitGameAudioState:
@@ -18341,7 +18341,7 @@ RangeLookup:                                                ; $00D648
     movem.l (sp)+,d2-d3               ; restore D2-D3
     rts
 ; ============================================================================
-; RunPlayerTurn -- (TODO: describe)
+; RunPlayerTurn -- Read current player, loop dispatching ProcessPlayerTurnAction per action; call end-of-turn handler on  action
 ; Called: ?? times.
 ; 166 bytes | $00D6BE-$00D763
 ; ============================================================================
@@ -18412,7 +18412,7 @@ RunPlayerTurn:                                                  ; $00D6BE
 ; 3 functions, 2346 bytes
 
 ; ============================================================================
-; ProcessPlayerTurnAction -- (TODO: name)
+; ProcessPlayerTurnAction -- Handle one player turn action: load screen, show char info, evaluate value, confirm purchase and deduct cost
 ; 808 bytes | $00D764-$00DA8B
 ; ============================================================================
 ProcessPlayerTurnAction:
@@ -18670,7 +18670,7 @@ l_0da78:
     rts
 
 ; ============================================================================
-; SelectRouteDestination -- (TODO: name)
+; SelectRouteDestination -- Show route selection dialog, call BrowseCharList for destination pick, validate against session block, loop until done
 ; 230 bytes | $00DA8C-$00DB71
 ; ============================================================================
 SelectRouteDestination:
@@ -18745,7 +18745,7 @@ l_0db6a:
     rts
 
 ; ============================================================================
-; DisplayRouteDestChoice -- (TODO: name)
+; DisplayRouteDestChoice -- Display selectable destination slots for a route type, handle scrolling navigation and selection input
 ; 1308 bytes | $00DB72-$00E08D
 ; ============================================================================
 DisplayRouteDestChoice:
@@ -19228,7 +19228,7 @@ CalcCharValue:                                                  ; $00E08E
     movem.l (sp)+,d2-d4/a2
     rts
 ; ============================================================================
-; CollectPlayerChars -- (TODO: describe)
+; CollectPlayerChars -- Collect and sort purchasable characters for player filtered by ownership and stat range, calling CalcCharValue for each
 ; Called: ?? times.
 ; 498 bytes | $00E152-$00E343
 ; ============================================================================
@@ -19418,7 +19418,7 @@ CollectPlayerChars:                                                  ; $00E152
 ; 2 functions, 878 bytes
 
 ; ============================================================================
-; DrawPlayerComparisonStats -- (TODO: name)
+; DrawPlayerComparisonStats -- Display comparison rows for up to 5 characters showing portrait, city/char type, and computed value
 ; 358 bytes | $00E344-$00E4A9
 ; ============================================================================
 DrawPlayerComparisonStats:
@@ -19541,7 +19541,7 @@ l_0e49a:
     rts
 
 ; ============================================================================
-; RunPlayerStatCompareUI -- (TODO: name)
+; RunPlayerStatCompareUI -- Run the player stat comparison screen with scrollable list navigation
 ; 520 bytes | $00E4AA-$00E6B1
 ; ============================================================================
 RunPlayerStatCompareUI:
@@ -19736,7 +19736,7 @@ l_0e6a8:
     rts
 
 ; ============================================================================
-; ShowCharCompare -- (TODO: describe)
+; ShowCharCompare -- Display character comparison panel: compute output and value, show stats, portrait, delta, and return win/lose flag
 ; Called: ?? times.
 ; 504 bytes | $00E6B2-$00E8A9
 ; ============================================================================
@@ -19899,7 +19899,7 @@ ShowCharCompare:                                                  ; $00E6B2
 ; 2 functions, 638 bytes
 
 ; ============================================================================
-; ProcessRouteEventLogic -- (TODO: name)
+; ProcessRouteEventLogic -- Handle route event: collect available chars, show comparison UI, confirm purchase or decline, update player record
 ; 476 bytes | $00E8AA-$00EA85
 ; ============================================================================
 ProcessRouteEventLogic:
@@ -20065,7 +20065,7 @@ l_0ea7a:
     rts
 
 ; ============================================================================
-; HandleDestArrival -- (TODO: name)
+; HandleDestArrival -- Decompress and place destination arrival tile graphic at specified screen position with palette attribute
 ; 162 bytes | $00EA86-$00EB27
 ; ============================================================================
 HandleDestArrival:
@@ -20118,7 +20118,7 @@ l_0eae4:
 
 
 ; ============================================================================
-; PackSaveState -- (TODO: describe)
+; PackSaveState -- Serialize all game state regions (player records, routes, chars, city data) into a packed buffer for SRAM save
 ; Called: ?? times.
 ; 1130 bytes | $00EB28-$00EF91
 ; ============================================================================
@@ -20477,7 +20477,7 @@ PackSaveState:                                                  ; $00EB28
 ; 1 functions, 54 bytes
 
 ; ============================================================================
-; ExecPassengerLoadUnload -- (TODO: name)
+; ExecPassengerLoadUnload -- Pack char_stat_array bytes into output buffer (4 per source byte, 2-bit wide), return end pointer
 ; 54 bytes | $00EF92-$00EFC7
 ; ============================================================================
 ExecPassengerLoadUnload:
@@ -20505,7 +20505,7 @@ l_0efa6:
     rts
 
 ; ============================================================================
-; UnpackPixelData -- (TODO: describe)
+; UnpackPixelData -- Unpack 2-bit packed pixel data from ROM source into byte-per-pixel array at  (57 bytes per player)
 ; Called: ?? times.
 ; 64 bytes | $00EFC8-$00F007
 ; ============================================================================
@@ -20540,7 +20540,7 @@ UnpackPixelData:                                                  ; $00EFC8
 ; 1 functions, 126 bytes
 
 ; ============================================================================
-; ProcessAirportTransact -- (TODO: name)
+; ProcessAirportTransact -- Unpack save buffer fields into work RAM regions , , , , return end pointer
 ; 126 bytes | $00F008-$00F085
 ; ============================================================================
 ProcessAirportTransact:
@@ -20582,7 +20582,7 @@ ProcessAirportTransact:
     rts
 
 ; ============================================================================
-; CopyRouteFields -- (TODO: describe)
+; CopyRouteFields -- Copy work RAM fields , , ,  to output buffer in sequence, return end pointer
 ; Called: ?? times.
 ; 126 bytes | $00F086-$00F103
 ; ============================================================================
@@ -20624,7 +20624,7 @@ CopyRouteFields:                                                  ; $00F086
     movem.l (sp)+,a2-a3
     rts
 ; ============================================================================
-; ShowRouteInfo -- (TODO: describe)
+; ShowRouteInfo -- Display route information panel: show player slot details, city/char names, route stats, and price/category labels
 ; Called: ?? times.
 ; 1046 bytes | $00F104-$00F519
 ; ============================================================================
@@ -20994,7 +20994,7 @@ ShowRouteInfo:                                                  ; $00F104
 ; 1 functions, 48 bytes
 
 ; ============================================================================
-; UpdatePassengerDemand -- (TODO: name)
+; UpdatePassengerDemand -- Compute byte sum of demand table starting at +6, store result and input value into header fields
 ; 48 bytes | $00F522-$00F551
 ; ============================================================================
 UpdatePassengerDemand:
@@ -21015,7 +21015,7 @@ UpdatePassengerDemand:
     rts
 
 ; ============================================================================
-; VerifyChecksum -- (TODO: describe)
+; VerifyChecksum -- Load save buffer from SRAM, compute checksum, compare against stored value, return 1 if valid or 0 if corrupt
 ; Called: ?? times.
 ; 88 bytes | $00F552-$00F5A9
 ; ============================================================================
@@ -21050,7 +21050,7 @@ VerifyChecksum:                                                  ; $00F552
     movem.l (sp)+,d2/a2-a3
     rts
 ; ============================================================================
-; sub_00F5AA -- (TODO: describe)
+; ProcessRouteAction -- Show route management screen, prompt player for action type, execute buy/assign/cancel, update route records
 ; Called: ?? times.
 ; 376 bytes | $00F5AA-$00F721
 ; ============================================================================
@@ -21188,7 +21188,7 @@ ProcessRouteAction:                                                  ; $00F5AA
 ; 4 functions, 1698 bytes
 
 ; ============================================================================
-; ComputeRouteProfit -- (TODO: name)
+; ComputeRouteProfit -- Compute route profit eligibility by ANDing region mask against active bitfield and excluding blocked entities
 ; 60 bytes | $00F722-$00F75D
 ; ============================================================================
 ComputeRouteProfit:
@@ -21213,7 +21213,7 @@ ComputeRouteProfit:
     rts
 
 ; ============================================================================
-; CalcOptimalTicketPrice -- (TODO: name)
+; CalcOptimalTicketPrice -- Compute optimal ticket price from char stats and player cash, show purchase dialog, deduct cost if confirmed
 ; 1046 bytes | $00F75E-$00FB73
 ; ============================================================================
 CalcOptimalTicketPrice:
@@ -21525,7 +21525,7 @@ l_0fb66:
     rts
 
 ; ============================================================================
-; SubmitTurnResults -- (TODO: name)
+; SubmitTurnResults -- Evaluate player region match and bitfield, format result message, show turn outcome dialog
 ; 312 bytes | $00FB74-$00FCAB
 ; ============================================================================
 SubmitTurnResults:
@@ -21642,7 +21642,7 @@ l_0fca0:
     rts
 
 ; ============================================================================
-; AdvanceToNextMonth -- (TODO: name)
+; AdvanceToNextMonth -- Search bitfield for available route slot, prompt player to confirm or skip, update route mask and reload screen
 ; 280 bytes | $00FCAC-$00FDC3
 ; ============================================================================
 AdvanceToNextMonth:
@@ -21742,7 +21742,7 @@ l_0fdb8:
     rts
 
 ; ============================================================================
-; FindOpenSlot -- (TODO: describe)
+; FindOpenSlot -- Search player's domestic and international char slots for one whose value is below player cash, return 1 if found
 ; Called: ?? times.
 ; 278 bytes | $00FDC4-$00FED9
 ; ============================================================================
@@ -21850,7 +21850,7 @@ FindOpenSlot:                                                  ; $00FDC4
     unlk    a6
     rts
 ; ============================================================================
-; CheckCharEligible -- (TODO: describe)
+; CheckCharEligible -- Check if a char entry is within active contract period and region-compatible with player hub city, return 1 if eligible
 ; Called: ?? times.
 ; 156 bytes | $00FEDA-$00FF75
 ; ============================================================================
@@ -21906,7 +21906,7 @@ CheckCharEligible:                                                  ; $00FEDA
     movem.l (sp)+,d2-d4/a2-a3
     rts
 ; ============================================================================
-; CountUnprofitableRoutes -- (TODO: describe)
+; CountUnprofitableRoutes -- Count unprofitable routes for a player; return -1 if no routes, -2 if no established routes, else count
 ; Called: ?? times.
 ; 130 bytes | $00FF76-$00FFF7
 ; ============================================================================
@@ -21966,7 +21966,7 @@ CountUnprofitableRoutes:                                                  ; $00F
     movem.l (sp)+,d2-d5/a2
     rts
 ; ============================================================================
-; CountCharPerformance -- (TODO: describe)
+; CountCharPerformance -- Evaluate character performance metrics across player routes; compute aggregate productivity score
 ; Called: ?? times.
 ; 250 bytes | $00FFF8-$0100F1
 ; ============================================================================

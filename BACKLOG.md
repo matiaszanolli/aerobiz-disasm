@@ -20,15 +20,12 @@ Pick the highest-priority unclaimed task. Mark it `IN PROGRESS` with your sessio
 ---
 
 ### B-055: Function description wave 1 — system / boot / VDP (≈100 functions)
-**Status:** OPEN
+**Status:** DONE (2026-02-26)
 **Priority:** P1
-**Why:** 592 of 755 function headers contain `(TODO: name)` as their description — only the label exists, no explanation of what the function does. This is the core Phase 5 gap. Wave 1 covers the most-understood layer: system, boot, interrupt, VDP, and input functions in section_000200.
-**Approach:** Read each function body, trace its behavior, write a 1-line description replacing `(TODO: name)`. Prioritize:
-1. GameCommand handler cluster (CmdSetVDPReg, CmdSetScrollMode, CmdLoadTiles, etc. — 47 handlers already named, just need descriptions)
-2. V-INT subsystem (SubsysUpdate1-4, VInt_Handler1-3, DMA_Transfer, DisplayUpdate)
-3. Boot / hardware init cluster (VDP_Init1-4, HardwareInit, EarlyInit, WaitVBlank, Z80_SoundInit)
-4. Input cluster (ControllerRead, ReadPortByte, WaitForKeyPress, WaitStableInput, etc.)
-**Acceptance:** All `(TODO: name)` replaced by real descriptions for the section_000200 system functions. Zero TODOs in the boot/interrupt/VDP/input function headers.
+**Why:** 249 function headers in section_000200 contained `(TODO: name)` or `(TODO: describe)` — only the label existed, no explanation. This is the core Phase 5 gap.
+**Approach:** 5 parallel Engineer agents, each covering a functional cluster: (A) GameCommand handlers + exception handlers, (B) VDP init + interrupt handlers + input system, (C) animation + Z80 + tile/palette ops, (D) display system + scroll bars + char search UI, (E) char management + route system + game logic + main loop.
+**Result:** 249 TODOs → 0. All 260 function headers in section_000200 now have real descriptions. Zero binary changes (comments only).
+**Acceptance:** `grep -c "(TODO:" section_000200.asm` = 0. ✓
 
 ---
 

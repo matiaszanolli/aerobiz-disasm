@@ -98,7 +98,7 @@
     unlk    a6
     rts
 ; ============================================================================
-; LoadScreenPalette -- (TODO: describe)
+; LoadScreenPalette -- loads palette entries from a color table for a given player index and renders the palette bar
 ; Called: 7 times.
 ; 216 bytes | $0100F2-$0101C9
 ; ============================================================================
@@ -167,7 +167,7 @@ LoadScreenPalette:                                                  ; $0100F2
     unlk    a6
     rts
 ; ============================================================================
-; ShowPlayerChart -- (TODO: describe)
+; ShowPlayerChart -- builds and displays a player's chart panel by filtering active route/relation bits and drawing tiles
 ; Called: ?? times.
 ; 260 bytes | $0101CA-$0102CD
 ; ============================================================================
@@ -243,7 +243,7 @@ ShowPlayerChart:                                                  ; $0101CA
     unlk    a6
     rts
 ; ============================================================================
-; CalcTotalCharValue -- (TODO: describe)
+; CalcTotalCharValue -- sums weighted relation values across all characters owned by a given player
 ; Called: ?? times.
 ; 226 bytes | $0102CE-$0103AF
 ; ============================================================================
@@ -334,7 +334,7 @@ CalcTotalCharValue:                                                  ; $0102CE
     movem.l (sp)+,d2-d6
     rts
 ; ============================================================================
-; CalcPlayerFinances -- (TODO: describe)
+; CalcPlayerFinances -- computes a player's total income, total expenses, and net profit from multiple RAM tables
 ; Called: ?? times.
 ; 170 bytes | $0103B0-$010459
 ; ============================================================================
@@ -395,7 +395,7 @@ CalcPlayerFinances:                                                  ; $0103B0
     movem.l (sp)+,d2/a2-a4
     rts
 ; ============================================================================
-; SumPlayerStats -- (TODO: describe)
+; SumPlayerStats -- sums 16 stat high-bytes for a given player from the character stat table at $FFB9E9
 ; Called: ?? times.
 ; 56 bytes | $01045A-$010491
 ; ============================================================================
@@ -421,7 +421,7 @@ SumPlayerStats:                                                  ; $01045A
     movem.l (sp)+,d2-d4
     rts
 ; ============================================================================
-; SumStatBytes -- (TODO: describe)
+; SumStatBytes -- sums 16 stat low-bytes for a given player from the character stat table at $FFB9E8
 ; Called: ?? times.
 ; 56 bytes | $010492-$0104C9
 ; ============================================================================
@@ -447,7 +447,7 @@ SumStatBytes:                                                  ; $010492
     movem.l (sp)+,d2-d4
     rts
 ; ============================================================================
-; CountProfitableRelations -- (TODO: describe)
+; CountProfitableRelations -- counts a player's route slots where current revenue exceeds the cost threshold
 ; Called: ?? times.
 ; 100 bytes | $0104CA-$01052D
 ; ============================================================================
@@ -942,7 +942,7 @@ FindCharByValue:                                                  ; $0108F2
     unlk    a6
     rts
 ; ============================================================================
-; SortWordPairs -- (TODO: describe)
+; SortWordPairs -- sorts an array of word pairs in-place by descending value using bubble sort
 ; Called: ?? times.
 ; 188 bytes | $0109FA-$010AB5
 ; ============================================================================
@@ -1214,7 +1214,7 @@ CalcCharDisplayIndex_Prelude:                                ; $010CAC
 ; 3 functions, 1598 bytes
 
 ; ============================================================================
-; CalcCharDisplayIndex -- (TODO: name)
+; CalcCharDisplayIndex -- computes tile column and row for a character portrait and calls LoadTileGraphics
 ; 88 bytes | $010CB0-$010D07
 ; ============================================================================
 CalcCharDisplayIndex:
@@ -1248,7 +1248,7 @@ CalcCharDisplayIndex:
     rts
 
 ; ============================================================================
-; RenderRouteSlotScreen -- (TODO: name)
+; RenderRouteSlotScreen -- draws the full route slot screen with character portraits and revenue bar graphs for a player
 ; 780 bytes | $010D08-$011013
 ; ============================================================================
 RenderRouteSlotScreen:
@@ -1506,7 +1506,7 @@ l_11004:
     rts
 
 ; ============================================================================
-; ShowRouteDetailsDialog -- (TODO: name)
+; ShowRouteDetailsDialog -- Draws a pop-up dialog showing route details; fills tile rectangles for text rows and renders city-pair info.
 ; 730 bytes | $011014-$0112ED
 ; ============================================================================
 ShowRouteDetailsDialog:
@@ -1724,7 +1724,7 @@ l_112e4:
     rts
 
 ; ============================================================================
-; ManageRouteSlots -- (TODO: describe)
+; ManageRouteSlots -- Interactive browser for a player's route slots; builds slot revenue list, renders route slot screen, and handles slot selection input.
 ; Called: ?? times.
 ; 1366 bytes | $0112EE-$011843
 ; ============================================================================
@@ -2241,7 +2241,7 @@ ShowTextDialog:                                              ; $01183A
     unlk    a6
     rts
 ; ============================================================================
-; CalcRouteRevenue -- (TODO: describe)
+; CalcRouteRevenue -- Calculates revenue for one route slot given player and slot indices; looks up demand/capacity data and returns net revenue.
 ; 174 bytes | $011906-$0119B3
 ; ============================================================================
 CalcRouteRevenue:                                                  ; $011906
@@ -2448,7 +2448,7 @@ ProcessRouteChange:                                                  ; $0119B4
 ; 1 functions, 140 bytes
 
 ; ============================================================================
-; ProcessPlayerRoutes -- (TODO: name)
+; ProcessPlayerRoutes -- Marks a player's changed route slot as pending, accumulates route bitmasks, then clears route-slot bits that changed since last turn.
 ; 140 bytes | $011B26-$011BB1
 ; ============================================================================
 ProcessPlayerRoutes:
@@ -2640,7 +2640,7 @@ UpdateRouteMask:                                                  ; $011BB2
 ; 11 functions, 4508 bytes
 
 ; ============================================================================
-; IsRouteSlotPending -- (TODO: name)
+; IsRouteSlotPending -- Scans a player's relation slots and returns 1 if any slot has its pending flag (bit 7 of offset $A) set, otherwise 0.
 ; 90 bytes | $011CF6-$011D4F
 ; ============================================================================
 IsRouteSlotPending:
@@ -2679,7 +2679,7 @@ IsRouteSlotPending:
     rts
 
 ; ============================================================================
-; AccumulateRouteBits -- (TODO: name)
+; AccumulateRouteBits -- Iteratively ORs available route-bit masks into an output bitmask by calling FindAvailSlot in a loop until no bits remain.
 ; 58 bytes | $011D50-$011D89
 ; ============================================================================
 AccumulateRouteBits:
@@ -2709,7 +2709,7 @@ AccumulateRouteBits:
     rts
 
 ; ============================================================================
-; FindAvailSlot -- (TODO: name)
+; FindAvailSlot -- Scans all 32 route positions for a player's relation slots, collecting city-pair route bits present in the global mask but not yet claimed.
 ; 226 bytes | $011D8A-$011E6B
 ; ============================================================================
 FindAvailSlot:
@@ -2801,7 +2801,7 @@ FindAvailSlot:
     rts
 
 ; ============================================================================
-; ClearRouteSlotBit -- (TODO: name)
+; ClearRouteSlotBit -- Clears a specific route-bit from the player's route bitmask, then sets the pending flag on every relation slot whose city pair references that route position.
 ; 258 bytes | $011E6C-$011F6D
 ; ============================================================================
 ClearRouteSlotBit:
@@ -2915,7 +2915,7 @@ ClearRouteSlotBit:
     rts
 
 ; ============================================================================
-; UpdateRouteRevenue -- (TODO: name)
+; UpdateRouteRevenue -- Iterates a player's four route slots; accumulates CalcRouteValue output for active (status=3) slots and clears status on orphaned placeholder (status=6) slots.
 ; 264 bytes | $011F6E-$012075
 ; ============================================================================
 UpdateRouteRevenue:
@@ -3013,7 +3013,7 @@ UpdateRouteRevenue:
     rts
 
 ; ============================================================================
-; CalcRouteProfit -- (TODO: name)
+; CalcRouteProfit -- Computes quarterly profit for all of a player's routes; processes route bitmasks, calls UpdateRouteRevenue, and updates player finance totals.
 ; 1182 bytes | $012076-$012513
 ; ============================================================================
 CalcRouteProfit:
@@ -3424,7 +3424,7 @@ CalcRouteProfit:
     rts
 
 ; ============================================================================
-; ShowRouteInfoDlg -- (TODO: name)
+; ShowRouteInfoDlg -- Displays a route-info dialog showing pending city-pair relation entries; scans pending slots, formats city names from lookup table, and prints them.
 ; 706 bytes | $012514-$0127D5
 ; ============================================================================
 ShowRouteInfoDlg:
@@ -3662,7 +3662,7 @@ ShowRouteInfoDlg:
     rts
 
 ; ============================================================================
-; FormatRouteDetails -- (TODO: name)
+; FormatRouteDetails -- Formats and renders the route details screen; clears display, decompresses background tiles, builds city-pair rows with profit indicators, and calls ShowDialog.
 ; 872 bytes | $0127D6-$012B3D
 ; ============================================================================
 FormatRouteDetails:
@@ -3945,7 +3945,7 @@ FormatRouteDetails:
     rts
 
 ; ============================================================================
-; GetCharStatField -- (TODO: name)
+; GetCharStatField -- Interactive character stat browser; displays stats across relation slots with arrow-key navigation and page scrolling, returning the selected stat value.
 ; 710 bytes | $012B3E-$012E03
 ; ============================================================================
 GetCharStatField:
@@ -4191,7 +4191,7 @@ GetCharStatField:
     rts
 
 ; ============================================================================
-; ClearRoutePendingFlags -- (TODO: name)
+; ClearRoutePendingFlags -- Clears the pending flag (bit 7 of offset $A) on all 40 relation slots for a given player, resetting their dirty state.
 ; 42 bytes | $012E04-$012E2D
 ; ============================================================================
 ClearRoutePendingFlags:
@@ -4211,7 +4211,7 @@ ClearRoutePendingFlags:
     rts
 
 ; ============================================================================
-; CalcRouteValue -- (TODO: name)
+; CalcRouteValue -- Computes a route's monetary value; reads char stat and airport capacity, applies a scaled formula (capacity * (stat+1) / 4), and returns the result.
 ; 100 bytes | $012E2E-$012E91
 ; ============================================================================
 CalcRouteValue:
@@ -4254,7 +4254,7 @@ CalcRouteValue:
     rts
 
 ; ============================================================================
-; ShowQuarterSummary -- (TODO: describe)
+; ShowQuarterSummary -- Displays the end-of-quarter summary screen; calls route-selection and profit helpers, shows a summary dialog with route results and financial totals.
 ; Called: ?? times.
 ; 840 bytes | $012E92-$0131D9
 ; ============================================================================
@@ -4542,7 +4542,7 @@ ShowQuarterSummary:                                                  ; $012E92
 ; 10 functions, 3842 bytes
 
 ; ============================================================================
-; IsCharAttrValid -- (TODO: name)
+; IsCharAttrValid -- Validates that a character type's attributes are usable; checks both primary and secondary attribute byte ranges against the $FF09D8 table, returning 1 if all non-zero.
 ; 130 bytes | $0131DA-$01325B
 ; ============================================================================
 IsCharAttrValid:
@@ -4601,7 +4601,7 @@ l_13254:
     rts
 
 ; ============================================================================
-; RunRouteManagementUI -- (TODO: name)
+; RunRouteManagementUI -- Runs the route management UI; calls SelectCharRelation to build available slots, then loops on directional input to scroll char-relation pairs and update sprite and text panel.
 ; 666 bytes | $01325C-$0134F5
 ; ============================================================================
 RunRouteManagementUI:
@@ -4847,7 +4847,7 @@ l_134ec:
     rts
 
 ; ============================================================================
-; SelectCharRelation -- (TODO: name)
+; SelectCharRelation -- Populates available char-relation options for a player/route slot; counts chars via SearchCharInSlots, prints city labels, and shows quarter-bonus value or status string for each slot.
 ; 286 bytes | $0134F6-$013613
 ; ============================================================================
 SelectCharRelation:
@@ -4954,7 +4954,7 @@ l_13600:
     rts
 
 ; ============================================================================
-; FindRelationByChar -- (TODO: name)
+; FindRelationByChar -- Counts how many times a given character ID appears across all player slot char-arrays and tallies occurrence counts into a caller-supplied output array.
 ; 228 bytes | $013614-$0136F7
 ; ============================================================================
 FindRelationByChar:
@@ -5055,7 +5055,7 @@ l_136ec:
     rts
 
 ; ============================================================================
-; SearchCharInSlots -- (TODO: name)
+; SearchCharInSlots -- Counts active relation slots for a given player that contain a specific character ID (as city_a or city_b), returning the total count.
 ; 134 bytes | $0136F8-$01377D
 ; ============================================================================
 SearchCharInSlots:
@@ -5114,7 +5114,7 @@ l_13776:
     rts
 
 ; ============================================================================
-; RenderCharacterPanel -- (TODO: name)
+; RenderCharacterPanel -- Draws the character detail panel for one route slot; prints char name, displays bonus value labels computed from CalcQuarterBonus, and shows a star rating bar.
 ; 1346 bytes | $01377E-$013CBF
 ; ============================================================================
 RenderCharacterPanel:
@@ -5575,7 +5575,7 @@ l_13cb6:
     rts
 
 ; ============================================================================
-; FindSpriteByID -- (TODO: name)
+; FindSpriteByID -- Searches a player's four route slots for one with status 6 whose char-ID and city-ID match given arguments; returns the slot's byte-field-4 value or 0 if not found.
 ; 84 bytes | $013CC0-$013D13
 ; ============================================================================
 FindSpriteByID:
@@ -5613,7 +5613,7 @@ l_13d0e:
     rts
 
 ; ============================================================================
-; UpdateSpritePos -- (TODO: name)
+; UpdateSpritePos -- Loads and places character portrait sprites at calculated tile positions; decompresses portraits, builds tile-attribute arrays, places tiles, and prints revenue beside each portrait.
 ; 334 bytes | $013D14-$013E61
 ; ============================================================================
 UpdateSpritePos:
@@ -5725,7 +5725,7 @@ l_13e46:
     rts
 
 ; ============================================================================
-; InitRouteBuffer -- (TODO: name)
+; InitRouteBuffer -- Populates the $FF9A10 route-summary buffer from a caller-supplied revenue array; sums positive revenue and counts active slots for three bucket groups.
 ; 144 bytes | $013E62-$013EF1
 ; ============================================================================
 InitRouteBuffer:
@@ -5791,7 +5791,7 @@ l_13ed2:
     rts
 
 ; ============================================================================
-; InitSpriteData -- (TODO: name)
+; InitSpriteData -- Scans chars compatible with a given player and char-type, fills the sprite-data working area with their indices and revenue values for the route management display.
 ; 490 bytes | $013EF2-$0140DB
 ; ============================================================================
 InitSpriteData:
@@ -5974,7 +5974,7 @@ l_140ca:
     rts
 
 ; ============================================================================
-; CalcQuarterBonus -- (TODO: describe)
+; CalcQuarterBonus -- Computes a quarter-scaled bonus percentage for a relation slot revenue value; multiplies by 20, divides by turn-modulo-3, clamps to 100, and returns percentage.
 ; Called: ?? times.
 ; 60 bytes | $0140DC-$014117
 ; ============================================================================
@@ -6002,7 +6002,7 @@ CalcQuarterBonus:                                                  ; $0140DC
 ; 1 functions, 234 bytes
 
 ; ============================================================================
-; UpdateCharacterStats -- (TODO: name)
+; UpdateCharacterStats -- Counts trainer entries (action-type $0E) matching a given character ID across both 6-slot and 4-slot char-groups; returns count * 30.
 ; 234 bytes | $014118-$014201
 ; ============================================================================
 UpdateCharacterStats:
@@ -6105,7 +6105,7 @@ l_141f0:
     rts
 
 ; ============================================================================
-; ProcessCharActions -- (TODO: describe)
+; ProcessCharActions -- Processes all pending char actions for the current player; iterates char stat blocks, selects target chars via the selection UI, then calls ProcessCharacterAction for each active slot.
 ; Called: ?? times.
 ; 1168 bytes | $014202-$014691
 ; ============================================================================
@@ -6485,7 +6485,7 @@ ProcessCharActions:                                                  ; $014202
 ; 11 functions, 8902 bytes
 
 ; ============================================================================
-; ProcessCharacterAction -- (TODO: name)
+; ProcessCharacterAction -- Applies a single char action to a relation slot; shows the bonus screen, loops calling ApplyCharacterEffect until confirmed or cancelled, and restores stats on cancel.
 ; 524 bytes | $014692-$01489D
 ; ============================================================================
 ProcessCharacterAction:
@@ -6672,7 +6672,7 @@ ProcessCharacterAction:
     rts
 
 ; ============================================================================
-; ValidateCharacterState -- (TODO: name)
+; ValidateCharacterState -- Decompresses status-icon tiles and displays one of three status tile sets based on char action flags in offset $A (bits 2/1/0 -> active/changed/pending).
 ; 212 bytes | $01489E-$014971
 ; ============================================================================
 ValidateCharacterState:
@@ -6747,7 +6747,7 @@ ValidateCharacterState:
     rts
 
 ; ============================================================================
-; CalcCharacterBonus -- (TODO: name)
+; CalcCharacterBonus -- Displays the character bonus detail screen; reads char type and nibble fields, decompresses portrait, places tiles, and prints char name, type string, and bonus values.
 ; 312 bytes | $014972-$014AA9
 ; ============================================================================
 CalcCharacterBonus:
@@ -6832,7 +6832,7 @@ CalcCharacterBonus:
     rts
 
 ; ============================================================================
-; ApplyCharacterEffect -- (TODO: name)
+; ApplyCharacterEffect -- Interactive UI for applying a char effect to a target slot; shows match slots, runs Up/Down/A/B input loop for target selection, calls BrowsePartners on B, returns selected slot index.
 ; 698 bytes | $014AAA-$014D63
 ; ============================================================================
 ApplyCharacterEffect:
@@ -7068,7 +7068,7 @@ ApplyCharacterEffect:
     rts
 
 ; ============================================================================
-; WaitStableInput -- (TODO: name)
+; WaitStableInput -- Polls ReadInput until input state is stable for N consecutive frames, advancing the frame each matching poll; debounces button input.
 ; 66 bytes | $014D64-$014DA5
 ; ============================================================================
 WaitStableInput:
@@ -7099,7 +7099,7 @@ WaitStableInput:
     rts
 
 ; ============================================================================
-; RankCharCandidatesFull -- (TODO: name)
+; RankCharCandidatesFull -- Full interactive character selection UI; displays sorted compatible-char list with portrait and detail panels, handles Up/Down navigation, and returns the selected char index.
 ; 666 bytes | $014DA6-$01503F
 ; ============================================================================
 RankCharCandidatesFull:
@@ -7348,7 +7348,7 @@ RankCharCandidatesFull:
     rts
 
 ; ============================================================================
-; RenderTilePattern -- (TODO: name)
+; RenderTilePattern -- Displays chars compatible with the current slot type; builds compatible-char index list, renders names with selection cursor, handles paging, and updates stat bytes on selection change.
 ; 1208 bytes | $015040-$0154F7
 ; ============================================================================
 RenderTilePattern:
@@ -7756,7 +7756,7 @@ RenderTilePattern:
     rts
 
 ; ============================================================================
-; DrawScreenElement -- (TODO: name)
+; DrawScreenElement -- Draws a char attribute tile panel with stat bar and level delta; computes stat delta vs baseline, decompresses the bar graphic, and navigates with Up/Down/A/B input.
 ; 1878 bytes | $0154F8-$015C4D
 ; ============================================================================
 DrawScreenElement:
@@ -8381,7 +8381,7 @@ DrawScreenElement:
     rts
 
 ; ============================================================================
-; UpdateScreenLayout -- (TODO: name)
+; UpdateScreenLayout -- Computes bar-chart display parameters from two characters' stats and renders a score comparison panel with navigation loop
 ; 1940 bytes | $015C4E-$0163E1
 ; ============================================================================
 UpdateScreenLayout:
@@ -9037,7 +9037,7 @@ UpdateScreenLayout:
     rts
 
 ; ============================================================================
-; RefreshDisplayArea -- (TODO: name)
+; RefreshDisplayArea -- Scores a character pair, formats the result as percent offset from 50, draws info box, and processes directional input; calls ProcessCityChange on value change
 ; 1158 bytes | $0163E2-$016867
 ; ============================================================================
 RefreshDisplayArea:
@@ -9452,7 +9452,7 @@ RefreshDisplayArea:
     rts
 
 ; ============================================================================
-; ProcessCityChange -- (TODO: name)
+; ProcessCityChange -- Builds an array of up/neutral/down icon tile IDs from row-count and column-index parameters and renders two rows of those tiles via GameCommand
 ; 240 bytes | $016868-$016957
 ; ============================================================================
 ProcessCityChange:
@@ -9553,7 +9553,7 @@ ProcessCityChange:
     rts
 
 ; ============================================================================
-; RunAssignmentUI -- (TODO: describe)
+; RunAssignmentUI -- Draws the assignment screen with character icon grid and runs a character-code entry loop supporting append and delete, printing the typed name
 ; Called: ?? times.
 ; 1524 bytes | $016958-$016F4B
 ; ============================================================================
@@ -10114,7 +10114,7 @@ RunAssignmentUI:                                                  ; $016958
 ; 1 functions, 78 bytes
 
 ; ============================================================================
-; UpdateCityStatus -- (TODO: name)
+; UpdateCityStatus -- Evaluates two packed byte values against signed threshold constants and sets result flag D3=1 if the combination is within the accepted range
 ; 78 bytes | $016F50-$016F9D
 ; ============================================================================
 UpdateCityStatus:
@@ -10160,6 +10160,9 @@ l_16f96:
     movem.l (a7)+, d2-d4
     rts
 
+; ============================================================================
+; RunGameMenu -- Draws the main menu screen (background, logo, portrait) then dispatches to sub-menus (aircraft, routes, staff, finance, end-turn) via a jump-table loop
+; ============================================================================
 RunGameMenu:                                                  ; $016F9E
     movem.l d2-d4/a2-a5,-(sp)
     movea.l #$0001725a,a2
@@ -10362,7 +10365,7 @@ RunGameMenu:                                                  ; $016F9E
 ; 4 functions, 946 bytes
 
 ; ============================================================================
-; CalcCityMetrics -- (TODO: name)
+; CalcCityMetrics -- Sets background, shows a dialog, then loops calling ScanCitySlots and NavigateCharList to browse city slot data; draws result box on exit
 ; 166 bytes | $0171B4-$017259
 ; ============================================================================
 CalcCityMetrics:
@@ -10434,7 +10437,7 @@ l_1723a:
     rts
 
 ; ============================================================================
-; ResolveCityConflict -- (TODO: name)
+; ResolveCityConflict -- Draws a text box, calls GenerateEventResult for the box outline, prints city and player name strings, then shows confirmation text based on conflict-type flag
 ; 268 bytes | $01725A-$017365
 ; ============================================================================
 ResolveCityConflict:
@@ -10532,7 +10535,7 @@ l_1735c:
     rts
 
 ; ============================================================================
-; ScanCitySlots -- (TODO: name)
+; ScanCitySlots -- Renders a tile panel for a city slot row and runs a navigation input loop; handles up/down/confirm/cancel and returns the chosen slot index in D0
 ; 316 bytes | $017366-$0174A1
 ; ============================================================================
 ScanCitySlots:
@@ -10659,7 +10662,7 @@ l_1748a:
     rts
 
 ; ============================================================================
-; ProcessCharSelectInput -- (TODO: name)
+; ProcessCharSelectInput -- Sets background, draws dual panels, calls BrowseMapPages to pick a city, then calls PackSaveState and SignExtendAndCall on the selection
 ; 196 bytes | $0174A2-$017565
 ; ============================================================================
 ProcessCharSelectInput:
@@ -10722,6 +10725,9 @@ l_17548:
     movem.l (a7)+, d2/a2
     rts
 
+; ============================================================================
+; BrowseMapPages -- Draws a paginated character/city map list with two tile columns per entry and runs a navigation loop; returns the selected index or -1 for cancel
+; ============================================================================
 BrowseMapPages:                                                  ; $017566
     movem.l d2-d6/a2-a5,-(sp)
     move.l  $0028(sp),d6
@@ -10923,7 +10929,7 @@ BrowseMapPages:                                                  ; $017566
     movem.l (sp)+,d2-d6/a2-a5
     rts
 ; ============================================================================
-; DrawDualPanels -- (TODO: describe)
+; DrawDualPanels -- Draws two fixed-size background panels side-by-side by calling the tile-placement function twice at column offsets 1 and 13
 ; Called: ?? times.
 ; 68 bytes | $0177C4-$017807
 ; ============================================================================
@@ -10948,7 +10954,7 @@ DrawDualPanels:                                                  ; $0177C4
 ; 8 functions, 1246 bytes
 
 ; ============================================================================
-; SignExtendAndCall -- (TODO: name)
+; SignExtendAndCall -- Sign-extends the word argument to a long and calls ShowRouteInfo; a thin adapter shim
 ; 20 bytes | $017808-$01781B
 ; ============================================================================
 SignExtendAndCall:
@@ -10961,7 +10967,7 @@ SignExtendAndCall:
     rts
 
 ; ============================================================================
-; ToggleDisplayMode -- (TODO: name)
+; ToggleDisplayMode -- Flips bit 0 of display-mode flag $FF000A, redraws a text window, and prints the new mode label from a pointer table
 ; 60 bytes | $01781C-$017857
 ; ============================================================================
 ToggleDisplayMode:
@@ -10981,7 +10987,7 @@ ToggleDisplayMode:
     rts
 
 ; ============================================================================
-; NavigateCharList -- (TODO: name)
+; NavigateCharList -- Toggles the view-mode or page flag depending on parameter, redraws the mode label, and calls SetDisplayMode or SetDisplayPage accordingly
 ; 174 bytes | $017858-$017905
 ; ============================================================================
 NavigateCharList:
@@ -11035,7 +11041,7 @@ l_17900:
     rts
 
 ; ============================================================================
-; HandleCharListAction -- (TODO: name)
+; HandleCharListAction -- Sets background, draws event frame via GenerateEventResult and ProcessEventSequence, formats a player-name string, shows a dialog with tile icon, and runs char-list navigation loop
 ; 516 bytes | $017906-$017B09
 ; ============================================================================
 HandleCharListAction:
@@ -11212,7 +11218,7 @@ l_17aec:
     rts
 
 ; ============================================================================
-; ProcessEventSequence -- (TODO: name)
+; ProcessEventSequence -- Prints the three company/player names into a fixed text window at successive cursor rows; a display-only routine with no input
 ; 96 bytes | $017B0A-$017B69
 ; ============================================================================
 ProcessEventSequence:
@@ -11246,7 +11252,7 @@ l_17b2a:
     rts
 
 ; ============================================================================
-; EvaluateEventCond -- (TODO: name)
+; EvaluateEventCond -- Shows a yes/no dialog; if accepted and all players have the event flag set shows a confirmation and calls GameSetup1; otherwise clears the player event flag and decrements the event counter
 ; 260 bytes | $017B6A-$017C6D
 ; ============================================================================
 EvaluateEventCond:
@@ -11345,7 +11351,7 @@ l_17c66:
     rts
 
 ; ============================================================================
-; GenerateEventResult -- (TODO: name)
+; GenerateEventResult -- Draws a filled box using DrawBox with coordinates derived from all four stack parameters; adjusts column/row offsets by +2 and -1
 ; 48 bytes | $017C6E-$017C9D
 ; ============================================================================
 GenerateEventResult:
@@ -11367,7 +11373,7 @@ GenerateEventResult:
     rts
 
 ; ============================================================================
-; RecordEventOutcome -- (TODO: name)
+; RecordEventOutcome -- Draws a filled rectangle using GameCommand, adjusting the passed coordinates by column+2 and row-1; a display utility for event result frames
 ; 72 bytes | $017C9E-$017CE5
 ; ============================================================================
 RecordEventOutcome:
@@ -11399,7 +11405,7 @@ RecordEventOutcome:
     rts
 
 ; ============================================================================
-; UpdateSlotEvents -- (TODO: describe)
+; UpdateSlotEvents -- Iterates 32 route/event slots; for each active slot calls UpdateEventState, and for idle slots where the random threshold is met calls ApplyEventEffect
 ; Called: ?? times.
 ; 134 bytes | $017CE6-$017D6B
 ; ============================================================================
@@ -11462,7 +11468,7 @@ UpdateSlotEvents:                                                  ; $017CE6
 ; 4 functions, 684 bytes
 
 ; ============================================================================
-; UpdateEventState -- (TODO: name)
+; UpdateEventState -- Decrements the slot countdown; when it reaches zero computes a bonus delta, adds to the accumulator, advances the slot type, and shows a notification box with button wait
 ; 210 bytes | $017D70-$017E41
 ; ============================================================================
 UpdateEventState:
@@ -11532,7 +11538,7 @@ l_17e38:
     rts
 
 ; ============================================================================
-; ApplyEventEffect -- (TODO: name)
+; ApplyEventEffect -- Arms a slot event: if the slot is idle and its type index is below 9, sets the countdown byte to (type*3+3) to schedule the event
 ; 46 bytes | $017E42-$017E6F
 ; ============================================================================
 ApplyEventEffect:
@@ -11554,7 +11560,7 @@ l_17e6c:
     rts
 
 ; ============================================================================
-; HandleEventCallback -- (TODO: name)
+; HandleEventCallback -- Copies per-player event stat bytes from one of two ROM tables into work-RAM at $FF1298 for all 89 slots, selecting or blending tables based on player-count flag
 ; 220 bytes | $017E70-$017F4B
 ; ============================================================================
 HandleEventCallback:
@@ -11635,7 +11641,7 @@ l_17f46:
     rts
 
 ; ============================================================================
-; ResetEventData -- (TODO: name)
+; ResetEventData -- Copies the initial event stat bytes for a single slot index from the appropriate ROM table into work-RAM, selecting or blending between two source tables based on player count
 ; 208 bytes | $017F4C-$01801B
 ; ============================================================================
 ResetEventData:
@@ -11706,6 +11712,9 @@ l_18016:
     movem.l (a7)+, d2/a2-a5
     rts
 
+; ============================================================================
+; CalcCityCharBonus -- Scans the assigned character list for a city/char slot and accumulates compatibility bonuses, cap-clamping the result into the slot's bonus byte at $FF1298
+; ============================================================================
 CalcCityCharBonus:                                                  ; $01801C
     movem.l d2-d5/a2-a5,-(sp)
     move.l  $0024(sp),d2
@@ -11861,7 +11870,7 @@ CalcCityCharBonus:                                                  ; $01801C
     movem.l (sp)+,d2-d5/a2-a5
     rts
 ; ============================================================================
-; InitAllCharRecords -- (TODO: describe)
+; InitAllCharRecords -- Optionally calls HandleEventCallback to copy event stats, then iterates all 89 character slots calling InitCharRecord on each
 ; 42 bytes | $01819C-$0181C5
 ; ============================================================================
 InitAllCharRecords:                                                  ; $01819C
@@ -11919,7 +11928,7 @@ InitCharRecord:                                                  ; $0181C6
     movem.l (sp)+,d2-d3/a2
     rts
 ; ============================================================================
-; ShowStatsSummary -- (TODO: describe)
+; ShowStatsSummary -- Computes rank change for a player, formats a summary string, builds the quarterly route/char bonus table, filters by age, and calls result-display for each slot
 ; Called: ?? times.
 ; 1030 bytes | $018214-$018619
 ; ============================================================================
@@ -12308,7 +12317,7 @@ ShowStatsSummary:                                                  ; $018214
     unlk    a6
     rts
 ; ============================================================================
-; RunCharManagement -- (TODO: describe)
+; RunCharManagement -- Runs the full char management screen: initialises the char list, scans for best negotiation and performance candidates, optionally triggers an event, and shows contract or departure dialogs
 ; Called: ?? times.
 ; 1638 bytes | $01861A-$018C7F
 ; ============================================================================
@@ -12864,7 +12873,7 @@ RunCharManagement:                                                  ; $01861A
 ; 2 functions, 570 bytes
 
 ; ============================================================================
-; ComputeQuarterResults -- (TODO: name)
+; ComputeQuarterResults -- Calls CountCharPerformance, formats a result string (no chars / 1 char / N chars) via sprintf, and calls ShowText to display the quarterly character performance summary
 ; 148 bytes | $018C80-$018D13
 ; ============================================================================
 ComputeQuarterResults:
@@ -12917,7 +12926,7 @@ l_18cec:
     rts
 
 ; ============================================================================
-; UpdatePlayerAssets -- (TODO: name)
+; UpdatePlayerAssets -- Calls CalcPlayerFinances then compares loan balance to repayment capacity; formats a debt/payment/balance message via sprintf and calls ShowText to report financial standing
 ; 422 bytes | $018D14-$018EB9
 ; ============================================================================
 UpdatePlayerAssets:
@@ -13053,7 +13062,9 @@ l_18eb0:
     unlk    a6
     rts
 
-; ---------------------------------------------------------------------------
+; ============================================================================
+; GetCharRelation -- Returns a tile-code for the relationship between two characters: same ($0760), married ($0761), bonded ($0762), or unrelated ($0763/$0764/$0765) based on city-type and bitmask
+; ============================================================================
 GetCharRelation:                                                  ; $018EBA
     movem.l d2-d5/a2,-(sp)
     move.l  $0020(sp),d2
@@ -13133,7 +13144,9 @@ GetCharRelation:                                                  ; $018EBA
     move.w  d2,d0
     movem.l (sp)+,d2-d5/a2
     rts
-; ---------------------------------------------------------------------------
+; ============================================================================
+; BrowseRelations -- Collects up to 4 partner pointers, shows the relation panel, and runs a page-navigation loop calling FormatRelationStats for each visible partner
+; ============================================================================
 BrowseRelations:                                                  ; $018F8E
     link    a6,#-$14
     movem.l d2-d7/a2-a5,-(sp)
@@ -13386,7 +13399,7 @@ BrowseRelations:                                                  ; $018F8E
     unlk    a6
     rts
 ; ============================================================================
-; FormatRelationDisplay -- (TODO: describe)
+; FormatRelationDisplay -- Draws the relation detail panel for a character pair: loads portrait sprite, draws compatibility gauge, prints both names and score, and displays relation icon tiles
 ; Called: ?? times.
 ; 1052 bytes | $019244-$01965F
 ; ============================================================================
@@ -13744,7 +13757,7 @@ FormatRelationDisplay:                                                  ; $01924
     unlk    a6
     rts
 ; ============================================================================
-; FormatRelationStats -- (TODO: describe)
+; FormatRelationStats -- Draws the compact relation stats cell: renders both character names, compatibility fraction, portrait icon, and score value into a tile panel at the given position
 ; Called: ?? times.
 ; 922 bytes | $019660-$0199F9
 ; ============================================================================
@@ -14062,7 +14075,7 @@ FormatRelationStats:                                                  ; $019660
     unlk    a6
     rts
 ; ============================================================================
-; ShowRelationAction -- (TODO: describe)
+; ShowRelationAction -- Draws the relation action screen showing an event-count bar graph (tile run proportional to current vs base count) for attack or defence depending on which count is nonzero
 ; Called: ?? times.
 ; 1004 bytes | $0199FA-$019DE5
 ; ============================================================================
@@ -14435,7 +14448,7 @@ ShowRelationAction:                                                  ; $0199FA
     unlk    a6
     rts
 ; ============================================================================
-; ShowRelationResult -- (TODO: describe)
+; ShowRelationResult -- Draws the relation result screen: computes percent outcome from char-pair score, splits it into filled/partial/empty tile runs, and renders three horizontal icon bars plus optional portrait
 ; Called: ?? times.
 ; 1256 bytes | $019DE6-$01A2CD
 ; ============================================================================
@@ -14928,7 +14941,7 @@ ShowRelationResult:                                                  ; $019DE6
     unlk    a6
     rts
 ; ============================================================================
-; BrowsePartners -- (TODO: describe)
+; BrowsePartners -- Finds the first valid partner slot, shows the partner list panel, and runs a left/right navigation loop calling FormatRelationStats for the highlighted partner until exit
 ; Called: ?? times.
 ; 410 bytes | $01A2CE-$01A467
 ; ============================================================================
@@ -15077,7 +15090,7 @@ BrowsePartners:                                                  ; $01A2CE
     movem.l (sp)+,d2-d5/a2-a4
     rts
 ; ============================================================================
-; ScanRouteSlots -- (TODO: describe)
+; ScanRouteSlots -- Iterates all route slots for the given player comparing each slot's assigned-char byte to the target char index and accumulates up to 4 matching route entries
 ; Called: ?? times.
 ; 158 bytes | $01A468-$01A505
 ; ============================================================================
@@ -15142,7 +15155,7 @@ ScanRouteSlots:                                                  ; $01A468
     movem.l (sp)+,d2-d6/a2
     rts
 ; ============================================================================
-; CalcRelationValue -- (TODO: describe)
+; CalcRelationValue -- Looks up compatibility score between two chars, scales by relation-type factor (attacker-only/defender-only/combined), and applies a seasonal modifier from $FF0006
 ; Called: 7 times.
 ; 264 bytes | $01A506-$01A60D
 ; ============================================================================
@@ -15238,7 +15251,7 @@ CalcRelationValue:                                                  ; $01A506
     movem.l (sp)+,d2-d6/a2
     rts
 ; ============================================================================
-; InitFlightDisplay -- (TODO: describe)
+; InitFlightDisplay -- Loads the flight-path background graphic, initialises the scroll table, clears the sprite counter, and zeroes the flight-slot array at $FF153C
 ; Called: ?? times.
 ; 62 bytes | $01A60E-$01A64B
 ; ============================================================================
@@ -15258,7 +15271,7 @@ InitFlightDisplay:                                                  ; $01A60E
     lea     $0024(sp),sp
     rts
 ; ============================================================================
-; ClearFlightSlots -- (TODO: describe)
+; ClearFlightSlots -- Clears the sprite count register and zeroes the flight-slot array at $FF153C; a subset of InitFlightDisplay used for mid-screen resets
 ; 38 bytes | $01A64C-$01A671
 ; ============================================================================
 ClearFlightSlots:                                                  ; $01A64C
@@ -15271,7 +15284,9 @@ ClearFlightSlots:                                                  ; $01A64C
     dc.w    $4eb9,$0001,$d520                           ; jsr $01D520
     lea     $0014(sp),sp
     rts
-; ---------------------------------------------------------------------------
+; ============================================================================
+; UpdateFlightSlots -- For the given display mode and player, counts active relation/route bits and fills in up to two free flight slot entries at $FF153C with flight path parameters
+; ============================================================================
 UpdateFlightSlots:                                                  ; $01A672
     movem.l d2-d6/a2-a3,-(sp)
     move.l  $0024(sp),d4
@@ -15395,7 +15410,7 @@ UpdateFlightSlots:                                                  ; $01A672
 ; 2 functions, 1054 bytes
 
 ; ============================================================================
-; InitTurnState -- (TODO: name)
+; InitTurnState -- Selects a random route and character for the current turn via bitfield search, looks up city and char compatibility, and fills the turn-state record with route/char/speed data
 ; 710 bytes | $01A792-$01AA57
 ; ============================================================================
 InitTurnState:
@@ -15670,7 +15685,7 @@ l_1aa52:
 ; 1 functions, 344 bytes
 
 ; ============================================================================
-; ProgressGamePhase -- (TODO: name)
+; ProgressGamePhase -- Advances one flight-slot record: clears it if it matches the turn record, otherwise computes bearing and step-size from city positions and writes tile-code and speed
 ; 344 bytes | $01AA58-$01ABAF
 ; ============================================================================
 ProgressGamePhase:
@@ -15829,7 +15844,9 @@ l_1aba6:
     rts
 
 
-; ---------------------------------------------------------------------------
+; ============================================================================
+; AnimateFlightPaths -- Interpolates each active flight slot one step toward its destination, places the result in the sprite work buffer, issues the sprite-DMA command, and advances the slot counter
+; ============================================================================
 AnimateFlightPaths:                                                  ; $01ABB0
     link    a6,#-$20
     movem.l d2-d6/a2-a4,-(sp)
@@ -15922,7 +15939,7 @@ AnimateFlightPaths:                                                  ; $01ABB0
     unlk    a6
     rts
 ; ============================================================================
-; DiagonalWipe -- (TODO: describe)
+; DiagonalWipe -- Performs a tiled diagonal wipe transition by expanding a strip of tiles outward from a start position using random step sizes until the full screen span is covered
 ; Called: ?? times.
 ; 510 bytes | $01ACBA-$01AEB7
 ; ============================================================================
@@ -16233,7 +16250,7 @@ GetModeRowOffset:                                                  ; $01AFCA
     move.w  d1,d0
     rts
 ; ============================================================================
-; DrawCharDetailPanel -- (TODO: describe)
+; DrawCharDetailPanel -- Draws a character detail panel: sets up a fixed layout block, renders stat fields, decompresses a portrait graphic to work RAM, and calls GameCommand to display it.
 ; Called: ?? times.
 ; 222 bytes | $01AFF0-$01B0CD
 ; ============================================================================
@@ -16303,7 +16320,7 @@ DrawCharDetailPanel:                                                  ; $01AFF0
     movem.l (sp)+,d2-d3/a2-a3
     rts
 ; ============================================================================
-; ShowCharStats -- (TODO: describe)
+; ShowCharStats -- Displays a character statistics screen: allocates two panel areas and renders the character's name, rating, age, and route load values as formatted text tiles at computed screen coordinates.
 ; Called: ?? times.
 ; 598 bytes | $01B0CE-$01B323
 ; ============================================================================
@@ -16500,7 +16517,7 @@ ShowCharStats:                                                  ; $01B0CE
     unlk    a6
     rts
 ; ============================================================================
-; MatchCharSlots -- (TODO: describe)
+; MatchCharSlots -- Matches character slots between two players: calls RangeLookup to map player IDs to slot counts, then fills the 4-entry slot array at $FF8804 with matched character indices (0xFF when no match).
 ; 374 bytes | $01B324-$01B499
 ; ============================================================================
 MatchCharSlots:                                                  ; $01B324
@@ -16663,7 +16680,7 @@ MatchCharSlots:                                                  ; $01B324
 ; 6 functions, 4002 bytes
 
 ; ============================================================================
-; GameUpdate2 -- (TODO: name)
+; GameUpdate2 -- Main per-turn update loop: selects active player order, iterates all four players running their menu or AI strategy, manages resource load/unload, shows relation panels and player info, and handles scenario events and post-turn screen transitions.
 ; 1152 bytes | $01B49A-$01B919
 ; ============================================================================
 GameUpdate2:
@@ -17005,7 +17022,7 @@ l_1b910:
     rts
 
 ; ============================================================================
-; RunMainMenu -- (TODO: name)
+; RunMainMenu -- Renders the main menu screen for a given player: clears the background, draws two header tile rows, calls RenderDisplayBuffer to populate the display, then calls ShowPlayerInfo.
 ; 134 bytes | $01B91A-$01B99F
 ; ============================================================================
 RunMainMenu:
@@ -17050,7 +17067,7 @@ RunMainMenu:
     rts
 
 ; ============================================================================
-; HandleMenuSelection -- (TODO: name)
+; HandleMenuSelection -- Highlights a selected city on the route map: places a tile at the city's computed pixel coordinates, draws a stat box via GameCommand, and refreshes via GameCmd16.
 ; 124 bytes | $01B9A0-$01BA1B
 ; ============================================================================
 HandleMenuSelection:
@@ -17092,7 +17109,7 @@ HandleMenuSelection:
     rts
 
 ; ============================================================================
-; DisplayMenuOption -- (TODO: name)
+; DisplayMenuOption -- Draws a menu option entry: looks up the option's screen position from a table, checks whether it is currently selected, and renders the tile with highlight or normal colour for each of up to 5 option slots.
 ; 274 bytes | $01BA1C-$01BB2D
 ; ============================================================================
 DisplayMenuOption:
@@ -17187,7 +17204,7 @@ l_1bb18:
     rts
 
 ; ============================================================================
-; ValidateMenuInput -- (TODO: name)
+; ValidateMenuInput -- Main menu input validation loop: iterates until exit code 0x0B, dispatching each input to PrepareRelationPush (non-flagged entries) or ExecMenuCommand (flagged), refreshing the main menu after each action.
 ; 158 bytes | $01BB2E-$01BBCB
 ; ============================================================================
 ValidateMenuInput:
@@ -17254,7 +17271,7 @@ l_1bbc2:
     rts
 
 ; ============================================================================
-; ExecMenuCommand -- (TODO: name)
+; ExecMenuCommand -- Executes a menu command for a selected city: initialises the route-map display, polls directional and button input in a loop, dispatches to CharacterBrowser (B), UpdateCharRelation (A on same city), or DrawStatDisplay/DisplayMenuOption (cursor), and returns the selected city index or an exit code.
 ; 1730 bytes | $01BBCC-$01C28D
 ; ============================================================================
 ExecMenuCommand:
@@ -17810,7 +17827,7 @@ PrepareRelationPush:                                         ; $01C28E
 ; 2 functions, 428 bytes
 
 ; ============================================================================
-; CalcRelationship -- (TODO: name)
+; CalcRelationship -- Game-command dispatcher: reads a command index (0–10) and jumps via a PC-relative table to one of ten sub-functions (RecruitCharacter, ProcessCharActions, RunPurchaseMenu, etc.), returning the sub-function's result or 0x0B on exit.
 ; 178 bytes | $01C290-$01C341
 ; ============================================================================
 CalcRelationship:
@@ -17871,7 +17888,7 @@ l_1c33c:
     rts
 
 ; ============================================================================
-; UpdateCharRelation -- (TODO: name)
+; UpdateCharRelation -- Updates a character relation between two players: saves the mode flag, calls ShowGameScreen and ResourceUnload, polls an input loop rendering 6 or 4 relation slots (depending on char index) until the action button is pressed, then reloads resources and returns to the main menu.
 ; 250 bytes | $01C342-$01C43B
 ; ============================================================================
 UpdateCharRelation:
@@ -18038,7 +18055,7 @@ ShowPlayerInfo:                                                  ; $01C43C
 ; 6 functions, 3522 bytes
 
 ; ============================================================================
-; EvalCharMatch -- (TODO: name)
+; EvalCharMatch -- Displays a character match selection box for up to 4 player slots: prints each slot's status string (selected/unselected) and polls for directional input, toggling the active/inactive flag of each slot byte on button presses, looping until the player exits.
 ; 248 bytes | $01C54E-$01C645
 ; ============================================================================
 EvalCharMatch:
@@ -18137,7 +18154,7 @@ l_1c62c:
     rts
 
 ; ============================================================================
-; ProcessCharTrade -- (TODO: name)
+; ProcessCharTrade -- Runs the character trade screen: decompresses the trade background, places the cursor sprite, calls InitFlightDisplay/UpdateFlightSlots, then processes a directional+button input loop supporting cursor movement (D-pad), character browsing (B), character selection (A), player info view (Start), and exit (C/back), animating flight paths between inputs.
 ; 1340 bytes | $01C646-$01CB81
 ; ============================================================================
 ProcessCharTrade:
@@ -18596,7 +18613,7 @@ l_1cb78:
     rts
 
 ; ============================================================================
-; RenderDisplayBuffer -- (TODO: name)
+; RenderDisplayBuffer -- Renders the main world-map display buffer for a given player/mode: copies layout data, resolves up to 7 visible players' screen positions from RAM tables, decompresses the background tileset and DMA-loads it to VRAM, iterates 4 route slots placing airline icons at computed tile coordinates, then prints the current year/quarter string in a text window.
 ; 700 bytes | $01CB82-$01CE3D
 ; ============================================================================
 RenderDisplayBuffer:
@@ -18822,7 +18839,7 @@ l_1cdec:
     rts
 
 ; ============================================================================
-; UpdateGraphicsState -- (TODO: name)
+; UpdateGraphicsState -- Manages the player-select screen: cycles the active player display (mod 4), calls LoadScreen, ShowRelPanel, and RunMainMenu each iteration, polls for input (D-pad to browse chars via CharacterBrowser, Enter to select, Back to exit), updates the relation text window, and stores the final selection in $FF9A1C before returning.
 ; 648 bytes | $01CE3E-$01D0C5
 ; ============================================================================
 UpdateGraphicsState:
@@ -19047,7 +19064,7 @@ l_1d0ba:
     rts
 
 ; ============================================================================
-; AllocGraphicsMemory -- (TODO: name)
+; AllocGraphicsMemory -- Computes and displays a character compatibility value between two players: calls RangeLookup and CharCodeCompare to check compatibility, then if valid shows the relation score panel (name, value, rating) via PrintfNarrow calls, offers a browse-relations interaction, and updates the displayed character stat.
 ; 584 bytes | $01D0C6-$01D30D
 ; ============================================================================
 AllocGraphicsMemory:
@@ -19224,14 +19241,14 @@ l_1d2c6:
     rts
 
 ; ============================================================================
-; ClearGraphicsArea -- (TODO: name)
+; ClearGraphicsArea -- Empty stub (single RTS); does nothing. Likely a placeholder left from an earlier implementation.
 ; 2 bytes | $01D30E-$01D30F
 ; ============================================================================
 ClearGraphicsArea:
     rts
 
 ; ============================================================================
-; RefreshAndWait -- (TODO: describe)
+; RefreshAndWait -- Issues two GameCommand calls (cmd 0x0E/1 and cmd 0x14) then returns 1 in D0 if bit 0 of the combined result byte is set, 0 otherwise; used to refresh the display and test a ready condition.
 ; 48 bytes | $01D310-$01D33F
 ; ============================================================================
 RefreshAndWait:                                                  ; $01D310
@@ -19253,7 +19270,7 @@ RefreshAndWait:                                                  ; $01D310
     move.l  (sp)+,d2
     rts
 ; ============================================================================
-; SetDisplayMode -- (TODO: describe)
+; SetDisplayMode -- Sets the low byte of the display-state word at $FF1274 to the given mode value; if mode is 0, first issues a GameCommand($13, $10) clear call and resets the stored selection at $FFBD52 to 0xFFFF.
 ; Called: 7 times.
 ; 58 bytes | $01D340-$01D379
 ; ============================================================================
@@ -19712,7 +19729,7 @@ ResourceUnload:                                                  ; $01D748
 ; 1 functions, 76 bytes
 
 ; ============================================================================
-; FormatTextString -- (TODO: name)
+; FormatTextString -- Computes a scaled rectangle from row/col/width/height args (subtracting base offsets and multiplying widths), then calls AdjustPercentage to pack the result into a scroll-control record at the caller's local buffer.
 ; 76 bytes | $01D772-$01D7BD
 ; ============================================================================
 FormatTextString:
@@ -19802,7 +19819,7 @@ DrawTileGrid:                                                  ; $01D7BE
 ; 3 functions, 180 bytes
 
 ; ============================================================================
-; RenderTextLineS1 -- (TODO: name)
+; RenderTextLineS1 -- Variant of DrawTileGrid that uses Multiply32 instead of a jsr-encoded call for the inner tile placement, drawing a row x col grid of tiles from a source buffer via GameCommand DMA (cmd 5).
 ; 106 bytes | $01D840-$01D8A9
 ; ============================================================================
 RenderTextLineS1:
@@ -19850,7 +19867,7 @@ l_1d8a0:
     rts
 
 ; ============================================================================
-; ProcessTextControl -- (TODO: name)
+; ProcessTextControl -- Issues a single GameCommand DMA tile transfer (cmd 5, sub 2): computes the VRAM offset from row and col arguments (shifted left), and sends the source pointer and tile count to the display system.
 ; 56 bytes | $01D8AA-$01D8E1
 ; ============================================================================
 ProcessTextControl:
@@ -19876,7 +19893,7 @@ ProcessTextControl:
     rts
 
 ; ============================================================================
-; AlignTextBlock -- (TODO: name)
+; AlignTextBlock -- Issues GameCommand($13, $10) to trigger a display-layer sync/align operation; a one-call wrapper with no other logic.
 ; 18 bytes | $01D8E2-$01D8F3
 ; ============================================================================
 AlignTextBlock:
@@ -19887,7 +19904,7 @@ AlignTextBlock:
     rts
 
 ; ============================================================================
-; SetScrollOffset -- (TODO: describe)
+; SetScrollOffset -- Sets the scroll registers for both background planes: if both offsets are zero clears the scroll buffer, otherwise writes horizontal and vertical scroll values at $FF5804 and issues GameCommand DMA (cmd 8 and cmd 5) to push the scroll table to VDP.
 ; Called: ?? times.
 ; 152 bytes | $01D8F4-$01D98B
 ; ============================================================================
@@ -19948,7 +19965,7 @@ SetScrollOffset:                                                  ; $01D8F4
 ; 2 functions, 662 bytes
 
 ; ============================================================================
-; PackGameState -- (TODO: name)
+; PackGameState -- Packs scroll/display state into a VRAM buffer: fills a working area at $FF1804+$5000, optionally writes a signed scroll-delta word at the computed column offset for each of N rows, then DMA-transfers the packed buffer to VRAM address $FC00 via GameCommand.
 ; 164 bytes | $01D990-$01DA33
 ; ============================================================================
 PackGameState:
@@ -20012,7 +20029,7 @@ l_1da0a:
     rts
 
 ; ============================================================================
-; UnpackGameState -- (TODO: name)
+; UnpackGameState -- Draws a Bresenham-style line in tile-map RAM: given two (col, row) endpoints and a tile palette word, uses integer error-accumulation to step along the longer axis, writing the tile attribute word into the VDP background-A tilemap buffer at each point.
 ; 498 bytes | $01DA34-$01DC25
 ; ============================================================================
 UnpackGameState:
@@ -20235,7 +20252,7 @@ l_1dc1c:
     rts
 
 ; ============================================================================
-; DrawTilemapLine -- (TODO: describe)
+; DrawTilemapLine -- Draws a line between two tile-map coordinates using integer (Bresenham-style) stepping with wrap correction: writes a composed tile-attribute word (palette + tile-index bits) into the BG-A tilemap buffer in work RAM for each step along the major axis.
 ; 516 bytes | $01DC26-$01DE29
 ; ============================================================================
 DrawTilemapLine:                                                  ; $01DC26
@@ -20469,7 +20486,7 @@ DrawTilemapLine:                                                  ; $01DC26
 ; 2 functions, 98 bytes
 
 ; ============================================================================
-; CalcScalar -- (TODO: name)
+; CalcScalar -- Calls GameCommand($1A, 0, 0, 0, $20, $20, mode_arg) to configure a background-layer scalar; a thin wrapper that pushes fixed arguments plus one variable arg from the caller's frame.
 ; 34 bytes | $01DE30-$01DE51
 ; ============================================================================
 CalcScalar:
@@ -20486,7 +20503,7 @@ CalcScalar:
     rts
 
 ; ============================================================================
-; AdjustPercentage -- (TODO: name)
+; AdjustPercentage -- Writes a scroll-control block at the address in A0: sets the command word to $0080, encodes two 2-bit row/col indices into a packed position word, stores the tile-attribute word with the $8000 flag, and writes a trailing $0080 pad word.
 ; 64 bytes | $01DE52-$01DE91
 ; ============================================================================
 AdjustPercentage:
@@ -20560,7 +20577,7 @@ LoadMapTiles:                                                  ; $01DE92
 ; 1 functions, 142 bytes
 
 ; ============================================================================
-; RoundValue -- (TODO: name)
+; RoundValue -- Generates a 16-byte tile digit sprite from a 0-99 value: splits the value into tens/units, looks up pre-built 8-long digit bitmaps from a table at $48E00, ORs the two digit rows together into the caller-supplied output buffer, or zeros the buffer if value <= 0.
 ; 142 bytes | $01DF30-$01DFBD
 ; ============================================================================
 RoundValue:
@@ -20731,7 +20748,7 @@ GameCmd16:                                                       ; $01E0B8
     move.l  (sp)+,d2                                             ; restore D2
     rts
 ; ============================================================================
-; CopyBytesToWords -- (TODO: describe)
+; CopyBytesToWords -- Copies N bytes from a source array to every-other byte of a destination array (stride 2), effectively expanding a byte array into the low byte of each word slot.
 ; Called: ?? times.
 ; 30 bytes | $01E0E0-$01E0FD
 ; ============================================================================
@@ -20751,7 +20768,7 @@ CopyBytesToWords:                                                  ; $01E0E0
     blt.b   .l1e0f0
     rts
 ; ============================================================================
-; CopyAlternateBytes -- (TODO: describe)
+; CopyAlternateBytes -- Copies N bytes from alternating (stride-2) positions in a source array to consecutive bytes in a destination array; the reverse direction of CopyBytesToWords.
 ; 30 bytes | $01E0FE-$01E11B
 ; ============================================================================
 CopyAlternateBytes:                                                  ; $01E0FE
@@ -20794,7 +20811,7 @@ MulDiv:                                                  ; $01E11C
     move.l  (sp)+,d2
     rts
 ; ============================================================================
-; ToUpperCase -- (TODO: describe)
+; ToUpperCase -- Converts a single ASCII character (passed by value in the low byte of the stack arg) to uppercase: subtracts 0x20 if it is in the range 'a'–'z', otherwise returns it unchanged, in D0.
 ; Called: ?? times.
 ; 34 bytes | $01E14A-$01E16B
 ; ============================================================================
@@ -20852,7 +20869,7 @@ MemMoveWords:                                                  ; $01E16C
 ; 1 functions, 22 bytes
 
 ; ============================================================================
-; SetupPointerRegs -- (TODO: name)
+; SetupPointerRegs -- Copies a null-terminated string from A1 to A2 (byte by byte until the NUL is copied), then returns the original start address of A2 in D0; a strcpy that also saves/restores A2.
 ; 22 bytes | $01E1A4-$01E1B9
 ; ============================================================================
 SetupPointerRegs:
@@ -20869,7 +20886,7 @@ l_1e1b0:
 
 
 ; ============================================================================
-; StringAppend -- (TODO: describe)
+; StringAppend -- Appends a null-terminated string from A1 onto the end of the null-terminated string at A2: scans A2 to its terminator, then copies from A1 including the NUL, returning the original A2 base in D0.
 ; 30 bytes | $01E1BA-$01E1D7
 ; ============================================================================
 StringAppend:                                                  ; $01E1BA
@@ -20893,7 +20910,7 @@ StringAppend:                                                  ; $01E1BA
 ; 1 functions, 20 bytes
 
 ; ============================================================================
-; SearchTable -- (TODO: name)
+; SearchTable -- Returns the length of a null-terminated string at the address in the stack arg: scans forward byte by byte until the NUL, then returns the byte count (string length) in D0.W.
 ; 20 bytes | $01E1D8-$01E1EB
 ; ============================================================================
 SearchTable:
@@ -20955,7 +20972,7 @@ ReadInput:                                                       ; $01E1EC
 ; 1 functions, 92 bytes
 
 ; ============================================================================
-; IterateCollection -- (TODO: name)
+; IterateCollection -- Wait-for-press utility: if the system is active, first flushes any held button (looping ReadInput until zero), then waits for a new press; if inactive, calls PollInputChange with 60-frame timeout and returns the first input value in D0.
 ; 92 bytes | $01E234-$01E28F
 ; ============================================================================
 IterateCollection:
@@ -21071,7 +21088,7 @@ PollInputChange:                                                      ; $01E2F4
     MOVEM.L (SP)+,D2-D4
     RTS
 ; ============================================================================
-; WeightedAverage -- (TODO: describe)
+; WeightedAverage -- Computes a weighted average: multiplies value-A by weight-B and value-B by weight-A (via Multiply32), sums the products, then divides by the total weight (A+B); returns zero if both weights are zero.
 ; Called: ?? times.
 ; 82 bytes | $01E346-$01E397
 ; ============================================================================
@@ -21140,7 +21157,7 @@ PreLoopInit:                                                   ; $01E398
     MOVEA.L (SP)+,A2                                           ; restore A2
     RTS
 ; ============================================================================
-; StringConcat -- (TODO: describe)
+; StringConcat -- Thin wrapper around StringAppend: pushes both pointer args onto the stack and calls StringAppend, returning the base of the destination string in D0.
 ; 20 bytes | $01E3EE-$01E401
 ; ============================================================================
 StringConcat:                                                  ; $01E3EE
@@ -21155,7 +21172,7 @@ StringConcat:                                                  ; $01E3EE
 ; 6 functions, 1420 bytes
 
 ; ============================================================================
-; GameUpdate3 -- (TODO: name)
+; GameUpdate3 -- Per-round city/route update: calls ClampValue, iterates CalcCityStats for all 7 cities, calls ValidateRange (unloads resources if needed), refreshes the map via MenuSelectEntry, optionally loads background graphics, runs ProcessInputEvent, iterates PrepareTradeOffer for 4 players, calls FilterCollection, UpdateRouteFieldValues, and UpdateGameStateCounters before reloading resources.
 ; 184 bytes | $01E402-$01E4B9
 ; ============================================================================
 GameUpdate3:
@@ -21224,7 +21241,7 @@ l_1e488:
     rts
 
 ; ============================================================================
-; ValidateRange -- (TODO: name)
+; ValidateRange -- Sums the aircraft count fields (bytes at offsets +4 and +5) across all 4 player records at $FF0018, returning the total in D0.W; used to check whether any player has aircraft assigned.
 ; 50 bytes | $01E4BA-$01E4EB
 ; ============================================================================
 ValidateRange:
@@ -21249,7 +21266,7 @@ l_1e4c8:
     rts
 
 ; ============================================================================
-; ClampValue -- (TODO: name)
+; ClampValue -- Initialises the route-scoring buffer ($FFB4E4, 0x500 bytes): for each of 4 players iterates their active routes, resolves city coordinates via RangeLookup, fills the per-player/per-route score entries, then calls CompareElements to rank all routes.
 ; 230 bytes | $01E4EC-$01E5D1
 ; ============================================================================
 ClampValue:
@@ -21339,7 +21356,7 @@ l_1e5b4:
     rts
 
 ; ============================================================================
-; CompareElements -- (TODO: name)
+; CompareElements -- Scores and ranks route entries across all 4 players: for each player-to-player pair, finds matching route type-6 entries via BitFieldSearch, calls SortElements to get a base score, then adds individual route scores from the $FFB4E4 table for matching city pairs, accumulating into $6(a3).
 ; 278 bytes | $01E5D2-$01E6E7
 ; ============================================================================
 CompareElements:
@@ -21447,7 +21464,7 @@ l_1e6c8:
     rts
 
 ; ============================================================================
-; SortElements -- (TODO: name)
+; SortElements -- Computes a per-route earnings score for a single city/player combination: scans character and route arrays for matching entries (by city index and season flag), accumulates a weighted sum factored by number of qualified characters, adjusts by year difficulty and remaining turns, and returns the result in D3.
 ; 364 bytes | $01E6E8-$01E853
 ; ============================================================================
 SortElements:
@@ -21598,7 +21615,7 @@ l_1e81e:
     rts
 
 ; ============================================================================
-; FilterCollection -- (TODO: name)
+; FilterCollection -- Updates per-player demand/capacity scores for all 4 players and 7 cities: computes each player's aggregate demand score (weighted sum of char-stat bytes multiplied by economy/popularity factors), clamps it to 0-100, stores in the demand table at $FF0230, then distributes route capacity scores (clamped 0-50) per city into adjacent word slots.
 ; 314 bytes | $01E854-$01E98D
 ; ============================================================================
 FilterCollection:
@@ -21991,7 +22008,7 @@ CalcCityStats:                                                  ; $01E98E
 ; 11 functions, 5106 bytes
 
 ; ============================================================================
-; GetPlayerInput -- (TODO: name)
+; GetPlayerInput -- Checks whether a given player's airline has any active route slots: scans up to 4 entries in the player's route table at $FFBA80 (checking byte at offset +1) and returns 1 in D0 if any slot is active, 0 otherwise.
 ; 50 bytes | $01EC0E-$01EC3F
 ; ============================================================================
 GetPlayerInput:
@@ -22019,7 +22036,7 @@ l_1ec3a:
     rts
 
 ; ============================================================================
-; ProcessInputEvent -- (TODO: name)
+; ProcessInputEvent -- Main event processing loop for one game turn: initialises route and input buffers, checks which players have active routes, calls MapInputToAction for the current city, iterates all 4 player/city combinations accumulating route scores, then for each of 7 city slots calls UpdateAnimation/PositionUIControl/ValidateInputState and FadeGraphics.
 ; 794 bytes | $01EC40-$01EF59
 ; ============================================================================
 ProcessInputEvent:
@@ -22343,7 +22360,7 @@ l_1ef44:
     rts
 
 ; ============================================================================
-; MapInputToAction -- (TODO: name)
+; MapInputToAction -- Maps a city/player index to a display action: if the system is active and the index is < 7, loads the city screen and optionally calls UpdateAnimation to show the city's roster; for index >= 7 loads a full-screen background; then draws the route-slot selection box with city and player name tiles and calls UpdateAnimation for the current slot.
 ; 416 bytes | $01EF5A-$01F0F9
 ; ============================================================================
 MapInputToAction:
@@ -22483,7 +22500,7 @@ l_1f0f4:
     rts
 
 ; ============================================================================
-; ValidateInputState -- (TODO: name)
+; ValidateInputState -- Checks whether a given character slot index is currently locked (active) in any of the 4 player route bitmask arrays at $FF08EC: returns 1 if the corresponding bit is set in any player's mask, 0 otherwise (or 0 if the index is >= 32).
 ; 66 bytes | $01F0FA-$01F13B
 ; ============================================================================
 ValidateInputState:
@@ -22519,7 +22536,7 @@ l_1f134:
     rts
 
 ; ============================================================================
-; UpdateAnimation -- (TODO: name)
+; UpdateAnimation -- Renders the animation bar chart for a city slot: computes the peak traffic value across all active player/city combinations, then scales each player's bar height by dividing total traffic by a year-difficulty factor and renders each bar as a tile column via TilePlacement and GameCommand, printing the numeric value and a row icon alongside.
 ; 534 bytes | $01F13C-$01F351
 ; ============================================================================
 UpdateAnimation:
@@ -22725,7 +22742,7 @@ l_1f34c:
     rts
 
 ; ============================================================================
-; RenderAnimFrame -- (TODO: name)
+; RenderAnimFrame -- Computes per-player route revenue shares for a specific city/slot: retrieves city capacity factors from $FFBDE4, calculates weighted demand contributions from both endpoint cities (scaled by the current market-share percentage at $FFBD4C), sums the products, and stores scaled revenue values per player into output accumulator fields, calling TransitionEffect to determine each player's relative slot index.
 ; 1134 bytes | $01F352-$01F7BF
 ; ============================================================================
 RenderAnimFrame:
@@ -23135,7 +23152,7 @@ l_1f7ae:
     rts
 
 ; ============================================================================
-; TransitionEffect -- (TODO: name)
+; TransitionEffect -- Looks up a character's slot assignment for a given player/city pair: scans the player's route entry list at $FF9A20 (up to the count in byte +4 of the airline record) comparing the source and destination city indices, and returns the matched slot index in D0 (or 0xFF if not found).
 ; 110 bytes | $01F7C0-$01F82D
 ; ============================================================================
 TransitionEffect:
@@ -23185,7 +23202,7 @@ l_1f826:
     rts
 
 ; ============================================================================
-; FadeGraphics -- (TODO: name)
+; FadeGraphics -- Applies negotiation/trade power weighting to each active player: for each city slot calls ManageUIElement to find the matched route index, computes per-player revenue contributions scaled by the negotiation power factor (CalcNegotiationPower), and calls UpdateUIPalette to write the final colour/value into each player's UI palette entry, iterating until all city slots are processed.
 ; 854 bytes | $01F82E-$01FB83
 ; ============================================================================
 FadeGraphics:
@@ -23488,7 +23505,7 @@ l_1fb52:
     rts
 
 ; ============================================================================
-; ManageUIElement -- (TODO: name)
+; ManageUIElement -- Searches a player's route list for a route that connects two given city indices (in either order): scans the flight-path entries at $FF9A20 comparing (src,dst) and (dst,src) pairs, and returns the matching slot index in D0 (or 0xFF if none found).
 ; 204 bytes | $01FB84-$01FC4F
 ; ============================================================================
 ManageUIElement:
@@ -23573,7 +23590,7 @@ l_1fc48:
     rts
 
 ; ============================================================================
-; PositionUIControl -- (TODO: name)
+; PositionUIControl -- Computes and applies per-player UI bar positions: calls ResizeUIPanel for each of 4 players to get a city-slot index, then for valid (< 0x28) slots calculates scaled revenue scores from the route tables (weighted by $FF0120 popularity factors and negotiation power) and calls UpdateUIPalette to write the result, accumulating total revenue in D6.
 ; 700 bytes | $01FC50-$01FF0B
 ; ============================================================================
 PositionUIControl:
@@ -23822,7 +23839,7 @@ l_1fef8:
     rts
 
 ; ============================================================================
-; ResizeUIPanel -- (TODO: name)
+; ResizeUIPanel -- Returns the city-slot index of a given character in a given player's route list: scans the player's flight entries at $FF9A20 comparing the destination city byte, and returns the matched index in D0 (or 0xFF if not found).
 ; 146 bytes | $01FF0C-$01FF9D
 ; ============================================================================
 ResizeUIPanel:
@@ -23886,7 +23903,7 @@ l_1ff96:
 ; 1 functions, 98 bytes
 
 ; ============================================================================
-; UpdateUIPalette -- (TODO: name)
+; UpdateUIPalette -- Updates a single player/slot palette entry: given player index (D6), slot index (D7), and a revenue value (D3), resolves the player's airline record ($FF0018), the route entry ($FF9A20), and the capacity table ($FFB4E4), then stores the scaled colour value into the route's palette slot.
 ; 98 bytes | $01FF9E-$01FFFF
 ; ============================================================================
 UpdateUIPalette:

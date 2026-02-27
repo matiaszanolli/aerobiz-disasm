@@ -39,11 +39,13 @@ Pick the highest-priority unclaimed task. Mark it `IN PROGRESS` with your sessio
 ---
 
 ### B-057: Function description wave 2 — game UI / character system (≈200 functions)
-**Status:** OPEN
+**Status:** DONE (2026-02-26)
 **Priority:** P2
-**Why:** Continuation of B-055. Game UI and character system functions in sections 010000 and 020000 are more complex — they require reading multi-screen control flows and cross-referencing RAM variables.
-**Approach:** Systematic pass through section_010000 and section_020000 function headers. For each `(TODO: name)`, read the function body, trace RAM accesses against RAM_MAP.md, identify the subsystem (from GAME_PHASE_FLOW.md), write description. Group into sub-waves by subsystem: character management, route management, financial, AI.
-**Acceptance:** Zero `(TODO: name)` or `(TODO: describe)` in section_010000 and section_020000.
+**Why:** Continuation of B-055. Game UI and character system functions in sections 010000 and 020000.
+**Approach:** 6 parallel Engineer agents (3 per file, by line range). section_010000 batches 1–3; section_020000 batches 4–6.
+**Result:** 341 TODOs → 0. All 392 function headers in section_010000 and section_020000 now have real descriptions.
+**Notable findings:** Several function names don't match actual behavior — `SnapshotGameState` is a route-slot search, `ResetGameStateS2` is a number-picker widget, `ProcessUndoRedo` is a char-slot reassignment flow, many utility names (FormatTextString, PackGameState, etc.) are misleading. Noted in batch findings files.
+**Acceptance:** `grep -c "(TODO:" section_010000.asm section_020000.asm` = 0 ✓
 
 ---
 

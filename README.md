@@ -45,8 +45,11 @@ aerobiz-disasm/
     ROM_MAP.md                   # ROM layout (code/data/padding)
     RAM_MAP.md                   # Work RAM variables and data structures
     DATA_STRUCTURES.md           # Field-level layouts for game structs
+    DATA_TABLES.md               # ROM data tables (53 tables with field layouts)
     FUNCTION_REFERENCE.md        # All identified functions
+    CALL_GRAPH.md                # Cross-reference index (who calls what)
     SYSTEM_EXECUTION_FLOW.md     # Boot, main loop, V-INT, game states
+    GAME_PHASE_FLOW.md           # Gameplay flow: turns, quarters, win/loss
   docs/                          # Hardware reference documentation (symlinked)
   tools/                         # Assembler and disassembler (symlinked)
   agents/                        # AI agent team definitions
@@ -84,28 +87,44 @@ aerobiz-disasm/
 |-------|-------------|--------|
 | 1. Initial dump | ROM as raw `dc.w` data, vector table labeled | Done |
 | 2. Code discovery | Trace execution, map ROM regions, identify functions | Done |
-| 3. Function translation | `dc.w` -> 68K mnemonics, name functions, symbolize calls | **Done** |
+| 3. Function translation | `dc.w` → 68K mnemonics, name functions, symbolize calls | **Done** |
 | 4. Data analysis | Identify tables, strings, graphics data | **Done** |
-| 5. Full understanding | Complete documentation, byte-identical rebuild | **In progress** |
+| 5. Full understanding | Complete documentation, byte-identical rebuild | **Done** |
 
-### Translation Status
+### By the Numbers
 
-~252,000 bytes of code translated from raw `dc.w` to 68000 mnemonics (all verified byte-identical). **860 functions translated, 593 named.** Only data tables remain as `dc.w` (system strings/tile patterns at $3D16-$3FEC, ~726 bytes; data tables at $1D20, ~1,896 bytes).
+| Metric | Count |
+|--------|-------|
+| Code translated | ~252,000 bytes (all translatable blocks) |
+| Functions translated | 860 |
+| Functions named | 595 (0 unnamed) |
+| Functions described | 595 (one-line descriptions for every function) |
+| Call sites symbolized | 3,696 (`jsr`, `bsr.w`, `jsr (d16,PC)`) |
+| ROM data tables documented | 53 (field-level layouts) |
+| RAM variables mapped | 50+ variables, 30+ named regions |
+| Data structures documented | 6 (player records, route slots, char stats, + 3 auxiliary) |
 
-**Call symbolization complete (B-049 through B-051):** All raw `dc.w` call instructions replaced with symbolic mnemonics:
-- **2,869 `jsr abs.l`** calls symbolized (B-049): `dc.w $4EB9,$HHHH,$LLLL` → `jsr FunctionName`
-- **490 `jsr (d16,PC)`** calls symbolized (B-050): `dc.w $4EBA,$XXXX` → `jsr (FunctionName,PC)`
-- **332 `bsr.w`** calls symbolized (B-051): `dc.w $6100,$XXXX` → `bsr.w FunctionName`
+### Phase 3 — Code Translation
 
-Only 7 raw `dc.w` call instructions remain: 1 RAM jump (`$FFF000`), 5 mid-function alt-entry BSR.Ws, 1 mislabeled address.
+All translatable code blocks converted from raw `dc.w` to 68000 mnemonics via automated capstone-to-vasm translation (B-046). All 595 functions named via docs-based analysis and code-pattern inference (B-047, B-053). All 3,691 raw call instructions replaced with symbolic mnemonics:
 
-**Milestone (B-031 through B-040):** All 854 unique JSR call targets from the function reference have been translated. Remaining untranslated code consists of inline routines, branch targets, and data-interleaved sections not reachable via JSR.
+- **2,869 `jsr abs.l`** calls (B-049): `dc.w $4EB9,$HHHH,$LLLL` → `jsr FunctionName`
+- **490 `jsr (d16,PC)`** calls (B-050): `dc.w $4EBA,$XXXX` → `jsr (FunctionName,PC)`
+- **337 `bsr.w`** calls (B-051, B-053): `dc.w $6100,$XXXX` → `bsr.w FunctionName`
 
-**Bulk translation complete (B-046):** All translatable code blocks converted via automated capstone-to-vasm translation of 104 contiguous code blocks across 4 section files. Includes jump-table-aware disassembly, misaligned block boundaries, and cross-section blocks. Translation tooling: `tools/translate_block.py`, `tools/disasm_jtab.py`, `tools/find_dcw_blocks.py`.
+Only data tables remain as `dc.w`.
 
-**All functions named (B-047):** 593 functions named across all subsystems via docs-based analysis (GameCommand handlers) and code-pattern analysis (B-047 waves 1-4: 68 + 525 functions).
+### Phase 4 — Data Analysis
 
-**Phase 4 (B-041 through B-045):** Work RAM map created — 50+ variables and 30+ regions. Data structure field layouts documented for player records (12 fields), route slots (13 fields), and char stat records (12 fields). String/text tables labeled. GAME_PHASE_FLOW.md documents complete gameplay flow. See [analysis/RAM_MAP.md](analysis/RAM_MAP.md), [analysis/DATA_STRUCTURES.md](analysis/DATA_STRUCTURES.md), and [analysis/GAME_PHASE_FLOW.md](analysis/GAME_PHASE_FLOW.md).
+Work RAM map: 50+ variables and 30+ named regions traced from `PackSaveState` and cross-referenced functions. Data structure field layouts for player records (12 fields), route slots (13 fields), char stat records (12 fields), and 3 auxiliary tables. String/text tables labeled. Game phase flow documented: initialization, main loop, turn sequence, quarterly processing, win/loss conditions.
+
+See [RAM_MAP.md](analysis/RAM_MAP.md), [DATA_STRUCTURES.md](analysis/DATA_STRUCTURES.md), [GAME_PHASE_FLOW.md](analysis/GAME_PHASE_FLOW.md).
+
+### Phase 5 — Full Understanding
+
+Every function has a one-line description explaining what it does (B-055, B-057, B-058 — 538 TODOs resolved across 4 section files). Cross-reference index generated: 605 unique callees, 3,698 call sites, 366 leaf functions (B-056). 53 ROM data tables documented with field layouts, accessor functions, and decoded examples — covering string pools, city/route/region tables, aircraft stats, character compatibility matrices, and graphics data (B-059).
+
+See [CALL_GRAPH.md](analysis/CALL_GRAPH.md), [DATA_TABLES.md](analysis/DATA_TABLES.md).
 
 ## License
 

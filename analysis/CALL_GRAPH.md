@@ -41,10 +41,10 @@ These 366 functions make no symbolic calls (may still use JMP, indirect calls, o
 
 | Function | Callers |
 |----------|---------|
-| AccumulateDigit | 1 |
+| ClampTextColumnWidths | 1 |
 | AddToTileBuffer | 0 |
 | AddressError | 0 |
-| AdjustPercentage | 1 |
+| PackScrollControlBlock | 1 |
 | AdjustScrollPos | 4 |
 | AnimateInfoPanel | 7 |
 | AnimateScrollEffect | 3 |
@@ -52,7 +52,7 @@ These 366 functions make no symbolic calls (may still use JMP, indirect calls, o
 | ApplyCharBonus | 2 |
 | ApplyCharGrowth | 4 |
 | ApplyEventEffect | 0 |
-| ApplyMatchDamage | 4 |
+| FindEmptyMatchSlot | 4 |
 | ApplyPaletteIndex | 0 |
 | ApplyPaletteMask | 0 |
 | BitFieldSearch | 40 |
@@ -203,13 +203,13 @@ These 366 functions make no symbolic calls (may still use JMP, indirect calls, o
 | GameStrings | 0 |
 | GetActiveCharCount | 1 |
 | GetByteField4 | 24 |
-| GetCharDescription | 6 |
-| GetCharLevel | 2 |
-| GetCharNamePtr | 2 |
+| FindNextOpenSkillSlot | 6 |
+| IsCharInActiveMatch | 2 |
+| CountCharPairSlots | 2 |
 | GetCharQuality | 1 |
 | GetCharRelation | 3 |
 | GetCharStat | 11 |
-| GetCharTypeID | 1 |
+| CalcQuarterTurnOffset | 1 |
 | GetLowNibble | 14 |
 | GetModeRowOffset | 2 |
 | GetPlayerInput | 0 |
@@ -343,7 +343,7 @@ These 366 functions make no symbolic calls (may still use JMP, indirect calls, o
 | SignedDiv_FromPtr | 0 |
 | SignedMod_FromPtr | 0 |
 | SkipControlChars | 1 |
-| SnapshotGameState | 2 |
+| FindRouteSlotByCharState | 2 |
 | SortWordPairs | 4 |
 | StringAppend | 2 |
 | StubCodeFragment | 0 |
@@ -362,7 +362,7 @@ These 366 functions make no symbolic calls (may still use JMP, indirect calls, o
 | TrapvInstr | 0 |
 | UDiv_Full32 | 0 |
 | UDiv_Overflow | 0 |
-| UnpackGameState | 0 |
+| DrawTilemapLine | 0 |
 | UnpackPixelData | 1 |
 | UnsignedDiv_FromPtr | 0 |
 | UnsignedDivide | 29 |
@@ -429,10 +429,10 @@ These 287 functions have no recorded symbolic callers. They may be called from j
 | BusError | 0 |
 | CalcAffinityScore | 2 |
 | CalcCharDisplayIndex | 1 |
-| CalcCharScoreS2 | 10 |
+| RunManagementMenu | 10 |
 | CalcCityMetrics | 6 |
 | CalcOptimalTicketPrice | 39 |
-| CalcRelationship | 12 |
+| DispatchGameAction | 12 |
 | CalcRouteProfit | 11 |
 | CalcScalar | 1 |
 | CalcTradeGains | 21 |
@@ -529,7 +529,7 @@ These 287 functions have no recorded symbolic callers. They may be called from j
 | FinalizeScenarioScreen | 2 |
 | FindBestCharacter | 0 |
 | FindCharByValue | 0 |
-| FindCharSlotInGroupS2 | 6 |
+| ShowAllianceScreen | 6 |
 | FindCompatChars | 5 |
 | FindRelationByChar | 0 |
 | FormatRouteDetails | 25 |
@@ -539,8 +539,8 @@ These 287 functions have no recorded symbolic callers. They may be called from j
 | GameStrings | 0 |
 | GetAffinityRating | 1 |
 | GetAirlineScenarioInfo | 9 |
-| GetBaseCharStat | 4 |
-| GetCharSpecialty | 8 |
+| ProcessRecruitmentGroups | 4 |
+| RecruitFromSkillGroups | 8 |
 | GetPlayerCharCount | 1 |
 | GetPlayerInput | 0 |
 | HBlankInt | 0 |
@@ -587,7 +587,7 @@ These 287 functions have no recorded symbolic callers. They may be called from j
 | ManageTurnDisplay | 16 |
 | Multiply32_FromPtr | 0 |
 | NormalizeDisplayAttrs | 3 |
-| PackGameState | 1 |
+| PackScrollDeltaToVRAM | 1 |
 | ParseInputDispatch | 0 |
 | ParseInputExtended | 1 |
 | ParseInputNibbles | 4 |
@@ -610,7 +610,7 @@ These 287 functions have no recorded symbolic callers. They may be called from j
 | ProcessRouteDisplayS2 | 20 |
 | ProcessRouteEventLogic | 15 |
 | ProcessTradeAction | 0 |
-| ProcessUndoRedo | 26 |
+| ManageCharSlotReassignment | 26 |
 | RankCharByScore | 5 |
 | RankCharCandidatesFull | 13 |
 | ReadMultiNibbles | 1 |
@@ -670,7 +670,7 @@ These 287 functions have no recorded symbolic callers. They may be called from j
 | UDiv_Full32 | 0 |
 | UDiv_Overflow | 0 |
 | UnlockSkill | 1 |
-| UnpackGameState | 0 |
+| DrawTilemapLine | 0 |
 | UnsignedDiv_FromPtr | 0 |
 | UnsignedMod_FromPtr | 0 |
 | UpdateCharStateS2 | 6 |
@@ -689,8 +689,8 @@ These 287 functions have no recorded symbolic callers. They may be called from j
 | VRAMWriteWithMode | 0 |
 | ValidateCharSlots | 0 |
 | ValidateCharacterState | 3 |
-| ValidateGameState | 1 |
-| ValidateGameStateS2 | 7 |
+| CheckCharInRoster | 1 |
+| ShowRouteSwapDialog | 7 |
 | ValidateRouteNetwork | 2 |
 | VerifyChecksum | 0 |
 | WaitForAButtonPress | 4 |
@@ -706,7 +706,7 @@ These 287 functions have no recorded symbolic callers. They may be called from j
 
 Every symbolic callee, sorted alphabetically. For each callee: list of callers with per-caller call count.
 
-### AccumulateDigit
+### ClampTextColumnWidths
 - **Total calls:** 1
 - **Unique callers:** 1
 
@@ -738,7 +738,7 @@ Every symbolic callee, sorted alphabetically. For each callee: list of callers w
 |--------|-------|
 | SelectCharSlot | 1 |
 
-### AdjustPercentage
+### PackScrollControlBlock
 - **Total calls:** 1
 - **Unique callers:** 1
 
@@ -764,7 +764,7 @@ Every symbolic callee, sorted alphabetically. For each callee: list of callers w
 |--------|-------|
 | ProcessTurnCheckpoint | 1 |
 
-### AllocGraphicsMemory
+### ShowCompatibilityScore
 - **Total calls:** 1
 - **Unique callers:** 1
 
@@ -843,7 +843,7 @@ Every symbolic callee, sorted alphabetically. For each callee: list of callers w
 |--------|-------|
 | ProcessCharacterAction | 1 |
 
-### ApplyCompatPenalty
+### RebuildMatchSlots
 - **Total calls:** 1
 - **Unique callers:** 1
 
@@ -851,7 +851,7 @@ Every symbolic callee, sorted alphabetically. For each callee: list of callers w
 |--------|-------|
 | ReorderMatchSlots | 1 |
 
-### ApplyMatchDamage
+### FindEmptyMatchSlot
 - **Total calls:** 4
 - **Unique callers:** 4
 
@@ -876,7 +876,7 @@ Every symbolic callee, sorted alphabetically. For each callee: list of callers w
 
 | Caller | Count |
 |--------|-------|
-| GetBaseCharStat | 1 |
+| ProcessRecruitmentGroups | 1 |
 
 ### BitFieldSearch
 - **Total calls:** 40
@@ -894,8 +894,8 @@ Every symbolic callee, sorted alphabetically. For each callee: list of callers w
 | CountMatchingChars | 1 |
 | FindCompatChars | 1 |
 | FindOpenCharSlot2 | 2 |
-| GetCharBackground | 1 |
-| GetCharSpecialty | 1 |
+| FindBestPartnerChar | 1 |
+| RecruitFromSkillGroups | 1 |
 | GetPlayerCharCount | 1 |
 | HasPriorityAlliance | 1 |
 | InitAllianceRecords | 1 |
@@ -913,8 +913,8 @@ Every symbolic callee, sorted alphabetically. For each callee: list of callers w
 | SearchCharInSlots | 1 |
 | SelectBestForTeam | 1 |
 | SortCharsByValue | 1 |
-| SortElements | 1 |
-| StartMatchSequence | 1 |
+| CalcRouteEarningsScore | 1 |
+| CountFilledAllianceSlots | 1 |
 | UpdateAnimation | 1 |
 | UpdatePlayerRating | 1 |
 | UpdateRouteRevenue | 1 |
@@ -926,7 +926,7 @@ Every symbolic callee, sorted alphabetically. For each callee: list of callers w
 | Caller | Count |
 |--------|-------|
 | FinalizeQuarterEnd | 1 |
-| ProcessUndoRedo | 1 |
+| ManageCharSlotReassignment | 1 |
 | RunModelSelectUI | 1 |
 | SelectRouteDestination | 1 |
 
@@ -956,7 +956,7 @@ Every symbolic callee, sorted alphabetically. For each callee: list of callers w
 
 | Caller | Count |
 |--------|-------|
-| AllocGraphicsMemory | 1 |
+| ShowCompatibilityScore | 1 |
 
 ### BuildAircraftAttrTable
 - **Total calls:** 2
@@ -973,7 +973,7 @@ Every symbolic callee, sorted alphabetically. For each callee: list of callers w
 
 | Caller | Count |
 |--------|-------|
-| CalcRelationship | 1 |
+| DispatchGameAction | 1 |
 
 ### BulkCopyVDP
 - **Total calls:** 1
@@ -1069,13 +1069,13 @@ Every symbolic callee, sorted alphabetically. For each callee: list of callers w
 | ProcessGameFrame | 1 |
 | UpdateCharDisplayS2 | 1 |
 
-### CalcCharStatFull
+### ExecuteCharRecruit
 - **Total calls:** 2
 - **Unique callers:** 1
 
 | Caller | Count |
 |--------|-------|
-| GetCharSpecialty | 2 |
+| RecruitFromSkillGroups | 2 |
 
 ### CalcCharValue
 - **Total calls:** 9
@@ -1083,7 +1083,7 @@ Every symbolic callee, sorted alphabetically. For each callee: list of callers w
 
 | Caller | Count |
 |--------|-------|
-| CalcCharStatFull | 1 |
+| ExecuteCharRecruit | 1 |
 | CollectPlayerChars | 2 |
 | DisplayRouteDestChoice | 1 |
 | LookupCharRecord | 1 |
@@ -1231,7 +1231,7 @@ Every symbolic callee, sorted alphabetically. For each callee: list of callers w
 
 | Caller | Count |
 |--------|-------|
-| AllocGraphicsMemory | 1 |
+| ShowCompatibilityScore | 1 |
 | CalcRouteProfit | 1 |
 | RenderGameplayScreen | 2 |
 | RenderTeamRoster | 1 |
@@ -1255,7 +1255,7 @@ Every symbolic callee, sorted alphabetically. For each callee: list of callers w
 | FinalizeQuarterEnd | 1 |
 | RenderRouteSlotScreen | 1 |
 | ShowRouteDetailsDialog | 1 |
-| ValidateGameStateS2 | 2 |
+| ShowRouteSwapDialog | 2 |
 
 ### CalcRouteValue
 - **Total calls:** 2
@@ -1354,7 +1354,7 @@ Every symbolic callee, sorted alphabetically. For each callee: list of callers w
 
 | Caller | Count |
 |--------|-------|
-| AllocGraphicsMemory | 1 |
+| ShowCompatibilityScore | 1 |
 | CalcCompatScore | 1 |
 | CharCodeScore | 1 |
 | GetCharStatPtr | 1 |
@@ -1366,7 +1366,7 @@ Every symbolic callee, sorted alphabetically. For each callee: list of callers w
 | RunAIMainLoop | 1 |
 | RunMatchTurn | 1 |
 | TransferCharSlot | 1 |
-| ValidateGameState | 1 |
+| CheckCharInRoster | 1 |
 
 ### CharCodeScore
 - **Total calls:** 10
@@ -1542,7 +1542,7 @@ Every symbolic callee, sorted alphabetically. For each callee: list of callers w
 
 | Caller | Count |
 |--------|-------|
-| GetBaseCharStat | 1 |
+| ProcessRecruitmentGroups | 1 |
 
 ### CheckRouteEventMatch
 - **Total calls:** 5
@@ -1602,7 +1602,7 @@ Every symbolic callee, sorted alphabetically. For each callee: list of callers w
 | FormatRouteDetails | 1 |
 | OptimizeCosts | 1 |
 | ProcessPlayerSelectInput | 1 |
-| ProcessUndoRedo | 2 |
+| ManageCharSlotReassignment | 2 |
 | ShowCharStatus | 1 |
 | UpdateCharStateS2 | 1 |
 | UpdatePlayerStatusDisplay | 1 |
@@ -1719,7 +1719,7 @@ Every symbolic callee, sorted alphabetically. For each callee: list of callers w
 
 | Caller | Count |
 |--------|-------|
-| CalcCharScoreS2 | 1 |
+| RunManagementMenu | 1 |
 | CalcCharacterBonus | 1 |
 | DisplayRouteInfo | 1 |
 | DrawScreenElement | 1 |
@@ -1997,7 +1997,7 @@ Every symbolic callee, sorted alphabetically. For each callee: list of callers w
 | GetCharRelationS2 | 1 |
 | InitAllianceRecords | 1 |
 | SearchCharInAlliances | 1 |
-| SortElements | 1 |
+| CalcRouteEarningsScore | 1 |
 | UpdatePlayerRating | 1 |
 
 ### CountProfitableRelations
@@ -2126,7 +2126,7 @@ Every symbolic callee, sorted alphabetically. For each callee: list of callers w
 
 | Caller | Count |
 |--------|-------|
-| AllocGraphicsMemory | 1 |
+| ShowCompatibilityScore | 1 |
 | ExecMenuCommand | 5 |
 
 ### DisplayMessageWithParams
@@ -2281,7 +2281,7 @@ Every symbolic callee, sorted alphabetically. For each callee: list of callers w
 | Caller | Count |
 |--------|-------|
 | ApplyCharacterEffect | 2 |
-| CalcCharStatFull | 1 |
+| ExecuteCharRecruit | 1 |
 | DecrementAffinity | 2 |
 | DisplayModelStats | 1 |
 | DisplayPlayerStatsScreen | 1 |
@@ -2297,7 +2297,7 @@ Every symbolic callee, sorted alphabetically. For each callee: list of callers w
 | RenderCharacterPanel | 2 |
 | RenderGameDialogs | 1 |
 | RenderStatusScreenS2 | 1 |
-| ResetGameStateS2 | 1 |
+| RunSlotCountPicker | 1 |
 | RunAircraftStatsDisplay | 1 |
 | TrainCharSkill | 1 |
 | UpdateCharDisplayS2 | 1 |
@@ -2399,7 +2399,7 @@ Every symbolic callee, sorted alphabetically. For each callee: list of callers w
 
 | Caller | Count |
 |--------|-------|
-| CalcCharStatFull | 1 |
+| ExecuteCharRecruit | 1 |
 | CheckRecruitEligible | 1 |
 | ProcessLevelUp | 1 |
 
@@ -2434,7 +2434,7 @@ Every symbolic callee, sorted alphabetically. For each callee: list of callers w
 
 | Caller | Count |
 |--------|-------|
-| AllocGraphicsMemory | 2 |
+| ShowCompatibilityScore | 2 |
 | BrowseCharList | 2 |
 | ExecMenuCommand | 4 |
 | RenderGameplayScreen | 5 |
@@ -2447,7 +2447,7 @@ Every symbolic callee, sorted alphabetically. For each callee: list of callers w
 |--------|-------|
 | DrawQuarterResultsScreen | 1 |
 | FindCompatChars | 1 |
-| GraphicsCleanup | 8 |
+| RunWorldMapAnimation | 8 |
 | LoadMapTiles | 1 |
 | ShowCharPanelS2 | 1 |
 
@@ -2625,7 +2625,7 @@ Every symbolic callee, sorted alphabetically. For each callee: list of callers w
 |--------|-------|
 | FinalizeRouteConfig | 1 |
 
-### FinalizeGameTurn
+### CheckAlliancePermission
 - **Total calls:** 1
 - **Unique callers:** 1
 
@@ -2739,7 +2739,7 @@ Every symbolic callee, sorted alphabetically. For each callee: list of callers w
 | Caller | Count |
 |--------|-------|
 | ComputeAllianceScores | 1 |
-| GetCharBackground | 1 |
+| FindBestPartnerChar | 1 |
 | ProcessInputEvent | 1 |
 | RecalcAllCharStats | 1 |
 | UpdatePlayerRating | 1 |
@@ -2776,7 +2776,7 @@ Every symbolic callee, sorted alphabetically. For each callee: list of callers w
 
 | Caller | Count |
 |--------|-------|
-| GetCharPortraitIdx | 1 |
+| IsCharSlotAvailable | 1 |
 | InitAllianceRecords | 1 |
 
 ### FindRelationRecord
@@ -2793,7 +2793,7 @@ Every symbolic callee, sorted alphabetically. For each callee: list of callers w
 
 | Caller | Count |
 |--------|-------|
-| GetCharSpecialty | 1 |
+| RecruitFromSkillGroups | 1 |
 
 ### FindSpriteByID
 - **Total calls:** 2
@@ -2841,7 +2841,7 @@ Every symbolic callee, sorted alphabetically. For each callee: list of callers w
 | FinalizeQuarterEnd | 3 |
 | GameUpdate2 | 2 |
 | GetCharStatField | 1 |
-| GraphicsCleanup | 1 |
+| RunWorldMapAnimation | 1 |
 | HandleMenuSelection | 1 |
 | HandlePlayerMenuInput | 2 |
 | HandleRouteSelectionS2 | 1 |
@@ -2849,7 +2849,7 @@ Every symbolic callee, sorted alphabetically. For each callee: list of callers w
 | InitMainGameS2 | 1 |
 | ProcessCharModifier | 1 |
 | ProcessPlayerTurnAction | 3 |
-| ProcessUndoRedo | 1 |
+| ManageCharSlotReassignment | 1 |
 | ReadCharInput | 2 |
 | RenderGameDialogs | 3 |
 | RenderGameplayScreen | 1 |
@@ -2871,7 +2871,7 @@ Every symbolic callee, sorted alphabetically. For each callee: list of callers w
 | AlignTextBlock | 1 |
 | ApplyPaletteShifts | 2 |
 | BuildSpriteBuffer | 1 |
-| CalcCharScoreS2 | 1 |
+| RunManagementMenu | 1 |
 | CalcCharacterBonus | 2 |
 | CalcOptimalTicketPrice | 2 |
 | CalcScalar | 1 |
@@ -2897,7 +2897,7 @@ Every symbolic callee, sorted alphabetically. For each callee: list of callers w
 | ExecuteEventAction | 1 |
 | FinalizeQuarterEnd | 4 |
 | FinalizeScenarioScreen | 1 |
-| FindCharSlotInGroupS2 | 1 |
+| ShowAllianceScreen | 1 |
 | FindCompatChars | 1 |
 | FormatRouteDetails | 3 |
 | GameCmd16 | 1 |
@@ -2937,7 +2937,7 @@ Every symbolic callee, sorted alphabetically. For each callee: list of callers w
 | ProcessRouteEventLogic | 2 |
 | ProcessScenarioMenu | 2 |
 | ProcessTextControl | 1 |
-| ProcessUndoRedo | 2 |
+| ManageCharSlotReassignment | 2 |
 | RandRange | 1 |
 | RankCharCandidatesFull | 3 |
 | ReadInput | 1 |
@@ -2962,8 +2962,8 @@ Every symbolic callee, sorted alphabetically. For each callee: list of callers w
 | SetPaletteViaCmd | 1 |
 | SetScrollAlternate | 1 |
 | SetScrollBothAxes | 1 |
-| SetVRAMReadAddr | 2 |
-| SetVRAMWriteAddr | 2 |
+| QueueVRAMReadAddr | 2 |
+| QueueVRAMWriteAddr | 2 |
 | SetVerticalScroll | 1 |
 | ShowCharDetailS2 | 2 |
 | ShowCharInfoPageS2 | 1 |
@@ -3130,28 +3130,28 @@ Every symbolic callee, sorted alphabetically. For each callee: list of callers w
 | TransferCharSlot | 1 |
 | UpdateCharMetrics | 1 |
 
-### GetCharBackground
+### FindBestPartnerChar
 - **Total calls:** 1
 - **Unique callers:** 1
 
 | Caller | Count |
 |--------|-------|
-| GetCharSpecialty | 1 |
+| RecruitFromSkillGroups | 1 |
 
-### GetCharDescription
+### FindNextOpenSkillSlot
 - **Total calls:** 6
 - **Unique callers:** 6
 
 | Caller | Count |
 |--------|-------|
-| CalcCharStatFull | 1 |
+| ExecuteCharRecruit | 1 |
 | CheckRecruitEligible | 1 |
-| GetBaseCharStat | 1 |
-| GetCharSpecialty | 1 |
+| ProcessRecruitmentGroups | 1 |
+| RecruitFromSkillGroups | 1 |
 | ManageCharSkills | 1 |
 | ProcessLevelUp | 1 |
 
-### GetCharLevel
+### IsCharInActiveMatch
 - **Total calls:** 2
 - **Unique callers:** 1
 
@@ -3159,7 +3159,7 @@ Every symbolic callee, sorted alphabetically. For each callee: list of callers w
 |--------|-------|
 | CheckLevelUpCond | 2 |
 
-### GetCharNamePtr
+### CountCharPairSlots
 - **Total calls:** 2
 - **Unique callers:** 1
 
@@ -3167,7 +3167,7 @@ Every symbolic callee, sorted alphabetically. For each callee: list of callers w
 |--------|-------|
 | ProcessCharJoin | 2 |
 
-### GetCharPortraitIdx
+### IsCharSlotAvailable
 - **Total calls:** 2
 - **Unique callers:** 1
 
@@ -3175,7 +3175,7 @@ Every symbolic callee, sorted alphabetically. For each callee: list of callers w
 |--------|-------|
 | ProcessCharJoin | 2 |
 
-### GetCharProfitAI
+### CheckCharPairConflict
 - **Total calls:** 2
 - **Unique callers:** 2
 
@@ -3262,7 +3262,7 @@ Every symbolic callee, sorted alphabetically. For each callee: list of callers w
 | ApplyRelationBonus | 1 |
 | DegradeCharSkill | 1 |
 
-### GetCharTypeID
+### CalcQuarterTurnOffset
 - **Total calls:** 1
 - **Unique callers:** 1
 
@@ -3276,7 +3276,7 @@ Every symbolic callee, sorted alphabetically. For each callee: list of callers w
 
 | Caller | Count |
 |--------|-------|
-| CalcCharScoreS2 | 1 |
+| RunManagementMenu | 1 |
 
 ### GetLowNibble
 - **Total calls:** 14
@@ -3321,7 +3321,7 @@ Every symbolic callee, sorted alphabetically. For each callee: list of callers w
 |--------|-------|
 | CalcTradeGains | 1 |
 
-### GraphicsCleanup
+### RunWorldMapAnimation
 - **Total calls:** 1
 - **Unique callers:** 1
 
@@ -3758,8 +3758,8 @@ Every symbolic callee, sorted alphabetically. For each callee: list of callers w
 
 | Caller | Count |
 |--------|-------|
-| AllocGraphicsMemory | 1 |
-| CalcCharScoreS2 | 1 |
+| ShowCompatibilityScore | 1 |
+| RunManagementMenu | 1 |
 | CalcCharacterBonus | 1 |
 | DecompressGraphicsData | 3 |
 | DisplayRouteEvent | 1 |
@@ -3770,7 +3770,7 @@ Every symbolic callee, sorted alphabetically. For each callee: list of callers w
 | DrawScreenElement | 1 |
 | ExecMenuCommand | 3 |
 | FormatRouteDetails | 1 |
-| GraphicsCleanup | 8 |
+| RunWorldMapAnimation | 8 |
 | HandleDestArrival | 1 |
 | HandleTextCompression | 2 |
 | InitGameDatabase | 1 |
@@ -3832,7 +3832,7 @@ Every symbolic callee, sorted alphabetically. For each callee: list of callers w
 |--------|-------|
 | DisplayStationDetail | 1 |
 | GameUpdate1 | 1 |
-| GraphicsCleanup | 1 |
+| RunWorldMapAnimation | 1 |
 | HandleCharInteraction | 2 |
 | LoadMapGraphics | 2 |
 | RenderCharStats | 3 |
@@ -3871,7 +3871,7 @@ Every symbolic callee, sorted alphabetically. For each callee: list of callers w
 | Caller | Count |
 |--------|-------|
 | ClearDisplayBuffers | 1 |
-| GraphicsCleanup | 1 |
+| RunWorldMapAnimation | 1 |
 | RenderTilePattern | 1 |
 
 ### LoadPaletteDataTile
@@ -3899,7 +3899,7 @@ Every symbolic callee, sorted alphabetically. For each callee: list of callers w
 | CalcOptimalTicketPrice | 2 |
 | DisplayPlayerStatsScreen | 1 |
 | FinalizeQuarterEnd | 3 |
-| FindCharSlotInGroupS2 | 1 |
+| ShowAllianceScreen | 1 |
 | GameUpdate2 | 1 |
 | HandleCharEventTrigger | 1 |
 | InitMainGameS2 | 1 |
@@ -3913,7 +3913,7 @@ Every symbolic callee, sorted alphabetically. For each callee: list of callers w
 | ProcessPlayerTurnAction | 2 |
 | ProcessRouteEventLogic | 1 |
 | ProcessScenarioMenu | 1 |
-| ProcessUndoRedo | 2 |
+| ManageCharSlotReassignment | 2 |
 | RunModelSelectUI | 1 |
 | ShowCharStatus | 1 |
 | UpdateCharRelation | 1 |
@@ -3974,7 +3974,7 @@ Every symbolic callee, sorted alphabetically. For each callee: list of callers w
 
 | Caller | Count |
 |--------|-------|
-| GetCharSpecialty | 2 |
+| RecruitFromSkillGroups | 2 |
 
 ### MakeAIDecision
 - **Total calls:** 1
@@ -3990,7 +3990,7 @@ Every symbolic callee, sorted alphabetically. For each callee: list of callers w
 
 | Caller | Count |
 |--------|-------|
-| CalcCharScoreS2 | 1 |
+| RunManagementMenu | 1 |
 
 ### ManageCharStatsS2
 - **Total calls:** 1
@@ -4063,7 +4063,7 @@ Every symbolic callee, sorted alphabetically. For each callee: list of callers w
 | Caller | Count |
 |--------|-------|
 | AnalyzeRouteProfit | 1 |
-| ApplyCompatPenalty | 1 |
+| RebuildMatchSlots | 1 |
 | ApplyEventEffectS2 | 1 |
 | CalcOptimalTicketPrice | 1 |
 | CalcRouteProfit | 4 |
@@ -4087,7 +4087,7 @@ Every symbolic callee, sorted alphabetically. For each callee: list of callers w
 | InitRouteFieldC2 | 1 |
 | LoadRouteDataS2 | 1 |
 | ManageAllianceRoster | 1 |
-| PackGameState | 1 |
+| PackScrollDeltaToVRAM | 1 |
 | ProcessEventState | 3 |
 | ProcessInputEvent | 2 |
 | ProgressGamePhase | 1 |
@@ -4097,15 +4097,15 @@ Every symbolic callee, sorted alphabetically. For each callee: list of callers w
 | RenderRouteSlotScreen | 1 |
 | RoundValue | 1 |
 | SetScrollOffset | 1 |
-| SetVRAMReadAddr | 1 |
-| SetVRAMWriteAddr | 1 |
+| QueueVRAMReadAddr | 1 |
+| QueueVRAMWriteAddr | 1 |
 | ShowRouteInfoDlg | 1 |
 | SortAircraftByMetric | 2 |
 | UpdateCharMetrics | 1 |
 | UpdatePlayerStatusDisplay | 1 |
 | UpdateRouteFieldValues | 1 |
 | UpdateSelectionS2 | 1 |
-| ValidateGameStateS2 | 1 |
+| ShowRouteSwapDialog | 1 |
 
 ### MemFillWord
 - **Total calls:** 1
@@ -4150,7 +4150,7 @@ Every symbolic callee, sorted alphabetically. For each callee: list of callers w
 | DisplayPlayerLeaderboard | 1 |
 | GameSetup2 | 1 |
 | GameUpdate3 | 1 |
-| GraphicsCleanup | 1 |
+| RunWorldMapAnimation | 1 |
 | HandleCharEventTrigger | 1 |
 | ManagePlayerInvoice | 2 |
 | ManageTurnDisplay | 1 |
@@ -4223,7 +4223,7 @@ Every symbolic callee, sorted alphabetically. For each callee: list of callers w
 | RunMatchTurn | 1 |
 | ScaleAircraftAttrValue | 1 |
 | SortCharsByValue | 1 |
-| SortElements | 2 |
+| CalcRouteEarningsScore | 2 |
 | TrainCharSkill | 1 |
 | UpdateAnimation | 1 |
 | UpdateCharDisplayS2 | 2 |
@@ -4327,7 +4327,7 @@ Every symbolic callee, sorted alphabetically. For each callee: list of callers w
 
 | Caller | Count |
 |--------|-------|
-| AllocGraphicsMemory | 1 |
+| ShowCompatibilityScore | 1 |
 | ExecMenuCommand | 2 |
 | RenderGameplayScreen | 1 |
 
@@ -4392,7 +4392,7 @@ Every symbolic callee, sorted alphabetically. For each callee: list of callers w
 
 | Caller | Count |
 |--------|-------|
-| AllocGraphicsMemory | 2 |
+| ShowCompatibilityScore | 2 |
 | CheckEventConditionS2 | 2 |
 | DecrementEventTimers | 1 |
 | DisplayEventChoice | 1 |
@@ -4406,7 +4406,7 @@ Every symbolic callee, sorted alphabetically. For each callee: list of callers w
 | GetAirlineScenarioInfo | 1 |
 | GetCharRelationS2 | 1 |
 | GetCharStatField | 1 |
-| GraphicsCleanup | 1 |
+| RunWorldMapAnimation | 1 |
 | HandleAirlineRouteEvent | 1 |
 | HandleRouteEventType0 | 4 |
 | HandleRouteEventType1 | 2 |
@@ -4439,7 +4439,7 @@ Every symbolic callee, sorted alphabetically. For each callee: list of callers w
 
 | Caller | Count |
 |--------|-------|
-| CalcCharStatFull | 1 |
+| ExecuteCharRecruit | 1 |
 | DecrementAffinity | 2 |
 | GameUpdate2 | 1 |
 | IterateCollection | 1 |
@@ -4515,12 +4515,12 @@ Every symbolic callee, sorted alphabetically. For each callee: list of callers w
 | DisplayScenarioMenu | 1 |
 | DisplayStationDetail | 1 |
 | FinalizeQuarterEnd | 1 |
-| FindCharSlotInGroupS2 | 1 |
+| ShowAllianceScreen | 1 |
 | GameLoopSetup | 1 |
 | GameUpdate1 | 1 |
 | GameUpdate2 | 4 |
 | GetCharStatField | 1 |
-| GraphicsCleanup | 3 |
+| RunWorldMapAnimation | 3 |
 | HandleCharSelectionS2 | 1 |
 | HandleTextCompression | 1 |
 | InitGameDatabase | 2 |
@@ -4588,7 +4588,7 @@ Every symbolic callee, sorted alphabetically. For each callee: list of callers w
 | LoadRouteMapDisplay | 1 |
 | ManageTurnDisplay | 1 |
 | ProcessRouteDisplayS2 | 1 |
-| ProcessUndoRedo | 2 |
+| ManageCharSlotReassignment | 2 |
 | RefreshDisplayArea | 4 |
 | RenderDisplayBuffer | 1 |
 | RenderGameDialogs | 4 |
@@ -4598,7 +4598,7 @@ Every symbolic callee, sorted alphabetically. For each callee: list of callers w
 | RenderRouteUIElements | 1 |
 | RenderTeamRoster | 2 |
 | RenderTilePattern | 1 |
-| ResetGameStateS2 | 2 |
+| RunSlotCountPicker | 2 |
 | ShowRoutePassengers | 1 |
 | UpdateAnimation | 1 |
 | UpdateScreenLayout | 4 |
@@ -4611,7 +4611,7 @@ Every symbolic callee, sorted alphabetically. For each callee: list of callers w
 | Caller | Count |
 |--------|-------|
 | AddCharToTeam | 2 |
-| CalcCharStatFull | 1 |
+| ExecuteCharRecruit | 1 |
 | DecompressGraphicsData | 3 |
 | DecrementAffinity | 2 |
 | DisplayEventChoice | 1 |
@@ -4636,7 +4636,7 @@ Every symbolic callee, sorted alphabetically. For each callee: list of callers w
 | RenderMatchResults | 3 |
 | RenderPlayerInterface | 7 |
 | RenderPlayerListUI | 1 |
-| ResetGameStateS2 | 1 |
+| RunSlotCountPicker | 1 |
 | ShowAlternatePlayerView | 1 |
 | ShowCharInfoPageS2 | 1 |
 | ShowPlayerDetailScreen | 1 |
@@ -4656,7 +4656,7 @@ Every symbolic callee, sorted alphabetically. For each callee: list of callers w
 
 | Caller | Count |
 |--------|-------|
-| CalcRelationship | 1 |
+| DispatchGameAction | 1 |
 
 ### ProcessCharJoin
 - **Total calls:** 1
@@ -4755,7 +4755,7 @@ Every symbolic callee, sorted alphabetically. For each callee: list of callers w
 | RenderMatchResults | 1 |
 | RenderPlayerInterface | 1 |
 | RenderTilePattern | 1 |
-| ResetGameStateS2 | 1 |
+| RunSlotCountPicker | 1 |
 | RunDestSelectLoop | 1 |
 | RunPlayerStatCompareUI | 1 |
 | RunPortfolioManagement | 1 |
@@ -4788,7 +4788,7 @@ Every symbolic callee, sorted alphabetically. For each callee: list of callers w
 
 | Caller | Count |
 |--------|-------|
-| CalcRelationship | 1 |
+| DispatchGameAction | 1 |
 
 ### ProcessRouteOptionB
 - **Total calls:** 1
@@ -4899,7 +4899,7 @@ Every symbolic callee, sorted alphabetically. For each callee: list of callers w
 
 | Caller | Count |
 |--------|-------|
-| AllocGraphicsMemory | 1 |
+| ShowCompatibilityScore | 1 |
 | CalcRouteProfit | 2 |
 | CalcTradeGains | 1 |
 | CharCodeCompare | 2 |
@@ -4916,13 +4916,13 @@ Every symbolic callee, sorted alphabetically. For each callee: list of callers w
 | EvaluateCharPool | 1 |
 | ExecMenuCommand | 1 |
 | FadeGraphics | 1 |
-| FinalizeGameTurn | 2 |
+| CheckAlliancePermission | 2 |
 | FindOpenCharSlot2 | 2 |
 | FormatRouteDetails | 1 |
 | GameUpdate2 | 1 |
 | GetAirlineScenarioInfo | 1 |
 | GetAllianceScore | 2 |
-| GetCharProfitAI | 2 |
+| CheckCharPairConflict | 2 |
 | GetPlayerModelSelect | 1 |
 | HandleEventConsequence | 1 |
 | HandleRouteEventType0 | 1 |
@@ -4952,7 +4952,7 @@ Every symbolic callee, sorted alphabetically. For each callee: list of callers w
 | SelectBestForTeam | 1 |
 | ShowCharStatus | 1 |
 | ShowRouteDetailsDialog | 1 |
-| SortElements | 1 |
+| CalcRouteEarningsScore | 1 |
 | SubmitTurnResults | 2 |
 | UpdateCharMetrics | 2 |
 | UpdateRouteRevenue | 1 |
@@ -5019,7 +5019,7 @@ Every symbolic callee, sorted alphabetically. For each callee: list of callers w
 | RenderMatchResults | 2 |
 | RenderPlayerInterface | 2 |
 | RenderTilePattern | 2 |
-| ResetGameStateS2 | 2 |
+| RunSlotCountPicker | 2 |
 | RunDestSelectLoop | 2 |
 | RunPlayerStatCompareUI | 1 |
 | RunPortfolioManagement | 2 |
@@ -5044,7 +5044,7 @@ Every symbolic callee, sorted alphabetically. For each callee: list of callers w
 
 | Caller | Count |
 |--------|-------|
-| GetBaseCharStat | 1 |
+| ProcessRecruitmentGroups | 1 |
 
 ### RecordEventOutcome
 - **Total calls:** 1
@@ -5060,7 +5060,7 @@ Every symbolic callee, sorted alphabetically. For each callee: list of callers w
 
 | Caller | Count |
 |--------|-------|
-| CalcRelationship | 1 |
+| DispatchGameAction | 1 |
 
 ### RefreshAndWait
 - **Total calls:** 3
@@ -5297,14 +5297,14 @@ Every symbolic callee, sorted alphabetically. For each callee: list of callers w
 |--------|-------|
 | InitGameScreen | 1 |
 
-### ResetGameStateS2
+### RunSlotCountPicker
 - **Total calls:** 2
 - **Unique callers:** 2
 
 | Caller | Count |
 |--------|-------|
 | FinalizeQuarterEnd | 1 |
-| ProcessUndoRedo | 1 |
+| ManageCharSlotReassignment | 1 |
 
 ### ResetSkillProgress
 - **Total calls:** 1
@@ -5343,7 +5343,7 @@ Every symbolic callee, sorted alphabetically. For each callee: list of callers w
 | DisplayScenarioMenu | 1 |
 | DisplayStationDetail | 2 |
 | FinalizeQuarterEnd | 3 |
-| FindCharSlotInGroupS2 | 1 |
+| ShowAllianceScreen | 1 |
 | FormatRouteDetails | 1 |
 | GameSetup2 | 2 |
 | GameUpdate1 | 1 |
@@ -5351,7 +5351,7 @@ Every symbolic callee, sorted alphabetically. For each callee: list of callers w
 | GameUpdate3 | 1 |
 | GameUpdate4 | 1 |
 | GetCharStatField | 1 |
-| GraphicsCleanup | 2 |
+| RunWorldMapAnimation | 2 |
 | HandleCharEventTrigger | 1 |
 | HandleScenarioTurns | 1 |
 | HandleTextCompression | 1 |
@@ -5375,7 +5375,7 @@ Every symbolic callee, sorted alphabetically. For each callee: list of callers w
 | ProcessPlayerTurnAction | 2 |
 | ProcessRouteEventLogic | 1 |
 | ProcessScenarioMenu | 1 |
-| ProcessUndoRedo | 2 |
+| ManageCharSlotReassignment | 2 |
 | RenderDetailedStats | 1 |
 | RenderPlayerStatusUI | 1 |
 | RenderQuarterReport | 1 |
@@ -5416,7 +5416,7 @@ Every symbolic callee, sorted alphabetically. For each callee: list of callers w
 | GameUpdate2 | 5 |
 | GameUpdate3 | 1 |
 | GetCharStatField | 1 |
-| GraphicsCleanup | 1 |
+| RunWorldMapAnimation | 1 |
 | HandleCharEventTrigger | 1 |
 | HandleCharSelectionS2 | 1 |
 | HandleScenarioTurns | 1 |
@@ -5439,7 +5439,7 @@ Every symbolic callee, sorted alphabetically. For each callee: list of callers w
 | ProcessPlayerTurnAction | 1 |
 | ProcessRouteEventLogic | 1 |
 | ProcessScenarioMenu | 1 |
-| ProcessUndoRedo | 3 |
+| ManageCharSlotReassignment | 3 |
 | RenderDetailedStats | 1 |
 | RenderMainMenu | 1 |
 | RenderPlayerListUI | 1 |
@@ -5531,7 +5531,7 @@ Every symbolic callee, sorted alphabetically. For each callee: list of callers w
 
 | Caller | Count |
 |--------|-------|
-| CalcCharScoreS2 | 1 |
+| RunManagementMenu | 1 |
 
 ### RunDestSelectLoop
 - **Total calls:** 1
@@ -5555,7 +5555,7 @@ Every symbolic callee, sorted alphabetically. For each callee: list of callers w
 
 | Caller | Count |
 |--------|-------|
-| CalcRelationship | 1 |
+| DispatchGameAction | 1 |
 
 ### RunIntroLoop
 - **Total calls:** 1
@@ -5601,7 +5601,7 @@ Every symbolic callee, sorted alphabetically. For each callee: list of callers w
 
 | Caller | Count |
 |--------|-------|
-| CalcCharScoreS2 | 1 |
+| RunManagementMenu | 1 |
 
 ### RunPlayerStatCompareUI
 - **Total calls:** 1
@@ -5617,7 +5617,7 @@ Every symbolic callee, sorted alphabetically. For each callee: list of callers w
 
 | Caller | Count |
 |--------|-------|
-| CalcRelationship | 1 |
+| DispatchGameAction | 1 |
 
 ### RunPortfolioManagement
 - **Total calls:** 1
@@ -5633,7 +5633,7 @@ Every symbolic callee, sorted alphabetically. For each callee: list of callers w
 
 | Caller | Count |
 |--------|-------|
-| CalcRelationship | 1 |
+| DispatchGameAction | 1 |
 
 ### RunQuarterScreen
 - **Total calls:** 1
@@ -5641,7 +5641,7 @@ Every symbolic callee, sorted alphabetically. For each callee: list of callers w
 
 | Caller | Count |
 |--------|-------|
-| CalcRelationship | 1 |
+| DispatchGameAction | 1 |
 
 ### RunScenarioMenu
 - **Total calls:** 2
@@ -5674,7 +5674,7 @@ Every symbolic callee, sorted alphabetically. For each callee: list of callers w
 
 | Caller | Count |
 |--------|-------|
-| CalcRelationship | 1 |
+| DispatchGameAction | 1 |
 
 ### ScaleAircraftAttrValue
 - **Total calls:** 4
@@ -5833,7 +5833,7 @@ Every symbolic callee, sorted alphabetically. For each callee: list of callers w
 
 | Caller | Count |
 |--------|-------|
-| GraphicsCleanup | 4 |
+| RunWorldMapAnimation | 4 |
 | InitGameGraphicsMode | 1 |
 
 ### SetScrollQuadrant
@@ -5843,7 +5843,7 @@ Every symbolic callee, sorted alphabetically. For each callee: list of callers w
 | Caller | Count |
 |--------|-------|
 | GameSetup2 | 2 |
-| GraphicsCleanup | 2 |
+| RunWorldMapAnimation | 2 |
 | InitScrollModes | 1 |
 | InitStatusScreenGfx | 1 |
 | RenderEndingCredits | 1 |
@@ -5888,7 +5888,7 @@ Every symbolic callee, sorted alphabetically. For each callee: list of callers w
 | MapInputToAction | 1 |
 | ProcessEventSequence | 1 |
 | ProcessRouteDisplayS2 | 2 |
-| ProcessUndoRedo | 3 |
+| ManageCharSlotReassignment | 3 |
 | RenderCharacterPanel | 12 |
 | RenderDisplayBuffer | 1 |
 | RenderGameDialogs | 5 |
@@ -5899,7 +5899,7 @@ Every symbolic callee, sorted alphabetically. For each callee: list of callers w
 | RenderRouteUIElements | 1 |
 | RenderTeamRoster | 2 |
 | RenderTilePattern | 1 |
-| ResetGameStateS2 | 4 |
+| RunSlotCountPicker | 4 |
 | ShowAlternatePlayerView | 1 |
 | ShowCharInfoPageS2 | 1 |
 | ShowPlayerDetailScreen | 1 |
@@ -5917,11 +5917,11 @@ Every symbolic callee, sorted alphabetically. For each callee: list of callers w
 | Caller | Count |
 |--------|-------|
 | AddCharToTeam | 2 |
-| AllocGraphicsMemory | 1 |
+| ShowCompatibilityScore | 1 |
 | ApplyCharacterEffect | 3 |
 | CalcCharacterBonus | 1 |
 | CalcOptimalTicketPrice | 1 |
-| CalcRelationship | 1 |
+| DispatchGameAction | 1 |
 | DecompressGraphicsData | 2 |
 | DisplayEventChoice | 1 |
 | DisplayPlayerStatsScreen | 2 |
@@ -5950,7 +5950,7 @@ Every symbolic callee, sorted alphabetically. For each callee: list of callers w
 | ProcessCharSelectInput | 2 |
 | ProcessEventSequence | 1 |
 | ProcessRouteDisplayS2 | 1 |
-| ProcessUndoRedo | 2 |
+| ManageCharSlotReassignment | 2 |
 | ReadCharInput | 1 |
 | RefreshCharPanel | 1 |
 | RefreshDisplayArea | 1 |
@@ -5967,7 +5967,7 @@ Every symbolic callee, sorted alphabetically. For each callee: list of callers w
 | RenderRouteUIElements | 2 |
 | RenderTeamRoster | 1 |
 | RenderTilePattern | 1 |
-| ResetGameStateS2 | 1 |
+| RunSlotCountPicker | 1 |
 | RunAircraftStatsDisplay | 1 |
 | RunDestSelectLoop | 1 |
 | RunPlayerStatCompareUI | 1 |
@@ -5995,7 +5995,7 @@ Every symbolic callee, sorted alphabetically. For each callee: list of callers w
 |--------|-------|
 | ConfigVDPDMA | 1 |
 
-### SetVRAMReadAddr
+### QueueVRAMReadAddr
 - **Total calls:** 6
 - **Unique callers:** 1
 
@@ -6003,7 +6003,7 @@ Every symbolic callee, sorted alphabetically. For each callee: list of callers w
 |--------|-------|
 | RenderDetailedStats | 6 |
 
-### SetVRAMWriteAddr
+### QueueVRAMWriteAddr
 - **Total calls:** 10
 - **Unique callers:** 5
 
@@ -6174,7 +6174,7 @@ Every symbolic callee, sorted alphabetically. For each callee: list of callers w
 | CalcOptimalTicketPrice | 1 |
 | DisplayRouteDestChoice | 1 |
 | FinalizeQuarterEnd | 1 |
-| ProcessUndoRedo | 1 |
+| ManageCharSlotReassignment | 1 |
 | UpdateCharRelation | 1 |
 
 ### ShowGameStatus
@@ -6243,7 +6243,7 @@ Every symbolic callee, sorted alphabetically. For each callee: list of callers w
 
 | Caller | Count |
 |--------|-------|
-| CalcRelationship | 1 |
+| DispatchGameAction | 1 |
 
 ### ShowQuarterSummary
 - **Total calls:** 1
@@ -6251,7 +6251,7 @@ Every symbolic callee, sorted alphabetically. For each callee: list of callers w
 
 | Caller | Count |
 |--------|-------|
-| CalcRelationship | 1 |
+| DispatchGameAction | 1 |
 
 ### ShowRelPanel
 - **Total calls:** 22
@@ -6261,14 +6261,14 @@ Every symbolic callee, sorted alphabetically. For each callee: list of callers w
 |--------|-------|
 | CalcOptimalTicketPrice | 1 |
 | FinalizeQuarterEnd | 3 |
-| FindCharSlotInGroupS2 | 1 |
+| ShowAllianceScreen | 1 |
 | GameUpdate2 | 3 |
 | HandleCharEventTrigger | 1 |
 | ManageCharSkills | 1 |
 | ProcessCharModifier | 1 |
 | ProcessCharTrade | 2 |
 | ProcessPlayerTurnAction | 2 |
-| ProcessUndoRedo | 2 |
+| ManageCharSlotReassignment | 2 |
 | RunModelSelectUI | 1 |
 | UpdateCharMetrics | 1 |
 | UpdateCharRelation | 1 |
@@ -6331,7 +6331,7 @@ Every symbolic callee, sorted alphabetically. For each callee: list of callers w
 
 | Caller | Count |
 |--------|-------|
-| CalcCharScoreS2 | 1 |
+| RunManagementMenu | 1 |
 
 ### ShowText
 - **Total calls:** 31
@@ -6340,7 +6340,7 @@ Every symbolic callee, sorted alphabetically. For each callee: list of callers w
 | Caller | Count |
 |--------|-------|
 | ComputeQuarterResults | 1 |
-| FindCharSlotInGroupS2 | 1 |
+| ShowAllianceScreen | 1 |
 | GetAllianceScore | 1 |
 | InitAllianceRecords | 2 |
 | IsAllianceSlotValid | 3 |
@@ -6356,7 +6356,7 @@ Every symbolic callee, sorted alphabetically. For each callee: list of callers w
 
 | Caller | Count |
 |--------|-------|
-| CalcCharScoreS2 | 2 |
+| RunManagementMenu | 2 |
 | CalcOptimalTicketPrice | 4 |
 | DisplayPlayerLeaderboard | 1 |
 | DisplayRouteDestChoice | 3 |
@@ -6372,7 +6372,7 @@ Every symbolic callee, sorted alphabetically. For each callee: list of callers w
 | RunPlayerStatCompareUI | 1 |
 | RunRouteManagementUI | 2 |
 | SelectRouteDestination | 2 |
-| ValidateGameStateS2 | 2 |
+| ShowRouteSwapDialog | 2 |
 
 ### SignExtendAndCall
 - **Total calls:** 1
@@ -6436,7 +6436,7 @@ Every symbolic callee, sorted alphabetically. For each callee: list of callers w
 | RunMatchTurn | 1 |
 | ScaleAircraftAttrValue | 1 |
 | SearchCharInAlliances | 1 |
-| SortElements | 1 |
+| CalcRouteEarningsScore | 1 |
 | UpdatePlayerAssets | 1 |
 | VRAMBulkLoad | 1 |
 
@@ -6456,7 +6456,7 @@ Every symbolic callee, sorted alphabetically. For each callee: list of callers w
 | GameUpdate4 | 1 |
 | GetAirlineScenarioInfo | 1 |
 | GetPlayerModelSelect | 1 |
-| GraphicsCleanup | 2 |
+| RunWorldMapAnimation | 2 |
 | HandleRouteSelectionS2 | 1 |
 | HandleScenarioMenuSelect | 1 |
 | HandleTextCompression | 1 |
@@ -6489,14 +6489,14 @@ Every symbolic callee, sorted alphabetically. For each callee: list of callers w
 |--------|-------|
 | RenderTextBlock | 1 |
 
-### SnapshotGameState
+### FindRouteSlotByCharState
 - **Total calls:** 2
 - **Unique callers:** 2
 
 | Caller | Count |
 |--------|-------|
 | FinalizeQuarterEnd | 1 |
-| ValidateGameStateS2 | 1 |
+| ShowRouteSwapDialog | 1 |
 
 ### SortAircraftByMetric
 - **Total calls:** 2
@@ -6516,7 +6516,7 @@ Every symbolic callee, sorted alphabetically. For each callee: list of callers w
 | ProcessMatchResult | 1 |
 | SelectBestForTeam | 2 |
 
-### SortElements
+### CalcRouteEarningsScore
 - **Total calls:** 2
 - **Unique callers:** 1
 
@@ -6533,7 +6533,7 @@ Every symbolic callee, sorted alphabetically. For each callee: list of callers w
 | InitAllianceRecords | 3 |
 | SearchCharInAlliances | 1 |
 
-### StartMatchSequence
+### CountFilledAllianceSlots
 - **Total calls:** 2
 - **Unique callers:** 2
 
@@ -6627,7 +6627,7 @@ Every symbolic callee, sorted alphabetically. For each callee: list of callers w
 | FormatRouteDetails | 2 |
 | GameUpdate2 | 2 |
 | GetCharStatField | 2 |
-| GraphicsCleanup | 1 |
+| RunWorldMapAnimation | 1 |
 | HandleCharListAction | 2 |
 | HandlePlayerMenuInput | 2 |
 | HandleScenarioTurns | 3 |
@@ -6757,7 +6757,7 @@ Every symbolic callee, sorted alphabetically. For each callee: list of callers w
 | ShowRoutePassengers | 1 |
 | SignedDiv | 1 |
 | SignedMod | 1 |
-| SortElements | 1 |
+| CalcRouteEarningsScore | 1 |
 | UnsignedMod | 1 |
 | UpdateAnimation | 1 |
 
@@ -7100,13 +7100,13 @@ Every symbolic callee, sorted alphabetically. For each callee: list of callers w
 
 | Caller | Count |
 |--------|-------|
-| AllocGraphicsMemory | 1 |
+| ShowCompatibilityScore | 1 |
 | DecompressGraphicsData | 2 |
 | DisplayStationDetail | 3 |
 | DrawCharPanelS2 | 1 |
 | DrawQuarterResultsScreen | 1 |
 | ExecMenuCommand | 3 |
-| GraphicsCleanup | 5 |
+| RunWorldMapAnimation | 5 |
 | HandleTextCompression | 2 |
 | InitGameDatabase | 1 |
 | LoadScenarioState | 3 |
@@ -7393,7 +7393,7 @@ Every symbolic callee, sorted alphabetically. For each callee: list of callers w
 | ProcessGameFrame | 6 |
 | ProcessPlayerTurnAction | 1 |
 | ProcessRouteEventLogic | 1 |
-| ProcessUndoRedo | 2 |
+| ManageCharSlotReassignment | 2 |
 | RenderCharInfoPanel | 4 |
 | RenderGameUI | 2 |
 | RenderGameplayScreen | 2 |
@@ -7410,6 +7410,6 @@ Every symbolic callee, sorted alphabetically. For each callee: list of callers w
 | UpdateGameStateS2 | 4 |
 | UpdatePlayerAssets | 5 |
 | ValidateAllianceSlot | 1 |
-| ValidateGameStateS2 | 1 |
+| ShowRouteSwapDialog | 1 |
 | ValidateRouteNetwork | 1 |
 

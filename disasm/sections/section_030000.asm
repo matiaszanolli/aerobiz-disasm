@@ -3296,7 +3296,7 @@ l_32480:
     bne.b   l_324d0
     addi.w  #$190, (a2)
 l_324d0:
-    jsr (GetCharTypeID,PC)
+    jsr (CalcQuarterTurnOffset,PC)
     nop
     cmpi.w  #$14, d0
     bcc.b   l_324ec
@@ -5076,7 +5076,7 @@ l_336c2:
     moveq   #$0,d0
     move.w  d4, d0
     move.l  d0, -(a7)
-    jsr (ApplyCompatPenalty,PC)
+    jsr (RebuildMatchSlots,PC)
     nop
     addq.l  #$4, a7
     movem.l (a7)+, d2-d4/a2-a3
@@ -5930,10 +5930,10 @@ CalcCharCompat:
     rts
 
 ; ============================================================================
-; ApplyCompatPenalty -- Reorders match slots for a player: saves, clears, and rebuilds slot list from saved data
+; RebuildMatchSlots -- Reorders match slots for a player: saves, clears, and rebuilds slot list from saved data
 ; 204 bytes | $033F62-$03402D
 ; ============================================================================
-ApplyCompatPenalty:
+RebuildMatchSlots:
     link    a6,#-$30
     movem.l d2-d3/a2-a5, -(a7)
     movea.l  #$00FF88DC,a4
@@ -6037,7 +6037,7 @@ l_3406a:
     moveq   #$0,d0
     move.w  d3, d0
     move.l  d0, -(a7)
-    jsr (ApplyMatchDamage,PC)
+    jsr (FindEmptyMatchSlot,PC)
     nop
     lea     $c(a7), a7
     cmpi.w  #$ff, d0
@@ -6263,7 +6263,7 @@ l_34282:
     moveq   #$0,d0
     move.w  d6, d0
     move.l  d0, -(a7)
-    jsr (GetCharProfitAI,PC)
+    jsr (CheckCharPairConflict,PC)
     nop
     lea     $c(a7), a7
     tst.w   d0
@@ -6291,7 +6291,7 @@ l_342d6:
     moveq   #$0,d0
     move.w  $2(a2), d0
     move.l  d0, -(a7)
-    jsr (StartMatchSequence,PC)
+    jsr (CountFilledAllianceSlots,PC)
     nop
     addq.l  #$4, a7
     tst.w   d0
@@ -6402,7 +6402,7 @@ l_34358:
     moveq   #$0,d0
     move.w  d6, d0
     move.l  d0, -(a7)
-    jsr (ApplyMatchDamage,PC)
+    jsr (FindEmptyMatchSlot,PC)
     nop
     lea     $c(a7), a7
     move.w  d0, d7
@@ -6576,7 +6576,7 @@ l_34540:
     moveq   #$0,d0
     move.w  d3, d0
     move.l  d0, -(a7)
-    jsr (GetCharProfitAI,PC)
+    jsr (CheckCharPairConflict,PC)
     nop
     lea     $c(a7), a7
     tst.w   d0
@@ -6605,7 +6605,7 @@ l_34540:
     moveq   #$0,d0
     move.w  d3, d0
     move.l  d0, -(a7)
-    jsr (ApplyMatchDamage,PC)
+    jsr (FindEmptyMatchSlot,PC)
     nop
     lea     $c(a7), a7
     move.w  d0, d2
@@ -6642,10 +6642,10 @@ l_3461c:
     rts
 
 ; ============================================================================
-; GetCharProfitAI -- Returns 1 if the given char pair already appears in any current match slot, 0 if no profit conflict
+; CheckCharPairConflict -- Returns 1 if the given char pair already appears in any current match slot, 0 if no profit conflict
 ; 152 bytes | $034628-$0346BF
 ; ============================================================================
-GetCharProfitAI:
+CheckCharPairConflict:
     movem.l d2-d7/a2, -(a7)
     move.l  $20(a7), d2
     move.l  $28(a7), d5
@@ -6707,7 +6707,7 @@ l_346b8:
     rts
 
 ; ============================================================================
-; SortCharsByValue -- Finds best char for an alliance slot via match simulation; calls ProcessCharJoin and RunMatchTurn/ApplyMatchDamage
+; SortCharsByValue -- Finds best char for an alliance slot via match simulation; calls ProcessCharJoin and RunMatchTurn/FindEmptyMatchSlot
 ; 296 bytes | $0346C0-$0347E7
 ; ============================================================================
 SortCharsByValue:
@@ -6733,7 +6733,7 @@ SortCharsByValue:
     moveq   #$0,d0
     move.w  d2, d0
     move.l  d0, -(a7)
-    jsr (StartMatchSequence,PC)
+    jsr (CountFilledAllianceSlots,PC)
     nop
     cmpi.w  #$1, d0
     bls.b   l_34712
@@ -6798,7 +6798,7 @@ l_3474c:
     moveq   #$0,d0
     move.w  d3, d0
     move.l  d0, -(a7)
-    jsr (ApplyMatchDamage,PC)
+    jsr (FindEmptyMatchSlot,PC)
     nop
     lea     $c(a7), a7
     move.w  d0, d6
@@ -6827,10 +6827,10 @@ l_347e2:
     rts
 
 ; ============================================================================
-; StartMatchSequence -- Counts how many alliance slots for a char type index are actively filled; returns that count
+; CountFilledAllianceSlots -- Counts how many alliance slots for a char type index are actively filled; returns that count
 ; 56 bytes | $0347E8-$03481F
 ; ============================================================================
-StartMatchSequence:
+CountFilledAllianceSlots:
     movem.l d2-d4, -(a7)
     move.l  $10(a7), d4
     clr.w   d3
@@ -6987,10 +6987,10 @@ l_3496c:
     rts
 
 ; ============================================================================
-; ApplyMatchDamage -- Searches match slot list for a char pair; returns the slot index of an empty slot or end-of-list index
+; FindEmptyMatchSlot -- Searches match slot list for a char pair; returns the slot index of an empty slot or end-of-list index
 ; 122 bytes | $034978-$0349F1
 ; ============================================================================
-ApplyMatchDamage:
+FindEmptyMatchSlot:
     movem.l d2-d5/a2-a3, -(a7)
     move.l  $20(a7), d3
     move.l  $24(a7), d4
@@ -7799,7 +7799,7 @@ l_351b8:
     moveq   #$0,d0
     move.w  d5, d0
     move.l  d0, -(a7)
-    jsr (GetCharDescription,PC)
+    jsr (FindNextOpenSkillSlot,PC)
     nop
     lea     $10(a7), a7
     move.w  d0, d2
@@ -7846,7 +7846,7 @@ l_35258:
     rts
 
 ; ============================================================================
-; CheckLevelUpCond -- Adjusts match-score accumulators for each char slot based on GetCharLevel results
+; CheckLevelUpCond -- Adjusts match-score accumulators for each char slot based on IsCharInActiveMatch results
 ; 208 bytes | $035264-$035333
 ; ============================================================================
 CheckLevelUpCond:
@@ -7873,7 +7873,7 @@ l_35284:
     moveq   #$0,d0
     move.w  d4, d0
     move.l  d0, -(a7)
-    jsr (GetCharLevel,PC)
+    jsr (IsCharInActiveMatch,PC)
     nop
     addq.l  #$8, a7
     tst.w   d0
@@ -7907,7 +7907,7 @@ l_352e4:
     moveq   #$0,d0
     move.w  d4, d0
     move.l  d0, -(a7)
-    jsr (GetCharLevel,PC)
+    jsr (IsCharInActiveMatch,PC)
     nop
     addq.l  #$8, a7
     tst.w   d0
@@ -7936,10 +7936,10 @@ l_35324:
     rts
 
 ; ============================================================================
-; GetCharLevel -- Returns 1 if char ID appears in any active match slot for given player, 0 otherwise
+; IsCharInActiveMatch -- Returns 1 if char ID appears in any active match slot for given player, 0 otherwise
 ; 72 bytes | $035334-$03537B
 ; ============================================================================
-GetCharLevel:
+IsCharInActiveMatch:
     movem.l d2-d4, -(a7)
     move.l  $14(a7), d3
     clr.w   d1
@@ -8032,7 +8032,7 @@ l_353f6:
     moveq   #$0,d0
     move.w  d3, d0
     move.l  d0, -(a7)
-    jsr (GetCharDescription,PC)
+    jsr (FindNextOpenSkillSlot,PC)
     nop
     addq.l  #$8, a7
     move.w  d0, d6
@@ -8989,7 +8989,7 @@ l_35dba:
     moveq   #$0,d0
     move.w  $a(a6), d0
     move.l  d0, -(a7)
-    jsr (GetCharPortraitIdx,PC)
+    jsr (IsCharSlotAvailable,PC)
     nop
     lea     $c(a7), a7
     tst.w   d0
@@ -9006,7 +9006,7 @@ l_35dba:
     moveq   #$0,d0
     move.w  d4, d0
     move.l  d0, -(a7)
-    jsr (GetCharNamePtr,PC)
+    jsr (CountCharPairSlots,PC)
     nop
     move.w  d0, d2
     moveq   #$0,d0
@@ -9127,7 +9127,7 @@ l_35f10:
     moveq   #$0,d0
     move.w  $a(a6), d0
     move.l  d0, -(a7)
-    jsr (GetCharPortraitIdx,PC)
+    jsr (IsCharSlotAvailable,PC)
     nop
     lea     $c(a7), a7
     tst.w   d0
@@ -9144,7 +9144,7 @@ l_35f10:
     moveq   #$0,d0
     move.w  d4, d0
     move.l  d0, -(a7)
-    jsr (GetCharNamePtr,PC)
+    jsr (CountCharPairSlots,PC)
     nop
     move.w  d0, d2
     moveq   #$0,d0
@@ -9304,10 +9304,10 @@ l_360b6:
     rts
 
 ; ============================================================================
-; GetCharNamePtr -- Counts occupied $FFBA80 pair slots for a player; returns slot count
+; CountCharPairSlots -- Counts occupied $FFBA80 pair slots for a player; returns slot count
 ; 48 bytes | $0360C2-$0360F1
 ; ============================================================================
-GetCharNamePtr:
+CountCharPairSlots:
     move.l  d2, -(a7)
     clr.w   d1
     move.w  $a(a7), d0
@@ -9330,10 +9330,10 @@ l_360e2:
     rts
 
 ; ============================================================================
-; GetCharPortraitIdx -- Returns 0 if char pair already has a relation record or match slot; 1 if slot is free
+; IsCharSlotAvailable -- Returns 0 if char pair already has a relation record or match slot; 1 if slot is free
 ; 136 bytes | $0360F2-$036179
 ; ============================================================================
-GetCharPortraitIdx:
+IsCharSlotAvailable:
     movem.l d2-d6/a2, -(a7)
     move.l  $1c(a7), d2
     move.l  $24(a7), d3
@@ -9390,10 +9390,10 @@ l_36172:
     rts
 
 ; ============================================================================
-; GetCharDescription -- Returns next open skill slot index (forward or reverse) from the player skill table
+; FindNextOpenSkillSlot -- Returns next open skill slot index (forward or reverse) from the player skill table
 ; 96 bytes | $03617A-$0361D9
 ; ============================================================================
-GetCharDescription:
+FindNextOpenSkillSlot:
     movem.l d2-d3, -(a7)
     move.l  $c(a7), d2
     move.l  $10(a7), d3
@@ -9440,10 +9440,10 @@ l_361d2:
     rts
 
 ; ============================================================================
-; GetCharTypeID -- Returns elapsed turns since game start (turn counter minus quarter * 60)
+; CalcQuarterTurnOffset -- Returns elapsed turns since game start (turn counter minus quarter * 60)
 ; 22 bytes | $0361DA-$0361EF
 ; ============================================================================
-GetCharTypeID:
+CalcQuarterTurnOffset:
     move.w  ($00FF0002).l, d0
     mulu.w  #$3c, d0
     move.w  ($00FF0006).l, d1
@@ -9452,10 +9452,10 @@ GetCharTypeID:
     rts
 
 ; ============================================================================
-; GetCharSpecialty -- Scans 8 skill groups to find and recruit the first char that passes CalcCharStatFull
+; RecruitFromSkillGroups -- Scans 8 skill groups to find and recruit the first char that passes ExecuteCharRecruit
 ; 288 bytes | $0361F0-$03630F
 ; ============================================================================
-GetCharSpecialty:
+RecruitFromSkillGroups:
     movem.l d2-d6, -(a7)
     move.l  $18(a7), d2
     clr.w   d4
@@ -9464,7 +9464,7 @@ l_361fa:
     moveq   #$0,d0
     move.w  d2, d0
     move.l  d0, -(a7)
-    bsr.w GetCharDescription
+    bsr.w FindNextOpenSkillSlot
     addq.l  #$8, a7
     cmpi.w  #$ff, d0
     beq.w   l_3630a
@@ -9491,7 +9491,7 @@ l_361fa:
     moveq   #$0,d0
     move.w  d2, d0
     move.l  d0, -(a7)
-    jsr (GetCharBackground,PC)
+    jsr (FindBestPartnerChar,PC)
     nop
     addq.l  #$8, a7
     move.w  d0, d3
@@ -9519,7 +9519,7 @@ l_361fa:
     moveq   #$0,d0
     move.w  d2, d0
     move.l  d0, -(a7)
-    jsr (CalcCharStatFull,PC)
+    jsr (ExecuteCharRecruit,PC)
     nop
     lea     $c(a7), a7
     cmpi.w  #$1, d0
@@ -9557,7 +9557,7 @@ l_362a4:
     moveq   #$0,d0
     move.w  d2, d0
     move.l  d0, -(a7)
-    jsr (CalcCharStatFull,PC)
+    jsr (ExecuteCharRecruit,PC)
     nop
     lea     $c(a7), a7
     cmpi.w  #$1, d0
@@ -9571,10 +9571,10 @@ l_3630a:
     rts
 
 ; ============================================================================
-; GetCharBackground -- Searches player char slots for best uncontested partner; returns char index or $FF
+; FindBestPartnerChar -- Searches player char slots for best uncontested partner; returns char index or $FF
 ; 250 bytes | $036310-$036409
 ; ============================================================================
-GetCharBackground:
+FindBestPartnerChar:
     movem.l d2-d6/a2-a3, -(a7)
     move.l  $20(a7), d2
     move.l  $24(a7), d5
@@ -9786,10 +9786,10 @@ l_36542:
     rts
 
 ; ============================================================================
-; CalcCharStatFull -- Deducts char recruitment cost, writes char to skill slot, shows acquisition dialog; returns 1 on success
+; ExecuteCharRecruit -- Deducts char recruitment cost, writes char to skill slot, shows acquisition dialog; returns 1 on success
 ; 386 bytes | $03654E-$0366CF
 ; ============================================================================
-CalcCharStatFull:
+ExecuteCharRecruit:
     link    a6,#-$4
     movem.l d2-d7/a2-a3, -(a7)
     move.l  $c(a6), d2
@@ -9850,7 +9850,7 @@ l_365c6:
     moveq   #$0,d0
     move.w  d3, d0
     move.l  d0, -(a7)
-    bsr.w GetCharDescription
+    bsr.w FindNextOpenSkillSlot
     addq.l  #$8, a7
     move.w  d0, -$2(a6)
     cmpi.w  #$4, d0
@@ -10053,10 +10053,10 @@ CollectCharRevenue:                                                  ; $0366D0
 ; 7 functions, 1662 bytes
 
 ; ============================================================================
-; GetBaseCharStat -- Iterates 8 skill groups; calls ApplyStatBonus and CheckRecruitEligible for each qualified group
+; ProcessRecruitmentGroups -- Iterates 8 skill groups; calls ApplyStatBonus and CheckRecruitEligible for each qualified group
 ; 142 bytes | $036894-$036921
 ; ============================================================================
-GetBaseCharStat:
+ProcessRecruitmentGroups:
     movem.l d2-d5, -(a7)
     move.l  $14(a7), d3
     clr.w   d2
@@ -10065,7 +10065,7 @@ l_3689e:
     moveq   #$0,d0
     move.w  d3, d0
     move.l  d0, -(a7)
-    bsr.w GetCharDescription
+    bsr.w FindNextOpenSkillSlot
     addq.l  #$8, a7
     cmpi.w  #$ff, d0
     beq.b   l_3691c
@@ -10464,7 +10464,7 @@ CheckRecruitEligible:
     moveq   #$0,d0
     move.w  d2, d0
     move.l  d0, -(a7)
-    bsr.w GetCharDescription
+    bsr.w FindNextOpenSkillSlot
     addq.l  #$8, a7
     move.w  d0, d7
     cmpi.w  #$4, d0
@@ -11220,7 +11220,7 @@ l_37480:
     move.w  d5, d0
     ext.l   d0
     move.l  d0, -(a7)
-    jsr (FinalizeGameTurn,PC)
+    jsr (CheckAlliancePermission,PC)
     nop
     lea     $c(a7), a7
     tst.w   d0
@@ -12117,7 +12117,7 @@ l_37f1e:
     move.w  d3, d0
     ext.l   d0
     move.l  d0, -(a7)
-    jsr (GraphicsCleanup,PC)
+    jsr (RunWorldMapAnimation,PC)
     nop
     move.w  ($00FF9A1C).l, d0
     ext.l   d0
@@ -14693,10 +14693,10 @@ l_39dd4:
     rts
 
 ; ============================================================================
-; ValidateGameState -- Checks whether a character (by code pair) already exists in a player's active roster; returns 1 if found, 0 if not
+; CheckCharInRoster -- Checks whether a character (by code pair) already exists in a player's active roster; returns 1 if found, 0 if not
 ; 116 bytes | $039DDE-$039E51
 ; ============================================================================
-ValidateGameState:
+CheckCharInRoster:
     movem.l d2-d4/a2-a3, -(a7)
     move.l  $18(a7), d2
     move.l  $1c(a7), d3
@@ -14743,10 +14743,10 @@ l_39e4a:
     rts
 
 ; ============================================================================
-; FinalizeGameTurn -- Looks up range indices for two player IDs, checks alliance permission bit in $FFA7BC table; returns 1 if the alliance is permitted, 0 if blocked
+; CheckAlliancePermission -- Looks up range indices for two player IDs, checks alliance permission bit in $FFA7BC table; returns 1 if the alliance is permitted, 0 if blocked
 ; 86 bytes | $039E52-$039EA7
 ; ============================================================================
-FinalizeGameTurn:
+CheckAlliancePermission:
     movem.l d2-d5, -(a7)
     move.l  $1c(a7), d2
     move.l  $18(a7), d3
@@ -14787,10 +14787,10 @@ GameLoopExit:
     rts
 
 ; ============================================================================
-; GraphicsCleanup -- Loads and tiles the world-map graphics set; decompresses route/city tiles into VRAM and runs an animated display loop (136 frames), then resets scroll and restores map
+; RunWorldMapAnimation -- Loads and tiles the world-map graphics set; decompresses route/city tiles into VRAM and runs an animated display loop (136 frames), then resets scroll and restores map
 ; 1668 bytes | $039EAA-$03A52D
 ; ============================================================================
-GraphicsCleanup:
+RunWorldMapAnimation:
     link    a6,#$0
     movem.l d2-d7/a2-a5, -(a7)
     move.l  $8(a6), d2
@@ -15789,10 +15789,10 @@ l_3aaaa:
     rts
 
 ; ============================================================================
-; AccumulateDigit -- Clamps two width values to the range 0–32 and stores them in win_right_dup ($FF1290) and win_right ($FF1000); used to set text column counters
+; ClampTextColumnWidths -- Clamps two width values to the range 0–32 and stores them in win_right_dup ($FF1290) and win_right ($FF1000); used to set text column counters
 ; 54 bytes | $03AAB0-$03AAE5
 ; ============================================================================
-AccumulateDigit:
+ClampTextColumnWidths:
     move.l  d2, -(a7)
     move.l  $c(a7), d2
     move.l  $8(a7), d1
@@ -15818,13 +15818,13 @@ l_3aadc:
     rts
 
 ; ============================================================================
-; ClearTextBuffer -- Resets the text column counters to zero by calling AccumulateDigit(0, 32)
+; ClearTextBuffer -- Resets the text column counters to zero by calling ClampTextColumnWidths(0, 32)
 ; 14 bytes | $03AAE6-$03AAF3
 ; ============================================================================
 ClearTextBuffer:
     pea     ($0020).w
     clr.l   -(a7)
-    bsr.w AccumulateDigit
+    bsr.w ClampTextColumnWidths
     addq.l  #$8, a7
     rts
 
@@ -18877,7 +18877,7 @@ InitStatusScreenGfx:
     jsr SetScrollQuadrant
     clr.l   -(a7)
     clr.l   -(a7)
-    jsr (SetVRAMWriteAddr,PC)
+    jsr (QueueVRAMWriteAddr,PC)
     nop
     lea     $20(a7), a7
     clr.l   -(a7)
@@ -19076,7 +19076,7 @@ l_3ce98:
     move.l  d0, -(a7)
     move.w  d2, d0
     move.l  d0, -(a7)
-    jsr (SetVRAMWriteAddr,PC)
+    jsr (QueueVRAMWriteAddr,PC)
     nop
     pea     ($0004).w
     pea     ($000E).w
@@ -19252,10 +19252,10 @@ l_3d066:
     rts
 
 ; ============================================================================
-; SetVRAMWriteAddr -- Sets up the VRAM write-address registers in the shadow buffer at $FF5804 (offset words $4/$6) and issues GameCommand $08/$05 to upload the address to the VDP
+; QueueVRAMWriteAddr -- Sets up the VRAM write-address registers in the shadow buffer at $FF5804 (offset words $4/$6) and issues GameCommand $08/$05 to upload the address to the VDP
 ; 126 bytes | $03D0C0-$03D13D
 ; ============================================================================
-SetVRAMWriteAddr:
+QueueVRAMWriteAddr:
     movem.l d2-d3/a2, -(a7)
     move.l  $14(a7), d2
     move.l  $10(a7), d3
@@ -19296,10 +19296,10 @@ l_3d0f4:
     rts
 
 ; ============================================================================
-; SetVRAMReadAddr -- Sets up the VRAM read-address registers in the shadow buffer at $FF5804 (offset words $0/$2) and issues GameCommand $08/$05 to prepare the VDP for a read operation
+; QueueVRAMReadAddr -- Sets up the VRAM read-address registers in the shadow buffer at $FF5804 (offset words $0/$2) and issues GameCommand $08/$05 to prepare the VDP for a read operation
 ; 124 bytes | $03D13E-$03D1B9
 ; ============================================================================
-SetVRAMReadAddr:
+QueueVRAMReadAddr:
     movem.l d2-d3/a2, -(a7)
     move.l  $14(a7), d2
     move.l  $10(a7), d3
@@ -19419,7 +19419,7 @@ RenderPlayerStatusUI:
     jsr SetScrollQuadrant
     clr.l   -(a7)
     clr.l   -(a7)
-    bsr.w SetVRAMWriteAddr
+    bsr.w QueueVRAMWriteAddr
     pea     ($000635D0).l
     move.l  a3, -(a7)
     jsr     (a4)
@@ -19582,7 +19582,7 @@ l_3d4ae:
     move.l  d0, -(a7)
     move.w  d3, d0
     move.l  d0, -(a7)
-    bsr.w SetVRAMReadAddr
+    bsr.w QueueVRAMReadAddr
     pea     ($0004).w
     pea     ($000E).w
     jsr     (a4)
@@ -19614,7 +19614,7 @@ l_3d51a:
     move.l  d0, -(a7)
     move.w  d3, d0
     move.l  d0, -(a7)
-    bsr.w SetVRAMReadAddr
+    bsr.w QueueVRAMReadAddr
     addq.l  #$8, a7
     move.w  d5, d0
     andi.l  #$1, d0
@@ -19699,7 +19699,7 @@ l_3d612:
     move.l  d0, -(a7)
     move.w  d3, d0
     move.l  d0, -(a7)
-    bsr.w SetVRAMReadAddr
+    bsr.w QueueVRAMReadAddr
     pea     ($0002).w
     pea     ($000E).w
     jsr     (a4)
@@ -19749,7 +19749,7 @@ l_3d6aa:
     move.l  d0, -(a7)
     move.w  d3, d0
     move.l  d0, -(a7)
-    bsr.w SetVRAMReadAddr
+    bsr.w QueueVRAMReadAddr
     pea     ($0001).w
     pea     ($000E).w
     jsr     (a4)
@@ -19805,7 +19805,7 @@ l_3d754:
     move.l  d0, -(a7)
     move.w  d3, d0
     move.l  d0, -(a7)
-    bsr.w SetVRAMReadAddr
+    bsr.w QueueVRAMReadAddr
     pea     ($0001).w
     pea     ($000E).w
     jsr     (a4)
@@ -19858,7 +19858,7 @@ l_3d7f0:
     move.l  d0, -(a7)
     move.w  d3, d0
     move.l  d0, -(a7)
-    bsr.w SetVRAMReadAddr
+    bsr.w QueueVRAMReadAddr
     addq.l  #$8, a7
     move.w  d5, d0
     andi.l  #$1, d0
@@ -19995,7 +19995,7 @@ ShowPlayerDetailScreen:
     clr.w   -$82(a6)
     clr.l   -(a7)
     clr.l   -(a7)
-    bsr.w SetVRAMWriteAddr
+    bsr.w QueueVRAMWriteAddr
     jsr PreLoopInit
     pea     ($0010).w
     clr.l   -(a7)
@@ -20034,7 +20034,7 @@ ShowPlayerDetailScreen:
     jsr     (a3)
     clr.l   -(a7)
     pea     (-$AF).w
-    bsr.w SetVRAMWriteAddr
+    bsr.w QueueVRAMWriteAddr
     jsr ResourceUnload
     pea     ($0028).w
     pea     ($000E).w
@@ -20114,7 +20114,7 @@ l_3db06:
     clr.l   -(a7)
     move.w  d4, d0
     move.l  d0, -(a7)
-    bsr.w SetVRAMWriteAddr
+    bsr.w QueueVRAMWriteAddr
     pea     ($0002).w
     pea     ($000E).w
     jsr     (a3)
@@ -20135,7 +20135,7 @@ l_3db2c:
     jsr CmdSetBackground
     clr.l   -(a7)
     clr.l   -(a7)
-    bsr.w SetVRAMWriteAddr
+    bsr.w QueueVRAMWriteAddr
     pea     ($0014).w
     pea     ($000E).w
     jsr     (a3)
@@ -20197,7 +20197,7 @@ ShowAlternatePlayerView:
     jsr     (a4)
     clr.l   -(a7)
     clr.l   -(a7)
-    bsr.w SetVRAMWriteAddr
+    bsr.w QueueVRAMWriteAddr
     jsr PreLoopInit
     pea     ($0012).w
     pea     ($0020).w
@@ -20253,7 +20253,7 @@ l_3dcbc:
     jsr     (a4)
     clr.l   -(a7)
     pea     (-$AF).w
-    bsr.w SetVRAMWriteAddr
+    bsr.w QueueVRAMWriteAddr
     jsr ResourceUnload
     pea     ($0028).w
     pea     ($000E).w
@@ -20392,7 +20392,7 @@ l_3de84:
     clr.l   -(a7)
     move.w  d4, d0
     move.l  d0, -(a7)
-    bsr.w SetVRAMWriteAddr
+    bsr.w QueueVRAMWriteAddr
     pea     ($0002).w
     pea     ($000E).w
     jsr     (a4)

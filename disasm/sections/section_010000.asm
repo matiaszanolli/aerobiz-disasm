@@ -3499,7 +3499,7 @@ ShowRouteInfoDlg:
     move.l  d0, -(a7)
     move.w  d3, d0
     move.l  d0, -(a7)
-    jsr DrawTilemapLine
+    jsr DrawTilemapLineWrap
     lea     $18(a7), a7
     addq.w  #$1, d4
 .l12600:
@@ -17459,7 +17459,7 @@ l_1bdfe:
     move.w  d6, d0
     ext.l   d0
     move.l  d0, -(a7)
-    jsr (AllocGraphicsMemory,PC)
+    jsr (ShowCompatibilityScore,PC)
     nop
     pea     ($0001).w
     move.w  d3, d0
@@ -17827,10 +17827,10 @@ PrepareRelationPush:                                         ; $01C28E
 ; 2 functions, 428 bytes
 
 ; ============================================================================
-; CalcRelationship -- Game-command dispatcher: reads a command index (0–10) and jumps via a PC-relative table to one of ten sub-functions (RecruitCharacter, ProcessCharActions, RunPurchaseMenu, etc.), returning the sub-function's result or 0x0B on exit.
+; DispatchGameAction -- Game-command dispatcher: reads a command index (0–10) and jumps via a PC-relative table to one of ten sub-functions (RecruitCharacter, ProcessCharActions, RunPurchaseMenu, etc.), returning the sub-function's result or 0x0B on exit.
 ; 178 bytes | $01C290-$01C341
 ; ============================================================================
-CalcRelationship:
+DispatchGameAction:
     move.l  $c(a7), d2
     pea     ($0020).w
     pea     ($0020).w
@@ -19064,10 +19064,10 @@ l_1d0ba:
     rts
 
 ; ============================================================================
-; AllocGraphicsMemory -- Computes and displays a character compatibility value between two players: calls RangeLookup and CharCodeCompare to check compatibility, then if valid shows the relation score panel (name, value, rating) via PrintfNarrow calls, offers a browse-relations interaction, and updates the displayed character stat.
+; ShowCompatibilityScore -- Computes and displays a character compatibility value between two players: calls RangeLookup and CharCodeCompare to check compatibility, then if valid shows the relation score panel (name, value, rating) via PrintfNarrow calls, offers a browse-relations interaction, and updates the displayed character stat.
 ; 584 bytes | $01D0C6-$01D30D
 ; ============================================================================
-AllocGraphicsMemory:
+ShowCompatibilityScore:
     movem.l d2-d6/a2-a4, -(a7)
     move.l  $2c(a7), d2
     move.l  $28(a7), d3
@@ -19729,7 +19729,7 @@ ResourceUnload:                                                  ; $01D748
 ; 1 functions, 76 bytes
 
 ; ============================================================================
-; FormatTextString -- Computes a scaled rectangle from row/col/width/height args (subtracting base offsets and multiplying widths), then calls AdjustPercentage to pack the result into a scroll-control record at the caller's local buffer.
+; FormatTextString -- Computes a scaled rectangle from row/col/width/height args (subtracting base offsets and multiplying widths), then calls PackScrollControlBlock to pack the result into a scroll-control record at the caller's local buffer.
 ; 76 bytes | $01D772-$01D7BD
 ; ============================================================================
 FormatTextString:
@@ -19755,7 +19755,7 @@ FormatTextString:
     ext.l   d0
     move.l  d0, -(a7)
     pea     -$8(a6)
-    jsr (AdjustPercentage,PC)
+    jsr (PackScrollControlBlock,PC)
     nop
     movem.l -$10(a6), d2-d3
     unlk    a6
@@ -19965,10 +19965,10 @@ SetScrollOffset:                                                  ; $01D8F4
 ; 2 functions, 662 bytes
 
 ; ============================================================================
-; PackGameState -- Packs scroll/display state into a VRAM buffer: fills a working area at $FF1804+$5000, optionally writes a signed scroll-delta word at the computed column offset for each of N rows, then DMA-transfers the packed buffer to VRAM address $FC00 via GameCommand.
+; PackScrollDeltaToVRAM -- Packs scroll/display state into a VRAM buffer: fills a working area at $FF1804+$5000, optionally writes a signed scroll-delta word at the computed column offset for each of N rows, then DMA-transfers the packed buffer to VRAM address $FC00 via GameCommand.
 ; 164 bytes | $01D990-$01DA33
 ; ============================================================================
-PackGameState:
+PackScrollDeltaToVRAM:
     move.l  $28(a7), d2
     move.l  $2c(a7), d3
     move.l  $24(a7), d4
@@ -20029,10 +20029,10 @@ l_1da0a:
     rts
 
 ; ============================================================================
-; UnpackGameState -- Draws a Bresenham-style line in tile-map RAM: given two (col, row) endpoints and a tile palette word, uses integer error-accumulation to step along the longer axis, writing the tile attribute word into the VDP background-A tilemap buffer at each point.
+; DrawTilemapLine -- Draws a Bresenham-style line in tile-map RAM: given two (col, row) endpoints and a tile palette word, uses integer error-accumulation to step along the longer axis, writing the tile attribute word into the VDP background-A tilemap buffer at each point.
 ; 498 bytes | $01DA34-$01DC25
 ; ============================================================================
-UnpackGameState:
+DrawTilemapLine:
     link    a6,#-$10
     movem.l d2-d7/a2-a4, -(a7)
     move.l  $10(a6), d2
@@ -20252,10 +20252,10 @@ l_1dc1c:
     rts
 
 ; ============================================================================
-; DrawTilemapLine -- Draws a line between two tile-map coordinates using integer (Bresenham-style) stepping with wrap correction: writes a composed tile-attribute word (palette + tile-index bits) into the BG-A tilemap buffer in work RAM for each step along the major axis.
+; DrawTilemapLineWrap -- Draws a line between two tile-map coordinates using Bresenham-style stepping with wrap correction: writes tile-attribute words into BG-A tilemap buffer for each step along the major axis.
 ; 516 bytes | $01DC26-$01DE29
 ; ============================================================================
-DrawTilemapLine:                                                  ; $01DC26
+DrawTilemapLineWrap:                                              ; $01DC26
     link    a6,#-$10
     movem.l d2-d7/a2-a4,-(sp)
     move.l  $0010(a6),d2
@@ -20503,10 +20503,10 @@ CalcScalar:
     rts
 
 ; ============================================================================
-; AdjustPercentage -- Writes a scroll-control block at the address in A0: sets the command word to $0080, encodes two 2-bit row/col indices into a packed position word, stores the tile-attribute word with the $8000 flag, and writes a trailing $0080 pad word.
+; PackScrollControlBlock -- Writes a scroll-control block at the address in A0: sets the command word to $0080, encodes two 2-bit row/col indices into a packed position word, stores the tile-attribute word with the $8000 flag, and writes a trailing $0080 pad word.
 ; 64 bytes | $01DE52-$01DE91
 ; ============================================================================
-AdjustPercentage:
+PackScrollControlBlock:
     movea.l $4(a7), a0
     move.w  #$80, (a0)
     move.w  $a(a7), d0
@@ -21356,7 +21356,7 @@ l_1e5b4:
     rts
 
 ; ============================================================================
-; CompareElements -- Scores and ranks route entries across all 4 players: for each player-to-player pair, finds matching route type-6 entries via BitFieldSearch, calls SortElements to get a base score, then adds individual route scores from the $FFB4E4 table for matching city pairs, accumulating into $6(a3).
+; CompareElements -- Scores and ranks route entries across all 4 players: for each player-to-player pair, finds matching route type-6 entries via BitFieldSearch, calls CalcRouteEarningsScore to get a base score, then adds individual route scores from the $FFB4E4 table for matching city pairs, accumulating into $6(a3).
 ; 278 bytes | $01E5D2-$01E6E7
 ; ============================================================================
 CompareElements:
@@ -21395,7 +21395,7 @@ l_1e5f4:
     moveq   #$0,d0
     move.w  d3, d0
     move.l  d0, -(a7)
-    jsr (SortElements,PC)
+    jsr (CalcRouteEarningsScore,PC)
     nop
     lea     $c(a7), a7
     move.w  d0, d6
@@ -21435,7 +21435,7 @@ l_1e684:
     moveq   #$0,d0
     move.w  d3, d0
     move.l  d0, -(a7)
-    jsr (SortElements,PC)
+    jsr (CalcRouteEarningsScore,PC)
     nop
     lea     $c(a7), a7
     move.w  d0, d5
@@ -21464,10 +21464,10 @@ l_1e6c8:
     rts
 
 ; ============================================================================
-; SortElements -- Computes a per-route earnings score for a single city/player combination: scans character and route arrays for matching entries (by city index and season flag), accumulates a weighted sum factored by number of qualified characters, adjusts by year difficulty and remaining turns, and returns the result in D3.
+; CalcRouteEarningsScore -- Computes a per-route earnings score for a single city/player combination: scans character and route arrays for matching entries (by city index and season flag), accumulates a weighted sum factored by number of qualified characters, adjusts by year difficulty and remaining turns, and returns the result in D3.
 ; 364 bytes | $01E6E8-$01E853
 ; ============================================================================
-SortElements:
+CalcRouteEarningsScore:
     link    a6,#$0
     movem.l d2-d7/a2-a5, -(a7)
     move.l  $10(a6), d3

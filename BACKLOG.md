@@ -8,6 +8,16 @@ Pick the highest-priority unclaimed task. Mark it `IN PROGRESS` with your sessio
 
 ## Phase 5 -- Full Understanding
 
+### B-061: Rename 31 misleading functions
+**Status:** DONE (2026-02-26)
+**Priority:** P2
+**Why:** B-055/B-057/B-058 description work revealed 31 functions whose names don't match their actual behavior (auto-generated names from code-pattern analysis were wrong). Misleading names hurt readability and grep-based cross-referencing.
+**Approach:** Python script for global find-and-replace across section files + CALL_GRAPH.md regeneration. 275 replacements across 4 section files. One name collision caught and resolved (`UnpackGameState` → `DrawTilemapLine` collided with existing `DrawTilemapLine` → renamed to `DrawTilemapLineWrap`).
+**Notable renames:** `CalcRelationship` → `DispatchGameAction`, `AllocGraphicsMemory` → `ShowCompatibilityScore`, `GetCharLevel` → `IsCharInActiveMatch`, `CalcCharStatFull` → `ExecuteCharRecruit`, `PackGameState` → `PackScrollDeltaToVRAM`, `GraphicsCleanup` → `RunWorldMapAnimation`.
+**Acceptance:** `make verify` passes (MD5: 1269f44e846a88a2de945de082428b39). CALL_GRAPH.md regenerated. Zero stale names in analysis docs.
+
+---
+
 ### B-054: Label and document remaining dc.w data regions
 **Status:** DONE (2026-02-26)
 **Priority:** P1

@@ -11876,7 +11876,7 @@ BuildRouteLoop:                                                  ; $027F18
 ; 5 functions, 2898 bytes
 
 ; ============================================================================
-; FinalizeQuarterEnd -- Finalises a player's route-placement turn: presents relation panels, browses the char list for a new hire, calls SnapshotGameState/CalcRouteRevenue/CalcCharAdvantage, handles the confirmation dialog, and stores the resulting hire into the route slot.
+; FinalizeQuarterEnd -- Finalises a player's route-placement turn: presents relation panels, browses the char list for a new hire, calls FindRouteSlotByCharState/CalcRouteRevenue/CalcCharAdvantage, handles the confirmation dialog, and stores the resulting hire into the route slot.
 ; 1090 bytes | $027FF4-$028435
 ; ============================================================================
 FinalizeQuarterEnd:
@@ -12039,7 +12039,7 @@ l_281ca:
     move.w  d2, d0
     ext.l   d0
     move.l  d0, -(a7)
-    jsr (SnapshotGameState,PC)
+    jsr (FindRouteSlotByCharState,PC)
     nop
     addq.l  #$8, a7
     ext.l   d0
@@ -12083,7 +12083,7 @@ l_281ca:
     move.w  d6, d0
     ext.l   d0
     move.l  d0, -(a7)
-    jsr (ResetGameStateS2,PC)
+    jsr (RunSlotCountPicker,PC)
     nop
     lea     $1c(a7), a7
     move.w  d0, d6
@@ -12239,10 +12239,10 @@ l_2842a:
     rts
 
 ; ============================================================================
-; SnapshotGameState -- Searches the player's route-slot array for a slot whose char code and state byte match the given values, returning the slot index or -1 if not found.
+; FindRouteSlotByCharState -- Searches the player's route-slot array for a slot whose char code and state byte match the given values, returning the slot index or -1 if not found.
 ; 58 bytes | $028436-$02846F
 ; ============================================================================
-SnapshotGameState:
+FindRouteSlotByCharState:
     move.l  d2, -(a7)
     move.l  $c(a7), d1
     move.w  $a(a7), d0
@@ -12269,10 +12269,10 @@ l_2846c:
     rts
 
 ; ============================================================================
-; ValidateGameStateS2 -- Shows a confirmation dialog comparing two route-revenue values for a proposed char swap, and if confirmed copies the char assignment into the target slot.
+; ShowRouteSwapDialog -- Shows a confirmation dialog comparing two route-revenue values for a proposed char swap, and if confirmed copies the char assignment into the target slot.
 ; 262 bytes | $028470-$028575
 ; ============================================================================
-ValidateGameStateS2:
+ShowRouteSwapDialog:
     link    a6,#-$40
     movem.l d2-d6/a2-a3, -(a7)
     move.l  $8(a6), d2
@@ -12293,7 +12293,7 @@ ValidateGameStateS2:
     move.w  d2, d0
     ext.l   d0
     move.l  d0, -(a7)
-    bsr.w SnapshotGameState
+    bsr.w FindRouteSlotByCharState
     move.w  d0, d5
     ext.l   d0
     move.l  d0, -(a7)
@@ -12368,10 +12368,10 @@ l_2856a:
     rts
 
 ; ============================================================================
-; ProcessUndoRedo -- Manages the char-reassignment screen for a player: allows selection of a char and shifting its assignment count across slots using directional input, confirming or cancelling with dialog prompts.
+; ManageCharSlotReassignment -- Manages the char-reassignment screen for a player: allows selection of a char and shifting its assignment count across slots using directional input, confirming or cancelling with dialog prompts.
 ; 814 bytes | $028576-$0288A3
 ; ============================================================================
-ProcessUndoRedo:
+ManageCharSlotReassignment:
     link    a6,#-$50
     movem.l d2-d5/a2-a5, -(a7)
     move.l  $8(a6), d3
@@ -12508,7 +12508,7 @@ l_286ea:
     move.w  d2, d0
     ext.l   d0
     move.l  d0, -(a7)
-    jsr (ResetGameStateS2,PC)
+    jsr (RunSlotCountPicker,PC)
     nop
     lea     $18(a7), a7
     move.w  d0, d2
@@ -12635,10 +12635,10 @@ l_28896:
     rts
 
 ; ============================================================================
-; ResetGameStateS2 -- Presents a numbered selector widget for choosing how many char slots to commit (1 through N), using left/right input to navigate and A/B to confirm or cancel, returning the selected count.
+; RunSlotCountPicker -- Presents a numbered selector widget for choosing how many char slots to commit (1 through N), using left/right input to navigate and A/B to confirm or cancel, returning the selected count.
 ; 674 bytes | $0288A4-$028B45
 ; ============================================================================
-ResetGameStateS2:
+RunSlotCountPicker:
     link    a6,#-$54
     movem.l d2-d7/a2-a5, -(a7)
     move.l  $8(a6), d5
@@ -22971,10 +22971,10 @@ ShowQuarterReport:                                                  ; $02F712
 ; 2 functions, 430 bytes
 
 ; ============================================================================
-; CalcCharScoreS2 -- Runs the main management menu for a player's turn: shows the management screen background and player city chart, presents a 4-item menu (game mode, alliance roster, stats summary, char management), and loops until the player selects exit
+; RunManagementMenu -- Runs the main management menu for a player's turn: shows the management screen background and player city chart, presents a 4-item menu (game mode, alliance roster, stats summary, char management), and loops until the player selects exit
 ; 292 bytes | $02FA28-$02FB4B
 ; ============================================================================
-CalcCharScoreS2:
+RunManagementMenu:
     link    a6,#$0
     movem.l d2-d3, -(a7)
     move.l  $8(a6), d3
@@ -23072,10 +23072,10 @@ l_2fb42:
     rts
 
 ; ============================================================================
-; FindCharSlotInGroupS2 -- Shows the alliance/relationship screen for a player: issues a GameCommand overlay, calls ShowText with a region label, loads resources, then calls LoadScreen and ShowRelPanel to render the relationship map and portrait panel
+; ShowAllianceScreen -- Shows the alliance/relationship screen for a player: issues a GameCommand overlay, calls ShowText with a region label, loads resources, then calls LoadScreen and ShowRelPanel to render the relationship map and portrait panel
 ; 138 bytes | $02FB4C-$02FBD5
 ; ============================================================================
-FindCharSlotInGroupS2:
+ShowAllianceScreen:
     link    a6,#-$4
     move.l  d2, -(a7)
     move.l  $8(a6), d2

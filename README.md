@@ -142,6 +142,8 @@ All 801 translated functions extracted from monolithic section files into indivi
 | input | 5 | Controller polling, input processing |
 | boot | 4 | Hardware init, early startup |
 
+Deep inline annotations added to the 30 most complex functions (B-062): phase block markers, struct field names, magic number explanations, ROM address identifications, and algorithm descriptions. Covers the AI decision tree, turn sequencing, route economics, save serialization, character management, alliance system, and quarterly processing.
+
 See [CALL_GRAPH.md](analysis/CALL_GRAPH.md), [DATA_TABLES.md](analysis/DATA_TABLES.md).
 
 ## License

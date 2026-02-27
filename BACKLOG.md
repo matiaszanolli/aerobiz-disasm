@@ -50,11 +50,13 @@ Pick the highest-priority unclaimed task. Mark it `IN PROGRESS` with your sessio
 ---
 
 ### B-058: Function description wave 3 — game logic / management screens (≈200 functions)
-**Status:** OPEN
+**Status:** DONE (2026-02-26)
 **Priority:** P2
 **Why:** Continuation of B-057. Section_030000 covers display primitives, text rendering, math, and management screen logic.
-**Approach:** Same as B-057 for section_030000. Math and text functions tend to be easier to describe (pure computation); management screen functions require more context from GAME_PHASE_FLOW.md.
-**Acceptance:** Zero `(TODO: name)` or `(TODO: describe)` in section_030000.
+**Approach:** 3 parallel Engineer agents by line range (1-7000, 7001-14000, 14001-21243).
+**Result:** 148 TODOs → 0. All function headers in section_030000 now have real descriptions.
+**Notable findings:** Many function names don't match actual behavior — `GetCharLevel/GetCharNamePtr/GetCharPortraitIdx/GetCharDescription/GetCharStatPtr/GetCharTypeID` all return unrelated values (slot checks, counts, tier thresholds, time offsets); `GraphicsCleanup` is a world-map animation loop; `FinalizeGameTurn` is an alliance permission lookup; `ApplyCompatPenalty` rebuilds match slot list; `ApplyMatchDamage` scans for empty slot index. Noted in batch findings files.
+**Acceptance:** `grep -c "(TODO:" section_030000.asm` = 0 ✓
 
 ---
 

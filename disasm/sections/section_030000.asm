@@ -7,7 +7,7 @@
 ; 10 functions, 8266 bytes
 
 ; ============================================================================
-; SearchCharInAlliances -- (TODO: name)
+; SearchCharInAlliances -- Ranks candidate alliances for current player, shows negotiation dialogue, calls InitAllianceRecords
 ; 708 bytes | $030000-$0302C3
 ; ============================================================================
 SearchCharInAlliances:
@@ -281,7 +281,7 @@ SearchCharInAlliances:
     rts
 
 ; ============================================================================
-; InitAllianceRecords -- (TODO: name)
+; InitAllianceRecords -- Scores and sorts alliance candidates for a player, displays proposal text, returns success flag
 ; 1012 bytes | $0302C4-$0306B7
 ; ============================================================================
 InitAllianceRecords:
@@ -633,7 +633,7 @@ InitAllianceRecords:
     rts
 
 ; ============================================================================
-; ValidateAllianceSlot -- (TODO: name)
+; ValidateAllianceSlot -- Checks player route capacity, presents AI alliance offer dialogue; returns 1 if slot is usable
 ; 324 bytes | $0306B8-$0307FB
 ; ============================================================================
 ValidateAllianceSlot:
@@ -755,7 +755,7 @@ ValidateAllianceSlot:
     rts
 
 ; ============================================================================
-; ProcessAllianceChange -- (TODO: name)
+; ProcessAllianceChange -- Handles player joining/leaving alliance: shows text, scans for matching chars, presents yes/no dialog
 ; 536 bytes | $0307FC-$030A13
 ; ============================================================================
 ProcessAllianceChange:
@@ -958,7 +958,7 @@ ProcessAllianceChange:
     rts
 
 ; ============================================================================
-; IsAllianceSlotValid -- (TODO: name)
+; IsAllianceSlotValid -- Checks if player alliance slot is empty or if profit ratio meets threshold; returns 1 if invalid
 ; 308 bytes | $030A14-$030B47
 ; ============================================================================
 IsAllianceSlotValid:
@@ -1073,7 +1073,7 @@ IsAllianceSlotValid:
     rts
 
 ; ============================================================================
-; GetAllianceScore -- (TODO: name)
+; GetAllianceScore -- Formats a profit/loss score message for a character pair in an alliance slot, shows text to player
 ; 328 bytes | $030B48-$030C8F
 ; ============================================================================
 GetAllianceScore:
@@ -1190,7 +1190,7 @@ GetAllianceScore:
     rts
 
 ; ============================================================================
-; ClearAllianceSlot -- (TODO: name)
+; ClearAllianceSlot -- Resets alliance display slot to default ordering, updates VDP tile display
 ; 116 bytes | $030C90-$030D03
 ; ============================================================================
 ClearAllianceSlot:
@@ -1234,7 +1234,7 @@ ClearAllianceSlot:
     rts
 
 ; ============================================================================
-; ManageAllianceRoster -- (TODO: name)
+; ManageAllianceRoster -- Interactive alliance roster screen: shows char pairs, handles D-pad navigation, confirm, and cancel input
 ; 1558 bytes | $030D04-$031319
 ; ============================================================================
 ManageAllianceRoster:
@@ -1752,7 +1752,7 @@ ManageAllianceRoster:
     rts
 
 ; ============================================================================
-; RunAIMainLoop -- (TODO: name)
+; RunAIMainLoop -- AI negotiation decision loop: evaluates character compatibility, profit, and skill; shows dialogue and makes offers
 ; 2986 bytes | $03131A-$031EC3
 ; ============================================================================
 RunAIMainLoop:
@@ -2735,7 +2735,7 @@ RunAIMainLoop:
     rts
 
 ; ============================================================================
-; PostTurnCleanup -- (TODO: name)
+; PostTurnCleanup -- Scans end-of-turn event list, matches char types, formats and displays event result messages
 ; 390 bytes | $031EC4-$032049
 ; ============================================================================
 PostTurnCleanup:
@@ -3028,7 +3028,7 @@ RunAIStrategy:                                                  ; $03204A
 ; 11 functions, 2970 bytes
 
 ; ============================================================================
-; InitAlliancePrefs -- (TODO: name)
+; InitAlliancePrefs -- Initialises alliance preference table at $FFA794 based on player type and current game round
 ; 440 bytes | $0321E0-$032397
 ; ============================================================================
 InitAlliancePrefs:
@@ -3173,7 +3173,7 @@ l_32392:
     rts
 
 ; ============================================================================
-; ComputeAllianceScores -- (TODO: name)
+; ComputeAllianceScores -- Scores each alliance slot for the AI player based on status, char type, and priority flags; writes ranked list
 ; 514 bytes | $032398-$032599
 ; ============================================================================
 ComputeAllianceScores:
@@ -3383,7 +3383,7 @@ l_32562:
     rts
 
 ; ============================================================================
-; HasPriorityAlliance -- (TODO: name)
+; HasPriorityAlliance -- Returns 1 if any active player has a priority-2 alliance entry with a char matching the given range index
 ; 94 bytes | $03259A-$0325F7
 ; ============================================================================
 HasPriorityAlliance:
@@ -3425,7 +3425,7 @@ l_325f0:
     rts
 
 ; ============================================================================
-; CheckDuplicateAlliance -- (TODO: name)
+; CheckDuplicateAlliance -- Returns 1 if two players share an alliance entry of lower rank than the given player pair
 ; 106 bytes | $0325F8-$032661
 ; ============================================================================
 CheckDuplicateAlliance:
@@ -3471,7 +3471,7 @@ l_3265a:
     rts
 
 ; ============================================================================
-; CountAllianceMembers -- (TODO: name)
+; CountAllianceMembers -- Counts how many alliance slots for a player index are marked as active (status byte = 1)
 ; 80 bytes | $032662-$0326B1
 ; ============================================================================
 CountAllianceMembers:
@@ -3508,7 +3508,7 @@ l_326a0:
     rts
 
 ; ============================================================================
-; CalcAllianceDifference -- (TODO: name)
+; CalcAllianceDifference -- Returns the difference in route revenue between two players sharing an alliance entry
 ; 124 bytes | $0326B2-$03272D
 ; ============================================================================
 CalcAllianceDifference:
@@ -3567,7 +3567,7 @@ l_32702:
     rts
 
 ; ============================================================================
-; ValidateCharSlots -- (TODO: name)
+; ValidateCharSlots -- Clears invalid char slot pairs for a player: removes dead chars and mismatched route assignments
 ; 228 bytes | $03272E-$032811
 ; ============================================================================
 ValidateCharSlots:
@@ -3644,7 +3644,7 @@ l_32804:
     rts
 
 ; ============================================================================
-; RankCharByScore -- (TODO: name)
+; RankCharByScore -- For each slot in player roster, decides whether to renegotiate contract or degrade skill based on profit ratio
 ; 236 bytes | $032812-$0328FD
 ; ============================================================================
 RankCharByScore:
@@ -3736,7 +3736,7 @@ l_328e0:
     rts
 
 ; ============================================================================
-; EvaluateNegotiation -- (TODO: name)
+; EvaluateNegotiation -- Decides AI negotiation action for a char slot: calls NegotiateContract, CalcRecruitmentCost, or adjusts score
 ; 298 bytes | $0328FE-$032A27
 ; ============================================================================
 EvaluateNegotiation:
@@ -3850,7 +3850,7 @@ l_32a22:
     rts
 
 ; ============================================================================
-; NegotiateContract -- (TODO: name)
+; NegotiateContract -- Resolves a contract renegotiation: adjusts level/stats if both chars are available, triggers growth/levelup
 ; 632 bytes | $032A28-$032C9F
 ; ============================================================================
 NegotiateContract:
@@ -4114,7 +4114,7 @@ l_32c94:
     rts
 
 ; ============================================================================
-; AcquireCharSlot -- (TODO: name)
+; AcquireCharSlot -- Adjusts char slot value by compatibility offset; updates char base stat if relation score exceeds threshold
 ; 218 bytes | $032CA0-$032D79
 ; ============================================================================
 AcquireCharSlot:
@@ -4413,7 +4413,7 @@ DegradeSkillLinked:                                          ; $032FEC
 ; 2 functions, 750 bytes
 
 ; ============================================================================
-; DegradeCharSkill -- (TODO: name)
+; DegradeCharSkill -- Reduces char level and alliance stamina; calls AcquireCharSlot or SetSubstituteFlag based on slot state
 ; 476 bytes | $032FF0-$0331CB
 ; ============================================================================
 DegradeCharSkill:
@@ -4592,7 +4592,7 @@ l_331c2:
     rts
 
 ; ============================================================================
-; CalcRecruitmentCost -- (TODO: name)
+; CalcRecruitmentCost -- Finds best char replacement for a slot; transfers or trains char based on skill level comparison
 ; 274 bytes | $0331CC-$0332DD
 ; ============================================================================
 CalcRecruitmentCost:
@@ -4840,7 +4840,7 @@ FindBestCharForSlot:                                                  ; $0332DE
 ; 26 functions, 6246 bytes
 
 ; ============================================================================
-; TransferCharSlot -- (TODO: name)
+; TransferCharSlot -- Moves stamina from a source char slot to a destination slot; updates alliance stamina counters; returns success
 ; 320 bytes | $03345E-$03359D
 ; ============================================================================
 TransferCharSlot:
@@ -4955,7 +4955,7 @@ l_33592:
     rts
 
 ; ============================================================================
-; ClearSubstituteFlag -- (TODO: name)
+; ClearSubstituteFlag -- Clears bit 1 of the flags byte ($A) in a character slot record (marks char as no longer a substitute)
 ; 54 bytes | $03359E-$0335D3
 ; ============================================================================
 ClearSubstituteFlag:
@@ -4978,7 +4978,7 @@ l_335d0:
     rts
 
 ; ============================================================================
-; SetSubstituteFlag -- (TODO: name)
+; SetSubstituteFlag -- Sets bit 1 of the flags byte ($A) in a character slot record (marks char as substitute)
 ; 56 bytes | $0335D4-$03360B
 ; ============================================================================
 SetSubstituteFlag:
@@ -5000,7 +5000,7 @@ l_33608:
     rts
 
 ; ============================================================================
-; ReorderMatchSlots -- (TODO: name)
+; ReorderMatchSlots -- Iterates match slots for a player; evaluates lineups, updates char metrics, clears invalid pairs
 ; 212 bytes | $03360C-$0336DF
 ; ============================================================================
 ReorderMatchSlots:
@@ -5083,7 +5083,7 @@ l_336c2:
     rts
 
 ; ============================================================================
-; EvaluateMatchLineup -- (TODO: name)
+; EvaluateMatchLineup -- Checks stamina and substitute status for a single match slot pair; calls FindOpenCharSlot2 if needed
 ; 306 bytes | $0336E0-$033811
 ; ============================================================================
 EvaluateMatchLineup:
@@ -5197,7 +5197,7 @@ l_3380a:
     rts
 
 ; ============================================================================
-; FindOpenCharSlot2 -- (TODO: name)
+; FindOpenCharSlot2 -- Finds an available open char slot for two char indices under a player; dispatches to ScanCharRoster or GetActiveCharCount
 ; 212 bytes | $033812-$0338E5
 ; ============================================================================
 FindOpenCharSlot2:
@@ -5288,7 +5288,7 @@ l_338da:
     rts
 
 ; ============================================================================
-; ScanCharRoster -- (TODO: name)
+; ScanCharRoster -- Checks if a char pair is already in the alliance bitmask or if any roster slot is still available; returns 1 if open
 ; 208 bytes | $0338E6-$0339B5
 ; ============================================================================
 ScanCharRoster:
@@ -5377,7 +5377,7 @@ l_339ae:
     rts
 
 ; ============================================================================
-; GetActiveCharCount -- (TODO: name)
+; GetActiveCharCount -- Returns 1 if the given char-type pair has a non-zero stamina byte in the alliance table, else 0
 ; 38 bytes | $0339B6-$0339DB
 ; ============================================================================
 GetActiveCharCount:
@@ -5398,7 +5398,7 @@ l_339d6:
     rts
 
 ; ============================================================================
-; UpdateCharMetrics -- (TODO: name)
+; UpdateCharMetrics -- Records a char-pair relation, updates alliance bitmasks and VSRAM, adjusts stamina, shows relation panel
 ; 774 bytes | $0339DC-$033CE1
 ; ============================================================================
 UpdateCharMetrics:
@@ -5674,7 +5674,7 @@ l_33cd6:
     rts
 
 ; ============================================================================
-; ApplyRelationBonus -- (TODO: name)
+; ApplyRelationBonus -- Initialises a relation record struct, computes max skill bonus from char types, calls CalcCharCompat
 ; 348 bytes | $033CE2-$033E3D
 ; ============================================================================
 ApplyRelationBonus:
@@ -5820,7 +5820,7 @@ l_33e24:
     rts
 
 ; ============================================================================
-; GetCharTypeBonus -- (TODO: name)
+; GetCharTypeBonus -- Returns scaled skill bonus (1-9) for a char based on compat score and the given level value
 ; 86 bytes | $033E3E-$033E93
 ; ============================================================================
 GetCharTypeBonus:
@@ -5863,7 +5863,7 @@ l_33e8c:
     rts
 
 ; ============================================================================
-; CalcCharCompat -- (TODO: name)
+; CalcCharCompat -- Computes compatibility score for a char pair: multiplies stat fields, divides by totals, scales by CharCodeScore
 ; 206 bytes | $033E94-$033F61
 ; ============================================================================
 CalcCharCompat:
@@ -5930,7 +5930,7 @@ CalcCharCompat:
     rts
 
 ; ============================================================================
-; ApplyCompatPenalty -- (TODO: name)
+; ApplyCompatPenalty -- Reorders match slots for a player: saves, clears, and rebuilds slot list from saved data
 ; 204 bytes | $033F62-$03402D
 ; ============================================================================
 ApplyCompatPenalty:
@@ -6009,7 +6009,7 @@ l_3401c:
     rts
 
 ; ============================================================================
-; SelectBestForTeam -- (TODO: name)
+; SelectBestForTeam -- Runs AI team selection loop: evaluates char quality and value across all alliance slots per turn
 ; 324 bytes | $03402E-$034171
 ; ============================================================================
 SelectBestForTeam:
@@ -6145,7 +6145,7 @@ l_34168:
     rts
 
 ; ============================================================================
-; GetCharQuality -- (TODO: name)
+; GetCharQuality -- Returns count of player resource entries that exceed a char's stats (higher = lower quality)
 ; 80 bytes | $034172-$0341C1
 ; ============================================================================
 GetCharQuality:
@@ -6180,7 +6180,7 @@ l_341b2:
     rts
 
 ; ============================================================================
-; EvaluateCharPool -- (TODO: name)
+; EvaluateCharPool -- Scores alliance preference pairs for AI: checks profitability, availability, and match state; offers contracts
 ; 632 bytes | $0341C2-$034439
 ; ============================================================================
 EvaluateCharPool:
@@ -6437,7 +6437,7 @@ l_34430:
     rts
 
 ; ============================================================================
-; CheckCharAvailable -- (TODO: name)
+; CheckCharAvailable -- Returns 1 if a char type index is already occupied in another player's alliance or match slot
 ; 204 bytes | $03443A-$034505
 ; ============================================================================
 CheckCharAvailable:
@@ -6524,7 +6524,7 @@ l_344fe:
     rts
 
 ; ============================================================================
-; CalcCharValueAI -- (TODO: name)
+; CalcCharValueAI -- Checks all alliance slots for a char; simulates match turns and damage; returns 1 if a profitable match found
 ; 290 bytes | $034506-$034627
 ; ============================================================================
 CalcCharValueAI:
@@ -6642,7 +6642,7 @@ l_3461c:
     rts
 
 ; ============================================================================
-; GetCharProfitAI -- (TODO: name)
+; GetCharProfitAI -- Returns 1 if the given char pair already appears in any current match slot, 0 if no profit conflict
 ; 152 bytes | $034628-$0346BF
 ; ============================================================================
 GetCharProfitAI:
@@ -6707,7 +6707,7 @@ l_346b8:
     rts
 
 ; ============================================================================
-; SortCharsByValue -- (TODO: name)
+; SortCharsByValue -- Finds best char for an alliance slot via match simulation; calls ProcessCharJoin and RunMatchTurn/ApplyMatchDamage
 ; 296 bytes | $0346C0-$0347E7
 ; ============================================================================
 SortCharsByValue:
@@ -6827,7 +6827,7 @@ l_347e2:
     rts
 
 ; ============================================================================
-; StartMatchSequence -- (TODO: name)
+; StartMatchSequence -- Counts how many alliance slots for a char type index are actively filled; returns that count
 ; 56 bytes | $0347E8-$03481F
 ; ============================================================================
 StartMatchSequence:
@@ -6856,7 +6856,7 @@ l_34810:
     rts
 
 ; ============================================================================
-; RunMatchTurn -- (TODO: name)
+; RunMatchTurn -- Selects best available char for a match turn based on negotiation power, compat score, and skill weights
 ; 344 bytes | $034820-$034977
 ; ============================================================================
 RunMatchTurn:
@@ -6987,7 +6987,7 @@ l_3496c:
     rts
 
 ; ============================================================================
-; ApplyMatchDamage -- (TODO: name)
+; ApplyMatchDamage -- Searches match slot list for a char pair; returns the slot index of an empty slot or end-of-list index
 ; 122 bytes | $034978-$0349F1
 ; ============================================================================
 ApplyMatchDamage:
@@ -7048,7 +7048,7 @@ l_349ea:
     rts
 
 ; ============================================================================
-; CalcMatchScore -- (TODO: name)
+; CalcMatchScore -- Writes char/player IDs and win/draw flags into match record at $FF88DC
 ; 206 bytes | $0349F2-$034ABF
 ; ============================================================================
 CalcMatchScore:
@@ -7125,7 +7125,7 @@ l_34aba:
     rts
 
 ; ============================================================================
-; ProcessMatchResult -- (TODO: name)
+; ProcessMatchResult -- Finds best rival char to challenge; calls RemoveCharRelation and SortCharsByValue on success
 ; 302 bytes | $034AC0-$034BED
 ; ============================================================================
 ProcessMatchResult:
@@ -7251,7 +7251,7 @@ l_34be4:
     rts
 
 ; ============================================================================
-; UpdatePlayerRating -- (TODO: name)
+; UpdatePlayerRating -- Scans player char slots for rival match; returns lowest-cost slot index or $FF on failure
 ; 214 bytes | $034BEE-$034CC3
 ; ============================================================================
 UpdatePlayerRating:
@@ -7568,7 +7568,7 @@ RemoveCharRelation:                                                  ; $034CC4
 ; 11 functions, 2158 bytes
 
 ; ============================================================================
-; ResetMatchState -- (TODO: name)
+; ResetMatchState -- Iterates all match slots; applies char growth and level-up outcomes, sets win/loss flags
 ; 208 bytes | $034F90-$03505F
 ; ============================================================================
 ResetMatchState:
@@ -7650,7 +7650,7 @@ l_35050:
     rts
 
 ; ============================================================================
-; ApplyCharGrowth -- (TODO: name)
+; ApplyCharGrowth -- Decrements training counter for chars matched against given char; returns 1 if any counter changed
 ; 194 bytes | $035060-$035121
 ; ============================================================================
 ApplyCharGrowth:
@@ -7727,7 +7727,7 @@ l_35104:
     rts
 
 ; ============================================================================
-; ProcessLevelUp -- (TODO: name)
+; ProcessLevelUp -- Checks level-up conditions for a char; writes new skill slot and shows promotion dialog if eligible
 ; 322 bytes | $035122-$035263
 ; ============================================================================
 ProcessLevelUp:
@@ -7846,7 +7846,7 @@ l_35258:
     rts
 
 ; ============================================================================
-; CheckLevelUpCond -- (TODO: name)
+; CheckLevelUpCond -- Adjusts match-score accumulators for each char slot based on GetCharLevel results
 ; 208 bytes | $035264-$035333
 ; ============================================================================
 CheckLevelUpCond:
@@ -7936,7 +7936,7 @@ l_35324:
     rts
 
 ; ============================================================================
-; GetCharLevel -- (TODO: name)
+; GetCharLevel -- Returns 1 if char ID appears in any active match slot for given player, 0 otherwise
 ; 72 bytes | $035334-$03537B
 ; ============================================================================
 GetCharLevel:
@@ -7972,7 +7972,7 @@ l_35374:
     rts
 
 ; ============================================================================
-; IncrementCharLevel -- (TODO: name)
+; IncrementCharLevel -- Returns 1 if char ID has an active level-up slot (type=$1) in the player skill table
 ; 68 bytes | $03537C-$0353BF
 ; ============================================================================
 IncrementCharLevel:
@@ -8005,7 +8005,7 @@ l_353b8:
     rts
 
 ; ============================================================================
-; ManageCharSkills -- (TODO: name)
+; ManageCharSkills -- For each skill group, finds an unlearned skill the char qualifies for and calls TrainCharSkill
 ; 384 bytes | $0353C0-$03553F
 ; ============================================================================
 ManageCharSkills:
@@ -8152,7 +8152,7 @@ l_3553a:
     rts
 
 ; ============================================================================
-; HasSkill -- (TODO: name)
+; HasSkill -- Returns 1 if skill ID is already learned (type=$3) in the player skill table, 0 otherwise
 ; 68 bytes | $035540-$035583
 ; ============================================================================
 HasSkill:
@@ -8185,7 +8185,7 @@ l_3557c:
     rts
 
 ; ============================================================================
-; UnlockSkill -- (TODO: name)
+; UnlockSkill -- Scans all match slots; calls TrainCharSkill for pending training slots (type=$1), marks done if successful
 ; 100 bytes | $035584-$0355E7
 ; ============================================================================
 UnlockSkill:
@@ -8227,7 +8227,7 @@ l_355da:
     rts
 
 ; ============================================================================
-; TrainCharSkill -- (TODO: name)
+; TrainCharSkill -- Checks skill cost vs player wealth and char stat threshold; deducts cost and records new skill if passed
 ; 410 bytes | $0355E8-$035781
 ; ============================================================================
 TrainCharSkill:
@@ -8374,7 +8374,7 @@ l_3577a:
     rts
 
 ; ============================================================================
-; ResetSkillProgress -- (TODO: name)
+; ResetSkillProgress -- Iterates skill slots; calls ApplyCharBonus to award or clamp accumulated skill XP points
 ; 124 bytes | $035782-$0357FD
 ; ============================================================================
 ResetSkillProgress:
@@ -8427,7 +8427,7 @@ l_357ee:
     rts
 
 ; ============================================================================
-; ApplyCharBonus -- (TODO: describe)
+; ApplyCharBonus -- Applies accumulated skill bonus to player wealth and clears skill counters; returns 1 on success
 ; Called: ?? times.
 ; 126 bytes | $0357FE-$03587B
 ; ============================================================================
@@ -8481,7 +8481,7 @@ ApplyCharBonus:                                                  ; $0357FE
 ; 5 functions, 1100 bytes
 
 ; ============================================================================
-; IncrementAffinity -- (TODO: name)
+; IncrementAffinity -- Advances player affinity phase: runs skill reset, level-up check, and threshold evaluation
 ; 144 bytes | $035880-$03590F
 ; ============================================================================
 IncrementAffinity:
@@ -8540,7 +8540,7 @@ l_3590a:
     rts
 
 ; ============================================================================
-; DecrementAffinity -- (TODO: name)
+; DecrementAffinity -- Shows affinity-lost dialog, adds $186A0 to player wealth, and resets affinity byte to $64
 ; 180 bytes | $035910-$0359C3
 ; ============================================================================
 DecrementAffinity:
@@ -8589,7 +8589,7 @@ l_359b4:
     rts
 
 ; ============================================================================
-; CheckAffinityThreshold -- (TODO: name)
+; CheckAffinityThreshold -- Scans char relations; calls RemoveCharRelation for slots that have exceeded their limit
 ; 154 bytes | $0359C4-$035A5D
 ; ============================================================================
 CheckAffinityThreshold:
@@ -8654,7 +8654,7 @@ l_35a54:
     rts
 
 ; ============================================================================
-; GetAffinityRating -- (TODO: name)
+; GetAffinityRating -- Sets affinity-quality bytes (9/A/B) based on player wealth vs target thresholds
 ; 178 bytes | $035A5E-$035B0F
 ; ============================================================================
 GetAffinityRating:
@@ -8710,7 +8710,7 @@ l_35b0a:
     rts
 
 ; ============================================================================
-; OfferCharContract -- (TODO: name)
+; OfferCharContract -- Scores all available chars for a player and returns best candidate char index
 ; 444 bytes | $035B10-$035CCB
 ; ============================================================================
 OfferCharContract:
@@ -8877,7 +8877,7 @@ l_35cc0:
     rts
 
 ; ============================================================================
-; FindBestCharValue -- (TODO: describe)
+; FindBestCharValue -- Returns highest $FFA6B8 cost field among recruitables that are in the current age window
 ; 122 bytes | $035CCC-$035D45
 ; ============================================================================
 FindBestCharValue:                                                  ; $035CCC
@@ -8933,7 +8933,7 @@ FindBestCharValue:                                                  ; $035CCC
 ; 10 functions, 2442 bytes
 
 ; ============================================================================
-; ProcessCharJoin -- (TODO: name)
+; ProcessCharJoin -- Evaluates all candidate chars for recruitment to a player; returns best scoring char index
 ; 778 bytes | $035D46-$03604F
 ; ============================================================================
 ProcessCharJoin:
@@ -9249,7 +9249,7 @@ l_36044:
     rts
 
 ; ============================================================================
-; GetCharStatPtr -- (TODO: name)
+; GetCharStatPtr -- Returns stat multiplier tier (30/35/50/100/150/200) based on CharCodeCompare score
 ; 114 bytes | $036050-$0360C1
 ; ============================================================================
 GetCharStatPtr:
@@ -9304,7 +9304,7 @@ l_360b6:
     rts
 
 ; ============================================================================
-; GetCharNamePtr -- (TODO: name)
+; GetCharNamePtr -- Counts occupied $FFBA80 pair slots for a player; returns slot count
 ; 48 bytes | $0360C2-$0360F1
 ; ============================================================================
 GetCharNamePtr:
@@ -9330,7 +9330,7 @@ l_360e2:
     rts
 
 ; ============================================================================
-; GetCharPortraitIdx -- (TODO: name)
+; GetCharPortraitIdx -- Returns 0 if char pair already has a relation record or match slot; 1 if slot is free
 ; 136 bytes | $0360F2-$036179
 ; ============================================================================
 GetCharPortraitIdx:
@@ -9390,7 +9390,7 @@ l_36172:
     rts
 
 ; ============================================================================
-; GetCharDescription -- (TODO: name)
+; GetCharDescription -- Returns next open skill slot index (forward or reverse) from the player skill table
 ; 96 bytes | $03617A-$0361D9
 ; ============================================================================
 GetCharDescription:
@@ -9440,7 +9440,7 @@ l_361d2:
     rts
 
 ; ============================================================================
-; GetCharTypeID -- (TODO: name)
+; GetCharTypeID -- Returns elapsed turns since game start (turn counter minus quarter * 60)
 ; 22 bytes | $0361DA-$0361EF
 ; ============================================================================
 GetCharTypeID:
@@ -9452,7 +9452,7 @@ GetCharTypeID:
     rts
 
 ; ============================================================================
-; GetCharSpecialty -- (TODO: name)
+; GetCharSpecialty -- Scans 8 skill groups to find and recruit the first char that passes CalcCharStatFull
 ; 288 bytes | $0361F0-$03630F
 ; ============================================================================
 GetCharSpecialty:
@@ -9571,7 +9571,7 @@ l_3630a:
     rts
 
 ; ============================================================================
-; GetCharBackground -- (TODO: name)
+; GetCharBackground -- Searches player char slots for best uncontested partner; returns char index or $FF
 ; 250 bytes | $036310-$036409
 ; ============================================================================
 GetCharBackground:
@@ -9669,7 +9669,7 @@ l_36402:
     rts
 
 ; ============================================================================
-; LookupCharRecord -- (TODO: name)
+; LookupCharRecord -- Scores available chars by CalcCharValue and returns best match for the current player/slot
 ; 324 bytes | $03640A-$03654D
 ; ============================================================================
 LookupCharRecord:
@@ -9786,7 +9786,7 @@ l_36542:
     rts
 
 ; ============================================================================
-; CalcCharStatFull -- (TODO: name)
+; CalcCharStatFull -- Deducts char recruitment cost, writes char to skill slot, shows acquisition dialog; returns 1 on success
 ; 386 bytes | $03654E-$0366CF
 ; ============================================================================
 CalcCharStatFull:
@@ -10053,7 +10053,7 @@ CollectCharRevenue:                                                  ; $0366D0
 ; 7 functions, 1662 bytes
 
 ; ============================================================================
-; GetBaseCharStat -- (TODO: name)
+; GetBaseCharStat -- Iterates 8 skill groups; calls ApplyStatBonus and CheckRecruitEligible for each qualified group
 ; 142 bytes | $036894-$036921
 ; ============================================================================
 GetBaseCharStat:
@@ -10116,7 +10116,7 @@ l_3691c:
     rts
 
 ; ============================================================================
-; ApplyStatBonus -- (TODO: name)
+; ApplyStatBonus -- Counts unfulfilled skill slots (type=1 with unmet stat threshold) for a player; returns count
 ; 158 bytes | $036922-$0369BF
 ; ============================================================================
 ApplyStatBonus:
@@ -10179,7 +10179,7 @@ l_369ae:
     rts
 
 ; ============================================================================
-; RecalcAllCharStats -- (TODO: name)
+; RecalcAllCharStats -- Accumulates weighted stat bonuses from all assigned chars; returns highest-scoring category index
 ; 624 bytes | $0369C0-$036C2F
 ; ============================================================================
 RecalcAllCharStats:
@@ -10405,7 +10405,7 @@ l_36c24:
     rts
 
 ; ============================================================================
-; CheckRecruitEligible -- (TODO: name)
+; CheckRecruitEligible -- Validates slot availability and wealth; deducts cost and records recruitment record if eligible
 ; 244 bytes | $036C30-$036D23
 ; ============================================================================
 CheckRecruitEligible:
@@ -10497,7 +10497,7 @@ l_36d1c:
     rts
 
 ; ============================================================================
-; IsCharSlotEmpty -- (TODO: name)
+; IsCharSlotEmpty -- Returns 1 if a recruitment slot (type=$6) for the given char and cost exists in the skill table
 ; 82 bytes | $036D24-$036D75
 ; ============================================================================
 IsCharSlotEmpty:
@@ -10535,7 +10535,7 @@ l_36d6e:
     rts
 
 ; ============================================================================
-; ValidateCharPool -- (TODO: name)
+; ValidateCharPool -- Counts chars in the active pool matching a target tier; returns count of qualifying chars
 ; 356 bytes | $036D76-$036ED9
 ; ============================================================================
 ValidateCharPool:
@@ -10688,7 +10688,7 @@ l_36eba:
     rts
 
 ; ============================================================================
-; GetPlayerCharCount -- (TODO: name)
+; GetPlayerCharCount -- Returns count of char slots occupied by the given player (via BitFieldSearch)
 ; 56 bytes | $036EDA-$036F11
 ; ============================================================================
 GetPlayerCharCount:
@@ -10919,7 +10919,7 @@ RecruitCharacter:                                                  ; $036F12
 ; 1 functions, 1638 bytes
 
 ; ============================================================================
-; RenderGameplayScreen -- (TODO: name)
+; RenderGameplayScreen -- Main map interaction loop: handles cursor, tile selection, char comparison, and dialog display
 ; 1638 bytes | $037162-$0377C7
 ; ============================================================================
 RenderGameplayScreen:
@@ -11422,7 +11422,7 @@ l_377bc:
     rts
 
 ; ============================================================================
-; ClearCharSprites -- (TODO: describe)
+; ClearCharSprites -- Clears the char sprite panel by calling GameCommand $0037 with flag 4
 ; Called: ?? times.
 ; 18 bytes | $0377C8-$0377D9
 ; ============================================================================
@@ -11437,7 +11437,7 @@ ClearCharSprites:                                                  ; $0377C8
 ; 3 functions, 3434 bytes
 
 ; ============================================================================
-; RenderCharInfoPanel -- (TODO: name)
+; RenderCharInfoPanel -- Renders the char info/relationship status panel for a given player char pair
 ; 610 bytes | $0377DA-$037A3B
 ; ============================================================================
 RenderCharInfoPanel:
@@ -11656,7 +11656,7 @@ l_37a32:
     rts
 
 ; ============================================================================
-; RenderTeamRoster -- (TODO: name)
+; RenderTeamRoster -- Displays team roster screen with portraits and stats; routes input to sub-screens
 ; 1474 bytes | $037A3C-$037FFD
 ; ============================================================================
 RenderTeamRoster:
@@ -12137,7 +12137,7 @@ l_37ff6:
     rts
 
 ; ============================================================================
-; RenderMatchResults -- (TODO: name)
+; RenderMatchResults -- Shows match result screen with compatible char list; handles char selection and pairing input
 ; 1350 bytes | $037FFE-$038543
 ; ============================================================================
 RenderMatchResults:
@@ -12586,7 +12586,7 @@ l_3853a:
 
 
 ; ============================================================================
-; CheckMatchSlots -- (TODO: describe)
+; CheckMatchSlots -- Returns 1 if all 4 player match slots at $FF8804 are filled (none equal $FF), else 0
 ; Called: ?? times.
 ; 58 bytes | $038544-$03857D
 ; ============================================================================
@@ -12619,7 +12619,7 @@ CheckMatchSlots:                                                  ; $038544
 ; 8 functions, 8234 bytes
 
 ; ============================================================================
-; RenderPlayerInterface -- (TODO: name)
+; RenderPlayerInterface -- Displays player pairing interface with compat bars; handles up/down selection and confirm/cancel
 ; 2326 bytes | $03857E-$038E93
 ; ============================================================================
 RenderPlayerInterface:
@@ -13387,7 +13387,7 @@ l_38e8a:
     rts
 
 ; ============================================================================
-; HandlePlayerMenuInput -- (TODO: name)
+; HandlePlayerMenuInput -- Handles negotiation menu: shows stat bars, processes directional input, confirms char selection
 ; 2036 bytes | $038E94-$039687
 ; ============================================================================
 HandlePlayerMenuInput:
@@ -14072,7 +14072,7 @@ l_3967e:
     rts
 
 ; ============================================================================
-; RenderGameDialogs -- (TODO: name)
+; RenderGameDialogs -- Runs the negotiation/dialog UI loop for a match slot; handles Up/Down offer adjustment, partner browsing, and confirm/cancel input
 ; 1878 bytes | $039688-$039DDD
 ; ============================================================================
 RenderGameDialogs:
@@ -14693,7 +14693,7 @@ l_39dd4:
     rts
 
 ; ============================================================================
-; ValidateGameState -- (TODO: name)
+; ValidateGameState -- Checks whether a character (by code pair) already exists in a player's active roster; returns 1 if found, 0 if not
 ; 116 bytes | $039DDE-$039E51
 ; ============================================================================
 ValidateGameState:
@@ -14743,7 +14743,7 @@ l_39e4a:
     rts
 
 ; ============================================================================
-; FinalizeGameTurn -- (TODO: name)
+; FinalizeGameTurn -- Looks up range indices for two player IDs, checks alliance permission bit in $FFA7BC table; returns 1 if the alliance is permitted, 0 if blocked
 ; 86 bytes | $039E52-$039EA7
 ; ============================================================================
 FinalizeGameTurn:
@@ -14780,14 +14780,14 @@ l_39ea0:
     rts
 
 ; ============================================================================
-; GameLoopExit -- (TODO: name)
+; GameLoopExit -- Stub exit point; immediately returns (RTS only, 2 bytes)
 ; 2 bytes | $039EA8-$039EA9
 ; ============================================================================
 GameLoopExit:
     rts
 
 ; ============================================================================
-; GraphicsCleanup -- (TODO: name)
+; GraphicsCleanup -- Loads and tiles the world-map graphics set; decompresses route/city tiles into VRAM and runs an animated display loop (136 frames), then resets scroll and restores map
 ; 1668 bytes | $039EAA-$03A52D
 ; ============================================================================
 GraphicsCleanup:
@@ -15289,7 +15289,7 @@ l_3a4c6:
     rts
 
 ; ============================================================================
-; LoadGraphicLine -- (TODO: name)
+; LoadGraphicLine -- Copies a row of graphic tiles from source VRAM buffer to the tile work area at $FFAA64; iterates over the tile count in the record
 ; 122 bytes | $03A52E-$03A5A7
 ; ============================================================================
 LoadGraphicLine:
@@ -15337,7 +15337,7 @@ l_3a59a:
     rts
 
 ; ============================================================================
-; ShowCharPortrait -- (TODO: describe)
+; ShowCharPortrait -- Renders a character portrait sprite to screen: loads portrait tiles from the char index, calls LoadGraphicLine for each row, then draws portrait and name panel at the given screen coords
 ; Called: 8 times.
 ; 504 bytes | $03A5A8-$03A79F
 ; ============================================================================
@@ -15501,7 +15501,7 @@ ShowCharPortrait:                                                  ; $03A5A8
     unlk    a6
     rts
 ; ============================================================================
-; LoadGameGraphics -- (TODO: describe)
+; LoadGameGraphics -- Loads and uploads all in-game character/route graphics to VRAM: decompresses portrait tiles (90 chars, 100 city tiles), uploads palette data and icon tilesets
 ; 310 bytes | $03A7A0-$03A8D5
 ; ============================================================================
 LoadGameGraphics:                                                  ; $03A7A0
@@ -15597,7 +15597,7 @@ LoadGameGraphics:                                                  ; $03A7A0
     movem.l (sp)+,d2/a2-a5
     rts
 ; ============================================================================
-; ResetGameState -- (TODO: describe)
+; ResetGameState -- Clears and initialises all key gameplay flags and cursor/window state variables to their default values before a new game screen
 ; 108 bytes | $03A8D6-$03A941
 ; ============================================================================
 ResetGameState:                                                  ; $03A8D6
@@ -15659,7 +15659,7 @@ SetTextWindow:
     movem.l (sp)+,d2-d5                                    ; $03A9A6
     rts                                                    ; $03A9AA
 ; ============================================================================
-; ClearTileArea -- (TODO: describe)
+; ClearTileArea -- Fills the entire background plane with blank (space) tiles by calling GameCommand with $001A (fill-plane)
 ; Called: ?? times.
 ; 36 bytes | $03A9AC-$03A9CF
 ; ============================================================================
@@ -15678,7 +15678,7 @@ ClearTileArea:                                                  ; $03A9AC
 ; 5 functions, 292 bytes
 
 ; ============================================================================
-; ParseDecimalDigit -- (TODO: name)
+; ParseDecimalDigit -- Reads consecutive ASCII decimal digit characters from a pointer, accumulates the value (base-10), and advances the pointer; returns the integer value in D0
 ; 50 bytes | $03A9D0-$03AA01
 ; ============================================================================
 ParseDecimalDigit:
@@ -15705,7 +15705,7 @@ l_3a9e6:
     rts
 
 ; ============================================================================
-; IntToDecimalStr -- (TODO: name)
+; IntToDecimalStr -- Recursively converts an unsigned 32-bit integer to a decimal ASCII string, writing digits to the buffer pointed to by the pointer argument
 ; 86 bytes | $03AA02-$03AA57
 ; ============================================================================
 IntToDecimalStr:
@@ -15744,7 +15744,7 @@ l_3aa52:
     rts
 
 ; ============================================================================
-; IntToHexStr -- (TODO: name)
+; IntToHexStr -- Recursively converts an unsigned 32-bit integer to a hexadecimal ASCII string ('0'-'9','A'-'F'), writing digits to the buffer pointer argument
 ; 88 bytes | $03AA58-$03AAAF
 ; ============================================================================
 IntToHexStr:
@@ -15789,7 +15789,7 @@ l_3aaaa:
     rts
 
 ; ============================================================================
-; AccumulateDigit -- (TODO: name)
+; AccumulateDigit -- Clamps two width values to the range 0–32 and stores them in win_right_dup ($FF1290) and win_right ($FF1000); used to set text column counters
 ; 54 bytes | $03AAB0-$03AAE5
 ; ============================================================================
 AccumulateDigit:
@@ -15818,7 +15818,7 @@ l_3aadc:
     rts
 
 ; ============================================================================
-; ClearTextBuffer -- (TODO: name)
+; ClearTextBuffer -- Resets the text column counters to zero by calling AccumulateDigit(0, 32)
 ; 14 bytes | $03AAE6-$03AAF3
 ; ============================================================================
 ClearTextBuffer:
@@ -15829,7 +15829,7 @@ ClearTextBuffer:
     rts
 
 ; ============================================================================
-; SetCursorY -- (TODO: describe)
+; SetCursorY -- Sets the current text cursor Y position (row) in $FFBDA6
 ; Called: ?? times.
 ; 10 bytes | $03AAF4-$03AAFD
 ; ============================================================================
@@ -15837,7 +15837,7 @@ SetCursorY:                                                  ; $03AAF4
     move.w  $0006(sp),($00FFBDA6).l
     rts
 ; ============================================================================
-; SetCursorX -- (TODO: describe)
+; SetCursorX -- Sets the current text cursor X position (column) in $FF128A
 ; Called: ?? times.
 ; 10 bytes | $03AAFE-$03AB07
 ; ============================================================================
@@ -15848,7 +15848,7 @@ SetCursorX:                                                  ; $03AAFE
 ; 1 functions, 36 bytes
 
 ; ============================================================================
-; SetTextCursorXY -- (TODO: name)
+; SetTextCursorXY -- Sets text cursor to (X, Y) by calling SetCursorX then SetCursorY with the two parameters
 ; 36 bytes | $03AB08-$03AB2B
 ; ============================================================================
 SetTextCursorXY:
@@ -15887,7 +15887,7 @@ SetTextCursor:
 ; 4 functions, 396 bytes
 
 ; ============================================================================
-; CountFormatChars -- (TODO: name)
+; CountFormatChars -- Counts printable (non-escape-sequence) characters in a formatted string, skipping ESC control sequences; returns character count in D0
 ; 86 bytes | $03AB50-$03ABA5
 ; ============================================================================
 CountFormatChars:
@@ -15940,7 +15940,7 @@ l_3ab9c:
     rts
 
 ; ============================================================================
-; RenderTextLine -- (TODO: name)
+; RenderTextLine -- Flushes the current text line buffer to the VDP via GameCommand $1B; advances the cursor Y and resets X for the next line
 ; 172 bytes | $03ABA6-$03AC51
 ; ============================================================================
 RenderTextLine:
@@ -16005,7 +16005,7 @@ l_3ac38:
     rts
 
 ; ============================================================================
-; SkipControlChars -- (TODO: name)
+; SkipControlChars -- Scans a string pointer counting printable characters while advancing past ESC control sequences (=, R, E, P, G, W, M codes); returns printable count in D0
 ; 96 bytes | $03AC52-$03ACB1
 ; ============================================================================
 SkipControlChars:
@@ -16060,7 +16060,7 @@ l_3acac:
     rts
 
 ; ============================================================================
-; FindCharInSet -- (TODO: name)
+; FindCharInSet -- Looks up a byte value in the table at $048978; returns 1 if found, 0 if not found
 ; 42 bytes | $03ACB2-$03ACDB
 ; ============================================================================
 FindCharInSet:
@@ -16392,7 +16392,7 @@ RenderTextBlock:                                                  ; $03ACDC
 ; 2 functions, 570 bytes
 
 ; ============================================================================
-; Vsprintf -- (TODO: name)
+; Vsprintf -- C-style vsprintf implementation: formats a string into a buffer using a format string and va_list; supports %d, %u, %x, %s, %c, %w, width/precision, left-align, zero-pad, $ currency
 ; 538 bytes | $03AFF2-$03B20B
 ; ============================================================================
 Vsprintf:
@@ -16634,7 +16634,7 @@ l_3b202:
     rts
 
 ; ============================================================================
-; PrintfDirect -- (TODO: name)
+; PrintfDirect -- Formats a string via Vsprintf into a local 152-byte buffer, then renders the result to screen via RenderTextBlock
 ; 32 bytes | $03B20C-$03B22B
 ; ============================================================================
 PrintfDirect:
@@ -16700,7 +16700,7 @@ PrintfWide:
 ; 19 functions, 6298 bytes
 
 ; ============================================================================
-; InitTextColors -- (TODO: name)
+; InitTextColors -- Initialises the text color palette entries in RAM and uploads two CRAM palette rows (normal and inverted) to the VDP via GameCommand $05/$08
 ; 164 bytes | $03B29C-$03B33F
 ; ============================================================================
 InitTextColors:
@@ -16750,7 +16750,7 @@ InitTextColors:
     rts
 
 ; ============================================================================
-; ClearSoundBuffer -- (TODO: name)
+; ClearSoundBuffer -- Stops sound playback (GameCommand $0D), reloads the VDP tile font from ROM, and re-enables display (GameCommand $0C)
 ; 42 bytes | $03B340-$03B369
 ; ============================================================================
 ClearSoundBuffer:
@@ -16765,7 +16765,7 @@ ClearSoundBuffer:
     rts
 
 ; ============================================================================
-; DelayFrames -- (TODO: name)
+; DelayFrames -- Busy-waits for N video frames by calling GameCommand $0E (wait-frame) in a countdown loop; returns 0
 ; 36 bytes | $03B36A-$03B38D
 ; ============================================================================
 DelayFrames:
@@ -16786,7 +16786,7 @@ l_3b388:
     rts
 
 ; ============================================================================
-; FadeOutAndWait -- (TODO: name)
+; FadeOutAndWait -- Steps palette brightness from 7 down to 0 (fade out) calling FadePalette + DelayFrames per step; returns 1 if interrupted by input
 ; 76 bytes | $03B38E-$03B3D9
 ; ============================================================================
 FadeOutAndWait:
@@ -16823,7 +16823,7 @@ l_3b3d4:
     rts
 
 ; ============================================================================
-; FadeInAndWait -- (TODO: name)
+; FadeInAndWait -- Steps palette brightness from 0 up to 7 (fade in) calling FadePalette + DelayFrames per step; returns 1 if interrupted by input
 ; 78 bytes | $03B3DA-$03B427
 ; ============================================================================
 FadeInAndWait:
@@ -16860,7 +16860,7 @@ l_3b422:
     rts
 
 ; ============================================================================
-; GameSetup1 -- (TODO: name)
+; GameSetup1 -- Plays the company-name intro sequence (or intro replay path): clears screen, loads fonts, displays company banners with fade-in/out; also handles the title-screen attract loop waiting for Start
 ; 1222 bytes | $03B428-$03B8ED
 ; ============================================================================
 GameSetup1:
@@ -17244,7 +17244,7 @@ l_3b8e4:
     rts
 
 ; ============================================================================
-; CalcScreenCoord -- (TODO: name)
+; CalcScreenCoord -- Computes a weighted blend coordinate: given two points and a denominator, returns (a*x + b*y) / (a+b) using Multiply32 and UnsignedDivide
 ; 82 bytes | $03B8EE-$03B93F
 ; ============================================================================
 CalcScreenCoord:
@@ -17281,7 +17281,7 @@ l_3b93a:
     rts
 
 ; ============================================================================
-; WaitForStartButton -- (TODO: name)
+; WaitForStartButton -- Polls controller input for up to N frames; returns 1 and sets $FFA78E if Start is pressed, 0 if the frame count expires
 ; 84 bytes | $03B940-$03B993
 ; ============================================================================
 WaitForStartButton:
@@ -17316,7 +17316,7 @@ l_3b98e:
     rts
 
 ; ============================================================================
-; DelayWithInputCheck -- (TODO: name)
+; DelayWithInputCheck -- Delays N frames while checking for Start button; sets $FFA78E=1 if Start seen during the wait; returns $FFA78E value
 ; 64 bytes | $03B994-$03B9D3
 ; ============================================================================
 DelayWithInputCheck:
@@ -17343,7 +17343,7 @@ l_3b9c6:
     rts
 
 ; ============================================================================
-; RenderColorTileset -- (TODO: name)
+; RenderColorTileset -- Animates a palette-cycle effect over 8 steps: each step incrementally fades each color component toward the target palette and calls DisplaySetup; optionally delays between steps
 ; 360 bytes | $03B9D4-$03BB3B
 ; ============================================================================
 RenderColorTileset:
@@ -17496,7 +17496,7 @@ l_3bb24:
     rts
 
 ; ============================================================================
-; UpdateScrollRegisters -- (TODO: name)
+; UpdateScrollRegisters -- Updates the VDP horizontal and vertical scroll registers for planes A and B based on the given scroll offsets (clamped to tile dimensions), then uploads new CRAM palette row
 ; 250 bytes | $03BB3C-$03BC35
 ; ============================================================================
 UpdateScrollRegisters:
@@ -17581,7 +17581,7 @@ l_3bbbe:
     rts
 
 ; ============================================================================
-; InitGameScreen -- (TODO: name)
+; InitGameScreen -- Loads game graphics, resets state, initialises tile buffer and text window, then renders all 20 text blocks of the scenario intro narrative with pause prompts between sections
 ; 232 bytes | $03BC36-$03BD1D
 ; ============================================================================
 InitGameScreen:
@@ -17651,7 +17651,7 @@ l_3bd12:
     rts
 
 ; ============================================================================
-; PlayIntroSequence -- (TODO: name)
+; PlayIntroSequence -- Loads resources, configures scroll bars and clears the screen to set up the intro animation environment before RunIntroLoop
 ; 52 bytes | $03BD1E-$03BD51
 ; ============================================================================
 PlayIntroSequence:
@@ -17671,7 +17671,7 @@ PlayIntroSequence:
     rts
 
 ; ============================================================================
-; RunIntroLoop -- (TODO: name)
+; RunIntroLoop -- Runs the full intro/demo sequence: displays 5 scenario preview screens, animates a globe flyby with CalcScreenCoord, then shows the opening animation; exits on Start or after full playback
 ; 1064 bytes | $03BD52-$03C179
 ; ============================================================================
 RunIntroLoop:
@@ -17990,7 +17990,7 @@ l_3c170:
     rts
 
 ; ============================================================================
-; ShowGameOverScreen -- (TODO: name)
+; ShowGameOverScreen -- Clears screen, loads game-over graphics, resets scroll registers, and clears the display; called when all players are bankrupt
 ; 62 bytes | $03C17A-$03C1B7
 ; ============================================================================
 ShowGameOverScreen:
@@ -18012,7 +18012,7 @@ ShowGameOverScreen:
     rts
 
 ; ============================================================================
-; LoadMapGraphics -- (TODO: name)
+; LoadMapGraphics -- Loads and renders the full world-map sequence: decompresses route/city LZ tiles, tiles them to VRAM in chunks, animates a scrolling preview, and loops through all map regions before returning
 ; 1252 bytes | $03C1B8-$03C69B
 ; ============================================================================
 LoadMapGraphics:
@@ -18418,7 +18418,7 @@ l_3c692:
     rts
 
 ; ============================================================================
-; RenderEndingCredits -- (TODO: name)
+; RenderEndingCredits -- Renders the game ending/credits screen: decompresses staff-roll graphics, animates horizontal scroll oscillation, and displays multiple credit text blocks before returning
 ; 678 bytes | $03C69C-$03C941
 ; ============================================================================
 RenderEndingCredits:
@@ -18633,7 +18633,7 @@ l_3c8ea:
     rts
 
 ; ============================================================================
-; RenderMainMenu -- (TODO: name)
+; RenderMainMenu -- Renders the main title-screen menu: loads title graphics, displays menu option text blocks, and calls WaitForStartButton for the menu selection
 ; 268 bytes | $03C942-$03CA4D
 ; ============================================================================
 RenderMainMenu:
@@ -18703,7 +18703,7 @@ RenderMainMenu:
     rts
 
 ; ============================================================================
-; GameSetup2 -- (TODO: name)
+; GameSetup2 -- Top-level new-game setup loop: plays the intro (RunIntroLoop or LoadMapGraphics), shows ending credits or main menu based on outcome, then waits for Start button and initialises display mode
 ; 232 bytes | $03CA4E-$03CB35
 ; ============================================================================
 GameSetup2:
@@ -18788,7 +18788,7 @@ l_3cb02:
     rts
 
 ; ============================================================================
-; ShowPlayerScreen -- (TODO: describe)
+; ShowPlayerScreen -- Displays the appropriate player status screen based on player index (0-3) and airline type; routes to RenderDetailedStats, ShowAlternatePlayerView, or RenderPlayerListUI
 ; Called: ?? times.
 ; 182 bytes | $03CB36-$03CBEB
 ; ============================================================================
@@ -18857,7 +18857,7 @@ ShowPlayerScreen:                                                  ; $03CB36
 ; 12 functions, 5230 bytes
 
 ; ============================================================================
-; InitStatusScreenGfx -- (TODO: name)
+; InitStatusScreenGfx -- Loads and uploads all status-screen background graphics to VRAM: decompresses character stat tiles, city icons, and panel tilesets; sets up scroll quadrant and clears planes
 ; 448 bytes | $03CBEC-$03CDAB
 ; ============================================================================
 InitStatusScreenGfx:
@@ -18992,7 +18992,7 @@ InitStatusScreenGfx:
     rts
 
 ; ============================================================================
-; RenderRouteStatus -- (TODO: name)
+; RenderRouteStatus -- Draws the animated route status display: scrolls route-line sprites across the screen from right-to-left, then draws three route arc overlays and updates VRAM write positions
 ; 292 bytes | $03CDAC-$03CECF
 ; ============================================================================
 RenderRouteStatus:
@@ -19093,7 +19093,7 @@ l_3ce98:
     rts
 
 ; ============================================================================
-; RenderCharStats -- (TODO: name)
+; RenderCharStats -- Renders the character statistics panel: uploads four stat-icon tiles, draws stat bars for each of four stat categories, and displays numeric values via GameCommand $0F/$0E
 ; 496 bytes | $03CED0-$03D0BF
 ; ============================================================================
 RenderCharStats:
@@ -19252,7 +19252,7 @@ l_3d066:
     rts
 
 ; ============================================================================
-; SetVRAMWriteAddr -- (TODO: name)
+; SetVRAMWriteAddr -- Sets up the VRAM write-address registers in the shadow buffer at $FF5804 (offset words $4/$6) and issues GameCommand $08/$05 to upload the address to the VDP
 ; 126 bytes | $03D0C0-$03D13D
 ; ============================================================================
 SetVRAMWriteAddr:
@@ -19296,7 +19296,7 @@ l_3d0f4:
     rts
 
 ; ============================================================================
-; SetVRAMReadAddr -- (TODO: name)
+; SetVRAMReadAddr -- Sets up the VRAM read-address registers in the shadow buffer at $FF5804 (offset words $0/$2) and issues GameCommand $08/$05 to prepare the VDP for a read operation
 ; 124 bytes | $03D13E-$03D1B9
 ; ============================================================================
 SetVRAMReadAddr:
@@ -19340,7 +19340,7 @@ l_3d170:
     rts
 
 ; ============================================================================
-; FillRectColor -- (TODO: name)
+; FillRectColor -- Fills a rectangular area of the background plane with solid color tiles using DisplaySetup and GameCommand $1A; takes width and height in tile units
 ; 190 bytes | $03D1BA-$03D277
 ; ============================================================================
 FillRectColor:
@@ -19402,7 +19402,7 @@ l_3d26e:
     rts
 
 ; ============================================================================
-; RenderPlayerStatusUI -- (TODO: name)
+; RenderPlayerStatusUI -- Loads and uploads the complete player-status panel graphics: background frames, stat bar icons, name/profit tilesets, and aircraft icon tiles to VRAM
 ; 476 bytes | $03D278-$03D453
 ; ============================================================================
 RenderPlayerStatusUI:
@@ -19540,7 +19540,7 @@ RenderPlayerStatusUI:
     rts
 
 ; ============================================================================
-; RenderDetailedStats -- (TODO: name)
+; RenderDetailedStats -- Renders the full detailed player-stats screen: calls RenderPlayerStatusUI, then draws per-stat bar rows with VRAM read addresses, aircraft icons, and city performance data; ends with ShowPlayerDetailScreen
 ; 1216 bytes | $03D454-$03D913
 ; ============================================================================
 RenderDetailedStats:
@@ -19954,7 +19954,7 @@ l_3d8de:
     rts
 
 ; ============================================================================
-; InitCursorPalette -- (TODO: name)
+; InitCursorPalette -- Fills the cursor CRAM area at $FF159C with 64 white ($EEE) entries and uploads them to VDP palette via GameCommand $08/$0E
 ; 80 bytes | $03D914-$03D963
 ; ============================================================================
 InitCursorPalette:
@@ -19982,7 +19982,7 @@ l_3d920:
     rts
 
 ; ============================================================================
-; ShowPlayerDetailScreen -- (TODO: name)
+; ShowPlayerDetailScreen -- Renders the scrolling player detail screen: decompresses and places tiles, builds 17-row info text (game year, player data from $FF00A8) via sprintf + PrintfWide, and animates VRAM write positions
 ; 640 bytes | $03D964-$03DBE3
 ; ============================================================================
 ShowPlayerDetailScreen:
@@ -20177,7 +20177,7 @@ l_3db2c:
     rts
 
 ; ============================================================================
-; ShowAlternatePlayerView -- (TODO: name)
+; ShowAlternatePlayerView -- Renders the alternate player info screen: loads background tiles, builds a 17-row info panel with competitor data (names, owned cities, aircraft) via sprintf + PrintfWide, then cleans up
 ; 746 bytes | $03DBE4-$03DECD
 ; ============================================================================
 ShowAlternatePlayerView:
@@ -20416,7 +20416,7 @@ l_3deaa:
     rts
 
 ; ============================================================================
-; RenderPlayerListUI -- (TODO: name)
+; RenderPlayerListUI -- Renders the 13-row player rankings/list screen: loads panel graphics, decompresses LZ background, builds each row via PrintfWide from the player name table at $0658D2
 ; 396 bytes | $03DECE-$03E059
 ; ============================================================================
 RenderPlayerListUI:

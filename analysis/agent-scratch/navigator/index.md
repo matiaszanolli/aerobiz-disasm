@@ -23,6 +23,7 @@ The Navigator's complete knowledge base. Updated after each session.
 | ROM map | analysis/ROM_MAP.md | ROM section layout (code/data/padding) |
 | RAM map | analysis/RAM_MAP.md | Work RAM variables, structs, save-state layout (50+ entries) |
 | Data structures | analysis/DATA_STRUCTURES.md | Player record, route slot, char stat record field layouts + auxiliary tables |
+| ROM data tables | analysis/DATA_TABLES.md | All ROM data tables: string pools, ptr tables, char data, compat tables, city/route/region/aircraft tables |
 
 ---
 
@@ -82,6 +83,7 @@ The Navigator's complete knowledge base. Updated after each session.
 - B-044 Game data structs: DONE (2026-02-25) -- DATA_STRUCTURES.md created
 - B-045 Resolve char_stat_array/char_stat_tab overlap: DONE (2026-02-25) -- 89=stat_type/city count, not char_index; 4 players × 57B = 228B, no overlap
 - Key RAM facts: player_records=$FF0018 (4×36B), char_stat_array=$FF05C4 (4×57B=228B), route_slots=$FF9A20 (4×40×20B), save_buf=$FF1804
+- B-059 ROM data tables survey: DONE (2026-02-26) -- DATA_TABLES.md created; labels added to section_040000+section_050000; 50+ tables documented
 
 ### Data Structure Key Facts (from DATA_STRUCTURES.md)
 - **Player record** ($FF0018, stride $24=36B, 4 players): active_flag+$00, hub_city+$01, domestic_slots+$04, intl_slots+$05, cash+$06(long), quarter_accum_a/b/c+$0A/+$0E/+$12(long), prev_quarter copies+$16/+$1A/+$1E, approval+$22(byte)
@@ -200,7 +202,11 @@ The Navigator's complete knowledge base. Updated after each session.
 | Controller I/O | docs/genesis-software-development-manual.md | docs/sega-genesis-reference-sheets.md |
 | Function reference | analysis/FUNCTION_REFERENCE.md | -- |
 | String tables / text | analysis/ROM_MAP.md / Game Strings | -- |
-| City name data | analysis/ROM_MAP.md (search: city) | -- |
+| City name data | analysis/DATA_TABLES.md / CityNamePtrs | -- |
+| ROM data tables / string pools | analysis/DATA_TABLES.md | -- |
+| Character compat tables | analysis/DATA_TABLES.md / Compatibility Score Tables | -- |
+| Aircraft stat tables | analysis/DATA_TABLES.md / AircraftStatsByRegion | -- |
+| Region tables | analysis/DATA_TABLES.md / Region and Aircraft Tables | -- |
 | Work RAM variables | analysis/RAM_MAP.md | -- |
 | Player / char / route structs | analysis/RAM_MAP.md / Regions | -- |
 | Save state layout | analysis/RAM_MAP.md / PackSaveState | -- |

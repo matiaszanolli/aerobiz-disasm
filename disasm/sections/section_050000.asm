@@ -3622,24 +3622,38 @@
     dc.w    $1110,$0000,$0000,$0000,$0000,$0000,$0000,$0000; $05E200
     dc.w    $0000,$0000,$0000,$0000,$0000,$0000,$0000,$0000; $05E210
     dc.w    $0000,$0000,$0000,$0000,$0000,$0000,$0000,$0000; $05E220
+; ============================================================================
+; CharPlacementData -- Character portrait animation placement structs (14 bytes × 7 entries)
+; 7 entries × 14 bytes | $05E234-$05E295 (starts at word[2] of $05E230 line)
+; Fields: [4 bytes sprite_offset] [2 bytes x_disp] [2 bytes y_disp] ... animation coords
+; Accessed by CharPortraitAnimate via mulu.w #$e, d0 for index*14
+; ============================================================================
     dc.w    $0000,$0000,$0000,$B890,$FA78,$FA28,$FA90,$0046; $05E230
     dc.w    $0090,$8800,$0000,$FA00,$FA30,$FA78,$0010,$0058; $05E240
     dc.w    $0000,$0040,$0000,$FA28,$FA90,$FA00,$0078,$0000; $05E250
     dc.w    $0078,$0040,$0000,$A090,$FA18,$FA78,$0000,$0050; $05E260
     dc.w    $0028,$6800,$0000,$FA00,$FA60,$FA38,$FA90,$FA70; $05E270
     dc.w    $0030,$0090,$0000,$A090,$C800,$FA48,$FA38,$0030; $05E280
+; --- NameStringPoolPtrs at $05E296: longword ptr table into NameStringPool ($04xxxx) ---
+; --- (starts at word[3] of $05E290 line; CharPlacementData ends at $05E295) ---
     dc.w    $0090,$4000,$0000,$0004,$55FE,$0004,$55EE,$0004; $05E290
     dc.w    $55DE,$0004,$56CA,$0004,$56C2,$0004,$56B4,$0004; $05E2A0
     dc.w    $56A8,$0004,$569A,$0004,$568E,$0004,$5680,$0004; $05E2B0
     dc.w    $5670,$0004,$5664,$0004,$5658,$0004,$5648,$0004; $05E2C0
     dc.w    $5642,$0004,$5630,$0004,$561E,$0004,$5610,$0004; $05E2D0
+; --- AircraftTypePtrs at $05E2DE: longword ptr table to AircraftModels strings ---
+; --- (starts at word[7] of $05E2D0 line; NameStringPoolPtrs ends at $05E2DD) ---
     dc.w    $575A,$0004,$5752,$0004,$574A,$0004,$5740,$0004; $05E2E0
     dc.w    $5736,$0004,$572C,$0004,$5722,$0004,$5718,$0004; $05E2F0
     dc.w    $570E,$0004,$5704,$0004,$56FC,$0004,$56F6,$0004; $05E300
+; --- CharWeightTable at $05E31A: byte-pair weight factors (starts at word[5] of $05E310 line) ---
+; --- AircraftTypePtrs ends at $05E319; last ptr = $0004_56D8 at $05E316/$05E318 ---
     dc.w    $56EC,$0004,$56E2,$0004,$56D8,$0101,$0F00,$0201; $05E310
     dc.w    $1E00,$0402,$2D00,$0201,$0A01,$0402,$1401,$0803; $05E320
     dc.w    $1E01,$0501,$3202,$1404,$5A02,$1004,$4602,$0C03; $05E330
     dc.w    $3C02,$0402,$1E03,$0A02,$2803,$1003,$4603,$0601; $05E340
+; --- CharRangeScoreTable at $05E356: range→score byte lookup (starts at word[3] of $05E350 line) ---
+; --- CharWeightTable ends at $05E355 ---
     dc.w    $3203,$0502,$0004,$0306,$0404,$0404,$0E0B,$090D; $05E350
     dc.w    $0909,$0406,$0C19,$1914,$1518,$1023,$201D,$2115; $05E360
     dc.w    $1D1D,$120F,$0F12,$0611,$1D15,$2C2A,$2628,$2223; $05E370
@@ -3671,6 +3685,12 @@
     dc.w    $665A,$7A73,$90BA,$B0B8,$B4A0,$A4B8,$8788,$724C; $05E510
     dc.w    $4D54,$6353,$4C6E,$4A4B,$4E51,$4E57,$5460,$6C57; $05E520
     dc.w    $7774,$8B79,$807E,$93AC,$9F97,$93B4,$7413,$1616; $05E530
+; ============================================================================
+; CharCompat_Cat0 -- Character compatibility score table, category 0 (mask $11)
+; Byte pairs [score_A, score_B] per char-pair combination | $05E546-$05E5BD
+; CharRangeScoreTable ($05E356-$05E545) precedes this; ends at word[2] of $05E540 line
+; Used by CharCodeCompare dispatch index 0; $FF byte terminates table
+; ============================================================================
     dc.w    $2512,$0C2E,$1241,$030A,$0903,$0A09,$1808,$0D0B; $05E540
     dc.w    $120E,$0B0C,$1D15,$1306,$0707,$0306,$0A15,$050B; $05E550
     dc.w    $0813,$0F0D,$0A1C,$1412,$0807,$0303,$0507,$1203; $05E560
@@ -3678,19 +3698,47 @@
     dc.w    $060F,$0C0F,$0B09,$0A1A,$110F,$1105,$070C,$050F; $05E580
     dc.w    $0B07,$0E09,$1613,$1407,$1610,$110A,$0B05,$0608; $05E590
     dc.w    $0312,$0713,$0F0B,$0809,$0514,$0C09,$191A,$1416; $05E5A0
+; --- CharCompat_Cat1 at $05E5BE: compatibility scores, category 1 (mask $05) ---
+; --- (starts at word[7] of $05E5B0 line; CharCompat_Cat0 ends at $05E5BD with $FF) ---
     dc.w    $1710,$1616,$221E,$090C,$1011,$0A08,$07FF,$1D24; $05E5B0
+; --- CharCompat_Cat2 at $05E5C8: compatibility scores, category 2 (mask $05) ---
+; --- (starts at word[4] of $05E5C0 line; CharCompat_Cat1 ends at $05E5C7) ---
     dc.w    $2419,$1109,$2234,$2B05,$1413,$271C,$101A,$182D; $05E5C0
+; --- CharCompat_Cat3 at $05E5D8: compatibility scores, category 3 (mask $0A) ---
+; --- (starts at word[4] of $05E5D0 line; CharCompat_Cat2 ends at $05E5D7) ---
     dc.w    $2017,$070B,$0D0B,$10FF,$0408,$0912,$1536,$2018; $05E5D0
     dc.w    $160D,$1215,$0E0B,$112C,$2226,$2511,$080D,$0509; $05E5E0
     dc.w    $0F2E,$1E1E,$1D0C,$1922,$150C,$0819,$111F,$2022; $05E5F0
+; --- CharCompat_Cat4 at $05E61E: compatibility scores, category 4 (mask $06) ---
+; --- (starts at word[7] of $05E610 line; CharCompat_Cat3 ends at $05E61D) ---
     dc.w    $313B,$2D26,$2003,$182D,$2E3B,$2A32,$251D,$190C; $05E600
     dc.w    $1A2D,$2E31,$1A25,$1712,$0B19,$0617,$1826,$0608; $05E610
     dc.w    $0C1F,$133D,$241B,$153F,$325E,$2024,$2B16,$1920; $05E620
+; ============================================================================
+; CharCompat_Cat5 -- Character compatibility score table, category 5 (mask $09)
+; Byte-pairs per char-pair combination | $05E630-$05E66F
+; CharCompat_Cat4 ends at $05E62F; used by CharCodeCompare dispatch index 5
+; ============================================================================
+CharCompat_Cat5:                                        ; $05E630
     dc.w    $2726,$1820,$0214,$0F06,$4E29,$271A,$2201,$1712; $05E630
     dc.w    $0550,$1E1C,$0F17,$0B0F,$1307,$4506,$0F0D,$0626; $05E640
     dc.w    $1625,$2329,$181B,$0A0E,$1504,$1213,$3D22,$2313; $05E650
     dc.w    $190B,$0B0A,$0C48,$0D02,$1214,$2720,$2D21,$2BFF; $05E660
+; ============================================================================
+; CharCompat_Cat6 -- Character compatibility score table, category 6
+; Byte-pairs per char-pair combination | $05E670-$05E67F
+; CharCompat_Cat5 ends at $05E66F ($FF terminator at $05E66F); used by CharCodeCompare dispatch index 6
+; ============================================================================
+CharCompat_Cat6:                                        ; $05E670
     dc.w    $4D17,$264A,$4204,$3926,$111A,$4308,$2245,$40FF; $05E670
+; ============================================================================
+; CityNamePtrs -- City name string pointer table (~89 entries × 4 bytes)
+; ~178 longword pointers | $05E680-$05E947
+; Pointers into CityNames ($045764), CountryNames ($045F26), and AirlineNames ($045D5A)
+; Access: lsl.w #2, d0 → (CityNamePtrs, d0.w) for sprintf/display
+; Used 68+ times in code for city name lookup by index
+; ============================================================================
+CityNamePtrs:                                           ; $05E680
     dc.w    $0004,$5A68,$0004,$5A62,$0004,$5A58,$0004,$5A4E; $05E680
     dc.w    $0004,$5A48,$0004,$5A40,$0004,$5A38,$0004,$5A32; $05E690
     dc.w    $0004,$5A2C,$0004,$5A24,$0004,$5A1C,$0004,$5A12; $05E6A0
@@ -3713,6 +3761,8 @@
     dc.w    $0004,$57DA,$0004,$57D2,$0004,$57CA,$0004,$57BC; $05E7B0
     dc.w    $0004,$57B4,$0004,$57AE,$0004,$57A6,$0004,$579C; $05E7C0
     dc.w    $0004,$578C,$0004,$5782,$0004,$577C,$0004,$576E; $05E7D0
+; --- CharTypePtrs at $05E7E4: secondary char-type name ptrs (starts at word[2] of $05E7E0 line) ---
+; --- within CityNamePtrs block; entries point to AirlineNames ($045Dxx) region ---
     dc.w    $0004,$5764,$0004,$5D4C,$0004,$5D46,$0004,$5D3C; $05E7E0
     dc.w    $0004,$5D32,$0004,$5D2C,$0004,$5D24,$0004,$5D1C; $05E7F0
     dc.w    $0004,$5D16,$0004,$5D10,$0004,$5D08,$0004,$5D00; $05E800
@@ -3735,6 +3785,12 @@
     dc.w    $0004,$5AD8,$0004,$5AD0,$0004,$5AC8,$0004,$5AC0; $05E910
     dc.w    $0004,$5AB8,$0004,$5AB0,$0004,$5AAA,$0004,$5AA2; $05E920
     dc.w    $0004,$5A98,$0004,$5A94,$0004,$5A8A,$0004,$5A84; $05E930
+; ============================================================================
+; CharPortraitPos -- Character portrait screen position table (word pairs: x,y)
+; ~89 entries × 2 words | $05E948-$05E9F9 (starts at word[4] of $05E940 line)
+; CityNamePtrs ends at $05E947; last entries = $0004,$5A7A,$0004,$5A70
+; Each entry: word[0]=x_screen, word[1]=y_screen for TilePlacement call
+; ============================================================================
     dc.w    $0004,$5A7A,$0004,$5A70,$2130,$2336,$2A35,$2733; $05E940
     dc.w    $2E40,$2D32,$3C2E,$394C,$2A45,$4742,$4246,$534D; $05E950
     dc.w    $7645,$653D,$6D40,$654D,$655B,$5F51,$7052,$8380; $05E960
@@ -3746,6 +3802,8 @@
     dc.w    $773E,$6E46,$6946,$6C4D,$625A,$7255,$7A54,$7B52; $05E9C0
     dc.w    $6F39,$8578,$7E84,$7A82,$956A,$8E70,$A26A,$AC3C; $05E9D0
     dc.w    $AB35,$B53A,$B23F,$C83A,$BE41,$C844,$C735,$9A43; $05E9E0
+; --- CharRangeScoreMap at $05E9FA: 2D word table indexed by char_code×2 (starts word[5] of $05E9F0 line) ---
+; --- CharPortraitPos ends at $05E9F9 ---
     dc.w    $E863,$CB4B,$CB60,$DC6F,$D16F,$5028,$523E,$6A36; $05E9F0
     dc.w    $6424,$8676,$7E2A,$C81E,$AA2C,$6C14,$5020,$343A; $05EA00
     dc.w    $AC5A,$A02C,$4A1C,$7220,$5050,$3080,$225A,$5A64; $05EA10
@@ -3757,6 +3815,12 @@
     dc.w    $902E,$A414,$7C30,$5C36,$6444,$247A,$666E,$C450; $05EA70
     dc.w    $D440,$8A08,$A650,$887C,$7274,$DE1E,$C22C,$E244; $05EA80
     dc.w    $0C3E,$1220,$5644,$3A5A,$D046,$8A70,$BC80,$BE32; $05EA90
+; ============================================================================
+; CharBioPtrs -- Character biography/name string pointer table (longword ptrs × ~32 entries)
+; ~32 entries × 4 bytes | $05EAAC-$05EB2B (starts at word[6] of $05EAA0 line)
+; CharRangeScoreMap ends at $05EAAB; pointers into $045Exx (CountryNames/bio strings)
+; Indexed by char_code via InitializeRouteDisplay and related functions
+; ============================================================================
     dc.w    $0E82,$CA66,$5C18,$545A,$A27E,$6C7E,$0004,$5E44; $05EAA0
     dc.w    $0004,$5E3C,$0004,$5E34,$0004,$5E2C,$0004,$5E24; $05EAB0
     dc.w    $0004,$5E1C,$0004,$5E14,$0004,$5E0C,$0004,$5E04; $05EAC0
@@ -3765,6 +3829,12 @@
     dc.w    $0004,$5DBC,$0004,$5DB4,$0004,$5DAC,$0004,$5DA6; $05EAF0
     dc.w    $0004,$5D9E,$0004,$5D96,$0004,$5D8E,$0004,$5D88; $05EB00
     dc.w    $0004,$5D80,$0004,$5D78,$0004,$5D72,$0004,$5D6A; $05EB10
+; ============================================================================
+; CountryRoutePtrs -- Country/route type string pointer table (longword ptrs)
+; Entries | $05EB2C-$05EC0F (starts at word[6] of $05EB20 line)
+; CharBioPtrs ends at $05EB2B; pointers into $04603x-$04608x region name strings
+; Indexed by char's route type byte; used by InitializeRouteDisplay
+; ============================================================================
     dc.w    $0004,$5D62,$0004,$5D5A,$0004,$5D54,$0004,$6036; $05EB20
     dc.w    $0004,$602E,$0004,$6026,$0004,$6018,$0004,$600A; $05EB30
     dc.w    $0004,$6002,$0004,$5FFA,$0004,$5FF4,$0004,$5FEC; $05EB40
@@ -3780,6 +3850,13 @@
     dc.w    $0004,$5EAC,$0004,$5E9E,$0004,$5E96,$0004,$5E88; $05EBE0
     dc.w    $0004,$5E80,$0004,$5E78,$0004,$5E70,$0004,$5E6A; $05EBF0
     dc.w    $0004,$5E62,$0004,$5E5C,$0004,$5E52,$0004,$5E4C; $05EC00
+; ============================================================================
+; RouteCodeMap -- City route adjacency byte matrix with $FF terminators
+; Variable-length byte rows per route origin | $05EC10-$05EC83
+; CountryRoutePtrs ends at $05EC0F; rows: city_indices terminated by $FF
+; Accessed via offset within row to find reachable destination cities
+; ============================================================================
+RouteCodeMap:                                           ; $05EC10
     dc.w    $0100,$0100,$0301,$0101,$0103,$0202,$0202,$0101; $05EC10
     dc.w    $0401,$0404,$0104,$0404,$0404,$0401,$0404,$0202; $05EC20
     dc.w    $0204,$0002,$0101,$0101,$0101,$0100,$0001,$0101; $05EC30
@@ -3787,13 +3864,40 @@
     dc.w    $0305,$0933,$0E10,$0F1D,$0406,$0708,$0A0B,$0C0D; $05EC50
     dc.w    $1112,$1314,$1516,$1718,$191A,$1C1B,$1E1F,$2022; $05EC60
     dc.w    $2324,$3221,$2526,$2731,$0101,$2829,$2A2E,$2B2C; $05EC70
+; ============================================================================
+; RegionNamePtrs -- Region name string pointer table (14 entries × 4 bytes)
+; 14 longword ptrs | $05EC84-$05ECBB (starts at word[2] of $05EC80 line)
+; RouteCodeMap ends at $05EC83 ($FF terminator); ptrs into $04606x region name strings
+; Used by SubmitTurnResults to display current player region
+; ============================================================================
     dc.w    $2D2F,$30FF,$0004,$6086,$0004,$607E,$0004,$606E; $05EC80
     dc.w    $0004,$605E,$0004,$6056,$0004,$6048,$0004,$603A; $05EC90
     dc.w    $0004,$60C8,$0004,$60C0,$0004,$60B6,$0004,$60AE; $05ECA0
+; ============================================================================
+; CharTypeRangeTable -- Character type range boundary descriptors (7 entries × 4 bytes)
+; 7 entries × 4 bytes | $05ECBC-$05ECDB (starts at word[6] of $05ECB0 line)
+; RegionNamePtrs ends at $05ECBB; struct: [range1_base, range1_size, range2_base, range2_size]
+; Used by RangeLookup (searches for threshold match, returns category 0-7)
+; Used by BitFieldSearch (byte[0]=start_bit, byte[1]=bit_count)
+; ============================================================================
     dc.w    $0004,$60A6,$0004,$609A,$0004,$608E,$0007,$2011; $05ECB0
     dc.w    $0702,$3105,$0903,$3605,$0C07,$3B0A,$1303,$4506; $05ECC0
+; ============================================================================
+; RegionBitmaskTable -- Region longword bitmask table (7 entries × 4 bytes)
+; 7 entries × 4 bytes | $05ECDC-$05ECF7 (starts at word[6] of $05ECD0 line)
+; CharTypeRangeTable ends at $05ECDB; each longword = bitmask for that region
+; Accessed via: and.l (a0,d0.w), d4 where d0 = region_index
+; ============================================================================
     dc.w    $1607,$4B09,$1D03,$5405,$3900,$5900,$0000,$007F; $05ECD0
     dc.w    $0000,$0180,$0000,$0E00,$0007,$F000,$0038,$0000; $05ECE0
+; ============================================================================
+; RegionAircraftIndex -- Region to aircraft category mapping (4 bytes at $05ECF8)
+; 4 bytes | $05ECF8-$05ECFB (starts at word[4] of $05ECF0 line)
+; RegionBitmaskTable ends at $05ECF7; bytes: region_index -> aircraft_category_offset
+; Used by SortAircraftByMetric before indexing AircraftStatsByRegion
+; ============================================================================
+; --- AircraftModelPtrs at $05ECFC: ptr table to $04624x aircraft model name strings ---
+; --- (starts at word[6] of $05ECF0 line; RegionAircraftIndex ends at $05ECFB) ---
     dc.w    $1FC0,$0000,$E000,$0000,$000C,$1A25,$0004,$6254; $05ECF0
     dc.w    $0004,$624A,$0004,$6246,$0004,$6240,$0004,$623A; $05ED00
     dc.w    $0004,$6230,$0004,$6228,$0004,$621E,$0004,$6216; $05ED10
@@ -3808,6 +3912,14 @@
     dc.w    $0004,$611C,$0004,$6116,$0004,$6110,$0004,$610A; $05EDA0
     dc.w    $0004,$6100,$0004,$60FA,$0004,$60F6,$0004,$60F0; $05EDB0
     dc.w    $0004,$60E6,$0004,$60DC,$0004,$60D6,$0004,$60D0; $05EDC0
+; ============================================================================
+; AircraftStatsByRegion -- Aircraft performance stats sorted by region category (12 bytes × 16 entries per group)
+; 16 entries × 12 bytes per category | $05EDD0-$05F04B
+; AircraftModelPtrs ends at $05EDCF; struct: region×$c offset per entry
+; Fields: word[0]=range_stat, word[1..5]=performance data; word[5]=model_index
+; Used by SortAircraftByMetric: RegionAircraftIndex ($05ECF8) maps region -> category offset
+; ============================================================================
+AircraftStatsByRegion:                                  ; $05EDD0
     dc.w    $0903,$0BB8,$03E8,$363C,$060C,$0000,$0607,$0A8C; $05EDD0
     dc.w    $07D0,$35C8,$080E,$0400,$0008,$1900,$0578,$2FC8; $05EDE0
     dc.w    $0E0F,$0400,$0209,$1DB0,$0898,$33C8,$0A0D,$0400; $05EDF0

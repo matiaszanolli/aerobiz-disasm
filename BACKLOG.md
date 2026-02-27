@@ -61,11 +61,11 @@ Pick the highest-priority unclaimed task. Mark it `IN PROGRESS` with your sessio
 ---
 
 ### B-059: Game data tables documentation
-**Status:** OPEN
+**Status:** DONE (2026-02-26)
 **Priority:** P2
 **Why:** The data sections (040000-0F0000) contain game configuration tables: aircraft model stats, city data, route pricing, scenario configurations. These are referenced by code but not yet systematically documented.
-**Approach:** Identify data table references in translated code (e.g., `lea SomeTable(pc), a0` patterns, indexed loads), decode the table format from access patterns, add labels and field-level comments. Key targets: aircraft stats table, city coordinates/data, route pricing lookup, scenario init data.
-**Acceptance:** `analysis/DATA_TABLES.md` created documenting game configuration tables. Labels added in section_040000-0F0000 for major game tables.
+**Approach:** Identified data table references in translated code (lea/indexed loads), decoded table format from access patterns, added labels and field-level comments. Key tables found: CharTypeRangeTable, CityNamePtrs, AircraftStatsByRegion, RouteCodeMap, RegionNamePtrs, 7 CharCompat score tables, and 25 more.
+**Acceptance:** `analysis/DATA_TABLES.md` created documenting 50+ ROM data tables with addresses, formats, field layouts, and accessor functions. Labels added in section_040000 (12 labels) and section_050000 (4 assembly labels + 20 comment annotations).
 
 ---
 

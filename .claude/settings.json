@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(pyenv exec python3 tools/translate.py --verify 0x6760 0x68CA)",
+      "Bash(pyenv exec python3 tools/translate.py --verify 0x68CA 0x6A2E)",
+      "Bash(pyenv exec python3 tools/translate.py --verify $spec)",
+      "Bash(pyenv exec python3 tools/translate.py --verify 0x814A 0x818A)",
+      "Bash(__NEW_LINE_68110ede227b01b2__ pyenv exec python3 tools/translate.py --verify 0x1D7BE 0x1D83C)",
+      "Bash(__NEW_LINE_68110ede227b01b2__ pyenv exec python3 tools/translate.py --verify 0x9F4A 0x9F88)",
+      "Bash(__NEW_LINE_68110ede227b01b2__ pyenv exec python3 tools/translate.py --verify 0x9D92 0x9DC4)",
+      "Bash(__NEW_LINE_68110ede227b01b2__ pyenv exec python3 tools/translate.py --verify 0x1E11C 0x1E14A)",
+      "Bash(__NEW_LINE_68110ede227b01b2__ pyenv exec python3 tools/translate.py --verify 0x595E 0x5A04)",
+      "Bash(__NEW_LINE_68110ede227b01b2__ pyenv exec python3 tools/translate.py --verify 0x1C43C 0x1C54E)",
+      "Bash(__NEW_LINE_68110ede227b01b2__ pyenv exec python3 tools/translate.py --verify 0x23930 0x23958)",
+      "Bash(__NEW_LINE_68110ede227b01b2__ pyenv exec python3 tools/translate.py --verify 0x181C6 0x18214)",
+      "Bash(__NEW_LINE_68110ede227b01b2__ pyenv exec python3 tools/translate.py --verify 0x88EA 0x8A4A)"
+    ]
+  }
+}

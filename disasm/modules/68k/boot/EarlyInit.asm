@@ -2,114 +2,177 @@
 ; EarlyInit -- TMSS boot screen: detect region, load font tiles, render license text to VDP
 ; 302 bytes | $003BE8-$003D15
 ; ============================================================================
+; --- Phase: Region Detection ---
+; Read the hardware version register to detect the console's region and TV system.
+; The version register lives at $A10001 (I/O area). Bits [7:6] encode the region:
+;   00 = Japan (NTSC), 01 = (unused), 10 = USA (NTSC), 11 = Europe (PAL).
+; This determines which license string to display on the TMSS boot screen.
 EarlyInit:
     clr.l   d0
-    move.b  ($00A10001).l, d0
-    lsr.b   #$6, d0
-    andi.b  #$3, d0
-    lea     $3d16(pc), a0
-    move.b  (a0,d0.w), d0
-    tst.b   d0
-    beq.w   l_03cde
-    lea     ($01F0).w, a0
-    move.w  #$f, d1
+    move.b  ($00A10001).l, d0     ; read hardware version register (I/O port 1 control)
+    lsr.b   #$6, d0               ; shift region bits [7:6] down to [1:0]
+    andi.b  #$3, d0               ; mask to 2-bit region index (0-3)
+    lea     $3d16(pc), a0         ; a0 -> TMSSRegionTable (4-byte table: J, \0, U, E)
+    move.b  (a0,d0.w), d0         ; d0 = region character ('J', 'U', 'E', or $00)
+    tst.b   d0                    ; is the region code null (no match)?
+    beq.w   l_03cde               ; yes: skip TMSS screen, jump to infinite halt
+; --- Phase: TMSS Security Check ---
+; The console's ROM at $01F0-$01FF holds the "SEGA" security string (16 bytes).
+; The TMSS hardware only unlocks cartridge access if this matches. Here the code
+; additionally confirms the region character is present in those bytes. If found,
+; the beq jumps to the real game entry point ($003F70), skipping the TMSS screen.
+; If not found after 16 comparisons, execution falls through to render the TMSS text.
+    lea     ($01F0).w, a0         ; a0 -> ROM security string at $01F0 (16 bytes, "SEGA MEGA DRIVE...")
+    move.w  #$f, d1               ; d1 = 15 (loop counter for 16 bytes)
 l_03c0c:
-    cmp.b   (a0), d0
-    dc.w    $6700,$0360                                         ; beq $003F70
-    addq.l  #$1, a0
-    dbra    d1, $3C0C
-    lea     ($00C00000).l, a4
-    lea     ($00C00004).l, a5
-    move.w  #$8164, (a5)
-    move.w  #$8230, (a5)
-    move.w  #$8c81, (a5)
-    move.w  #$8f02, (a5)
-    move.w  #$9001, (a5)
-    move.l  #$c0020000, (a5)
-    move.w  #$eee, (a4)
-    move.l  #$40000000, (a5)
-    lea     $3d98(pc), a0
-    move.w  #$3a, d0
-    move.l  #$10000000, d2
+    cmp.b   (a0), d0              ; does this byte match the region character?
+    dc.w    $6700,$0360           ; beq $003F70 -- match found: jump to game start
+    addq.l  #$1, a0               ; advance to next byte
+    dbra    d1, $3C0C             ; loop for all 16 bytes of security string
+; --- Phase: VDP Minimal Init for TMSS Screen ---
+; The VDP is initialized just enough to write tile graphics and name-table cells
+; for the TMSS license text. A4 = VDP data port, A5 = VDP control port.
+; The VDP command word format for register writes: $8NVV where N = reg#, VV = value.
+    lea     ($00C00000).l, a4     ; a4 = VDP data port ($C00000)
+    lea     ($00C00004).l, a5     ; a5 = VDP control port ($C00004) -- also VDP status (read)
+    move.w  #$8164, (a5)          ; VDP reg $01 = $64: display enable, V28 (224 lines), Genesis mode bit2=1
+    move.w  #$8230, (a5)          ; VDP reg $02 = $30: Plane A name table at VRAM $C000 ($30 << 10)
+    move.w  #$8c81, (a5)          ; VDP reg $0C = $81: H40 mode (320px wide), no interlace, no shadow/highlight
+    move.w  #$8f02, (a5)          ; VDP reg $0F = $02: auto-increment = 2 (advance by 2 bytes after each VRAM write)
+    move.w  #$9001, (a5)          ; VDP reg $10 = $01: scroll size = 64 cols x 32 rows (H=64, V=32)
+; Set VDP VRAM write address to $0200 (tile data start for TMSS font).
+; VDP command word for VRAM write: upper long = $C0000000 | (addr & $3FFF)<<16 | (addr>>14)
+; $C0020000 = VRAM write to address $0200 ($02 in bits[17:16] of the long)
+    move.l  #$c0020000, (a5)      ; set VRAM write address = $0200 (start of font tile VRAM slot)
+; Write a single word to VRAM at $0200 -- initializes the first word of tile 0 (blank tile header).
+; Value $0EEE = 4 pixels of palette index 14 (used as background color).
+    move.w  #$eee, (a4)           ; write $0EEE to VRAM data port (first word of blank tile, 4 pixels = color 14)
+; After the font tiles we need to write name-table cells (BAT entries) into Plane A.
+; Reset VRAM write address to $4000 = Plane A name table base (reg$02=$30 -> $C000? -- TBC).
+; $40000000 = VRAM write address command for address $0000 with CD[5:4]=01 (VRAM write).
+    move.l  #$40000000, (a5)      ; set VRAM write address = $0000 (Plane A BAT base for name-table cells)
+; --- Phase: Font Tile Upload (1bpp -> 4bpp Expansion) ---
+; Upload 59 font tiles (TMSSFontTiles at $3D98) to VRAM.
+; Each tile is 8 bytes of 1bpp data (1 bit per pixel, 8x8 = 64 pixels).
+; The VDP wants 4bpp tiles: 32 bytes per tile (8 rows x 4 bytes, 2 pixels per nibble).
+; The expansion loop converts each bit to a 4-pixel run in d2 using a rotating palette index,
+; OR-ing the run into d4 to build each output long, then writing d4 to the VDP data port.
+; Result: each 0-bit pixel gets color 0 (transparent), each 1-bit pixel gets a cycling palette index.
+    lea     $3d98(pc), a0         ; a0 -> TMSSFontTiles (59 tiles x 8 bytes = 472 bytes of 1bpp data)
+    move.w  #$3a, d0              ; d0 = $3A = 58 (loop count for 59 tiles, dbra counts down to -1)
+    move.l  #$10000000, d2        ; d2 = rotating color index register, starts with palette index 1 in bits[31:28]
 l_03c56:
-    move.w  #$7, d6
+; Outer tile loop: 8 source bytes per tile = 8 VDP long writes (one per tile row)
+    move.w  #$7, d6               ; d6 = 7 (inner row counter, 8 rows per tile)
 l_03c5a:
-    move.b  (a0)+, d1
-    moveq   #$0,d4
-    move.w  #$7, d5
+; Per-row loop: convert one byte of 1bpp data into one VDP long (4bpp, 8 pixels)
+    move.b  (a0)+, d1             ; d1 = next source byte (8 pixels, MSB = leftmost pixel)
+    moveq   #$0,d4                ; d4 = output accumulator (will hold 8 expanded pixels as 4bpp nibbles)
+    move.w  #$7, d5               ; d5 = 7 (bit counter, 8 bits per byte)
 l_03c62:
-    rol.l   #$4, d2
-    ror.b   #$1, d1
-    bcc.b   l_03c6a
-    or.l    d2, d4
+; Per-pixel loop: expand each 1bpp pixel to a 4-bit palette index
+    rol.l   #$4, d2               ; rotate color register left 4 bits (cycle through palette indices 1,2,...,F,0,1,...)
+    ror.b   #$1, d1               ; shift next source bit into carry (LSB first after first ROR makes MSB go last -- MSB first because we start at bit7)
+    bcc.b   l_03c6a               ; if bit was 0: skip OR (pixel stays transparent, color 0)
+    or.l    d2, d4                ; bit was 1: OR the current color nibble position into output accumulator
 l_03c6a:
-    dbra    d5, $3C62
-    move.l  d4, (a4)
-    dbra    d6, $3C5A
-    dbra    d0, $3C56
-    move.b  #$8, d1
-    lea     $3d2e(pc), a0
-    move.b  (a0)+, d0
-    bsr.w WriteVDPTileRow
-    lea     ($01F0).w, a1
+    dbra    d5, $3C62             ; loop for all 8 bits of source byte
+    move.l  d4, (a4)              ; write 8 expanded pixels (one tile row) to VDP data port (auto-increment +2 advances by word, but we write long)
+    dbra    d6, $3C5A             ; loop for all 8 rows of tile
+    dbra    d0, $3C56             ; loop for all 59 tiles
+; --- Phase: Render "DEVELOPED FOR USE ONLY WITH" Header Row ---
+; WriteVDPTileRow takes d1 = tile row (Y position in name table), d0 = tile column (X),
+; and (a0) = null-terminated string of ASCII chars to write as BAT name-table entries.
+; Each character is mapped to a tile index by subtracting $20 (ASCII space = tile 0).
+    move.b  #$8, d1               ; d1 = 8 (tile row for the top license text line)
+    lea     $3d2e(pc), a0         ; a0 -> TMSSTopStr: [col_byte] "DEVELOPED FOR USE ONLY WITH\0"
+    move.b  (a0)+, d0             ; d0 = tile column (first byte of string: $06 = column 6); a0 now -> text
+    bsr.w WriteVDPTileRow         ; write "DEVELOPED FOR USE ONLY WITH" to Plane A at row 8, col 6
+; --- Phase: Render Region-Specific License Text ---
+; Scan the ROM security string at $01F0-$01FF to find the region char ('J','U','E').
+; For each char in the security string, look it up in TMSSCharTable ($3D1A), which
+; maps region chars to draw-string offsets from TMSSRegionTable ($3D16).
+; When matched: optionally write the separator string "&", then write the region
+; system name string (e.g. "NTSC MEGA DRIVE", "NTSC GENESIS", "PAL AND FRENCH...").
+; When the security string ends (space char), write "SYSTEMS." on the final row.
+    lea     ($01F0).w, a1         ; a1 -> ROM security string at $01F0 (e.g. "SEGA MEGA DRIVE  J")
 l_03c8a:
-    cmpi.b  #$20, (a1)
-    beq.b   l_03cd2
-    lea     $3d1a(pc), a2
+    cmpi.b  #$20, (a1)            ; is current byte a space (end of meaningful content)?
+    beq.b   l_03cd2               ; yes: fall through to write final "SYSTEMS." row
+    lea     $3d1a(pc), a2         ; a2 -> TMSSCharTable: 3 entries of (word char, long offset), terminated by $0000
 l_03c94:
-    move.w  (a2)+, d4
-    tst.b   d4
-    beq.b   l_03cce
-    cmp.b   (a1), d4
-    bne.b   l_03cca
-    cmpi.b  #$20, $1(a1)
-    bne.b   l_03cba
-    cmpa.l  #$1f0, a1
-    beq.b   l_03cba
-    lea     $3d4b(pc), a0
-    move.b  (a0)+, d0
-    addq.w  #$1, d1
-    bsr.w WriteVDPTileRow
+    move.w  (a2)+, d4             ; d4 = table entry char code (word, e.g. $004A = 'J')
+    tst.b   d4                    ; is this the end-of-table sentinel ($0000)?
+    beq.b   l_03cce               ; yes: no match found for this char, advance to next security byte
+    cmp.b   (a1), d4              ; does this table entry match the current security string byte?
+    bne.b   l_03cca               ; no: try next table entry
+; Found a match: check if next byte is a space (word boundary) to avoid matching mid-word
+    cmpi.b  #$20, $1(a1)         ; is the following byte a space (end of a word token)?
+    bne.b   l_03cba               ; no: skip the separator "&" -- match is part of a longer word
+    cmpa.l  #$1f0, a1             ; are we at the very start of the security string ($01F0)?
+    beq.b   l_03cba               ; yes: skip separator (no preceding word to separate)
+; Write the "&" separator on a new tile row (between first and second lines of license text)
+    lea     $3d4b(pc), a0         ; a0 -> TMSSSpaceStr: [col=$12] "&\0"
+    move.b  (a0)+, d0             ; d0 = column byte ($12 = col 18); a0 -> "&\0"
+    addq.w  #$1, d1               ; advance to next tile row (d1++)
+    bsr.w WriteVDPTileRow         ; write "&" at row d1, col 18
 l_03cba:
-    lea     $3d16(pc), a0
-    adda.l  (a2)+, a0
-    move.b  (a0)+, d0
-    addq.w  #$1, d1
-    bsr.w WriteVDPTileRow
-    bra.b   l_03cce
+; Write the region system string (e.g. "NTSC MEGA DRIVE" / "NTSC GENESIS" / "PAL AND...")
+    lea     $3d16(pc), a0         ; a0 -> TMSSRegionTable base ($3D16)
+    adda.l  (a2)+, a0             ; add offset from table entry: a0 -> region-specific draw string
+    move.b  (a0)+, d0             ; d0 = tile column for this string; a0 -> null-terminated text
+    addq.w  #$1, d1               ; advance to next tile row
+    bsr.w WriteVDPTileRow         ; write region system name (e.g. "NTSC MEGA DRIVE")
+    bra.b   l_03cce               ; done with this table scan, continue scanning security string
 l_03cca:
-    addq.l  #$4, a2
-    bra.b   l_03c94
+    addq.l  #$4, a2               ; skip past this non-matching table entry (word char + long offset = 6 bytes, but a2 already ate 2 for the word, so +4 = skip the long)
+    bra.b   l_03c94               ; try next table entry
 l_03cce:
-    addq.l  #$1, a1
-    bra.b   l_03c8a
+    addq.l  #$1, a1               ; advance to next byte in ROM security string
+    bra.b   l_03c8a               ; loop until we find a space (end of string)
 l_03cd2:
-    lea     $3d4e(pc), a0
-    move.b  (a0)+, d0
-    addq.w  #$1, d1
-    bsr.w WriteVDPTileRow
+; Write the final row: "SYSTEMS." to close the license text
+    lea     $3d4e(pc), a0         ; a0 -> TMSSSystemsStr: [col=$0F] "SYSTEMS.\0"
+    move.b  (a0)+, d0             ; d0 = column byte ($0F = col 15); a0 -> "SYSTEMS.\0"
+    addq.w  #$1, d1               ; advance to next tile row
+    bsr.w WriteVDPTileRow         ; write "SYSTEMS." at row d1, col 15
+; --- Phase: TMSS Boot Screen Complete -- Infinite Halt ---
+; All license text has been written to VRAM. The screen is now visible.
+; The code halts here in an infinite loop; the console must be reset or the
+; game cart must match the TMSS check to escape (via the beq to $3F70 above).
 l_03cde:
-    bra.b   l_03cde
+    bra.b   l_03cde               ; infinite loop -- TMSS screen displayed, wait for reset
+
+; --- Subroutine: WriteVDPTileRow ---
+; Write a null-terminated string of ASCII chars as VDP name-table (BAT) entries.
+; Inputs: d1 = tile row (Y, 0-based), d0 = tile column (X, 0-based), (a0) = string.
+; Uses: a4 = VDP data port ($C00000), a5 = VDP control port ($C00004).
+; Each character is converted to a tile index by subtracting $20 (ASCII ' ' -> tile 0).
+; The VDP VRAM write address for the name table cell at (col, row) is computed as:
+;   addr = row * $80 + col * 2   (H40 mode: 64 cols * 2 bytes = $80 bytes per row)
+; The VDP command word (long) for VRAM write = $40000003 | (addr & $3FFF)<<16 | addr>>14
 WriteVDPTileRow:                                        ; $003CE0
-    move.b  d1, d2
-    andi.l  #$ff, d2
-    swap    d2
-    lsl.l   #$7, d2
-    move.b  d0, d3
-    andi.l  #$ff, d3
-    swap    d3
-    asl.l   #$1, d3
-    add.l   d3, d2
-    addi.l  #$40000003, d2
-    move.l  d2, (a5)
+; Build VDP VRAM write address command for cell (d0 col, d1 row) in the name table
+    move.b  d1, d2                ; d2 = row index (byte)
+    andi.l  #$ff, d2              ; zero-extend row to long
+    swap    d2                    ; move row to high word of d2 for address calculation
+    lsl.l   #$7, d2               ; row * $80 (H40 name table: 64 cols * 2 bytes = $80 per row) -- now in high word position
+    move.b  d0, d3                ; d3 = column index (byte)
+    andi.l  #$ff, d3              ; zero-extend column to long
+    swap    d3                    ; move col to high word
+    asl.l   #$1, d3               ; col * 2 (2 bytes per name-table cell)
+    add.l   d3, d2                ; d2 = combined VRAM address (row*$80 + col*2) in high word
+    addi.l  #$40000003, d2        ; add VDP VRAM-write command prefix: $4000 (CD=01 VRAM write) and low-word address bits
+    move.l  d2, (a5)              ; write command word to VDP control port -- sets VRAM write address
+; Write each character of the string as a name-table tile index word
 l_03d02:
-    tst.b   (a0)
-    beq.b   l_03d14
-    move.b  (a0)+, d2
-    subi.b  #$20, d2
-    andi.w  #$ff, d2
-    move.w  d2, (a4)
-    bra.b   l_03d02
+    tst.b   (a0)                  ; is this the null terminator?
+    beq.b   l_03d14               ; yes: done writing this row
+    move.b  (a0)+, d2             ; d2 = next ASCII character from string
+    subi.b  #$20, d2              ; convert ASCII to tile index (space=$20 -> tile 0, 'A'=$41 -> tile $21)
+    andi.w  #$ff, d2              ; zero-extend byte to word (VDP name-table entry is a word)
+    move.w  d2, (a4)              ; write tile index to VDP data port (auto-increment advances VRAM by 2)
+    bra.b   l_03d02               ; loop to next character
 l_03d14:
     rts
 

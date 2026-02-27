@@ -8,6 +8,16 @@ Pick the highest-priority unclaimed task. Mark it `IN PROGRESS` with your sessio
 
 ## Phase 5 -- Full Understanding
 
+### B-065: Widen annotation coverage (next 27 complex functions)
+**Status:** DONE (2026-02-27)
+**Priority:** P2
+**Why:** B-062 covered the top 30 most complex functions. The next tier (27 functions, 287-767 lines each) covers the rendering pipeline, world map animation, quarterly reports, and AI turn management — all still bare.
+**Approach:** 3 batches of 9 functions each, annotated by parallel Engineer agents (same pattern as B-062). Added phase block comments, register role annotations, struct field names, magic number explanations, RAM address identifications, and algorithm descriptions across: RenderPlayerInterface, DrawScreenElement, RenderGameDialogs, RenderGameplayScreen, RunWorldMapAnimation, ShowRelationResult, RenderTeamRoster, DrawQuarterResultsScreen, RenderCharacterPanel, EarlyInit, RenderMatchResults, DisplayRouteDestChoice, RenderDetailedStats, RenderAnimFrame, RenderTilePattern, LoadMapGraphics, ShowStatsSummary, GameSetup1, ReadCharInput, ShowRelationAction, ShowRouteInfo, LoadAllGameData, FormatRelationDisplay, InitAllianceRecords, RenderQuarterReport, ShowGameStatus, ManageCharStatsS2, GameUpdate2, ProcessCharModifier, FindCharInSet (+ RenderTextBlock bonus).
+**Result:** 27+ functions annotated across graphics/, game/, input/, text/, display/, boot/. Comments only — no binary changes.
+**Acceptance:** `make verify` passes (MD5: 1269f44e846a88a2de945de082428b39). `git diff` shows only comment additions.
+
+---
+
 ### B-063: Recategorize util/ functions into proper categories
 **Status:** DONE (2026-02-27)
 **Priority:** P2

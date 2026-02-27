@@ -101,8 +101,8 @@
     include "disasm/modules/68k/game/ShowPlayerChart.asm"
     include "disasm/modules/68k/game/CalcTotalCharValue.asm"
     include "disasm/modules/68k/game/CalcPlayerFinances.asm"
-    include "disasm/modules/68k/util/SumPlayerStats.asm"
-    include "disasm/modules/68k/util/SumStatBytes.asm"
+    include "disasm/modules/68k/game/SumPlayerStats.asm"
+    include "disasm/modules/68k/math/SumStatBytes.asm"
     include "disasm/modules/68k/game/CountProfitableRelations.asm"
     include "disasm/modules/68k/game/SortWordPairs.asm"
 
@@ -118,13 +118,13 @@
 
     include "disasm/modules/68k/game/ProcessPlayerRoutes.asm"
 
-    include "disasm/modules/68k/util/IsRouteSlotPending.asm"
+    include "disasm/modules/68k/game/IsRouteSlotPending.asm"
 
-    include "disasm/modules/68k/util/AccumulateRouteBits.asm"
+    include "disasm/modules/68k/game/AccumulateRouteBits.asm"
 
     include "disasm/modules/68k/game/FindAvailSlot.asm"
 
-    include "disasm/modules/68k/util/ClearRouteSlotBit.asm"
+    include "disasm/modules/68k/game/ClearRouteSlotBit.asm"
 
     include "disasm/modules/68k/game/UpdateRouteRevenue.asm"
 
@@ -136,13 +136,13 @@
 
     include "disasm/modules/68k/game/GetCharStatField.asm"
 
-    include "disasm/modules/68k/util/ClearRoutePendingFlags.asm"
+    include "disasm/modules/68k/game/ClearRoutePendingFlags.asm"
 
     include "disasm/modules/68k/game/CalcRouteValue.asm"
 
     include "disasm/modules/68k/game/ShowQuarterSummary.asm"
 
-    include "disasm/modules/68k/util/IsCharAttrValid.asm"
+    include "disasm/modules/68k/game/IsCharAttrValid.asm"
 
     include "disasm/modules/68k/game/RunRouteManagementUI.asm"
 
@@ -170,15 +170,15 @@
 
     include "disasm/modules/68k/game/ProcessCharacterAction.asm"
 
-    include "disasm/modules/68k/util/ValidateCharacterState.asm"
+    include "disasm/modules/68k/game/ValidateCharacterState.asm"
 
     include "disasm/modules/68k/game/CalcCharacterBonus.asm"
 
     include "disasm/modules/68k/game/ApplyCharacterEffect.asm"
 
-    include "disasm/modules/68k/util/WaitStableInput.asm"
+    include "disasm/modules/68k/input/WaitStableInput.asm"
 
-    include "disasm/modules/68k/util/RankCharCandidatesFull.asm"
+    include "disasm/modules/68k/game/RankCharCandidatesFull.asm"
 
     include "disasm/modules/68k/graphics/RenderTilePattern.asm"
 
@@ -186,7 +186,7 @@
 
     include "disasm/modules/68k/game/UpdateScreenLayout.asm"
 
-    include "disasm/modules/68k/util/RefreshDisplayArea.asm"
+    include "disasm/modules/68k/graphics/RefreshDisplayArea.asm"
 
     include "disasm/modules/68k/game/ProcessCityChange.asm"
 
@@ -198,7 +198,7 @@
 
     include "disasm/modules/68k/game/CalcCityMetrics.asm"
 
-    include "disasm/modules/68k/util/ResolveCityConflict.asm"
+    include "disasm/modules/68k/game/ResolveCityConflict.asm"
 
     include "disasm/modules/68k/game/ScanCitySlots.asm"
 
@@ -211,17 +211,17 @@
 
     include "disasm/modules/68k/game/ToggleDisplayMode.asm"
 
-    include "disasm/modules/68k/util/NavigateCharList.asm"
+    include "disasm/modules/68k/game/NavigateCharList.asm"
 
     include "disasm/modules/68k/game/HandleCharListAction.asm"
 
     include "disasm/modules/68k/game/ProcessEventSequence.asm"
 
-    include "disasm/modules/68k/util/EvaluateEventCond.asm"
+    include "disasm/modules/68k/game/EvaluateEventCond.asm"
 
-    include "disasm/modules/68k/util/GenerateEventResult.asm"
+    include "disasm/modules/68k/game/GenerateEventResult.asm"
 
-    include "disasm/modules/68k/util/RecordEventOutcome.asm"
+    include "disasm/modules/68k/game/RecordEventOutcome.asm"
 
     include "disasm/modules/68k/game/UpdateSlotEvents.asm"
 
@@ -239,7 +239,7 @@
     include "disasm/modules/68k/game/ShowStatsSummary.asm"
     include "disasm/modules/68k/game/RunCharManagement.asm"
 
-    include "disasm/modules/68k/util/ComputeQuarterResults.asm"
+    include "disasm/modules/68k/game/ComputeQuarterResults.asm"
 
     include "disasm/modules/68k/game/UpdatePlayerAssets.asm"
 
@@ -253,19 +253,19 @@
     include "disasm/modules/68k/game/ScanRouteSlots.asm"
     include "disasm/modules/68k/game/CalcRelationValue.asm"
     include "disasm/modules/68k/game/InitFlightDisplay.asm"
-    include "disasm/modules/68k/util/ClearFlightSlots.asm"
+    include "disasm/modules/68k/game/ClearFlightSlots.asm"
     include "disasm/modules/68k/game/UpdateFlightSlots.asm"
 
     include "disasm/modules/68k/game/InitTurnState.asm"
 
-    include "disasm/modules/68k/util/ProgressGamePhase.asm"
+    include "disasm/modules/68k/game/ProgressGamePhase.asm"
 
 
-    include "disasm/modules/68k/util/AnimateFlightPaths.asm"
-    include "disasm/modules/68k/util/DiagonalWipe.asm"
+    include "disasm/modules/68k/graphics/AnimateFlightPaths.asm"
+    include "disasm/modules/68k/graphics/DiagonalWipe.asm"
     include "disasm/modules/68k/graphics/DrawCharDetailPanel.asm"
     include "disasm/modules/68k/game/ShowCharStats.asm"
-    include "disasm/modules/68k/util/MatchCharSlots.asm"
+    include "disasm/modules/68k/game/MatchCharSlots.asm"
 
     include "disasm/modules/68k/game/GameUpdate2.asm"
 
@@ -275,9 +275,9 @@
 
     include "disasm/modules/68k/display/DisplayMenuOption.asm"
 
-    include "disasm/modules/68k/util/ValidateMenuInput.asm"
+    include "disasm/modules/68k/input/ValidateMenuInput.asm"
 
-    include "disasm/modules/68k/util/ExecMenuCommand.asm"
+    include "disasm/modules/68k/game/ExecMenuCommand.asm"
 
     include "disasm/modules/68k/game/DispatchGameAction.asm"
 
@@ -286,7 +286,7 @@
 
     include "disasm/modules/68k/game/ShowPlayerInfo.asm"
 
-    include "disasm/modules/68k/util/EvalCharMatch.asm"
+    include "disasm/modules/68k/game/EvalCharMatch.asm"
 
     include "disasm/modules/68k/game/ProcessCharTrade.asm"
 
@@ -296,21 +296,21 @@
 
     include "disasm/modules/68k/game/ShowCompatibilityScore.asm"
 
-    include "disasm/modules/68k/util/ClearGraphicsArea.asm"
+    include "disasm/modules/68k/graphics/ClearGraphicsArea.asm"
 
-    include "disasm/modules/68k/util/RefreshAndWait.asm"
+    include "disasm/modules/68k/input/RefreshAndWait.asm"
     include "disasm/modules/68k/display/SetDisplayMode.asm"
-    include "disasm/modules/68k/util/MenuSelectEntry.asm"
+    include "disasm/modules/68k/game/MenuSelectEntry.asm"
     include "disasm/modules/68k/game/LoadDisplaySet.asm"
     include "disasm/modules/68k/memory/MemFillByte.asm"
     include "disasm/modules/68k/memory/MemCopy.asm"
     include "disasm/modules/68k/memory/MemFillWord.asm"
-    include "disasm/modules/68k/util/VRAMBulkLoad.asm"
+    include "disasm/modules/68k/vdp/VRAMBulkLoad.asm"
     include "disasm/modules/68k/input/PollAction.asm"
     include "disasm/modules/68k/math/RandRange.asm"
-    include "disasm/modules/68k/util/ByteSum.asm"
-    include "disasm/modules/68k/util/ResourceLoad.asm"
-    include "disasm/modules/68k/util/ResourceUnload.asm"
+    include "disasm/modules/68k/math/ByteSum.asm"
+    include "disasm/modules/68k/game/ResourceLoad.asm"
+    include "disasm/modules/68k/game/ResourceUnload.asm"
 
     include "disasm/modules/68k/text/FormatTextString.asm"
 
@@ -320,7 +320,7 @@
 
     include "disasm/modules/68k/game/ProcessTextControl.asm"
 
-    include "disasm/modules/68k/util/AlignTextBlock.asm"
+    include "disasm/modules/68k/text/AlignTextBlock.asm"
 
     include "disasm/modules/68k/game/SetScrollOffset.asm"
 
@@ -334,26 +334,26 @@
 
     include "disasm/modules/68k/game/PackScrollControlBlock.asm"
 
-    include "disasm/modules/68k/util/RoundValue.asm"
+    include "disasm/modules/68k/math/RoundValue.asm"
     include "disasm/modules/68k/graphics/TilePlacement.asm"
     include "disasm/modules/68k/game/GameCmd16.asm"
-    include "disasm/modules/68k/util/CopyBytesToWords.asm"
-    include "disasm/modules/68k/util/CopyAlternateBytes.asm"
-    include "disasm/modules/68k/util/MulDiv.asm"
-    include "disasm/modules/68k/util/ToUpperCase.asm"
+    include "disasm/modules/68k/memory/CopyBytesToWords.asm"
+    include "disasm/modules/68k/memory/CopyAlternateBytes.asm"
+    include "disasm/modules/68k/math/MulDiv.asm"
+    include "disasm/modules/68k/text/ToUpperCase.asm"
 
     include "disasm/modules/68k/game/SetupPointerRegs.asm"
 
 
-    include "disasm/modules/68k/util/StringAppend.asm"
+    include "disasm/modules/68k/text/StringAppend.asm"
 
     include "disasm/modules/68k/game/SearchTable.asm"
 
     include "disasm/modules/68k/input/ReadInput.asm"
 
-    include "disasm/modules/68k/util/IterateCollection.asm"
-    include "disasm/modules/68k/util/WeightedAverage.asm"
-    include "disasm/modules/68k/util/StringConcat.asm"
+    include "disasm/modules/68k/game/IterateCollection.asm"
+    include "disasm/modules/68k/math/WeightedAverage.asm"
+    include "disasm/modules/68k/text/StringConcat.asm"
 
     include "disasm/modules/68k/game/GameUpdate3.asm"
 
@@ -361,33 +361,33 @@
 
     include "disasm/modules/68k/math/ClampValue.asm"
 
-    include "disasm/modules/68k/util/CompareElements.asm"
+    include "disasm/modules/68k/math/CompareElements.asm"
 
     include "disasm/modules/68k/game/CalcRouteEarningsScore.asm"
 
-    include "disasm/modules/68k/util/FilterCollection.asm"
+    include "disasm/modules/68k/game/FilterCollection.asm"
 
     include "disasm/modules/68k/game/GetPlayerInput.asm"
 
     include "disasm/modules/68k/game/ProcessInputEvent.asm"
 
-    include "disasm/modules/68k/util/MapInputToAction.asm"
+    include "disasm/modules/68k/input/MapInputToAction.asm"
 
-    include "disasm/modules/68k/util/ValidateInputState.asm"
+    include "disasm/modules/68k/input/ValidateInputState.asm"
 
     include "disasm/modules/68k/game/UpdateAnimation.asm"
 
     include "disasm/modules/68k/graphics/RenderAnimFrame.asm"
 
-    include "disasm/modules/68k/util/TransitionEffect.asm"
+    include "disasm/modules/68k/graphics/TransitionEffect.asm"
 
     include "disasm/modules/68k/display/FadeGraphics.asm"
 
     include "disasm/modules/68k/game/ManageUIElement.asm"
 
-    include "disasm/modules/68k/util/PositionUIControl.asm"
+    include "disasm/modules/68k/graphics/PositionUIControl.asm"
 
-    include "disasm/modules/68k/util/ResizeUIPanel.asm"
+    include "disasm/modules/68k/graphics/ResizeUIPanel.asm"
 
     include "disasm/modules/68k/game/UpdateUIPalette.asm"
 

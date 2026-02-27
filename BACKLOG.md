@@ -8,6 +8,16 @@ Pick the highest-priority unclaimed task. Mark it `IN PROGRESS` with your sessio
 
 ## Phase 5 -- Full Understanding
 
+### B-063: Recategorize util/ functions into proper categories
+**Status:** DONE (2026-02-27)
+**Priority:** P2
+**Why:** 211 functions dumped into `util/` by the B-060 extraction script's name-pattern fallback. Most are actually VDP primitives, input handlers, graphics routines, or game logic — not utilities. This makes `util/` a grab-bag that hurts navigability.
+**Approach:** Python script (`/tmp/recategorize_util.py`) with per-function category mapping. Moves .asm files and updates include directives in section files. 191 functions moved to 10 categories; 20 genuine utilities remain.
+**Result:** util/ reduced from 211 to 20 (stubs, checksums, error handling, misc). game/ grew from 452 to 551. graphics/ from 59 to 92. input/ from 5 to 27. vdp/ from 12 to 23. text/ from 7 to 16. math/ from 13 to 20. vint/ from 6 to 10. memory/ from 5 to 8. sound/ from 5 to 7.
+**Acceptance:** `make verify` passes (MD5: 1269f44e846a88a2de945de082428b39). 801 total modules unchanged.
+
+---
+
 ### B-062: Deep game logic annotation (top 30 complex functions)
 **Status:** DONE (2026-02-27)
 **Priority:** P2

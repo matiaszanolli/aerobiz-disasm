@@ -10,27 +10,27 @@
 
     include "disasm/modules/68k/game/InitAllianceRecords.asm"
 
-    include "disasm/modules/68k/util/ValidateAllianceSlot.asm"
+    include "disasm/modules/68k/game/ValidateAllianceSlot.asm"
 
     include "disasm/modules/68k/game/ProcessAllianceChange.asm"
 
-    include "disasm/modules/68k/util/IsAllianceSlotValid.asm"
+    include "disasm/modules/68k/game/IsAllianceSlotValid.asm"
 
     include "disasm/modules/68k/game/GetAllianceScore.asm"
 
-    include "disasm/modules/68k/util/ClearAllianceSlot.asm"
+    include "disasm/modules/68k/game/ClearAllianceSlot.asm"
 
     include "disasm/modules/68k/game/ManageAllianceRoster.asm"
 
     include "disasm/modules/68k/game/RunAIMainLoop.asm"
 
-    include "disasm/modules/68k/util/PostTurnCleanup.asm"
+    include "disasm/modules/68k/game/PostTurnCleanup.asm"
 
     include "disasm/modules/68k/game/InitAlliancePrefs.asm"
 
-    include "disasm/modules/68k/util/ComputeAllianceScores.asm"
+    include "disasm/modules/68k/game/ComputeAllianceScores.asm"
 
-    include "disasm/modules/68k/util/HasPriorityAlliance.asm"
+    include "disasm/modules/68k/game/HasPriorityAlliance.asm"
 
     include "disasm/modules/68k/game/CheckDuplicateAlliance.asm"
 
@@ -38,29 +38,29 @@
 
     include "disasm/modules/68k/game/CalcAllianceDifference.asm"
 
-    include "disasm/modules/68k/util/ValidateCharSlots.asm"
+    include "disasm/modules/68k/game/ValidateCharSlots.asm"
 
-    include "disasm/modules/68k/util/RankCharByScore.asm"
+    include "disasm/modules/68k/game/RankCharByScore.asm"
 
-    include "disasm/modules/68k/util/EvaluateNegotiation.asm"
+    include "disasm/modules/68k/game/EvaluateNegotiation.asm"
 
-    include "disasm/modules/68k/util/NegotiateContract.asm"
+    include "disasm/modules/68k/game/NegotiateContract.asm"
 
-    include "disasm/modules/68k/util/AcquireCharSlot.asm"
+    include "disasm/modules/68k/game/AcquireCharSlot.asm"
 
-    include "disasm/modules/68k/util/DegradeCharSkill.asm"
+    include "disasm/modules/68k/game/DegradeCharSkill.asm"
 
     include "disasm/modules/68k/game/CalcRecruitmentCost.asm"
 
-    include "disasm/modules/68k/util/TransferCharSlot.asm"
+    include "disasm/modules/68k/game/TransferCharSlot.asm"
 
     include "disasm/modules/68k/util/ClearSubstituteFlag.asm"
 
     include "disasm/modules/68k/game/SetSubstituteFlag.asm"
 
-    include "disasm/modules/68k/util/ReorderMatchSlots.asm"
+    include "disasm/modules/68k/game/ReorderMatchSlots.asm"
 
-    include "disasm/modules/68k/util/EvaluateMatchLineup.asm"
+    include "disasm/modules/68k/game/EvaluateMatchLineup.asm"
 
     include "disasm/modules/68k/game/FindOpenCharSlot2.asm"
 
@@ -76,13 +76,13 @@
 
     include "disasm/modules/68k/game/CalcCharCompat.asm"
 
-    include "disasm/modules/68k/util/RebuildMatchSlots.asm"
+    include "disasm/modules/68k/game/RebuildMatchSlots.asm"
 
     include "disasm/modules/68k/game/SelectBestForTeam.asm"
 
     include "disasm/modules/68k/game/GetCharQuality.asm"
 
-    include "disasm/modules/68k/util/EvaluateCharPool.asm"
+    include "disasm/modules/68k/game/EvaluateCharPool.asm"
 
     include "disasm/modules/68k/game/CheckCharAvailable.asm"
 
@@ -112,31 +112,31 @@
 
     include "disasm/modules/68k/game/CheckLevelUpCond.asm"
 
-    include "disasm/modules/68k/util/IsCharInActiveMatch.asm"
+    include "disasm/modules/68k/game/IsCharInActiveMatch.asm"
 
-    include "disasm/modules/68k/util/IncrementCharLevel.asm"
+    include "disasm/modules/68k/game/IncrementCharLevel.asm"
 
     include "disasm/modules/68k/game/ManageCharSkills.asm"
 
-    include "disasm/modules/68k/util/HasSkill.asm"
+    include "disasm/modules/68k/game/HasSkill.asm"
 
-    include "disasm/modules/68k/util/UnlockSkill.asm"
+    include "disasm/modules/68k/game/UnlockSkill.asm"
 
-    include "disasm/modules/68k/util/TrainCharSkill.asm"
+    include "disasm/modules/68k/game/TrainCharSkill.asm"
 
     include "disasm/modules/68k/game/ResetSkillProgress.asm"
 
     include "disasm/modules/68k/game/ApplyCharBonus.asm"
 
-    include "disasm/modules/68k/util/IncrementAffinity.asm"
+    include "disasm/modules/68k/game/IncrementAffinity.asm"
 
-    include "disasm/modules/68k/util/DecrementAffinity.asm"
+    include "disasm/modules/68k/game/DecrementAffinity.asm"
 
     include "disasm/modules/68k/game/CheckAffinityThreshold.asm"
 
     include "disasm/modules/68k/game/GetAffinityRating.asm"
 
-    include "disasm/modules/68k/util/OfferCharContract.asm"
+    include "disasm/modules/68k/game/OfferCharContract.asm"
 
     include "disasm/modules/68k/game/FindBestCharValue.asm"
 
@@ -146,17 +146,17 @@
 
     include "disasm/modules/68k/game/CountCharPairSlots.asm"
 
-    include "disasm/modules/68k/util/IsCharSlotAvailable.asm"
+    include "disasm/modules/68k/game/IsCharSlotAvailable.asm"
 
     include "disasm/modules/68k/game/FindNextOpenSkillSlot.asm"
 
     include "disasm/modules/68k/game/CalcQuarterTurnOffset.asm"
 
-    include "disasm/modules/68k/util/RecruitFromSkillGroups.asm"
+    include "disasm/modules/68k/game/RecruitFromSkillGroups.asm"
 
     include "disasm/modules/68k/game/FindBestPartnerChar.asm"
 
-    include "disasm/modules/68k/util/LookupCharRecord.asm"
+    include "disasm/modules/68k/game/LookupCharRecord.asm"
 
     include "disasm/modules/68k/game/ExecuteCharRecruit.asm"
 
@@ -164,19 +164,19 @@
 
     include "disasm/modules/68k/game/ApplyStatBonus.asm"
 
-    include "disasm/modules/68k/util/RecalcAllCharStats.asm"
+    include "disasm/modules/68k/game/RecalcAllCharStats.asm"
 
     include "disasm/modules/68k/game/CheckRecruitEligible.asm"
 
-    include "disasm/modules/68k/util/IsCharSlotEmpty.asm"
+    include "disasm/modules/68k/game/IsCharSlotEmpty.asm"
 
-    include "disasm/modules/68k/util/ValidateCharPool.asm"
+    include "disasm/modules/68k/game/ValidateCharPool.asm"
 
     include "disasm/modules/68k/game/GetPlayerCharCount.asm"
 
     include "disasm/modules/68k/graphics/RenderGameplayScreen.asm"
 
-    include "disasm/modules/68k/util/ClearCharSprites.asm"
+    include "disasm/modules/68k/game/ClearCharSprites.asm"
 
     include "disasm/modules/68k/graphics/RenderCharInfoPanel.asm"
 
@@ -206,17 +206,17 @@
     include "disasm/modules/68k/game/ShowCharPortrait.asm"
     include "disasm/modules/68k/game/LoadGameGraphics.asm"
     include "disasm/modules/68k/game/ResetGameState.asm"
-    include "disasm/modules/68k/util/ClearTileArea.asm"
+    include "disasm/modules/68k/graphics/ClearTileArea.asm"
 
     include "disasm/modules/68k/game/ParseDecimalDigit.asm"
 
-    include "disasm/modules/68k/util/IntToDecimalStr.asm"
+    include "disasm/modules/68k/text/IntToDecimalStr.asm"
 
-    include "disasm/modules/68k/util/IntToHexStr.asm"
+    include "disasm/modules/68k/text/IntToHexStr.asm"
 
     include "disasm/modules/68k/math/ClampTextColumnWidths.asm"
 
-    include "disasm/modules/68k/util/ClearTextBuffer.asm"
+    include "disasm/modules/68k/text/ClearTextBuffer.asm"
 
     include "disasm/modules/68k/game/SetCursorY.asm"
     include "disasm/modules/68k/game/SetCursorX.asm"
@@ -237,9 +237,9 @@
 
     include "disasm/modules/68k/game/InitTextColors.asm"
 
-    include "disasm/modules/68k/util/ClearSoundBuffer.asm"
+    include "disasm/modules/68k/sound/ClearSoundBuffer.asm"
 
-    include "disasm/modules/68k/util/DelayFrames.asm"
+    include "disasm/modules/68k/input/DelayFrames.asm"
 
     include "disasm/modules/68k/display/FadeOutAndWait.asm"
 
@@ -249,9 +249,9 @@
 
     include "disasm/modules/68k/game/CalcScreenCoord.asm"
 
-    include "disasm/modules/68k/util/WaitForStartButton.asm"
+    include "disasm/modules/68k/input/WaitForStartButton.asm"
 
-    include "disasm/modules/68k/util/DelayWithInputCheck.asm"
+    include "disasm/modules/68k/input/DelayWithInputCheck.asm"
 
     include "disasm/modules/68k/graphics/RenderColorTileset.asm"
 
@@ -259,7 +259,7 @@
 
     include "disasm/modules/68k/game/InitGameScreen.asm"
 
-    include "disasm/modules/68k/util/PlayIntroSequence.asm"
+    include "disasm/modules/68k/game/PlayIntroSequence.asm"
 
     include "disasm/modules/68k/game/RunIntroLoop.asm"
 
@@ -285,7 +285,7 @@
 
     include "disasm/modules/68k/vdp/QueueVRAMReadAddr.asm"
 
-    include "disasm/modules/68k/util/FillRectColor.asm"
+    include "disasm/modules/68k/graphics/FillRectColor.asm"
 
     include "disasm/modules/68k/graphics/RenderPlayerStatusUI.asm"
 

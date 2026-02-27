@@ -126,7 +126,7 @@ EntryPoint:
 
     include "disasm/modules/68k/game/CmdTestVRAM.asm"
 
-    include "disasm/modules/68k/util/ComputeMapCoordOffset.asm"
+    include "disasm/modules/68k/graphics/ComputeMapCoordOffset.asm"
 
     include "disasm/modules/68k/game/CmdDMABatchWrite.asm"
 
@@ -143,7 +143,7 @@ EntryPoint:
 
     include "disasm/modules/68k/game/CmdSetCharState.asm"
 
-    include "disasm/modules/68k/util/ControllerRead.asm"
+    include "disasm/modules/68k/input/ControllerRead.asm"
 
     include "disasm/modules/68k/game/CmdInitAnimation.asm"
 
@@ -190,25 +190,25 @@ EntryPoint:
 
     include "disasm/modules/68k/vdp/VDP_Init4.asm"
 
-    include "disasm/modules/68k/util/TriggerVDPDMA.asm"
+    include "disasm/modules/68k/vdp/TriggerVDPDMA.asm"
 
     include "disasm/modules/68k/game/DispatchVDPWrite.asm"
 
-    include "disasm/modules/68k/util/ReleaseZ80BusDirect.asm"
+    include "disasm/modules/68k/sound/ReleaseZ80BusDirect.asm"
 
     include "disasm/modules/68k/game/SetVDPDisplayBit.asm"
 
-    include "disasm/modules/68k/util/WaitVDPAndWrite.asm"
+    include "disasm/modules/68k/vdp/WaitVDPAndWrite.asm"
 
-    include "disasm/modules/68k/util/ConfigVDPDMA.asm"
+    include "disasm/modules/68k/vdp/ConfigVDPDMA.asm"
 
-    include "disasm/modules/68k/util/ConfigVDPScroll.asm"
+    include "disasm/modules/68k/vdp/ConfigVDPScroll.asm"
 
-    include "disasm/modules/68k/util/ConfigVDPColors.asm"
+    include "disasm/modules/68k/vdp/ConfigVDPColors.asm"
 
     include "disasm/modules/68k/vint/VInt_Handler1.asm"
 
-    include "disasm/modules/68k/util/BulkCopyVDP.asm"
+    include "disasm/modules/68k/vdp/BulkCopyVDP.asm"
 
     include "disasm/modules/68k/vint/VInt_Handler2.asm"
 
@@ -224,19 +224,19 @@ EntryPoint:
 
     include "disasm/modules/68k/vint/VInt_Sub2.asm"
 
-    include "disasm/modules/68k/util/SubsysUpdate1.asm"
+    include "disasm/modules/68k/vint/SubsysUpdate1.asm"
 
-    include "disasm/modules/68k/util/SubsysUpdate2.asm"
+    include "disasm/modules/68k/vint/SubsysUpdate2.asm"
 
-    include "disasm/modules/68k/util/SubsysUpdate3.asm"
+    include "disasm/modules/68k/vint/SubsysUpdate3.asm"
 
-    include "disasm/modules/68k/util/SubsysUpdate4.asm"
+    include "disasm/modules/68k/vint/SubsysUpdate4.asm"
 
     include "disasm/modules/68k/input/InitInputArrays.asm"
 
-    include "disasm/modules/68k/util/ReadPortByte.asm"
+    include "disasm/modules/68k/input/ReadPortByte.asm"
 
-    include "disasm/modules/68k/util/InputCaseDispatch.asm"
+    include "disasm/modules/68k/input/InputCaseDispatch.asm"
 
     include "disasm/modules/68k/game/CountInputBits.asm"
 
@@ -246,27 +246,27 @@ EntryPoint:
 
     include "disasm/modules/68k/util/XorAndUpdate.asm"
 
-    include "disasm/modules/68k/util/ReadMultiNibbles.asm"
+    include "disasm/modules/68k/input/ReadMultiNibbles.asm"
 
-    include "disasm/modules/68k/util/WaitInputReady.asm"
+    include "disasm/modules/68k/input/WaitInputReady.asm"
 
     include "disasm/modules/68k/game/ParseInputData.asm"
 
     include "disasm/modules/68k/game/ParseInputExtended.asm"
 
-    include "disasm/modules/68k/util/InputStateMachine.asm"
+    include "disasm/modules/68k/input/InputStateMachine.asm"
 
     include "disasm/modules/68k/game/ParseInputDispatch.asm"
 
     include "disasm/modules/68k/game/ParseInputNibbles.asm"
 
-    include "disasm/modules/68k/util/WriteNibble.asm"
+    include "disasm/modules/68k/text/WriteNibble.asm"
 
-    include "disasm/modules/68k/util/CombineNibbles.asm"
+    include "disasm/modules/68k/text/CombineNibbles.asm"
 
     include "disasm/modules/68k/input/PollInputStatus.asm"
 
-    include "disasm/modules/68k/util/WaitInputZero.asm"
+    include "disasm/modules/68k/input/WaitInputZero.asm"
 
     include "disasm/modules/68k/util/ReturnError.asm"
 
@@ -284,17 +284,17 @@ EntryPoint:
 
     include "disasm/modules/68k/boot/EarlyInit.asm"
 
-    include "disasm/modules/68k/util/WriteColorBitsVRAM.asm"
+    include "disasm/modules/68k/vdp/WriteColorBitsVRAM.asm"
 
-    include "disasm/modules/68k/util/VRAMWriteWithMode.asm"
+    include "disasm/modules/68k/vdp/VRAMWriteWithMode.asm"
 
-    include "disasm/modules/68k/util/VRAMWriteExtended.asm"
+    include "disasm/modules/68k/vdp/VRAMWriteExtended.asm"
 
     include "disasm/modules/68k/game/DecompressVDPTiles.asm"
 
     include "disasm/modules/68k/graphics/TilePlaceWrapper.asm"
 
-    include "disasm/modules/68k/util/FillTileSequence.asm"
+    include "disasm/modules/68k/graphics/FillTileSequence.asm"
 
     include "disasm/modules/68k/game/AddToTileBuffer.asm"
 
@@ -318,21 +318,21 @@ EntryPoint:
 
     include "disasm/modules/68k/game/BuildSpriteDataRows.asm"
 
-    include "disasm/modules/68k/util/WriteCharUIDisplay.asm"
+    include "disasm/modules/68k/graphics/WriteCharUIDisplay.asm"
 
     include "disasm/modules/68k/display/FadePalette.asm"
     include "disasm/modules/68k/graphics/DrawLayersReverse.asm"
     include "disasm/modules/68k/graphics/DrawLayersForward.asm"
 
-    include "disasm/modules/68k/util/ComputeDisplayAttrsUpper.asm"
+    include "disasm/modules/68k/graphics/ComputeDisplayAttrsUpper.asm"
 
-    include "disasm/modules/68k/util/ComputeDisplayAttrsLower.asm"
+    include "disasm/modules/68k/graphics/ComputeDisplayAttrsLower.asm"
 
-    include "disasm/modules/68k/util/NormalizeDisplayAttrs.asm"
+    include "disasm/modules/68k/graphics/NormalizeDisplayAttrs.asm"
 
     include "disasm/modules/68k/util/CopyWithMultiply.asm"
 
-    include "disasm/modules/68k/util/CopyBufferPair.asm"
+    include "disasm/modules/68k/memory/CopyBufferPair.asm"
 
     include "disasm/modules/68k/game/BuildSpriteBuffer.asm"
     include "disasm/modules/68k/display/ClearScreen.asm"
@@ -349,11 +349,11 @@ EntryPoint:
 
     include "disasm/modules/68k/game/SelectPaletteMode.asm"
 
-    include "disasm/modules/68k/util/ConfigDmaMode.asm"
+    include "disasm/modules/68k/vdp/ConfigDmaMode.asm"
 
     include "disasm/modules/68k/game/InitScrollModes.asm"
 
-    include "disasm/modules/68k/util/PreGameInit.asm"
+    include "disasm/modules/68k/game/PreGameInit.asm"
 
     include "disasm/modules/68k/game/ResetScrollModes.asm"
 
@@ -373,12 +373,12 @@ EntryPoint:
 
     include "disasm/modules/68k/util/ErrorDisplay.asm"
 
-    include "disasm/modules/68k/util/PlaceIconPair.asm"
-    include "disasm/modules/68k/util/PlaceIconTiles.asm"
+    include "disasm/modules/68k/graphics/PlaceIconPair.asm"
+    include "disasm/modules/68k/graphics/PlaceIconTiles.asm"
     include "disasm/modules/68k/graphics/DrawBox.asm"
     include "disasm/modules/68k/graphics/DrawTileStrip.asm"
     include "disasm/modules/68k/graphics/RenderTileStrip.asm"
-    include "disasm/modules/68k/util/FillSequentialWords.asm"
+    include "disasm/modules/68k/graphics/FillSequentialWords.asm"
     include "disasm/modules/68k/graphics/LoadCompressedGfx.asm"
 
     include "disasm/modules/68k/game/UpdateScrollBar1.asm"
@@ -398,14 +398,14 @@ EntryPoint:
     include "disasm/modules/68k/game/ToggleScrollBar.asm"
 
     include "disasm/modules/68k/graphics/DrawCharInfoPanel.asm"
-    include "disasm/modules/68k/util/FillTileRect.asm"
+    include "disasm/modules/68k/graphics/FillTileRect.asm"
     include "disasm/modules/68k/graphics/LoadScreenGfx.asm"
     include "disasm/modules/68k/game/LoadScreen.asm"
     include "disasm/modules/68k/game/ShowRelPanel.asm"
-    include "disasm/modules/68k/util/CharCodeCompare.asm"
-    include "disasm/modules/68k/util/CharCodeScore.asm"
+    include "disasm/modules/68k/game/CharCodeCompare.asm"
+    include "disasm/modules/68k/game/CharCodeScore.asm"
     include "disasm/modules/68k/util/RangeMatch.asm"
-    include "disasm/modules/68k/util/CharPairIndex.asm"
+    include "disasm/modules/68k/game/CharPairIndex.asm"
 
     include "disasm/modules/68k/game/FindCompatChars.asm"
 
@@ -423,22 +423,22 @@ EntryPoint:
     include "disasm/modules/68k/game/CheckCharRelation.asm"
 
     include "disasm/modules/68k/game/CheckBitField.asm"
-    include "disasm/modules/68k/util/HitTestMapTile.asm"
+    include "disasm/modules/68k/graphics/HitTestMapTile.asm"
     include "disasm/modules/68k/game/ShowCharProfile.asm"
     include "disasm/modules/68k/game/ShowCharDetail.asm"
     include "disasm/modules/68k/game/CalcWeightedStat.asm"
 
     include "disasm/modules/68k/game/CalcAffinityScore.asm"
 
-    include "disasm/modules/68k/util/ClearBothPlanes.asm"
+    include "disasm/modules/68k/graphics/ClearBothPlanes.asm"
     include "disasm/modules/68k/game/CheckCharCompat.asm"
     include "disasm/modules/68k/game/FindRelationRecord.asm"
     include "disasm/modules/68k/game/InsertRelationRecord.asm"
     include "disasm/modules/68k/game/CalcCharAdvantage.asm"
     include "disasm/modules/68k/game/CalcNegotiationPower.asm"
-    include "disasm/modules/68k/util/PlaceCharSprite.asm"
+    include "disasm/modules/68k/graphics/PlaceCharSprite.asm"
     include "disasm/modules/68k/graphics/DrawStatDisplay.asm"
-    include "disasm/modules/68k/util/CharacterBrowser.asm"
+    include "disasm/modules/68k/game/CharacterBrowser.asm"
     include "disasm/modules/68k/game/BrowseCharList.asm"
     include "disasm/modules/68k/game/CalcStatChange.asm"
     include "disasm/modules/68k/game/CalcRevenue.asm"
@@ -450,7 +450,7 @@ EntryPoint:
     include "disasm/modules/68k/game/ProcessCharRoster.asm"
 
     include "disasm/modules/68k/game/UpdateSlotDisplays.asm"
-    include "disasm/modules/68k/util/PlaceCursor.asm"
+    include "disasm/modules/68k/graphics/PlaceCursor.asm"
     include "disasm/modules/68k/game/GetCharStat.asm"
     include "disasm/modules/68k/game/FindBitInField.asm"
     include "disasm/modules/68k/graphics/DrawPlayerRoutes.asm"
@@ -470,11 +470,11 @@ EntryPoint:
 
     include "disasm/modules/68k/display/DisplayModelStats.asm"
 
-    include "disasm/modules/68k/util/PlacePlayerNameLabels.asm"
+    include "disasm/modules/68k/graphics/PlacePlayerNameLabels.asm"
 
     include "disasm/modules/68k/game/ProcessPlayerSelectInput.asm"
 
-    include "disasm/modules/68k/util/WaitForKeyPress.asm"
+    include "disasm/modules/68k/input/WaitForKeyPress.asm"
 
     include "disasm/modules/68k/game/GetPlayerModelSelect.asm"
 
@@ -482,17 +482,17 @@ EntryPoint:
 
     include "disasm/modules/68k/game/InitAllGameTables.asm"
 
-    include "disasm/modules/68k/util/ComputeDividends.asm"
+    include "disasm/modules/68k/game/ComputeDividends.asm"
 
     include "disasm/modules/68k/game/RunAircraftPurchase.asm"
 
-    include "disasm/modules/68k/util/ComputeMonthlyAircraftCosts.asm"
+    include "disasm/modules/68k/game/ComputeMonthlyAircraftCosts.asm"
 
-    include "disasm/modules/68k/util/ComputeAircraftSpeedDisp.asm"
+    include "disasm/modules/68k/game/ComputeAircraftSpeedDisp.asm"
 
     include "disasm/modules/68k/game/RunAircraftStatsDisplay.asm"
 
-    include "disasm/modules/68k/util/PollSingleButtonPress.asm"
+    include "disasm/modules/68k/input/PollSingleButtonPress.asm"
 
     include "disasm/modules/68k/game/RunAircraftParamShuffle.asm"
 
@@ -502,7 +502,7 @@ EntryPoint:
 
     include "disasm/modules/68k/game/BuildAircraftAttrTable.asm"
 
-    include "disasm/modules/68k/util/ScaleAircraftAttrValue.asm"
+    include "disasm/modules/68k/math/ScaleAircraftAttrValue.asm"
 
     include "disasm/modules/68k/game/RunDestSelectLoop.asm"
 
@@ -512,19 +512,19 @@ EntryPoint:
 
     include "disasm/modules/68k/game/UpdateEventSchedule.asm"
 
-    include "disasm/modules/68k/util/WaitForEventInput.asm"
+    include "disasm/modules/68k/input/WaitForEventInput.asm"
 
     include "disasm/modules/68k/display/DisplayEventChoice.asm"
 
     include "disasm/modules/68k/game/InitGameGraphicsMode.asm"
 
-    include "disasm/modules/68k/util/ClearDisplayBuffers.asm"
+    include "disasm/modules/68k/graphics/ClearDisplayBuffers.asm"
 
     include "disasm/modules/68k/game/InitGameAudioState.asm"
 
     include "disasm/modules/68k/game/GameEntry.asm"
     include "disasm/modules/68k/game/GameLoopSetup.asm"
-    include "disasm/modules/68k/util/MainLoop.asm"
+    include "disasm/modules/68k/main-loop/MainLoop.asm"
 ; ===========================================================================
 ; RangeLookup -- Map a value to a table index (0-7)
 ;   In:  4(sp) = value to look up (longword on stack)
@@ -598,7 +598,7 @@ RangeLookup:                                                ; $00D648
     include "disasm/modules/68k/display/DisplayRouteDestChoice.asm"
 
     include "disasm/modules/68k/game/CalcCharValue.asm"
-    include "disasm/modules/68k/util/CollectPlayerChars.asm"
+    include "disasm/modules/68k/game/CollectPlayerChars.asm"
 
     include "disasm/modules/68k/graphics/DrawPlayerComparisonStats.asm"
 
@@ -613,13 +613,13 @@ RangeLookup:                                                ; $00D648
 
     include "disasm/modules/68k/game/PackSaveState.asm"
 
-    include "disasm/modules/68k/util/ExecPassengerLoadUnload.asm"
+    include "disasm/modules/68k/game/ExecPassengerLoadUnload.asm"
 
     include "disasm/modules/68k/game/UnpackPixelData.asm"
 
     include "disasm/modules/68k/game/ProcessAirportTransact.asm"
 
-    include "disasm/modules/68k/util/CopyRouteFields.asm"
+    include "disasm/modules/68k/game/CopyRouteFields.asm"
     include "disasm/modules/68k/game/ShowRouteInfo.asm"
 
     include "disasm/modules/68k/game/UpdatePassengerDemand.asm"
@@ -627,11 +627,11 @@ RangeLookup:                                                ; $00D648
     include "disasm/modules/68k/util/VerifyChecksum.asm"
     include "disasm/modules/68k/game/ProcessRouteAction.asm"
 
-    include "disasm/modules/68k/util/ComputeRouteProfit.asm"
+    include "disasm/modules/68k/game/ComputeRouteProfit.asm"
 
     include "disasm/modules/68k/game/CalcOptimalTicketPrice.asm"
 
-    include "disasm/modules/68k/util/SubmitTurnResults.asm"
+    include "disasm/modules/68k/game/SubmitTurnResults.asm"
 
     include "disasm/modules/68k/game/AdvanceToNextMonth.asm"
 

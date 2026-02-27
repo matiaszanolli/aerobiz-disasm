@@ -129,18 +129,19 @@ All 801 translated functions extracted from monolithic section files into indivi
 
 | Category | Count | Purpose |
 |----------|-------|---------|
-| game | 452 | Game logic, UI, AI, turn processing |
-| util | 211 | General utilities, uncategorized helpers |
-| graphics | 59 | Tile/sprite drawing, graphics loading |
+| game | 551 | Game logic, UI, AI, turn processing, characters, routes, economy |
+| graphics | 92 | Tile/sprite drawing, animation, display refresh |
+| input | 27 | Controller polling, input processing, wait/delay |
+| vdp | 23 | VDP register access, DMA routines |
 | display | 22 | Screen management, fading, display modes |
-| math | 13 | Arithmetic, division, random numbers |
-| vdp | 12 | VDP register access, DMA routines |
-| text | 7 | Printf, text rendering, cursor control |
-| vint | 6 | V-INT/H-INT handlers |
-| sound | 5 | Z80 communication, sound driver interface |
-| memory | 5 | Memory fill, copy, clear |
-| input | 5 | Controller polling, input processing |
+| util | 20 | Stubs, checksums, error handling, misc |
+| math | 20 | Arithmetic, division, random numbers |
+| text | 16 | Printf, text rendering, string formatting |
+| vint | 10 | V-INT/H-INT handlers, subsystem updates |
+| memory | 8 | Memory fill, copy, clear |
+| sound | 7 | Z80 communication, sound driver interface |
 | boot | 4 | Hardware init, early startup |
+| main-loop | 1 | Main game loop |
 
 Deep inline annotations added to the 30 most complex functions (B-062): phase block markers, struct field names, magic number explanations, ROM address identifications, and algorithm descriptions. Covers the AI decision tree, turn sequencing, route economics, save serialization, character management, alliance system, and quarterly processing.
 

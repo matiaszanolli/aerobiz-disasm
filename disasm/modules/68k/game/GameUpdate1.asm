@@ -5,104 +5,123 @@
 GameUpdate1:
     link    a6,#$0
     movem.l d2-d4/a2-a3, -(a7)
-    movea.l  #$00000D64,a2
-    movea.l  #$0003B270,a3
+    movea.l  #$00000D64,a2               ; a2 = GameCommand dispatcher
+    movea.l  #$0003B270,a3               ; a3 = printf-style display function
+
+; --- Phase: Load and display setup ---
     jsr ResourceLoad
     jsr PreLoopInit
-    pea     ($0040).w
+    pea     ($0040).w                    ; #$40 = display mode flags
     clr.l   -(a7)
-    pea     ($0010).w
+    pea     ($0010).w                    ; GameCommand $10 (set display mode)
     jsr     (a2)
     clr.l   -(a7)
     jsr CmdSetBackground
     pea     ($0001).w
     clr.l   -(a7)
     pea     ($0004).w
-    jsr LoadScreenGfx
+    jsr LoadScreenGfx                    ; load screen_id $4 (seasonal transition screen)
     pea     ($0007).w
-    jsr SelectMenuItem
-    move.w  ($00FF0006).l, d0
+    jsr SelectMenuItem                   ; select menu item 7 (season display slot)
+
+; --- Phase: Compute season index (d3) and display year (d4) ---
+    ; Season index: ((frame_counter + 3) mod 4) * 3, then mod 12
+    ; This converts frame_counter to a 0-based season index (0-3) mapped to
+    ; one of 4 season label pointer entries, each 3 words apart in the table.
+    move.w  ($00FF0006).l, d0            ; frame_counter (increments each main loop tick)
     ext.l   d0
-    addq.l  #$3, d0
+    addq.l  #$3, d0                      ; bias so season 0 starts at frame 0
     moveq   #$4,d1
-    jsr SignedMod
+    jsr SignedMod                        ; d0 = (frame_counter+3) mod 4 -> season slot 0-3
     move.l  d0, d3
-    mulu.w  #$3, d3
+    mulu.w  #$3, d3                      ; d3 = season_slot * 3 (pointer table stride = 3 words)
     move.w  d3, d0
     ext.l   d0
     addq.l  #$3, d0
     moveq   #$C,d1
-    jsr SignedMod
-    move.w  d0, d3
+    jsr SignedMod                        ; re-wrap: ((season*3)+3) mod 12
+    move.w  d0, d3                       ; d3 = final season label table index
+
+    ; Display year: frame_counter / 4 + $7A3 (1955 in-game year base)
     move.w  ($00FF0006).l, d0
     ext.l   d0
     bge.b   l_2f628
-    addq.l  #$3, d0
+    addq.l  #$3, d0                      ; adjust for arithmetic right shift (signed correction)
 l_2f628:
-    asr.l   #$2, d0
-    addi.w  #$7a3, d0
-    move.w  d0, d4
-    pea     ($001E).w
-    pea     ($0020).w
-    clr.l   -(a7)
-    clr.l   -(a7)
+    asr.l   #$2, d0                      ; d0 = frame_counter / 4 (year offset from base)
+    addi.w  #$7a3, d0                    ; #$7A3 = 1955 decimal (base year)
+    move.w  d0, d4                       ; d4 = display year (e.g. 1955, 1956, ...)
+
+; --- Phase: Set up text window and cursor ---
+    pea     ($001E).w                    ; right edge = 30
+    pea     ($0020).w                    ; bottom edge = 32
+    clr.l   -(a7)                        ; left = 0
+    clr.l   -(a7)                        ; top = 0
     jsr SetTextWindow
-    lea     $30(a7), a7
-    pea     ($000C).w
-    pea     ($000C).w
+    lea     $30(a7), a7                  ; pop 6 longword args (SetTextWindow takes 4 params + 2 extras)
+    pea     ($000C).w                    ; cursor col = 12 (horizontal center)
+    pea     ($000C).w                    ; cursor row = 12 (vertical center)
     jsr SetTextCursor
     jsr ResourceUnload
+
+; --- Phase: Print season label and year (pre-animation, static render) ---
+    ; Look up season name pointer from table at $5F096 using d3 as word index
     move.w  d3, d0
-    lsl.w   #$2, d0
-    movea.l  #$0005F096,a0
-    move.l  (a0,d0.w), -(a7)
-    pea     ($0004472A).l
-    jsr     (a3)
+    lsl.w   #$2, d0                      ; d3 * 4 = longword index into season name pointer table
+    movea.l  #$0005F096,a0              ; season name pointer table (4 entries x 4 bytes)
+    move.l  (a0,d0.w), -(a7)            ; push ptr to season name string (e.g. "SPRING")
+    pea     ($0004472A).l               ; ptr to format string for season label display
+    jsr     (a3)                         ; print season label string
     move.w  d4, d0
     ext.l   d0
-    move.l  d0, -(a7)
-    pea     ($00044726).l
-    jsr     (a3)
+    move.l  d0, -(a7)                   ; push year value (e.g. 1955)
+    pea     ($00044726).l               ; ptr to format string for year display
+    jsr     (a3)                         ; print year number
     pea     ($000D).w
-    jsr LoadDisplaySet
-    lea     $1c(a7), a7
-    clr.w   d2
+    jsr LoadDisplaySet                   ; flush display buffer set $D to screen
+    lea     $1c(a7), a7                  ; clean up 7 longwords ($1C = 28 bytes)
+
+; --- Phase: Animate season label (3 frames) ---
+    ; Render the same season label + year 3 times to hold the display for visibility.
+    ; Each iteration also issues GameCommand calls for sprite/display sync.
+    clr.w   d2                           ; d2 = animation frame counter (0-2)
 l_2f68e:
-    move.l  #$8000, -(a7)
+    move.l  #$8000, -(a7)               ; flags: $8000 = display enable/flip
     pea     ($0002).w
     pea     ($000C).w
     pea     ($000C).w
     pea     ($000C).w
     clr.l   -(a7)
-    pea     ($001A).w
+    pea     ($001A).w                    ; GameCommand $1A (tile display / sprite update)
     jsr     (a2)
     pea     ($000A).w
     pea     ($000E).w
-    jsr     (a2)
-    pea     ($000C).w
-    pea     ($000C).w
+    jsr     (a2)                         ; GameCommand $E (wait/sync step)
+    pea     ($000C).w                    ; cursor col = 12
+    pea     ($000C).w                    ; cursor row = 12
     jsr SetTextCursor
     lea     $2c(a7), a7
     move.w  d3, d0
     lsl.w   #$2, d0
-    movea.l  #$0005F096,a0
+    movea.l  #$0005F096,a0              ; season name pointer table
     move.l  (a0,d0.w), -(a7)
-    pea     ($00044722).l
+    pea     ($00044722).l               ; format string for season label (animation variant)
     jsr     (a3)
     move.w  d4, d0
     ext.l   d0
-    move.l  d0, -(a7)
-    pea     ($0004471E).l
+    move.l  d0, -(a7)                   ; year value
+    pea     ($0004471E).l               ; format string for year (animation variant)
     jsr     (a3)
     pea     ($000A).w
     pea     ($000E).w
-    jsr     (a2)
+    jsr     (a2)                         ; GameCommand $E (sync)
     lea     $18(a7), a7
     addq.w  #$1, d2
-    cmpi.w  #$3, d2
+    cmpi.w  #$3, d2                      ; repeat 3 frames
     blt.b   l_2f68e
+
     pea     ($0018).w
-    jsr     (a2)
+    jsr     (a2)                         ; GameCommand $18 (finalize / commit display)
     movem.l -$14(a6), d2-d4/a2-a3
     unlk    a6
     rts

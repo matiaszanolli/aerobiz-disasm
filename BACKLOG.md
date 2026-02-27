@@ -8,6 +8,16 @@ Pick the highest-priority unclaimed task. Mark it `IN PROGRESS` with your sessio
 
 ## Phase 5 -- Full Understanding
 
+### B-062: Deep game logic annotation (top 30 complex functions)
+**Status:** DONE (2026-02-27)
+**Priority:** P2
+**Why:** All 801 module files have one-line header descriptions but 0-1% inline comment density. The top 30 most complex functions (300-982 lines each) contain unexplained magic numbers, RAM offsets, struct field references, and ROM data addresses. Annotation makes the disassembly actually readable.
+**Approach:** 3 batches of 10 functions each, annotated by parallel Engineer agents. Added phase block comments, struct field names, magic number explanations, ROM address identifications, algorithm descriptions, and branch purpose comments. Comments only — no binary changes. One accidental instruction change (pea $0039→$003A in UpdateScreenLayout) caught and reverted during build verification.
+**Result:** 30 functions annotated across game/ and util/. Total ~13,700 lines of assembly received ~3,000 lines of new inline comments (phase blocks, field names, magic numbers, algorithms). Functions went from 0-1% to 10-20% comment density.
+**Acceptance:** `make verify` passes (MD5: 1269f44e846a88a2de945de082428b39). `git diff` shows only comment additions.
+
+---
+
 ### B-061: Rename 31 misleading functions
 **Status:** DONE (2026-02-26)
 **Priority:** P2

@@ -143,7 +143,7 @@ All 801 translated functions extracted from monolithic section files into indivi
 | boot | 4 | Hardware init, early startup |
 | main-loop | 1 | Main game loop |
 
-Deep inline annotations added to the 30 most complex functions (B-062): phase block markers, struct field names, magic number explanations, ROM address identifications, and algorithm descriptions. Covers the AI decision tree, turn sequencing, route economics, save serialization, character management, alliance system, and quarterly processing.
+Deep inline annotations added to the 57 most complex functions (B-062 + B-065): phase block markers, struct field names, magic number explanations, ROM address identifications, and algorithm descriptions. B-062 covers the AI decision tree, turn sequencing, route economics, save serialization, character management, alliance system, and quarterly processing. B-065 extends coverage to the rendering pipeline (RenderPlayerInterface, RenderGameplayScreen, DrawQuarterResultsScreen, RenderDetailedStats, RenderAnimFrame, RenderTeamRoster, RenderMatchResults, RenderQuarterReport), world map animation, TMSS boot screen (VDP init + 1bpp→4bpp tile expansion), input handling, character stat management, and the text renderer escape-sequence parser (7 escape types).
 
 See [CALL_GRAPH.md](analysis/CALL_GRAPH.md), [DATA_TABLES.md](analysis/DATA_TABLES.md).
 

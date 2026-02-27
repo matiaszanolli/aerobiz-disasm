@@ -123,7 +123,24 @@ See [RAM_MAP.md](analysis/RAM_MAP.md), [DATA_STRUCTURES.md](analysis/DATA_STRUCT
 
 ### Phase 5 — Full Understanding
 
-Every function has a one-line description explaining what it does (B-055, B-057, B-058 — 538 TODOs resolved across 4 section files). Cross-reference index generated: 605 unique callees, 3,698 call sites, 366 leaf functions (B-056). 53 ROM data tables documented with field layouts, accessor functions, and decoded examples — covering string pools, city/route/region tables, aircraft stats, character compatibility matrices, and graphics data (B-059).
+Every function has a one-line description explaining what it does (B-055, B-057, B-058 — 538 TODOs resolved across 4 section files). Cross-reference index generated: 605 unique callees, 3,698 call sites, 366 leaf functions (B-056). 53 ROM data tables documented with field layouts, accessor functions, and decoded examples — covering string pools, city/route/region tables, aircraft stats, character compatibility matrices, and graphics data (B-059). 31 misleading function names corrected based on actual behavior analysis (B-061).
+
+All 801 translated functions extracted from monolithic section files into individual module files at `disasm/modules/68k/<category>/` (B-060). Section files now contain only data tables and include directives.
+
+| Category | Count | Purpose |
+|----------|-------|---------|
+| game | 452 | Game logic, UI, AI, turn processing |
+| util | 211 | General utilities, uncategorized helpers |
+| graphics | 59 | Tile/sprite drawing, graphics loading |
+| display | 22 | Screen management, fading, display modes |
+| math | 13 | Arithmetic, division, random numbers |
+| vdp | 12 | VDP register access, DMA routines |
+| text | 7 | Printf, text rendering, cursor control |
+| vint | 6 | V-INT/H-INT handlers |
+| sound | 5 | Z80 communication, sound driver interface |
+| memory | 5 | Memory fill, copy, clear |
+| input | 5 | Controller polling, input processing |
+| boot | 4 | Hardware init, early startup |
 
 See [CALL_GRAPH.md](analysis/CALL_GRAPH.md), [DATA_TABLES.md](analysis/DATA_TABLES.md).
 

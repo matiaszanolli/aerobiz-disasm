@@ -1,0 +1,197 @@
+; ============================================================================
+; ShowCharStats -- Displays a character statistics screen: allocates two panel areas and renders the character's name, rating, age, and route load values as formatted text tiles at computed screen coordinates.
+; Called: ?? times.
+; 598 bytes | $01B0CE-$01B323
+; ============================================================================
+ShowCharStats:                                                  ; $01B0CE
+    link    a6,#-$80
+    movem.l d2-d5/a2-a5,-(sp)
+    move.l  $0014(a6),d3
+    move.l  $000c(a6),d4
+    move.l  $0008(a6),d5
+    lea     -$0080(a6),a4
+    movea.l #$0003b270,a5
+    moveq   #$1,d2
+    clr.l   -(sp)
+    pea     ($0008).w
+    pea     ($000E).w
+    move.w  d3,d0
+    ext.l   d0
+    addq.l  #$1,d0
+    move.l  d0,-(sp)
+    move.w  d2,d0
+    ext.l   d0
+    addq.l  #$1,d0
+    move.l  d0,-(sp)
+    clr.l   -(sp)
+    pea     ($001A).w
+    dc.w    $4eb9,$0000,$0d64                           ; jsr $000D64
+    lea     $001c(sp),sp
+    move.w  d5,d0
+    ext.l   d0
+    move.l  d0,-(sp)
+    move.w  $001a(a6),d0
+    ext.l   d0
+    move.l  d0,-(sp)
+    clr.l   -(sp)
+    move.w  d3,d0
+    ext.l   d0
+    addq.l  #$1,d0
+    move.l  d0,-(sp)
+    move.w  d2,d0
+    ext.l   d0
+    addq.l  #$1,d0
+    move.l  d0,-(sp)
+    move.w  d4,d0
+    ext.l   d0
+    move.l  d0,-(sp)
+    dc.w    $4eb9,$0003,$a5a8                           ; jsr $03A5A8
+    lea     $0018(sp),sp
+    addi.w  #$f,d2
+    addq.w  #$1,d3
+    move.w  d4,d0
+    mulu.w  #$c,d0
+    movea.l #$00ffa6b8,a0
+    lea     (a0,d0.w),a0
+    movea.l a0,a2
+    move.w  d5,d0
+    lsl.w   #$5,d0
+    move.w  d4,d1
+    add.w   d1,d1
+    add.w   d1,d0
+    movea.l #$00ffb9e8,a0
+    lea     (a0,d0.w),a0
+    movea.l a0,a3
+    clr.l   -(sp)
+    pea     ($0008).w
+    pea     ($000E).w
+    move.w  d3,d0
+    ext.l   d0
+    move.l  d0,-(sp)
+    move.w  d2,d0
+    ext.l   d0
+    move.l  d0,-(sp)
+    clr.l   -(sp)
+    pea     ($001A).w
+    dc.w    $4eb9,$0000,$0d64                           ; jsr $000D64
+    pea     ($0020).w
+    pea     ($0020).w
+    clr.l   -(sp)
+    clr.l   -(sp)
+    dc.w    $4eb9,$0003,$a942                           ; jsr $03A942
+    lea     $002c(sp),sp
+    move.w  d3,d0
+    ext.l   d0
+    move.l  d0,-(sp)
+    move.w  d2,d0
+    addq.w  #$8,d0
+    andi.l  #$ffff,d0
+    move.l  d0,-(sp)
+    dc.w    $4eb9,$0003,$ab2c                           ; jsr $03AB2C
+    moveq   #$0,d0
+    move.w  $0002(a2),d0
+    move.l  d0,-(sp)
+    pea     ($0004114E).l
+    jsr     (a5)
+    move.w  d3,d0
+    ext.l   d0
+    addq.l  #$2,d0
+    move.l  d0,-(sp)
+    move.w  d2,d0
+    addi.w  #$9,d0
+    andi.l  #$ffff,d0
+    move.l  d0,-(sp)
+    dc.w    $4eb9,$0003,$ab2c                           ; jsr $03AB2C
+    moveq   #$0,d0
+    move.b  $0001(a2),d0
+    mulu.w  #$a,d0
+    andi.l  #$ffff,d0
+    move.l  d0,-(sp)
+    pea     ($0004114A).l
+    jsr     (a5)
+    move.w  d3,d0
+    ext.l   d0
+    addq.l  #$4,d0
+    move.l  d0,-(sp)
+    move.w  d2,d0
+    addq.w  #$4,d0
+    andi.l  #$ffff,d0
+    move.l  d0,-(sp)
+    dc.w    $4eb9,$0003,$ab2c                           ; jsr $03AB2C
+    moveq   #$0,d0
+    move.b  $0008(a2),d0
+    moveq   #$64,d1
+    sub.w   d0,d1
+    move.l  d1,d0
+    andi.l  #$ffff,d0
+    move.l  d0,-(sp)
+    pea     ($00041146).l
+    jsr     (a5)
+    lea     $0030(sp),sp
+    move.w  d3,d0
+    ext.l   d0
+    addq.l  #$4,d0
+    move.l  d0,-(sp)
+    move.w  d2,d0
+    addi.w  #$b,d0
+    andi.l  #$ffff,d0
+    move.l  d0,-(sp)
+    dc.w    $4eb9,$0003,$ab2c                           ; jsr $03AB2C
+    moveq   #$0,d0
+    move.b  $0009(a2),d0
+    moveq   #$64,d1
+    sub.w   d0,d1
+    move.l  d1,d0
+    andi.l  #$ffff,d0
+    move.l  d0,-(sp)
+    pea     ($00041142).l
+    move.l  a4,-(sp)
+    dc.w    $4eb9,$0003,$b22c                           ; jsr $03B22C
+    move.l  a4,-(sp)
+    pea     ($0004113E).l
+    jsr     (a5)
+    move.w  d3,d0
+    ext.l   d0
+    addq.l  #$6,d0
+    move.l  d0,-(sp)
+    move.w  d2,d0
+    addq.w  #$4,d0
+    andi.l  #$ffff,d0
+    move.l  d0,-(sp)
+    dc.w    $4eb9,$0003,$ab2c                           ; jsr $03AB2C
+    moveq   #$0,d0
+    move.b  (a3),d0
+    andi.l  #$ffff,d0
+    moveq   #$0,d1
+    move.b  $0001(a3),d1
+    sub.l   d1,d0
+    move.l  d0,-(sp)
+    pea     ($0004113A).l
+    move.l  a4,-(sp)
+    dc.w    $4eb9,$0003,$b22c                           ; jsr $03B22C
+    lea     $0030(sp),sp
+    move.l  a4,-(sp)
+    pea     ($00041136).l
+    jsr     (a5)
+    move.w  d3,d0
+    ext.l   d0
+    addq.l  #$6,d0
+    move.l  d0,-(sp)
+    move.w  d2,d0
+    addi.w  #$b,d0
+    andi.l  #$ffff,d0
+    move.l  d0,-(sp)
+    dc.w    $4eb9,$0003,$ab2c                           ; jsr $03AB2C
+    moveq   #$0,d0
+    move.b  $0001(a3),d0
+    andi.l  #$ffff,d0
+    move.l  d0,-(sp)
+    pea     ($00041132).l
+    move.l  a4,-(sp)
+    dc.w    $4eb9,$0003,$b22c                           ; jsr $03B22C
+    move.l  a4,-(sp)
+    pea     ($0004112E).l
+    jsr     (a5)
+    movem.l -$00a0(a6),d2-d5/a2-a5
+    unlk    a6
+    rts

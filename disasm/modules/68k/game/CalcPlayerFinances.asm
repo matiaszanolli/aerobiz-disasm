@@ -1,0 +1,61 @@
+; ============================================================================
+; CalcPlayerFinances -- computes a player's total income, total expenses, and net profit from multiple RAM tables
+; Called: ?? times.
+; 170 bytes | $0103B0-$010459
+; ============================================================================
+CalcPlayerFinances:                                                  ; $0103B0
+    movem.l d2/a2-a4,-(sp)
+    move.l  $0014(sp),d2
+    move.w  d2,d0
+    mulu.w  #$24,d0
+    movea.l #$00ff0018,a0
+    lea     (a0,d0.w),a0
+    movea.l a0,a1
+    move.w  d2,d0
+    mulu.w  #$6,d0
+    movea.l #$00ff0290,a0
+    lea     (a0,d0.w),a0
+    movea.l a0,a3
+    move.w  d2,d0
+    mulu.w  #$c,d0
+    movea.l #$00ff03f0,a0
+    lea     (a0,d0.w),a0
+    movea.l a0,a2
+    move.w  d2,d0
+    lsl.w   #$3,d0
+    movea.l #$00ff09a2,a0
+    lea     (a0,d0.w),a0
+    movea.l a0,a4
+    moveq   #$0,d0
+    move.w  (a3),d0
+    add.l   $000e(a1),d0
+    moveq   #$0,d1
+    move.w  $0002(a3),d1
+    add.l   d1,d0
+    moveq   #$0,d1
+    move.w  $0004(a3),d1
+    add.l   d1,d0
+    moveq   #$0,d1
+    move.w  (a2),d1
+    add.l   d1,d0
+    moveq   #$0,d1
+    move.w  $0002(a2),d1
+    add.l   d1,d0
+    moveq   #$0,d1
+    move.w  $0004(a2),d1
+    add.l   d1,d0
+    add.l   $0004(a4),d0
+    movea.l $001c(sp),a0
+    move.l  d0,(a0)
+    move.l  $000a(a1),d0
+    add.l   (a4),d0
+    movea.l $0018(sp),a0
+    move.l  d0,(a0)
+    movea.l $0018(sp),a0
+    move.l  (a0),d0
+    movea.l $001c(sp),a0
+    sub.l   (a0),d0
+    movea.l $0020(sp),a0
+    move.l  d0,(a0)
+    movem.l (sp)+,d2/a2-a4
+    rts

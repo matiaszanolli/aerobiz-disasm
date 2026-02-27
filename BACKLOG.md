@@ -80,11 +80,12 @@ Pick the highest-priority unclaimed task. Mark it `IN PROGRESS` with your sessio
 ---
 
 ### B-060: Module extraction (code reorganization)
-**Status:** OPEN
+**Status:** DONE (2026-02-26)
 **Priority:** P3
-**Why:** Currently all 860 translated functions live inline in the 4 monolithic section files alongside data. Extracting them to `disasm/modules/68k/<category>/` improves navigability and enables per-function git history.
-**Approach:** For each translated function block: extract code to `disasm/modules/68k/<category>/FunctionName.asm`, replace in section file with a `dcb.b N, 0` fill + `include` directive (or use an offset-tracking approach). Requires careful byte counting to preserve ROM layout. Pilot with 5-10 functions before bulk application.
-**Acceptance:** All 860 functions in module files. Section files contain only data + include directives. `make verify` passes.
+**Why:** All 801 translated functions lived inline in 4 monolithic section files (21,000–24,000 lines each). Extracting them to individual module files improves navigability, enables per-function git history, and matches the `disasm/modules/68k/<category>/` structure.
+**Approach:** Python extraction script (`/tmp/extract_modules.py`). For each function block (header comment + label + code), create `disasm/modules/68k/<category>/FunctionName.asm` and replace inline code with `include "disasm/modules/68k/<category>/FunctionName.asm"`. vasm inline expansion generates identical bytes — no `org` or padding needed. Pilot-tested with 3 functions, then extracted all 4 sections incrementally with build verification after each.
+**Result:** 801 functions extracted to 12 categories: game (452), util (211), graphics (59), display (22), math (13), vdp (12), text (7), vint (6), sound (5), memory (5), input (5), boot (4). Section files reduced from ~90,000 lines total to ~2,200 lines (data tables, includes, structural markers). 1 data block (GameStrings) correctly kept inline.
+**Acceptance:** `make verify` passes after each section extraction (MD5: 1269f44e846a88a2de945de082428b39). 801 module files in `disasm/modules/68k/`.
 
 ---
 

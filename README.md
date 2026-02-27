@@ -37,10 +37,10 @@ aerobiz-disasm/
     aerobiz.asm                  # Main entry point (includes everything)
     modules/
       shared/definitions.asm     # Hardware register equates
-      68k/<category>/*.asm       # Translated 68K modules (by category)
+      68k/<category>/*.asm       # 801 translated 68K modules (12 categories)
     sections/
       header.asm                 # Vector table + ROM header ($000000-$0001FF)
-      section_XXXXXX.asm         # ROM data sections (64KB each)
+      section_XXXXXX.asm         # ROM sections (data + include directives)
   analysis/
     ROM_MAP.md                   # ROM layout (code/data/padding)
     RAM_MAP.md                   # Work RAM variables and data structures
@@ -99,6 +99,7 @@ aerobiz-disasm/
 | Functions translated | 860 |
 | Functions named | 595 (0 unnamed) |
 | Functions described | 595 (one-line descriptions for every function) |
+| Functions extracted to modules | 801 (12 categories) |
 | Call sites symbolized | 3,696 (`jsr`, `bsr.w`, `jsr (d16,PC)`) |
 | ROM data tables documented | 53 (field-level layouts) |
 | RAM variables mapped | 50+ variables, 30+ named regions |

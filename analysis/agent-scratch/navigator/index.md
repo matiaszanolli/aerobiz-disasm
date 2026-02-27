@@ -84,6 +84,7 @@ The Navigator's complete knowledge base. Updated after each session.
 - B-045 Resolve char_stat_array/char_stat_tab overlap: DONE (2026-02-25) -- 89=stat_type/city count, not char_index; 4 players × 57B = 228B, no overlap
 - Key RAM facts: player_records=$FF0018 (4×36B), char_stat_array=$FF05C4 (4×57B=228B), route_slots=$FF9A20 (4×40×20B), save_buf=$FF1804
 - B-059 ROM data tables survey: DONE (2026-02-26) -- DATA_TABLES.md created; labels added to section_040000+section_050000; 50+ tables documented
+- B-060 Module extraction: DONE (2026-02-26) -- 801 functions extracted from 4 section files to `disasm/modules/68k/<category>/`. Section files now contain data + include directives only. Categories: game(452), util(211), graphics(59), display(22), math(13), vdp(12), text(7), vint(6), sound(5), memory(5), input(5), boot(4). To find a function: `disasm/modules/68k/<category>/<FunctionName>.asm`
 
 ### Data Structure Key Facts (from DATA_STRUCTURES.md)
 - **Player record** ($FF0018, stride $24=36B, 4 players): active_flag+$00, hub_city+$01, domestic_slots+$04, intl_slots+$05, cash+$06(long), quarter_accum_a/b/c+$0A/+$0E/+$12(long), prev_quarter copies+$16/+$1A/+$1E, approval+$22(byte)

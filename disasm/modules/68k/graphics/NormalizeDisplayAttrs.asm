@@ -2,24 +2,45 @@
 ; NormalizeDisplayAttrs -- Step RGB display attributes toward a target set over 8 iterations
 ; 358 bytes | $004EFA-$00505F
 ; ============================================================================
+; --- Phase: Setup -- allocate frame, copy source palette to local work buffer ---
+; Args:
+;   $8(a6)  = pointer to source colour array (current CRAM values)
+;   $c(a6)  = pointer to target colour array (destination values to converge toward)
+;   $12(a6) = VRAM/CRAM write address (passed to WriteCharUIDisplay)
+;   $16(a6) = count of colour entries (words) to process
+;   $1a(a6) = GameCommand argument for optional post-frame sync call (0 = skip)
+;
+; Algorithm: fade each RGB channel of each colour entry one step toward the target
+; over 8 outer iterations, writing the intermediate result to CRAM each iteration.
+; Genesis colour format: %0000BBB0GGG0RRR0 -- 3 bits per channel, spaced at bits 1/5/9
 NormalizeDisplayAttrs:
     link    a6,#-$88
     movem.l d2-d7/a2-a5, -(a7)
+    ; a4 = target colour array pointer ($c(a6)); each entry is a Genesis colour word
     movea.l $c(a6), a4
+    ; a5 = pointer to single-word temp at -$6(a6): used to hold current channel value
     lea     -$6(a6), a5
+    ; copy source colour array into local work buffer at -$86(a6), size = count * 2 bytes
     move.w  $16(a6), d0
     add.w   d0, d0
     move.l  d0, -(a7)
     pea     -$86(a6)
     move.l  $8(a6), -(a7)
+    ; MemMove: copy source palette (size=count*2 bytes) into frame temp work buffer
     bsr.w MemMove
     lea     $c(a7), a7
+    ; -$4(a6) = outer iteration counter (0-7, 8 total fade steps)
     clr.w   -$4(a6)
+; --- Phase: Outer loop -- one fade step per iteration (8 total) ---
 l_04f26:
+    ; -$2(a6) = remaining steps = 7 - iteration (decrements each step)
+    ; used as the "max single-step jump" clamp: prevents overshooting the target
     moveq   #$7,d0
     sub.w   -$4(a6), d0
     move.w  d0, -$2(a6)
+    ; d5 = colour entry index (0 to count-1); inner loop walks all entries
     clr.w   d5
+    ; a2 -> current entry in local work buffer; a3 -> corresponding target entry
     move.w  d5, d0
     add.w   d0, d0
     lea     -$86(a6), a0
@@ -31,48 +52,71 @@ l_04f26:
     lea     (a4,d0.l), a0
     movea.l a0, a3
     bra.w   l_0500e
+; --- Phase: Inner loop -- step each channel of one colour entry toward target ---
 l_04f50:
+    ; extract Blue channel from target colour (a3):
+    ; Genesis format bits[11:9] = BBB; mask $E00, shift right 9 -> 0-7
     move.w  (a3), d0
     andi.l  #$e00, d0
     moveq   #$9,d1
     asr.l   d1, d0
+    ; save target Blue (0-7) in temp word at a5 (-$6(a6)) for clamped step logic below
     move.w  d0, (a5)
+    ; extract Green channel from target colour: bits[7:5] = GGG; mask $E0, shift right 5
     move.w  (a3), d7
     andi.l  #$e0, d7
     asr.l   #$5, d7
+    ; d7 = target Green (0-7)
+    ; extract Red channel from target colour: bits[3:1] = RRR; mask $E, shift right 1
     move.w  (a3), d6
     andi.l  #$e, d6
     asr.l   #$1, d6
+    ; d6 = target Red (0-7)
+    ; extract Blue channel from CURRENT (work buffer) colour (a2): same decode
     move.w  (a2), d4
     andi.l  #$e00, d4
     moveq   #$9,d0
     asr.l   d0, d4
+    ; d4 = current Blue (0-7)
+    ; extract Green channel from current colour
     move.w  (a2), d3
     andi.l  #$e0, d3
     asr.l   #$5, d3
+    ; d3 = current Green (0-7)
+    ; extract Red channel from current colour
     move.w  (a2), d2
     andi.l  #$e, d2
     asr.l   #$1, d2
+    ; d2 = current Red (0-7)
+    ; --- Channel step: Blue (d4 toward target at (a5)) ---
+    ; if current Blue > target Blue: step down by 1
     cmp.w   (a5), d4
     bls.b   l_04f9a
     subq.w  #$1, d4
     bra.b   l_04fb4
 l_04f9a:
+    ; if current Blue == target Blue: no change needed (already at target)
     cmp.w   (a5), d4
     bcc.b   l_04fb4
+    ; current Blue < target Blue: step up
+    ; max step-up = remaining_steps (-$2(a6)); if target - current > remaining, clamp
     move.w  -$2(a6), d0
     cmp.w   (a5), d0
     bcc.b   l_04fae
+    ; remaining steps < gap: step up by 1 only (smooth fade, not a jump)
     moveq   #$0,d0
     move.w  d4, d0
     addq.l  #$1, d0
     bra.b   l_04fb2
 l_04fae:
+    ; remaining steps >= gap: can reach target this iteration, set to target
     moveq   #$0,d0
     move.w  d4, d0
 l_04fb2:
     move.w  d0, d4
 l_04fb4:
+    ; --- Channel step: Green (d3 toward target d7) ---
+    ; same 3-way logic: above/equal/below target
     cmp.w   d7, d3
     bls.b   l_04fbc
     subq.w  #$1, d3
@@ -92,6 +136,8 @@ l_04fce:
 l_04fd2:
     move.w  d0, d3
 l_04fd4:
+    ; --- Channel step: Red (d2 toward target d6) ---
+    ; same 3-way logic: above/equal/below target
     cmp.w   d6, d2
     bls.b   l_04fdc
     subq.w  #$1, d2
@@ -111,39 +157,55 @@ l_04fee:
 l_04ff2:
     move.w  d0, d2
 l_04ff4:
+    ; --- Re-pack stepped RGB channels back into Genesis colour word format ---
+    ; Genesis colour: %0000BBB0GGG0RRR0
+    ; Blue in bits[11:9]: d4 << 9
     move.w  d4, d0
     moveq   #$9,d1
     lsl.w   d1, d0
+    ; Green in bits[7:5]: d3 << 5
     move.w  d3, d1
     lsl.w   #$5, d1
     add.w   d1, d0
+    ; Red in bits[3:1]: d2 << 1 (each channel value 0-7 sits in bit positions 1,5,9)
     move.w  d2, d1
     add.w   d1, d1
     add.w   d1, d0
+    ; write updated colour word back into work buffer
     move.w  d0, (a2)
+    ; advance both pointers (work buffer and target) to next colour entry
     addq.l  #$2, a3
     addq.l  #$2, a2
     addq.w  #$1, d5
 l_0500e:
+    ; loop while d5 < count ($16(a6))
     cmp.w   $16(a6), d5
     bcs.w   l_04f50
+    ; --- Phase: Write updated palette to CRAM/VSRAM via WriteCharUIDisplay ---
+    ; pass: buffer ptr, VRAM write address ($12(a6)), count ($16(a6))
     move.w  $16(a6), d0
     move.l  d0, -(a7)
     move.w  $12(a6), d0
     move.l  d0, -(a7)
     pea     -$86(a6)
+    ; WriteCharUIDisplay: writes count colour words from buffer to CRAM at the given address
     bsr.w WriteCharUIDisplay
     lea     $c(a7), a7
+    ; optional sync: if $1a(a6) is nonzero, issue GameCommand #$E (wait-for-VBlank sync)
     tst.w   $1a(a6)
     beq.b   l_05048
+    ; $1a(a6) = sync argument passed to GameCommand #$E (display sync / wait)
     moveq   #$0,d0
     move.w  $1a(a6), d0
     move.l  d0, -(a7)
     pea     ($000E).w
+    ; GameCommand #$E: display sync -- waits for the next V-Blank before returning
     jsr GameCommand
     addq.l  #$8, a7
 l_05048:
+    ; advance outer iteration counter and repeat for all 8 fade steps
     addq.w  #$1, -$4(a6)
+    ; $8 = 8 total fade steps; after 8 iterations the palette has fully reached target
     cmpi.w  #$8, -$4(a6)
     bcs.w   l_04f26
     movem.l -$b0(a6), d2-d7/a2-a5

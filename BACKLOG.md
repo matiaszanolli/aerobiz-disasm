@@ -8,6 +8,16 @@ Pick the highest-priority unclaimed task. Mark it `IN PROGRESS` with your sessio
 
 ## Phase 5 -- Full Understanding
 
+### B-066: Widen annotation coverage (functions 28-50)
+**Status:** DONE (2026-02-27)
+**Priority:** P2
+**Why:** Continue B-065 annotation wave covering the next tier of complex functions (287-330 lines each).
+**Approach:** 3 parallel agents covering 19 functions: ProcessRouteDisplayS2, ProcessInputEvent, InitGraphicsMemory, FormatRelationStats, RunIntroLoop, UpdatePlayerRating, ProcessCharJoin, DrawCharPanelS2, CalcTradeGains, DiagonalWipe, CalcOptimalTicketPrice, HandleTextCompression, CharacterBrowser, FadeGraphics, DecompressGraphicsData, NormalizeDisplayAttrs, AcquireCharSlot, PostTurnCleanup, ShowQuarterSummary.
+**Notable:** Two spurious instruction lines caught and reverted during build verification (movea.l #$FF03FB in ProcessRouteDisplayS2; lea $c(a7) in RunIntroLoop).
+**Acceptance:** `make verify` passes (MD5: 1269f44e846a88a2de945de082428b39).
+
+---
+
 ### B-065: Widen annotation coverage (next 27 complex functions)
 **Status:** DONE (2026-02-27)
 **Priority:** P2

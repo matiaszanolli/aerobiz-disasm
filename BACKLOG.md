@@ -8,6 +8,26 @@ Pick the highest-priority unclaimed task. Mark it `IN PROGRESS` with your sessio
 
 ## Phase 5 -- Full Understanding
 
+### B-068: Widen annotation coverage (functions 81-110)
+**Status:** DONE (2026-02-28)
+**Priority:** P2
+**Why:** Continue B-067 annotation wave covering functions 81-110 by size (203-235 lines each).
+**Approach:** 3 parallel agents covering 30 functions: ApplyCharacterEffect, DrawTilemapLineWrap, RenderGameUI, ClearControllerS2, GetPlayerCharCount, DisplayStationDetail, UpdateGameStateS2, RenderDisplayBuffer, RecalcAllCharStats, DrawTilemapLine, RenderCharInfoPanel, ShowRouteDetailsDialog, UpdateCharDisplayS2, ShowCharDetail, DisplayPlayerStatsScreen, RenderEndingCredits, ManageTurnDisplay, HandleCharInteraction, HandleRouteEventType0, CalcRouteRevenue, ProcessCharRoster, ProcessGameFrame, UpdateAnimation, CalcCharOutput, RunGameMenu, BrowseMapPages, CalcCharAdvantage, CalcStatChange, ComputeAllianceScores, UpdateGraphicsState.
+**Notable:** Spurious `lea $30(a7),a7` insertion caught in RenderEndingCredits.asm — another "stack-cleanup hallucination" failure mode. The 4-byte insertion at ROM $3C935 shifted Multiply32 from $3E05C to $3E060, producing 420K+ differing bytes in cmp. Found by locating the dense diff run start. Reverted by removing the spurious line.
+**Acceptance:** `make verify` passes (MD5: 1269f44e846a88a2de945de082428b39).
+
+---
+
+### B-067: Widen annotation coverage (functions 51-80)
+**Status:** DONE (2026-02-27)
+**Priority:** P2
+**Why:** Continue B-066 annotation wave covering functions 51-80 by size (235-282 lines each).
+**Approach:** 3 parallel agents covering 30 functions spanning game/, graphics/, display/, input/ categories.
+**Notable:** Label collapse hallucination caught in CalcRevenue.asm — agent renamed .l9530 to .l93b0, changing a backward branch to forward. Reverted to HEAD; CalcRevenue remains unannotated.
+**Acceptance:** `make verify` passes (MD5: 1269f44e846a88a2de945de082428b39).
+
+---
+
 ### B-066: Widen annotation coverage (functions 28-50)
 **Status:** DONE (2026-02-27)
 **Priority:** P2
